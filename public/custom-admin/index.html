@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbitra Custom Admin</title>
+    <link rel="stylesheet" href="/custom-admin/admin.css" />
+  </head>
+  <body>
+    <main class="admin">
+      <section class="hero">
+        <p>Orbitra CMS Custom</p>
+        <h1>Gestione prodotti</h1>
+        <span>Database collegato a Cloudflare D1</span>
+      </section>
+
+      <section class="grid">
+        <form id="productForm" class="card">
+          <h2>Aggiungi prodotto</h2>
+
+          <label>Nome prodotto</label>
+          <input id="name" type="text" placeholder="Kit Energia Astronauta" required />
+
+          <label>Slug URL</label>
+          <input id="slug" type="text" placeholder="kit-energia-astronauta" required />
+
+          <label>Descrizione</label>
+          <textarea id="description" placeholder="Descrizione prodotto..." required></textarea>
+
+          <label>Prezzo in euro</label>
+          <input id="price" type="number" step="0.01" placeholder="49.00" required />
+
+          <label>URL immagine</label>
+          <input id="image_url" type="text" placeholder="https://..." />
+
+          <label>Collezione</label>
+          <input id="collection_slug" type="text" placeholder="pre-lancio" />
+
+          <label>Categoria</label>
+          <input id="category" type="text" placeholder="Preparazione" />
+
+          <label>Stock</label>
+          <input id="stock" type="number" placeholder="120" required />
+
+          <button type="submit">Salva prodotto</button>
+
+          <p id="message"></p>
+        </form>
+
+        <section class="card">
+          <div class="section-title">
+            <h2>Prodotti nel database</h2>
+            <button id="refreshButton" type="button">Aggiorna</button>
+          </div>
+
+          <div id="productsList" class="products-list">
+            Caricamento prodotti...
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/custom-admin/admin.js"></script>
+  </body>
+</html>
