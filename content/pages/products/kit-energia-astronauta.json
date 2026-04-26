@@ -1,0 +1,10 @@
+{
+  "name": "Kit Energia Astronauta",
+  "slug": "kit-energia-astronauta",
+  "description": "Kit energetico premium per prepararsi al lancio.",
+  "price_cents": 4900,
+  "image": "",
+  "category": "Preparazione",
+  "collection": "Pre-lancio",
+  "active": true
+}

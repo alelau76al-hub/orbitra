@@ -1,0 +1,40 @@
+backend:
+  name: github
+  repo: alelau76al-hub/orbitra
+  branch: main
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: products
+    label: Prodotti
+    label_singular: Prodotto
+    folder: content/products
+    create: true
+    slug: "{{slug}}"
+    extension: json
+    format: json
+    fields:
+      - { label: Nome prodotto, name: name, widget: string }
+      - { label: Slug URL, name: slug, widget: string }
+      - { label: Descrizione, name: description, widget: text }
+      - { label: Prezzo in centesimi, name: price_cents, widget: number }
+      - { label: Immagine, name: image, widget: image, required: false }
+      - { label: Categoria, name: category, widget: string, required: false }
+      - { label: Collezione, name: collection, widget: string, required: false }
+      - { label: Attivo, name: active, widget: boolean, default: true }
+
+  - name: pages
+    label: Pagine
+    files:
+      - label: Homepage
+        name: home
+        file: content/pages/home.json
+        extension: json
+        format: json
+        fields:
+          - { label: Eyebrow, name: eyebrow, widget: string }
+          - { label: Titolo, name: title, widget: string }
+          - { label: Sottotitolo, name: subtitle, widget: text }
+          - { label: Testo bottone, name: button_text, widget: string }
