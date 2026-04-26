@@ -524,11 +524,162 @@ window.addEventListener('message', (event) => {
 
   applyHeroPreview(event.data.hero)
 })
+function escapeCmsHtml(value = '') {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
+
+function getCmsContainer() {
+  let container = document.querySelector('#cmsSections')
+
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'cmsSections'
+
+    const hero = document.querySelector('.hero')
+    hero?.insertAdjacentElement('afterend', container)
+  }
+
+  return container
+}
+
+function renderCmsSection(section) {
+  const data = section.data || {}
+
+  if (section.type === 'banner') {
+    return `
+      <section class="section cms-banner">
+        <p class="eyebrow">Mission update</p>
+        <h2>${escapeCmsHtml(data.title)}</h2>
+        <p>${escapeCmsHtml(data.text)}</p>
+        <a class="btn primary" href="#shop">${escapeCmsHtml(data.button_text)}</a>
+      </section>
+    `
+  }
+
+  if (section.type === 'product_grid') {
+    return `
+      <section class="section">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+        <div class="store-grid cms-product-grid" data-products-grid>
+          Caricamento prodotti...
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'faq') {
+    return `
+      <section class="section cms-faq">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">FAQ</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="faq-item open">
+          <span>${escapeCmsHtml(data.question)}</span>
+          <strong>+</strong>
+          <p>${escapeCmsHtml(data.answer)}</p>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'cta') {
+    return `
+      <section class="section cms-cta">
+        <h2>${escapeCmsHtml(data.title)}</h2>
+        <p>${escapeCmsHtml(data.text)}</p>
+        <a class="btn primary" href="#booking">${escapeCmsHtml(data.button_text)}</a>
+      </section>
+    `
+  }
+
+  return ''
+}
+
+async function hydrateProductGrids() {
+  const grids = document.querySelectorAll('[data-products-grid]')
+  if (grids.length === 0) return
+
+  try {
+    const response = await fetch('/api/products')
+    const data = await response.json()
+
+    if (!data.success || data.products.length === 0) {
+      grids.forEach((grid) => {
+        grid.textContent = 'Nessun prodotto disponibile.'
+      })
+      return
+    }
+
+    const html = data.products
+      .map(
+        (product) => `
+          <article class="store-card">
+            <div class="store-image">
+              ${product.image_url ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">` : '🚀'}
+            </div>
+            <h3>${escapeCmsHtml(product.name)}</h3>
+            <p>${escapeCmsHtml(product.description || '')}</p>
+            <div class="store-meta">
+              <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
+                style: 'currency',
+                currency: 'EUR',
+              })}</strong>
+              <span>Stock: ${product.stock}</span>
+            </div>
+            <button class="btn primary" type="button">Aggiungi al carrello</button>
+          </article>
+        `,
+      )
+      .join('')
+
+    grids.forEach((grid) => {
+      grid.innerHTML = html
+    })
+  } catch {
+    grids.forEach((grid) => {
+      grid.textContent = 'Errore caricamento prodotti.'
+    })
+  }
+}
+
 function renderCmsSections(sections) {
   const heroSection = sections.find((section) => section.type === 'hero')
 
   if (heroSection) {
     applyHeroPreview(heroSection.data)
+  }
+
+  const container = getCmsContainer()
+
+  container.innerHTML = sections
+    .filter((section) => section.type !== 'hero')
+    .map(renderCmsSection)
+    .join('')
+
+  hydrateProductGrids()
+}
+
+async function loadCmsSectionsFromD1() {
+  try {
+    const response = await fetch('/api/admin/section')
+    const data = await response.json()
+
+    if (!data.success) return
+
+    renderCmsSections(data.sections)
+  } catch (error) {
+    console.error('Errore caricamento sezioni CMS:', error)
   }
 }
 
@@ -538,3 +689,5 @@ window.addEventListener('message', (event) => {
 
   renderCmsSections(event.data.sections)
 })
+
+loadCmsSectionsFromD1()

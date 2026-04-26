@@ -1038,3 +1038,48 @@ input[type="range"] {
     grid-template-columns: 1fr;
   }
 }
+.cms-banner,
+.cms-cta {
+  border: 1px solid var(--border);
+  border-radius: 34px;
+  padding: 56px;
+  background:
+    radial-gradient(circle at top right, rgba(0, 245, 255, 0.18), transparent 35%),
+    rgba(255, 255, 255, 0.055);
+  box-shadow: 0 0 70px rgba(0, 245, 255, 0.08);
+}
+
+.cms-banner h2,
+.cms-cta h2 {
+  max-width: 760px;
+  margin-bottom: 18px;
+  font-size: clamp(42px, 6vw, 78px);
+  line-height: 0.95;
+  letter-spacing: -4px;
+}
+
+.cms-banner p,
+.cms-cta p {
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.cms-faq .faq-item {
+  max-width: 900px;
+}
+
+.cms-cta {
+  text-align: center;
+}
+
+.cms-cta h2,
+.cms-cta p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cms-cta .btn {
+  margin-top: 20px;
+}
