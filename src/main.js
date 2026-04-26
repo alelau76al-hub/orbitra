@@ -427,3 +427,54 @@ function observeReveals() {
 }
 
 observeReveals()
+async function loadStoreProducts() {
+  const main = document.querySelector('main')
+
+  const section = document.createElement('section')
+  section.className = 'section'
+  section.id = 'shop'
+  section.innerHTML = `
+    <div class="section-head reveal visible">
+      <p class="eyebrow">Shop pre-lancio</p>
+      <h2>Prodotti dal database.</h2>
+      <p>Questi prodotti arrivano da Cloudflare D1 e sono gestiti dalla dashboard custom.</p>
+    </div>
+    <div id="storeProducts" class="store-grid">Caricamento prodotti...</div>
+  `
+
+  main.appendChild(section)
+
+  const container = document.querySelector('#storeProducts')
+
+  try {
+    const response = await fetch('/api/products')
+    const data = await response.json()
+
+    if (!data.success || data.products.length === 0) {
+      container.textContent = 'Nessun prodotto disponibile.'
+      return
+    }
+
+    container.innerHTML = data.products.map((product) => `
+      <article class="store-card">
+        <div class="store-image">
+          ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}">` : '🚀'}
+        </div>
+        <h3>${product.name}</h3>
+        <p>${product.description || ''}</p>
+        <div class="store-meta">
+          <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
+            style: 'currency',
+            currency: 'EUR'
+          })}</strong>
+          <span>Stock: ${product.stock}</span>
+        </div>
+        <button class="btn primary" type="button">Aggiungi al carrello</button>
+      </article>
+    `).join('')
+  } catch {
+    container.textContent = 'Errore nel caricamento prodotti.'
+  }
+}
+
+loadStoreProducts()
