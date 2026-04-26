@@ -189,17 +189,28 @@ const heroButtonText = document.querySelector('#heroButtonText')
 const saveHeroButton = document.querySelector('#saveHeroButton')
 const heroMessage = document.querySelector('#heroMessage')
 
-const previewEyebrow = document.querySelector('#previewEyebrow')
-const previewTitle = document.querySelector('#previewTitle')
-const previewSubtitle = document.querySelector('#previewSubtitle')
-const previewButton = document.querySelector('#previewButton')
+const sitePreview = document.querySelector('#sitePreview')
+
+function getHeroValues() {
+  return {
+    eyebrow: heroEyebrow.value || 'Luxury Space Travel',
+    title: heroTitle.value || 'Titolo hero',
+    subtitle: heroSubtitle.value || 'Sottotitolo hero',
+    button_text: heroButtonText.value || 'Scopri di più',
+  }
+}
 
 function updateHeroPreview() {
-  previewEyebrow.textContent = heroEyebrow.value || 'Luxury Space Travel'
-  previewTitle.textContent = heroTitle.value || 'Titolo hero'
-  previewSubtitle.textContent = heroSubtitle.value || 'Sottotitolo hero'
-  previewButton.textContent = heroButtonText.value || 'Scopri di più'
+  sitePreview.contentWindow?.postMessage(
+    {
+      type: 'ORBITRA_HERO_PREVIEW',
+      hero: getHeroValues(),
+    },
+    window.location.origin,
+  )
 }
+
+sitePreview.addEventListener('load', updateHeroPreview)
 
 async function loadHeroEditor() {
   try {

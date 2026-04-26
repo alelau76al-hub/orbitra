@@ -503,3 +503,24 @@ async function loadEditableHero() {
 }
 
 loadEditableHero()
+function applyHeroPreview(hero) {
+  const heroContent = document.querySelector('.hero-content')
+  if (!heroContent) return
+
+  const eyebrow = heroContent.querySelector('.eyebrow')
+  const title = heroContent.querySelector('h1')
+  const subtitle = heroContent.querySelector('.hero-text')
+  const button = heroContent.querySelector('.btn.primary')
+
+  if (eyebrow) eyebrow.textContent = hero.eyebrow
+  if (title) title.textContent = hero.title
+  if (subtitle) subtitle.textContent = hero.subtitle
+  if (button) button.textContent = hero.button_text
+}
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== window.location.origin) return
+  if (event.data?.type !== 'ORBITRA_HERO_PREVIEW') return
+
+  applyHeroPreview(event.data.hero)
+})
