@@ -1,0 +1,8 @@
+name = "orbitra"
+compatibility_date = "2026-04-26"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "orbitra-store"
+database_id = "d397bd5a-bb1b-4ce1-95a6-e0e757a3f2e3"
