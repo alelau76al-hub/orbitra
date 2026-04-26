@@ -478,3 +478,28 @@ async function loadStoreProducts() {
 }
 
 loadStoreProducts()
+async function loadEditableHero() {
+  try {
+    const response = await fetch('/api/admin/hero')
+    const data = await response.json()
+
+    if (!data.success || !data.hero) return
+
+    const heroContent = document.querySelector('.hero-content')
+    if (!heroContent) return
+
+    const eyebrow = heroContent.querySelector('.eyebrow')
+    const title = heroContent.querySelector('h1')
+    const subtitle = heroContent.querySelector('.hero-text')
+    const button = heroContent.querySelector('.btn.primary')
+
+    if (eyebrow) eyebrow.textContent = data.hero.eyebrow
+    if (title) title.textContent = data.hero.title
+    if (subtitle) subtitle.textContent = data.hero.subtitle
+    if (button) button.textContent = data.hero.button_text
+  } catch (error) {
+    console.error('Errore caricamento hero modificabile:', error)
+  }
+}
+
+loadEditableHero()
