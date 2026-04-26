@@ -17,7 +17,8 @@
 
       <section class="grid">
         <form id="productForm" class="card">
-          <h2>Aggiungi prodotto</h2>
+          <h2 id="formTitle">Aggiungi prodotto</h2>
+<input id="productId" type="hidden" />
 
           <label>Nome prodotto</label>
           <input id="name" type="text" placeholder="Kit Energia Astronauta" required />
@@ -43,7 +44,8 @@
           <label>Stock</label>
           <input id="stock" type="number" placeholder="120" required />
 
-          <button type="submit">Salva prodotto</button>
+          <button id="submitButton" type="submit">Salva prodotto</button>
+<button id="cancelEdit" class="secondary" type="button" hidden>Annulla modifica</button>
 
           <p id="message"></p>
         </form>

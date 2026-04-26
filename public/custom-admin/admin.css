@@ -162,3 +162,26 @@ button {
     grid-template-columns: 1fr;
   }
 }
+.product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.product-actions button {
+  margin-top: 0;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+button.secondary {
+  margin-left: 8px;
+  color: white;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+button.danger {
+  color: white;
+  background: linear-gradient(135deg, #ff2b6d, #ff7a2b);
+}

@@ -2,12 +2,68 @@ const productsList = document.querySelector('#productsList')
 const productForm = document.querySelector('#productForm')
 const message = document.querySelector('#message')
 const refreshButton = document.querySelector('#refreshButton')
+const formTitle = document.querySelector('#formTitle')
+const submitButton = document.querySelector('#submitButton')
+const cancelEdit = document.querySelector('#cancelEdit')
 
 function formatMoney(priceCents) {
   return new Intl.NumberFormat('it-IT', {
     style: 'currency',
     currency: 'EUR',
   }).format(priceCents / 100)
+}
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
+
+function resetForm() {
+  productForm.reset()
+  document.querySelector('#productId').value = ''
+  formTitle.textContent = 'Aggiungi prodotto'
+  submitButton.textContent = 'Salva prodotto'
+  cancelEdit.hidden = true
+  message.textContent = ''
+}
+
+function fillForm(product) {
+  document.querySelector('#productId').value = product.id
+  document.querySelector('#name').value = product.name || ''
+  document.querySelector('#slug').value = product.slug || ''
+  document.querySelector('#description').value = product.description || ''
+  document.querySelector('#price').value = product.price_cents / 100
+  document.querySelector('#image_url').value = product.image_url || ''
+  document.querySelector('#collection_slug').value = product.collection_slug || ''
+  document.querySelector('#category').value = product.category || ''
+  document.querySelector('#stock').value = product.stock || 0
+
+  formTitle.textContent = 'Modifica prodotto'
+  submitButton.textContent = 'Aggiorna prodotto'
+  cancelEdit.hidden = false
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  })
+}
+
+function getFormProduct() {
+  return {
+    id: document.querySelector('#productId').value,
+    name: document.querySelector('#name').value.trim(),
+    slug: document.querySelector('#slug').value.trim(),
+    description: document.querySelector('#description').value.trim(),
+    price_cents: Math.round(Number(document.querySelector('#price').value) * 100),
+    image_url: document.querySelector('#image_url').value.trim(),
+    collection_slug: document.querySelector('#collection_slug').value.trim(),
+    category: document.querySelector('#category').value.trim(),
+    stock: Number(document.querySelector('#stock').value),
+  }
 }
 
 async function loadProducts() {
@@ -31,18 +87,57 @@ async function loadProducts() {
       .map(
         (product) => `
           <article class="product-item">
-            <h3>${product.name}</h3>
-            <p>${product.description || 'Nessuna descrizione'}</p>
+            <h3>${escapeHtml(product.name)}</h3>
+            <p>${escapeHtml(product.description || 'Nessuna descrizione')}</p>
+
             <div class="meta">
               <span>${formatMoney(product.price_cents)}</span>
               <span>Stock: ${product.stock}</span>
-              <span>${product.category || 'Senza categoria'}</span>
-              <span>${product.collection_slug || 'Senza collezione'}</span>
+              <span>${escapeHtml(product.category || 'Senza categoria')}</span>
+              <span>${escapeHtml(product.collection_slug || 'Senza collezione')}</span>
+            </div>
+
+            <div class="product-actions">
+              <button type="button" data-edit="${product.id}">Modifica</button>
+              <button type="button" class="danger" data-disable="${product.id}">Disattiva</button>
             </div>
           </article>
         `,
       )
       .join('')
+
+    document.querySelectorAll('[data-edit]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const product = data.products.find((item) => item.id === Number(button.dataset.edit))
+        fillForm(product)
+      })
+    })
+
+    document.querySelectorAll('[data-disable]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const confirmed = confirm('Vuoi disattivare questo prodotto?')
+        if (!confirmed) return
+
+        const response = await fetch('/api/admin/products', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Number(button.dataset.disable),
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore durante la disattivazione.')
+          return
+        }
+
+        loadProducts()
+      })
+    })
   } catch (error) {
     productsList.textContent = 'Errore di connessione alla API.'
   }
@@ -53,20 +148,12 @@ productForm.addEventListener('submit', async (event) => {
 
   message.textContent = 'Salvataggio in corso...'
 
-  const product = {
-    name: document.querySelector('#name').value.trim(),
-    slug: document.querySelector('#slug').value.trim(),
-    description: document.querySelector('#description').value.trim(),
-    price_cents: Math.round(Number(document.querySelector('#price').value) * 100),
-    image_url: document.querySelector('#image_url').value.trim(),
-    collection_slug: document.querySelector('#collection_slug').value.trim(),
-    category: document.querySelector('#category').value.trim(),
-    stock: Number(document.querySelector('#stock').value),
-  }
+  const product = getFormProduct()
+  const isEditing = Boolean(product.id)
 
   try {
     const response = await fetch('/api/admin/products', {
-      method: 'POST',
+      method: isEditing ? 'PUT' : 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -80,14 +167,18 @@ productForm.addEventListener('submit', async (event) => {
       return
     }
 
-    message.textContent = 'Prodotto salvato correttamente.'
-    productForm.reset()
+    message.textContent = isEditing
+      ? 'Prodotto aggiornato correttamente.'
+      : 'Prodotto salvato correttamente.'
+
+    resetForm()
     loadProducts()
   } catch (error) {
     message.textContent = 'Errore di connessione.'
   }
 })
 
+cancelEdit.addEventListener('click', resetForm)
 refreshButton.addEventListener('click', loadProducts)
 
 loadProducts()
