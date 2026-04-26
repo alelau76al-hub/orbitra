@@ -21,16 +21,6 @@ export async function onRequestPost({ request, env }) {
       )
     }
 
-    if (Number.isNaN(stock) || stock < 0) {
-      return Response.json(
-        {
-          success: false,
-          message: 'Stock non valido.',
-        },
-        { status: 400 },
-      )
-    }
-
     const existing = await env.DB.prepare(
       'SELECT id FROM products WHERE slug = ?',
     )
