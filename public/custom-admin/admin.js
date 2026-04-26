@@ -182,3 +182,79 @@ cancelEdit.addEventListener('click', resetForm)
 refreshButton.addEventListener('click', loadProducts)
 
 loadProducts()
+const heroEyebrow = document.querySelector('#heroEyebrow')
+const heroTitle = document.querySelector('#heroTitle')
+const heroSubtitle = document.querySelector('#heroSubtitle')
+const heroButtonText = document.querySelector('#heroButtonText')
+const saveHeroButton = document.querySelector('#saveHeroButton')
+const heroMessage = document.querySelector('#heroMessage')
+
+const previewEyebrow = document.querySelector('#previewEyebrow')
+const previewTitle = document.querySelector('#previewTitle')
+const previewSubtitle = document.querySelector('#previewSubtitle')
+const previewButton = document.querySelector('#previewButton')
+
+function updateHeroPreview() {
+  previewEyebrow.textContent = heroEyebrow.value || 'Luxury Space Travel'
+  previewTitle.textContent = heroTitle.value || 'Titolo hero'
+  previewSubtitle.textContent = heroSubtitle.value || 'Sottotitolo hero'
+  previewButton.textContent = heroButtonText.value || 'Scopri di più'
+}
+
+async function loadHeroEditor() {
+  try {
+    const response = await fetch('/api/admin/hero')
+    const data = await response.json()
+
+    if (!data.success || !data.hero) {
+      heroMessage.textContent = 'Hero non trovata.'
+      return
+    }
+
+    heroEyebrow.value = data.hero.eyebrow || ''
+    heroTitle.value = data.hero.title || ''
+    heroSubtitle.value = data.hero.subtitle || ''
+    heroButtonText.value = data.hero.button_text || ''
+
+    updateHeroPreview()
+  } catch {
+    heroMessage.textContent = 'Errore caricamento Hero.'
+  }
+}
+
+async function saveHero() {
+  heroMessage.textContent = 'Salvataggio...'
+
+  const hero = {
+    eyebrow: heroEyebrow.value.trim(),
+    title: heroTitle.value.trim(),
+    subtitle: heroSubtitle.value.trim(),
+    button_text: heroButtonText.value.trim(),
+  }
+
+  try {
+    const response = await fetch('/api/admin/hero', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(hero),
+    })
+
+    const data = await response.json()
+
+    heroMessage.textContent = data.success
+      ? 'Hero salvata correttamente.'
+      : 'Errore nel salvataggio.'
+  } catch {
+    heroMessage.textContent = 'Errore di connessione.'
+  }
+}
+
+;[heroEyebrow, heroTitle, heroSubtitle, heroButtonText].forEach((input) => {
+  input.addEventListener('input', updateHeroPreview)
+})
+
+saveHeroButton.addEventListener('click', saveHero)
+
+loadHeroEditor()
