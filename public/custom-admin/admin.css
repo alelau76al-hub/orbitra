@@ -288,3 +288,35 @@ button.danger {
   background: #050509;
   overflow: hidden;
 }
+.inline-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.inline-controls button {
+  margin-top: 0;
+}
+
+.sections-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 24px;
+}
+
+.section-button {
+  width: 100%;
+  margin-top: 0;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.section-button.active {
+  color: black;
+  background: linear-gradient(135deg, #00f5ff, #52ff9f);
+}

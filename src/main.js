@@ -524,3 +524,17 @@ window.addEventListener('message', (event) => {
 
   applyHeroPreview(event.data.hero)
 })
+function renderCmsSections(sections) {
+  const heroSection = sections.find((section) => section.type === 'hero')
+
+  if (heroSection) {
+    applyHeroPreview(heroSection.data)
+  }
+}
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== window.location.origin) return
+  if (event.data?.type !== 'ORBITRA_SECTIONS_PREVIEW') return
+
+  renderCmsSections(event.data.sections)
+})

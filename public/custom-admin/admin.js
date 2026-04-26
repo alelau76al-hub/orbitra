@@ -182,90 +182,189 @@ cancelEdit.addEventListener('click', resetForm)
 refreshButton.addEventListener('click', loadProducts)
 
 loadProducts()
-const heroEyebrow = document.querySelector('#heroEyebrow')
-const heroTitle = document.querySelector('#heroTitle')
-const heroSubtitle = document.querySelector('#heroSubtitle')
-const heroButtonText = document.querySelector('#heroButtonText')
-const saveHeroButton = document.querySelector('#saveHeroButton')
-const heroMessage = document.querySelector('#heroMessage')
-
 const sitePreview = document.querySelector('#sitePreview')
+const sectionsList = document.querySelector('#sectionsList')
+const sectionFields = document.querySelector('#sectionFields')
+const selectedSectionTitle = document.querySelector('#selectedSectionTitle')
+const saveSectionButton = document.querySelector('#saveSectionButton')
+const addSectionButton = document.querySelector('#addSectionButton')
+const newSectionType = document.querySelector('#newSectionType')
+const sectionMessage = document.querySelector('#sectionMessage')
 
-function getHeroValues() {
-  return {
-    eyebrow: heroEyebrow.value || 'Luxury Space Travel',
-    title: heroTitle.value || 'Titolo hero',
-    subtitle: heroSubtitle.value || 'Sottotitolo hero',
-    button_text: heroButtonText.value || 'Scopri di più',
-  }
+let pageSections = []
+let selectedSectionId = null
+
+const sectionLabels = {
+  hero: 'Hero',
+  banner: 'Banner',
+  product_grid: 'Griglia prodotti',
+  faq: 'FAQ',
+  cta: 'CTA finale',
 }
 
-function updateHeroPreview() {
+const fieldsByType = {
+  hero: ['eyebrow', 'title', 'subtitle', 'button_text'],
+  banner: ['title', 'text', 'button_text'],
+  product_grid: ['eyebrow', 'title', 'subtitle'],
+  faq: ['title', 'question', 'answer'],
+  cta: ['title', 'text', 'button_text'],
+}
+
+const fieldLabels = {
+  eyebrow: 'Eyebrow',
+  title: 'Titolo',
+  subtitle: 'Sottotitolo',
+  button_text: 'Testo bottone',
+  text: 'Testo',
+  question: 'Domanda',
+  answer: 'Risposta',
+}
+
+function selectedSection() {
+  return pageSections.find((section) => section.id === selectedSectionId)
+}
+
+async function loadSections() {
+  const response = await fetch('/api/admin/section')
+  const data = await response.json()
+
+  if (!data.success) {
+    sectionMessage.textContent = 'Errore caricamento sezioni.'
+    return
+  }
+
+  pageSections = data.sections
+
+  if (!selectedSectionId && pageSections.length > 0) {
+    selectedSectionId = pageSections[0].id
+  }
+
+  renderSectionsList()
+  renderSelectedSection()
+  updateSitePreview()
+}
+
+function renderSectionsList() {
+  sectionsList.innerHTML = pageSections
+    .map(
+      (section) => `
+        <button
+          type="button"
+          class="section-button ${section.id === selectedSectionId ? 'active' : ''}"
+          data-section-id="${section.id}"
+        >
+          ${sectionLabels[section.type] || section.type}
+        </button>
+      `,
+    )
+    .join('')
+
+  document.querySelectorAll('[data-section-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedSectionId = Number(button.dataset.sectionId)
+      renderSectionsList()
+      renderSelectedSection()
+    })
+  })
+}
+
+function renderSelectedSection() {
+  const section = selectedSection()
+
+  if (!section) {
+    selectedSectionTitle.textContent = 'Seleziona una sezione'
+    sectionFields.innerHTML = ''
+    return
+  }
+
+  selectedSectionTitle.textContent = sectionLabels[section.type] || section.type
+
+  const fields = fieldsByType[section.type] || []
+
+  sectionFields.innerHTML = fields
+    .map((field) => {
+      const value = section.data[field] || ''
+      const isLong = ['title', 'subtitle', 'text', 'answer'].includes(field)
+
+      return `
+        <label>${fieldLabels[field] || field}</label>
+        ${
+          isLong
+            ? `<textarea data-field="${field}">${escapeHtml(value)}</textarea>`
+            : `<input data-field="${field}" type="text" value="${escapeHtml(value)}" />`
+        }
+      `
+    })
+    .join('')
+
+  sectionFields.querySelectorAll('[data-field]').forEach((input) => {
+    input.addEventListener('input', () => {
+      section.data[input.dataset.field] = input.value
+      updateSitePreview()
+    })
+  })
+}
+
+function updateSitePreview() {
   sitePreview.contentWindow?.postMessage(
     {
-      type: 'ORBITRA_HERO_PREVIEW',
-      hero: getHeroValues(),
+      type: 'ORBITRA_SECTIONS_PREVIEW',
+      sections: pageSections,
     },
     window.location.origin,
   )
 }
 
-sitePreview.addEventListener('load', updateHeroPreview)
+async function saveSelectedSection() {
+  const section = selectedSection()
+  if (!section) return
 
-async function loadHeroEditor() {
-  try {
-    const response = await fetch('/api/admin/hero')
-    const data = await response.json()
+  sectionMessage.textContent = 'Salvataggio...'
 
-    if (!data.success || !data.hero) {
-      heroMessage.textContent = 'Hero non trovata.'
-      return
-    }
+  const response = await fetch('/api/admin/section', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: section.id,
+      data: section.data,
+    }),
+  })
 
-    heroEyebrow.value = data.hero.eyebrow || ''
-    heroTitle.value = data.hero.title || ''
-    heroSubtitle.value = data.hero.subtitle || ''
-    heroButtonText.value = data.hero.button_text || ''
-
-    updateHeroPreview()
-  } catch {
-    heroMessage.textContent = 'Errore caricamento Hero.'
-  }
+  const data = await response.json()
+  sectionMessage.textContent = data.success
+    ? 'Sezione salvata.'
+    : 'Errore salvataggio.'
 }
 
-async function saveHero() {
-  heroMessage.textContent = 'Salvataggio...'
+async function addSection() {
+  sectionMessage.textContent = 'Aggiunta sezione...'
 
-  const hero = {
-    eyebrow: heroEyebrow.value.trim(),
-    title: heroTitle.value.trim(),
-    subtitle: heroSubtitle.value.trim(),
-    button_text: heroButtonText.value.trim(),
+  const response = await fetch('/api/admin/section', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: newSectionType.value,
+    }),
+  })
+
+  const data = await response.json()
+
+  if (!data.success) {
+    sectionMessage.textContent = data.message || 'Errore aggiunta sezione.'
+    return
   }
 
-  try {
-    const response = await fetch('/api/admin/hero', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(hero),
-    })
-
-    const data = await response.json()
-
-    heroMessage.textContent = data.success
-      ? 'Hero salvata correttamente.'
-      : 'Errore nel salvataggio.'
-  } catch {
-    heroMessage.textContent = 'Errore di connessione.'
-  }
+  selectedSectionId = null
+  await loadSections()
+  sectionMessage.textContent = 'Sezione aggiunta.'
 }
 
-;[heroEyebrow, heroTitle, heroSubtitle, heroButtonText].forEach((input) => {
-  input.addEventListener('input', updateHeroPreview)
-})
+saveSectionButton.addEventListener('click', saveSelectedSection)
+addSectionButton.addEventListener('click', addSection)
+sitePreview.addEventListener('load', updateSitePreview)
 
-saveHeroButton.addEventListener('click', saveHero)
-
-loadHeroEditor()
+loadSections()

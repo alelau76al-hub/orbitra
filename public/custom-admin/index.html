@@ -18,31 +18,37 @@
 <section class="visual-editor card">
   <div class="section-title">
     <h2>Editor visuale homepage</h2>
-    <button id="saveHeroButton" type="button">Salva Hero</button>
+    <button id="saveSectionButton" type="button">Salva sezione</button>
   </div>
 
   <div class="editor-layout">
     <iframe
-  id="sitePreview"
-  class="site-preview"
-  src="/?preview=admin"
-  title="Anteprima sito"
-></iframe>
+      id="sitePreview"
+      class="site-preview"
+      src="/?preview=admin"
+      title="Anteprima sito"
+    ></iframe>
 
     <div class="editor-panel">
-      <label>Eyebrow</label>
-      <input id="heroEyebrow" type="text" />
+      <label>Aggiungi sezione</label>
+      <div class="inline-controls">
+        <select id="newSectionType">
+          <option value="hero">Hero</option>
+          <option value="banner">Banner</option>
+          <option value="product_grid">Griglia prodotti</option>
+          <option value="faq">FAQ</option>
+          <option value="cta">CTA finale</option>
+        </select>
+        <button id="addSectionButton" type="button">Aggiungi</button>
+      </div>
 
-      <label>Titolo Hero</label>
-      <textarea id="heroTitle"></textarea>
+      <h3>Sezioni pagina</h3>
+      <div id="sectionsList" class="sections-list"></div>
 
-      <label>Sottotitolo</label>
-      <textarea id="heroSubtitle"></textarea>
+      <h3 id="selectedSectionTitle">Seleziona una sezione</h3>
+      <div id="sectionFields"></div>
 
-      <label>Testo bottone</label>
-      <input id="heroButtonText" type="text" />
-
-      <p id="heroMessage"></p>
+      <p id="sectionMessage"></p>
     </div>
   </div>
 </section>
