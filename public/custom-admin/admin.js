@@ -268,41 +268,111 @@ function renderSectionsList() {
   })
 }
 
-function renderSelectedSection() {
-  const section = selectedSection()
+function renderSectionsList() {
+  sectionsList.innerHTML = pageSections
+    .map(
+      (section, index) => `
+        <div class="section-row ${section.id === selectedSectionId ? 'active' : ''}">
+          <button
+            type="button"
+            class="section-button"
+            data-section-id="${section.id}"
+          >
+            ${sectionLabels[section.type] || section.type}
+          </button>
 
-  if (!section) {
-    selectedSectionTitle.textContent = 'Seleziona una sezione'
-    sectionFields.innerHTML = ''
-    return
-  }
-
-  selectedSectionTitle.textContent = sectionLabels[section.type] || section.type
-
-  const fields = fieldsByType[section.type] || []
-
-  sectionFields.innerHTML = fields
-    .map((field) => {
-      const value = section.data[field] || ''
-      const isLong = ['title', 'subtitle', 'text', 'answer'].includes(field)
-
-      return `
-        <label>${fieldLabels[field] || field}</label>
-        ${
-          isLong
-            ? `<textarea data-field="${field}">${escapeHtml(value)}</textarea>`
-            : `<input data-field="${field}" type="text" value="${escapeHtml(value)}" />`
-        }
-      `
-    })
+          <div class="section-tools">
+            <button type="button" data-up="${index}">↑</button>
+            <button type="button" data-down="${index}">↓</button>
+            <button type="button" class="danger" data-delete-section="${section.id}">×</button>
+          </div>
+        </div>
+      `,
+    )
     .join('')
 
-  sectionFields.querySelectorAll('[data-field]').forEach((input) => {
-    input.addEventListener('input', () => {
-      section.data[input.dataset.field] = input.value
+  document.querySelectorAll('[data-section-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedSectionId = Number(button.dataset.sectionId)
+      renderSectionsList()
+      renderSelectedSection()
+    })
+  })
+
+  document.querySelectorAll('[data-up]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const index = Number(button.dataset.up)
+      if (index === 0) return
+
+      const temp = pageSections[index]
+      pageSections[index] = pageSections[index - 1]
+      pageSections[index - 1] = temp
+
+      await saveSectionOrder()
+      renderSectionsList()
       updateSitePreview()
     })
   })
+
+  document.querySelectorAll('[data-down]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const index = Number(button.dataset.down)
+      if (index === pageSections.length - 1) return
+
+      const temp = pageSections[index]
+      pageSections[index] = pageSections[index + 1]
+      pageSections[index + 1] = temp
+
+      await saveSectionOrder()
+      renderSectionsList()
+      updateSitePreview()
+    })
+  })
+
+  document.querySelectorAll('[data-delete-section]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const confirmed = confirm('Vuoi eliminare questa sezione?')
+      if (!confirmed) return
+
+      const id = Number(button.dataset.deleteSection)
+
+      const response = await fetch('/api/admin/section', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      })
+
+      const data = await response.json()
+
+      if (!data.success) {
+        sectionMessage.textContent = data.message || 'Errore eliminazione sezione.'
+        return
+      }
+
+      selectedSectionId = null
+      await loadSections()
+      sectionMessage.textContent = 'Sezione eliminata.'
+    })
+  })
+}
+
+async function saveSectionOrder() {
+  await Promise.all(
+    pageSections.map((section, index) =>
+      fetch('/api/admin/section', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: section.id,
+          sort_order: index,
+        }),
+      }),
+    ),
+  )
 }
 
 function updateSitePreview() {

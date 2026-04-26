@@ -73,18 +73,46 @@ export async function onRequestPost({ request, env }) {
 export async function onRequestPut({ request, env }) {
   const body = await request.json()
 
-  if (!body.id || !body.data) {
-    return Response.json({ success: false, message: 'Dati mancanti.' }, { status: 400 })
+  if (!body.id) {
+    return Response.json({ success: false, message: 'ID sezione mancante.' }, { status: 400 })
+  }
+
+  if (body.data) {
+    await env.DB.prepare(`
+      UPDATE sections
+      SET data = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).bind(
+      JSON.stringify(body.data),
+      Number(body.id),
+    ).run()
+  }
+
+  if (typeof body.sort_order === 'number') {
+    await env.DB.prepare(`
+      UPDATE sections
+      SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).bind(
+      body.sort_order,
+      Number(body.id),
+    ).run()
+  }
+
+  return Response.json({ success: true })
+}
+export async function onRequestDelete({ request, env }) {
+  const body = await request.json()
+  const id = Number(body.id)
+
+  if (!id || Number.isNaN(id)) {
+    return Response.json({ success: false, message: 'ID sezione non valido.' }, { status: 400 })
   }
 
   await env.DB.prepare(`
-    UPDATE sections
-    SET data = ?, updated_at = CURRENT_TIMESTAMP
+    DELETE FROM sections
     WHERE id = ?
-  `).bind(
-    JSON.stringify(body.data),
-    Number(body.id),
-  ).run()
+  `).bind(id).run()
 
   return Response.json({ success: true })
 }

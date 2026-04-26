@@ -320,3 +320,26 @@ button.danger {
   color: black;
   background: linear-gradient(135deg, #00f5ff, #52ff9f);
 }
+.section-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.section-row.active .section-button {
+  color: black;
+  background: linear-gradient(135deg, #00f5ff, #52ff9f);
+}
+
+.section-tools {
+  display: flex;
+  gap: 6px;
+}
+
+.section-tools button {
+  margin-top: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
