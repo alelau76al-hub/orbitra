@@ -506,3 +506,38 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+.content-manager {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 22px;
+  margin-top: 22px;
+  align-items: start;
+}
+
+.inner-card {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.inner-card h3 {
+  margin-top: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+#pageMessage {
+  min-height: 24px;
+  color: #52ff9f;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .content-manager {
+    grid-template-columns: 1fr;
+  }
+}

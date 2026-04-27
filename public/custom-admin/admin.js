@@ -371,6 +371,164 @@ refreshCollectionsButton.addEventListener('click', loadCollections)
 
 loadCollections()
 
+// ===============================
+// PAGINE
+// ===============================
+
+const pagesList = document.querySelector('#pagesList')
+const pageForm = document.querySelector('#pageForm')
+const pageMessage = document.querySelector('#pageMessage')
+const refreshPagesButton = document.querySelector('#refreshPagesButton')
+const pageFormTitle = document.querySelector('#pageFormTitle')
+const pageSubmitButton = document.querySelector('#pageSubmitButton')
+const cancelPageEdit = document.querySelector('#cancelPageEdit')
+
+function resetPageForm() {
+  pageForm.reset()
+  document.querySelector('#pageId').value = ''
+  pageFormTitle.textContent = 'Aggiungi pagina'
+  pageSubmitButton.textContent = 'Salva pagina'
+  cancelPageEdit.hidden = true
+  pageMessage.textContent = ''
+}
+
+function fillPageForm(page) {
+  document.querySelector('#pageId').value = page.id
+  document.querySelector('#pageTitle').value = page.title || ''
+  document.querySelector('#pageSlug').value = page.slug || ''
+
+  pageFormTitle.textContent = 'Modifica pagina'
+  pageSubmitButton.textContent = 'Aggiorna pagina'
+  cancelPageEdit.hidden = false
+}
+
+function getFormPage() {
+  return {
+    id: document.querySelector('#pageId').value,
+    title: document.querySelector('#pageTitle').value.trim(),
+    slug: document.querySelector('#pageSlug').value.trim(),
+  }
+}
+
+async function loadPages() {
+  pagesList.textContent = 'Caricamento pagine...'
+
+  try {
+    const response = await fetch('/api/admin/pages')
+    const data = await response.json()
+
+    if (!data.success) {
+      pagesList.textContent = 'Errore nel caricamento pagine.'
+      return
+    }
+
+    if (data.pages.length === 0) {
+      pagesList.textContent = 'Nessuna pagina trovata.'
+      return
+    }
+
+    pagesList.innerHTML = data.pages
+      .map(
+        (page) => `
+          <article class="product-item">
+            <h3>${escapeHtml(page.title)}</h3>
+
+            <div class="meta">
+              <span>Slug: ${escapeHtml(page.slug)}</span>
+              <span>ID: ${page.id}</span>
+            </div>
+
+            <div class="product-actions">
+              <button type="button" data-edit-page="${page.id}">Modifica</button>
+              ${
+                page.slug === 'home'
+                  ? '<button type="button" class="secondary" disabled>Homepage protetta</button>'
+                  : `<button type="button" class="danger" data-delete-page="${page.id}">Elimina</button>`
+              }
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-edit-page]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const page = data.pages.find((item) => item.id === Number(button.dataset.editPage))
+        fillPageForm(page)
+      })
+    })
+
+    document.querySelectorAll('[data-delete-page]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const confirmed = confirm('Vuoi eliminare questa pagina?')
+        if (!confirmed) return
+
+        const response = await fetch('/api/admin/pages', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Number(button.dataset.deletePage),
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore durante eliminazione pagina.')
+          return
+        }
+
+        resetPageForm()
+        loadPages()
+      })
+    })
+  } catch (error) {
+    pagesList.textContent = 'Errore di connessione alla API pagine.'
+  }
+}
+
+pageForm.addEventListener('submit', async (event) => {
+  event.preventDefault()
+
+  pageMessage.textContent = 'Salvataggio in corso...'
+
+  const page = getFormPage()
+  const isEditing = Boolean(page.id)
+
+  try {
+    const response = await fetch('/api/admin/pages', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(page),
+    })
+
+    const data = await response.json()
+
+    if (!data.success) {
+      pageMessage.textContent = data.message || 'Errore nel salvataggio.'
+      return
+    }
+
+    pageMessage.textContent = isEditing
+      ? 'Pagina aggiornata correttamente.'
+      : 'Pagina salvata correttamente.'
+
+    resetPageForm()
+    loadPages()
+  } catch (error) {
+    pageMessage.textContent = 'Errore di connessione.'
+  }
+})
+
+cancelPageEdit.addEventListener('click', resetPageForm)
+refreshPagesButton.addEventListener('click', loadPages)
+
+loadPages()
+
 const sitePreview = document.querySelector('#sitePreview')
 const sectionsList = document.querySelector('#sectionsList')
 const sectionFields = document.querySelector('#sectionFields')

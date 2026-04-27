@@ -248,21 +248,21 @@
   </p>
 </section>
 
-<section id="contenuto" class="cms-area card placeholder-area">
+<section id="contenuto" class="cms-area card">
   <div class="section-title">
     <h2>Contenuto</h2>
-    <span class="status-badge">Prossima fase</span>
+    <span class="status-badge">Pagine attive</span>
   </div>
 
   <div class="mini-grid">
     <article>
       <h3>Pagine</h3>
-      <p>Crea pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
+      <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
     </article>
 
     <article>
       <h3>Menu</h3>
-      <p>Crea menu principali e footer collegati a pagine, collezioni, prodotti o URL esterni.</p>
+      <p>Prossima fase: menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
     </article>
 
     <article>
@@ -274,6 +274,39 @@
       <h3>SEO</h3>
       <p>Titoli, descrizioni, slug e dati per Google e social.</p>
     </article>
+  </div>
+
+  <div class="content-manager">
+    <form id="pageForm" class="inner-card">
+      <h3 id="pageFormTitle">Aggiungi pagina</h3>
+
+      <input id="pageId" type="hidden" />
+
+      <label>Titolo pagina</label>
+      <input id="pageTitle" type="text" placeholder="Chi siamo" required />
+
+      <label>Slug URL</label>
+      <input id="pageSlug" type="text" placeholder="chi-siamo" required />
+
+      <button id="pageSubmitButton" type="submit">Salva pagina</button>
+
+      <button id="cancelPageEdit" class="secondary" type="button" hidden>
+        Annulla modifica
+      </button>
+
+      <p id="pageMessage"></p>
+    </form>
+
+    <section class="inner-card">
+      <div class="section-title">
+        <h3>Pagine nel CMS</h3>
+        <button id="refreshPagesButton" type="button">Aggiorna</button>
+      </div>
+
+      <div id="pagesList" class="products-list">
+        Caricamento pagine...
+      </div>
+    </section>
   </div>
 </section>
 
