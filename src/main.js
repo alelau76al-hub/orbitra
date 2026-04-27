@@ -801,3 +801,99 @@ window.addEventListener('message', (event) => {
 })
 
 loadCmsSectionsFromD1()
+async function renderPublicCollectionPage() {
+  const path = window.location.pathname
+
+  if (!path.startsWith('/collections/')) return
+
+  const collectionSlug = decodeURIComponent(path.replace('/collections/', '').replaceAll('/', ''))
+  const main = document.querySelector('main')
+
+  if (!main || !collectionSlug) return
+
+  main.innerHTML = `
+    <section class="section">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Collezione</p>
+        <h2>Caricamento collezione...</h2>
+        <p>Stiamo recuperando prodotti e contenuti dal CMS.</p>
+      </div>
+
+      <div id="collectionProducts" class="store-grid">
+        Caricamento prodotti...
+      </div>
+    </section>
+  `
+
+  const title = main.querySelector('h2')
+  const intro = main.querySelector('.section-head p:last-child')
+  const container = document.querySelector('#collectionProducts')
+
+  try {
+    const [collectionsResponse, productsResponse] = await Promise.all([
+      fetch('/api/collections'),
+      fetch('/api/products'),
+    ])
+
+    const collectionsData = await collectionsResponse.json()
+    const productsData = await productsResponse.json()
+
+    const collection = collectionsData.collections?.find(
+      (item) => item.slug === collectionSlug,
+    )
+
+    if (!collection) {
+      title.textContent = 'Collezione non trovata'
+      intro.textContent = 'Questa collezione non esiste o non è più attiva.'
+      container.textContent = ''
+      return
+    }
+
+    title.textContent = collection.name
+    intro.textContent = collection.description || 'Prodotti selezionati da questa collezione.'
+
+    const products = (productsData.products || []).filter(
+      (product) => product.collection_slug === collection.slug,
+    )
+
+    if (products.length === 0) {
+      container.textContent = 'Nessun prodotto disponibile in questa collezione.'
+      return
+    }
+
+    container.innerHTML = products
+      .map(
+        (product) => `
+          <article class="store-card">
+            <div class="store-image">
+              ${
+                product.image_url
+                  ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+                  : '🚀'
+              }
+            </div>
+
+            <h3>${escapeCmsHtml(product.name)}</h3>
+            <p>${escapeCmsHtml(product.description || '')}</p>
+
+            <div class="store-meta">
+              <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
+                style: 'currency',
+                currency: 'EUR',
+              })}</strong>
+              <span>Stock: ${product.stock}</span>
+            </div>
+
+            <button class="btn primary" type="button">Aggiungi al carrello</button>
+          </article>
+        `,
+      )
+      .join('')
+  } catch (error) {
+    title.textContent = 'Errore caricamento collezione'
+    intro.textContent = 'Non è stato possibile caricare questa pagina.'
+    container.textContent = ''
+  }
+}
+
+renderPublicCollectionPage()
