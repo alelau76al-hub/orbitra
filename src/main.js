@@ -427,6 +427,65 @@ function observeReveals() {
 }
 
 observeReveals()
+async function loadStoreCollections() {
+  const main = document.querySelector('main')
+
+  const section = document.createElement('section')
+  section.className = 'section'
+  section.id = 'collections'
+  section.innerHTML = `
+    <div class="section-head reveal visible">
+      <p class="eyebrow">Collezioni</p>
+      <h2>Esplora le collezioni.</h2>
+      <p>Queste collezioni arrivano da Cloudflare D1 e sono gestite dal CMS custom.</p>
+    </div>
+
+    <div id="storeCollections" class="store-grid">
+      Caricamento collezioni...
+    </div>
+  `
+
+  main.appendChild(section)
+
+  const container = document.querySelector('#storeCollections')
+
+  try {
+    const response = await fetch('/api/collections')
+    const data = await response.json()
+
+    if (!data.success || data.collections.length === 0) {
+      container.textContent = 'Nessuna collezione disponibile.'
+      return
+    }
+
+    container.innerHTML = data.collections
+      .map(
+        (collection) => `
+          <article class="store-card">
+            <div class="store-image">
+              ${
+                collection.image_url
+                  ? `<img src="${escapeCmsHtml(collection.image_url)}" alt="${escapeCmsHtml(collection.name)}">`
+                  : '🪐'
+              }
+            </div>
+
+            <h3>${escapeCmsHtml(collection.name)}</h3>
+            <p>${escapeCmsHtml(collection.description || '')}</p>
+
+            <a class="btn primary" href="#shop" data-collection-link="${escapeCmsHtml(collection.slug)}">
+              Vedi prodotti
+            </a>
+          </article>
+        `,
+      )
+      .join('')
+  } catch {
+    container.textContent = 'Errore nel caricamento collezioni.'
+  }
+}
+
+loadStoreCollections()
 async function loadStoreProducts() {
   const main = document.querySelector('main')
 
