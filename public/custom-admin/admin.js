@@ -182,6 +182,169 @@ cancelEdit.addEventListener('click', resetForm)
 refreshButton.addEventListener('click', loadProducts)
 
 loadProducts()
+
+// ===============================
+// COLLEZIONI
+// ===============================
+
+const collectionsList = document.querySelector('#collectionsList')
+const collectionForm = document.querySelector('#collectionForm')
+const collectionMessage = document.querySelector('#collectionMessage')
+const refreshCollectionsButton = document.querySelector('#refreshCollectionsButton')
+const collectionFormTitle = document.querySelector('#collectionFormTitle')
+const collectionSubmitButton = document.querySelector('#collectionSubmitButton')
+const cancelCollectionEdit = document.querySelector('#cancelCollectionEdit')
+
+function resetCollectionForm() {
+  collectionForm.reset()
+  document.querySelector('#collectionId').value = ''
+  collectionFormTitle.textContent = 'Aggiungi collezione'
+  collectionSubmitButton.textContent = 'Salva collezione'
+  cancelCollectionEdit.hidden = true
+  collectionMessage.textContent = ''
+}
+
+function fillCollectionForm(collection) {
+  document.querySelector('#collectionId').value = collection.id
+  document.querySelector('#collectionName').value = collection.name || ''
+  document.querySelector('#collectionSlug').value = collection.slug || ''
+  document.querySelector('#collectionDescription').value = collection.description || ''
+  document.querySelector('#collectionImageUrl').value = collection.image_url || ''
+
+  collectionFormTitle.textContent = 'Modifica collezione'
+  collectionSubmitButton.textContent = 'Aggiorna collezione'
+  cancelCollectionEdit.hidden = false
+}
+
+function getFormCollection() {
+  return {
+    id: document.querySelector('#collectionId').value,
+    name: document.querySelector('#collectionName').value.trim(),
+    slug: document.querySelector('#collectionSlug').value.trim(),
+    description: document.querySelector('#collectionDescription').value.trim(),
+    image_url: document.querySelector('#collectionImageUrl').value.trim(),
+  }
+}
+
+async function loadCollections() {
+  collectionsList.textContent = 'Caricamento collezioni...'
+
+  try {
+    const response = await fetch('/api/admin/collections')
+    const data = await response.json()
+
+    if (!data.success) {
+      collectionsList.textContent = 'Errore nel caricamento collezioni.'
+      return
+    }
+
+    if (data.collections.length === 0) {
+      collectionsList.textContent = 'Nessuna collezione trovata.'
+      return
+    }
+
+    collectionsList.innerHTML = data.collections
+      .map(
+        (collection) => `
+          <article class="product-item">
+            <h3>${escapeHtml(collection.name)}</h3>
+            <p>${escapeHtml(collection.description || 'Nessuna descrizione')}</p>
+
+            <div class="meta">
+              <span>Slug: ${escapeHtml(collection.slug)}</span>
+              <span>ID: ${collection.id}</span>
+            </div>
+
+            <div class="product-actions">
+              <button type="button" data-edit-collection="${collection.id}">Modifica</button>
+              <button type="button" class="danger" data-delete-collection="${collection.id}">Elimina</button>
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-edit-collection]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const collection = data.collections.find(
+          (item) => item.id === Number(button.dataset.editCollection),
+        )
+
+        fillCollectionForm(collection)
+      })
+    })
+
+    document.querySelectorAll('[data-delete-collection]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const confirmed = confirm('Vuoi eliminare questa collezione?')
+        if (!confirmed) return
+
+        const response = await fetch('/api/admin/collections', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Number(button.dataset.deleteCollection),
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore durante eliminazione collezione.')
+          return
+        }
+
+        resetCollectionForm()
+        loadCollections()
+      })
+    })
+  } catch (error) {
+    collectionsList.textContent = 'Errore di connessione alla API collezioni.'
+  }
+}
+
+collectionForm.addEventListener('submit', async (event) => {
+  event.preventDefault()
+
+  collectionMessage.textContent = 'Salvataggio in corso...'
+
+  const collection = getFormCollection()
+  const isEditing = Boolean(collection.id)
+
+  try {
+    const response = await fetch('/api/admin/collections', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(collection),
+    })
+
+    const data = await response.json()
+
+    if (!data.success) {
+      collectionMessage.textContent = data.message || 'Errore nel salvataggio.'
+      return
+    }
+
+    collectionMessage.textContent = isEditing
+      ? 'Collezione aggiornata correttamente.'
+      : 'Collezione salvata correttamente.'
+
+    resetCollectionForm()
+    loadCollections()
+  } catch (error) {
+    collectionMessage.textContent = 'Errore di connessione.'
+  }
+})
+
+cancelCollectionEdit.addEventListener('click', resetCollectionForm)
+refreshCollectionsButton.addEventListener('click', loadCollections)
+
+loadCollections()
+
 const sitePreview = document.querySelector('#sitePreview')
 const sectionsList = document.querySelector('#sectionsList')
 const sectionFields = document.querySelector('#sectionFields')

@@ -53,6 +53,69 @@
   </div>
 </section>
 
+<section class="grid">
+  <form id="collectionForm" class="card">
+    <h2 id="collectionFormTitle">Aggiungi collezione</h2>
+
+    <input id="collectionId" type="hidden" />
+
+    <label>Nome collezione</label>
+    <input
+      id="collectionName"
+      type="text"
+      placeholder="Viaggi lunari"
+      required
+    />
+
+    <label>Slug URL</label>
+    <input
+      id="collectionSlug"
+      type="text"
+      placeholder="viaggi-lunari"
+      required
+    />
+
+    <label>Descrizione</label>
+    <textarea
+      id="collectionDescription"
+      placeholder="Descrizione della collezione..."
+    ></textarea>
+
+    <label>URL immagine</label>
+    <input
+      id="collectionImageUrl"
+      type="text"
+      placeholder="https://..."
+    />
+
+    <button id="collectionSubmitButton" type="submit">
+      Salva collezione
+    </button>
+
+    <button
+      id="cancelCollectionEdit"
+      class="secondary"
+      type="button"
+      hidden
+    >
+      Annulla modifica
+    </button>
+
+    <p id="collectionMessage"></p>
+  </form>
+
+  <section class="card">
+    <div class="section-title">
+      <h2>Collezioni nel database</h2>
+      <button id="refreshCollectionsButton" type="button">Aggiorna</button>
+    </div>
+
+    <div id="collectionsList" class="products-list">
+      Caricamento collezioni...
+    </div>
+  </section>
+</section>
+
       <section class="grid">
         <form id="productForm" class="card">
           <h2 id="formTitle">Aggiungi prodotto</h2>
