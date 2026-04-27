@@ -9,13 +9,53 @@
   </head>
   <body>
     <main class="admin">
-      <section class="hero">
-        <p>Orbitra CMS Custom</p>
-        <h1>Gestione prodotti</h1>
-        <span>Database collegato a Cloudflare D1</span>
-      </section>
+      <section class="hero admin-hero">
+  <p>Orbitra CMS Custom</p>
+  <h1>Mission Control CMS</h1>
+  <span>
+    Editor visuale, catalogo, collezioni, pagine, menu, ordini e impostazioni in un unico pannello.
+  </span>
+</section>
 
-<section class="visual-editor card">
+<section class="admin-hub">
+  <a class="hub-card active" href="#editor">
+    <span>01</span>
+    <strong>Editor sito</strong>
+    <small>Modifica homepage e sezioni visuali</small>
+  </a>
+
+  <a class="hub-card" href="#catalogo">
+    <span>02</span>
+    <strong>Catalogo</strong>
+    <small>Prodotti, collezioni e stock</small>
+  </a>
+
+  <a class="hub-card disabled" href="#pagine">
+    <span>03</span>
+    <strong>Pagine</strong>
+    <small>In arrivo</small>
+  </a>
+
+  <a class="hub-card disabled" href="#menu">
+    <span>04</span>
+    <strong>Menu</strong>
+    <small>In arrivo</small>
+  </a>
+
+  <a class="hub-card disabled" href="#ordini">
+    <span>05</span>
+    <strong>Ordini</strong>
+    <small>In arrivo</small>
+  </a>
+
+  <a class="hub-card disabled" href="#impostazioni">
+    <span>06</span>
+    <strong>Impostazioni</strong>
+    <small>In arrivo</small>
+  </a>
+</section>
+
+<section id="editor" class="visual-editor card"></section>
   <div class="section-title">
     <h2>Editor visuale homepage</h2>
     <button id="saveSectionButton" type="button">Salva sezione</button>
@@ -53,7 +93,7 @@
   </div>
 </section>
 
-<section class="grid">
+<section id="catalogo" class="grid admin-section"></section>
   <form id="collectionForm" class="card">
     <h2 id="collectionFormTitle">Aggiungi collezione</h2>
 

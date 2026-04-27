@@ -343,3 +343,110 @@ button.danger {
   height: 36px;
   padding: 0;
 }
+.admin-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-hero::after {
+  content: "CMS";
+  position: absolute;
+  right: 28px;
+  bottom: -18px;
+  color: rgba(255, 255, 255, 0.04);
+  font-size: 120px;
+  font-weight: 900;
+  letter-spacing: -8px;
+}
+
+.admin-hub {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.hub-card {
+  min-height: 130px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  color: white;
+  background: rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.hub-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 245, 255, 0.55);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.hub-card span {
+  display: inline-flex;
+  margin-bottom: 18px;
+  color: #00f5ff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.hub-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 17px;
+}
+
+.hub-card small {
+  display: block;
+  color: #b8b8d8;
+  line-height: 1.4;
+}
+
+.hub-card.active {
+  color: black;
+  background: linear-gradient(135deg, #00f5ff, #52ff9f);
+}
+
+.hub-card.active span,
+.hub-card.active small {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.hub-card.disabled {
+  opacity: 0.55;
+}
+
+.admin-section {
+  margin-bottom: 22px;
+}
+
+select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  outline: none;
+  color: white;
+  background: rgba(0, 0, 0, 0.32);
+}
+
+select:focus {
+  border-color: #00f5ff;
+  box-shadow: 0 0 0 4px rgba(0, 245, 255, 0.1);
+}
+
+@media (max-width: 1100px) {
+  .admin-hub {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-hub {
+    grid-template-columns: 1fr;
+  }
+}
