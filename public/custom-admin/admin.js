@@ -529,6 +529,45 @@ refreshPagesButton.addEventListener('click', loadPages)
 
 loadPages()
 
+// ===============================
+// NAVIGAZIONE ADMIN A VISTE
+// ===============================
+
+function setupAdminViews() {
+  const views = document.querySelectorAll('[data-admin-view]')
+  const hubLinks = document.querySelectorAll('.hub-card')
+
+  function openViewFromHash() {
+    const hash = window.location.hash.replace('#', '') || 'editor'
+    const viewExists = document.querySelector(`[data-admin-view="${hash}"]`)
+    const activeView = viewExists ? hash : 'editor'
+
+    views.forEach((view) => {
+      view.hidden = view.dataset.adminView !== activeView
+    })
+
+    const activeHubHash =
+      activeView === 'pagine' || activeView === 'menu' || activeView === 'media' || activeView === 'seo'
+        ? '#contenuto'
+        : `#${activeView}`
+
+    hubLinks.forEach((link) => {
+      link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
+    })
+
+    const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+    target?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+
+  window.addEventListener('hashchange', openViewFromHash)
+  openViewFromHash()
+}
+
+setupAdminViews()
+
 const sitePreview = document.querySelector('#sitePreview')
 const sectionsList = document.querySelector('#sectionsList')
 const sectionFields = document.querySelector('#sectionFields')

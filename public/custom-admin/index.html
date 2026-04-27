@@ -79,7 +79,7 @@
   </a>
 </section>
 
-<section id="editor" class="visual-editor card"></section>
+<section id="editor" class="visual-editor card admin-view" data-admin-view="editor"></section>
   <div class="section-title">
     <h2>Editor visuale homepage</h2>
     <button id="saveSectionButton" type="button">Salva sezione</button>
@@ -117,7 +117,7 @@
   </div>
 </section>
 
-<section id="catalogo" class="grid admin-section"></section>
+<section id="catalogo" class="grid admin-section admin-view" data-admin-view="catalogo"></section>
   <form id="collectionForm" class="card">
     <h2 id="collectionFormTitle">Aggiungi collezione</h2>
 
@@ -180,7 +180,7 @@
   </section>
 </section>
 
-      <section class="grid">
+      <section class="grid admin-view" data-admin-view="catalogo"></section>
         <form id="productForm" class="card">
           <h2 id="formTitle">Aggiungi prodotto</h2>
 <input id="productId" type="hidden" />
@@ -228,7 +228,7 @@
           </div>
         </section>
       </section>
-      <section id="ordini" class="cms-area card placeholder-area">
+      <section id="ordini" class="cms-area card placeholder-area admin-view" data-admin-view="ordini"></section>
   <div class="section-title">
     <h2>Ordini</h2>
     <span class="status-badge">In arrivo</span>
@@ -254,12 +254,10 @@
     <span class="status-badge">Pagine attive</span>
   </div>
 
-  <div class="mini-grid">
-    <article>
-      <h3>Pagine</h3>
-      <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
-    </article>
-
+  <a class="mini-card" href="#pagine">
+  <h3>Pagine</h3>
+  <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
+</a>
     <article>
       <h3>Menu</h3>
       <p>Prossima fase: menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
@@ -274,6 +272,26 @@
       <h3>SEO</h3>
       <p>Titoli, descrizioni, slug e dati per Google e social.</p>
     </article>
+  </div>
+
+  
+      <div id="pagesList" class="products-list">
+        Caricamento pagine...
+      </div>
+    </section>
+  </div>
+</section>
+
+<section id="pagine" class="cms-area card admin-view" data-admin-view="pagine">
+  <div class="section-title">
+    <div>
+      <h2>Pagine</h2>
+      <p class="section-subtitle">
+        Crea, modifica e organizza le pagine del sito.
+      </p>
+    </div>
+
+    <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
   </div>
 
   <div class="content-manager">
