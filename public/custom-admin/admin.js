@@ -224,6 +224,46 @@ function selectedSection() {
   return pageSections.find((section) => section.id === selectedSectionId)
 }
 
+function renderSelectedSection() {
+  const section = selectedSection()
+
+  if (!section) {
+    selectedSectionTitle.textContent = 'Seleziona una sezione'
+    sectionFields.innerHTML = '<p>Seleziona una sezione dalla lista.</p>'
+    return
+  }
+
+  selectedSectionTitle.textContent = sectionLabels[section.type] || section.type
+
+  const fields = fieldsByType[section.type] || []
+
+  sectionFields.innerHTML = fields
+    .map((field) => {
+      const value = section.data?.[field] || ''
+
+      return `
+        <label>
+          ${fieldLabels[field] || field}
+          <textarea data-section-field="${field}">${escapeHtml(value)}</textarea>
+        </label>
+      `
+    })
+    .join('')
+
+  document.querySelectorAll('[data-section-field]').forEach((input) => {
+    input.addEventListener('input', () => {
+      const field = input.dataset.sectionField
+
+      section.data = {
+        ...(section.data || {}),
+        [field]: input.value,
+      }
+
+      updateSitePreview()
+    })
+  })
+}
+
 async function loadSections() {
   const response = await fetch('/api/admin/section')
   const data = await response.json()
