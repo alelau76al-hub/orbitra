@@ -546,10 +546,14 @@ function setupAdminViews() {
       view.hidden = view.dataset.adminView !== activeView
     })
 
-    const activeHubHash =
-      activeView === 'pagine' || activeView === 'menu' || activeView === 'media' || activeView === 'seo'
-        ? '#contenuto'
-        : `#${activeView}`
+    const catalogoViews = ['prodotti', 'collezioni', 'stock']
+const contenutoViews = ['pagine', 'menu', 'media', 'seo']
+
+const activeHubHash = contenutoViews.includes(activeView)
+  ? '#contenuto'
+  : catalogoViews.includes(activeView)
+    ? '#catalogo'
+    : `#${activeView}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)

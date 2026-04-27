@@ -117,7 +117,49 @@
   </div>
 </section>
 
-<section id="catalogo" class="grid admin-section admin-view" data-admin-view="catalogo"></section>
+<section id="catalogo" class="cms-area card admin-view" data-admin-view="catalogo">
+  <div class="section-title">
+    <div>
+      <h2>Catalogo</h2>
+      <p class="section-subtitle">
+        Gestisci prodotti, collezioni, stock, immagini e struttura commerciale del sito.
+      </p>
+    </div>
+    <span class="status-badge">Attivo</span>
+  </div>
+
+  <div class="mini-grid">
+    <a class="mini-card" href="#prodotti">
+      <h3>Prodotti</h3>
+      <p>Crea, modifica e organizza i prodotti del catalogo.</p>
+    </a>
+
+    <a class="mini-card" href="#collezioni">
+      <h3>Collezioni</h3>
+      <p>Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
+    </a>
+
+    <article>
+      <h3>Stock</h3>
+      <p>Gestione futura delle scorte avanzate, quantità e disponibilità.</p>
+    </article>
+
+    <article>
+      <h3>Immagini</h3>
+      <p>Gestione futura di gallery prodotto, copertine e media catalogo.</p>
+    </article>
+  </div>
+</section>
+
+<section id="collezioni" class="grid admin-section admin-view" data-admin-view="collezioni">
+  <div class="view-heading">
+    <div>
+      <h2>Collezioni</h2>
+      <p>Crea e modifica le collezioni del catalogo.</p>
+    </div>
+
+    <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+  </div>
   <form id="collectionForm" class="card">
     <h2 id="collectionFormTitle">Aggiungi collezione</h2>
 
@@ -180,7 +222,15 @@
   </section>
 </section>
 
-      <section class="grid admin-view" data-admin-view="catalogo"></section>
+      <section id="prodotti" class="grid admin-view" data-admin-view="prodotti">
+  <div class="view-heading">
+    <div>
+      <h2>Prodotti</h2>
+      <p>Crea, modifica, assegna collezioni e gestisci stock dei prodotti.</p>
+    </div>
+
+    <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+  </div>
         <form id="productForm" class="card">
           <h2 id="formTitle">Aggiungi prodotto</h2>
 <input id="productId" type="hidden" />
