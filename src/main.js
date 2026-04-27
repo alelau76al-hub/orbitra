@@ -60,12 +60,12 @@ document.querySelector('#app').innerHTML = `
       ORBITRA
     </a>
 
-    <nav class="nav-links">
-      <a href="#viaggi">Viaggi</a>
-      <a href="#missione">Missione</a>
-      <a href="#booking">Prenota</a>
-      <a href="#faq">FAQ</a>
-    </nav>
+    <nav class="nav-links" id="mainMenuLinks">
+  <a href="#viaggi">Viaggi</a>
+  <a href="#missione">Missione</a>
+  <a href="#booking">Prenota</a>
+  <a href="#faq">FAQ</a>
+</nav>
 
     <a class="nav-cta" href="#booking">Launch Pass</a>
   </header>
@@ -297,6 +297,57 @@ document.querySelector('#app').innerHTML = `
     <a href="#booking">Request launch access</a>
   </footer>
 `
+
+function buildMenuItemUrl(item) {
+  if (item.link_type === 'url') {
+    return item.url || '#'
+  }
+
+  if (item.link_type === 'page') {
+    if (item.target_slug === 'home') return '/'
+    return `/${item.target_slug}`
+  }
+
+  if (item.link_type === 'collection') {
+    return `/collections/${item.target_slug}`
+  }
+
+  if (item.link_type === 'product') {
+    return `/products/${item.target_slug}`
+  }
+
+  return '#'
+}
+
+async function loadPublicMainMenu() {
+  const menuContainer = document.querySelector('#mainMenuLinks')
+  if (!menuContainer) return
+
+  try {
+    const response = await fetch('/api/menus?handle=main')
+    const data = await response.json()
+
+    if (!data.success || !data.menus?.[0]?.items?.length) {
+      return
+    }
+
+    const menu = data.menus[0]
+
+    menuContainer.innerHTML = menu.items
+      .map(
+        (item) => `
+          <a href="${escapeCmsHtml(buildMenuItemUrl(item))}">
+            ${escapeCmsHtml(item.label)}
+          </a>
+        `,
+      )
+      .join('')
+  } catch (error) {
+    console.error('Errore caricamento menu principale:', error)
+  }
+}
+
+loadPublicMainMenu()
 
 const grid = document.querySelector('#destinationGrid')
 
