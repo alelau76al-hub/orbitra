@@ -897,3 +897,67 @@ async function renderPublicCollectionPage() {
 }
 
 renderPublicCollectionPage()
+async function renderPublicCmsPage() {
+  const path = window.location.pathname
+
+  if (path === '/') return
+  if (path.startsWith('/collections/')) return
+  if (path.startsWith('/products/')) return
+  if (path.startsWith('/api/')) return
+
+  const pageSlug = decodeURIComponent(path.replace('/', '').replaceAll('/', ''))
+  const main = document.querySelector('main')
+
+  if (!main || !pageSlug) return
+
+  main.innerHTML = `
+    <section class="section">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Pagina CMS</p>
+        <h2>Caricamento pagina...</h2>
+        <p>Stiamo recuperando questa pagina dal CMS.</p>
+      </div>
+    </section>
+  `
+
+  const title = main.querySelector('h2')
+  const intro = main.querySelector('.section-head p:last-child')
+
+  try {
+    const response = await fetch('/api/pages')
+    const data = await response.json()
+
+    if (!data.success) {
+      title.textContent = 'Errore caricamento pagina'
+      intro.textContent = 'Non è stato possibile leggere questa pagina dal CMS.'
+      return
+    }
+
+    const page = data.pages.find((item) => item.slug === pageSlug)
+
+    if (!page) {
+      title.textContent = 'Pagina non trovata'
+      intro.textContent = 'Questa pagina non esiste nel CMS.'
+      return
+    }
+
+    title.textContent = page.title
+    intro.textContent = 'Questa pagina è stata creata dal CMS custom Orbitra.'
+
+    main.innerHTML += `
+      <section class="section cms-page-content">
+        <div class="section-head reveal visible">
+          <p>
+            Qui collegheremo presto le sezioni modificabili della pagina:
+            hero, testo, immagini, prodotti, CTA, FAQ e blocchi custom.
+          </p>
+        </div>
+      </section>
+    `
+  } catch (error) {
+    title.textContent = 'Errore caricamento pagina'
+    intro.textContent = 'Non è stato possibile caricare questa pagina.'
+  }
+}
+
+renderPublicCmsPage()
