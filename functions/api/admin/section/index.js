@@ -27,16 +27,26 @@ const defaultDataByType = {
   },
 }
 
-export async function onRequestGet({ env }) {
+function getPageSlugFromRequest(request) {
+  const url = new URL(request.url)
+  return url.searchParams.get('page_slug') || 'home'
+}
+
+export async function onRequestGet({ request, env }) {
+  const pageSlug = getPageSlugFromRequest(request)
+
   const { results } = await env.DB.prepare(`
     SELECT id, page_slug, type, sort_order, data
     FROM sections
-    WHERE page_slug = 'home'
+    WHERE page_slug = ?
     ORDER BY sort_order ASC, id ASC
-  `).all()
+  `)
+    .bind(pageSlug)
+    .all()
 
   return Response.json({
     success: true,
+    page_slug: pageSlug,
     sections: results.map((section) => ({
       ...section,
       data: JSON.parse(section.data),
@@ -47,34 +57,49 @@ export async function onRequestGet({ env }) {
 export async function onRequestPost({ request, env }) {
   const body = await request.json()
   const type = body.type
+  const pageSlug = body.page_slug || 'home'
 
   if (!defaultDataByType[type]) {
-    return Response.json({ success: false, message: 'Tipo sezione non valido.' }, { status: 400 })
+    return Response.json(
+      { success: false, message: 'Tipo sezione non valido.' },
+      { status: 400 },
+    )
   }
 
   const last = await env.DB.prepare(`
     SELECT COALESCE(MAX(sort_order), 0) AS max_order
     FROM sections
-    WHERE page_slug = 'home'
-  `).first()
+    WHERE page_slug = ?
+  `)
+    .bind(pageSlug)
+    .first()
 
   await env.DB.prepare(`
     INSERT INTO sections (page_slug, type, sort_order, data)
-    VALUES ('home', ?, ?, ?)
-  `).bind(
-    type,
-    Number(last.max_order) + 1,
-    JSON.stringify(defaultDataByType[type]),
-  ).run()
+    VALUES (?, ?, ?, ?)
+  `)
+    .bind(
+      pageSlug,
+      type,
+      Number(last.max_order) + 1,
+      JSON.stringify(defaultDataByType[type]),
+    )
+    .run()
 
-  return Response.json({ success: true })
+  return Response.json({
+    success: true,
+    page_slug: pageSlug,
+  })
 }
 
 export async function onRequestPut({ request, env }) {
   const body = await request.json()
 
   if (!body.id) {
-    return Response.json({ success: false, message: 'ID sezione mancante.' }, { status: 400 })
+    return Response.json(
+      { success: false, message: 'ID sezione mancante.' },
+      { status: 400 },
+    )
   }
 
   if (body.data) {
@@ -82,10 +107,12 @@ export async function onRequestPut({ request, env }) {
       UPDATE sections
       SET data = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).bind(
-      JSON.stringify(body.data),
-      Number(body.id),
-    ).run()
+    `)
+      .bind(
+        JSON.stringify(body.data),
+        Number(body.id),
+      )
+      .run()
   }
 
   if (typeof body.sort_order === 'number') {
@@ -93,26 +120,34 @@ export async function onRequestPut({ request, env }) {
       UPDATE sections
       SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).bind(
-      body.sort_order,
-      Number(body.id),
-    ).run()
+    `)
+      .bind(
+        body.sort_order,
+        Number(body.id),
+      )
+      .run()
   }
 
   return Response.json({ success: true })
 }
+
 export async function onRequestDelete({ request, env }) {
   const body = await request.json()
   const id = Number(body.id)
 
   if (!id || Number.isNaN(id)) {
-    return Response.json({ success: false, message: 'ID sezione non valido.' }, { status: 400 })
+    return Response.json(
+      { success: false, message: 'ID sezione non valido.' },
+      { status: 400 },
+    )
   }
 
   await env.DB.prepare(`
     DELETE FROM sections
     WHERE id = ?
-  `).bind(id).run()
+  `)
+    .bind(id)
+    .run()
 
   return Response.json({ success: true })
 }
