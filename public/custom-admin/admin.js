@@ -572,6 +572,257 @@ const activeHubHash = contenutoViews.includes(activeView)
 
 setupAdminViews()
 
+// ===============================
+// MENU
+// ===============================
+
+const menuItemForm = document.querySelector('#menuItemForm')
+const menuSelect = document.querySelector('#menuSelect')
+const menuItemLabel = document.querySelector('#menuItemLabel')
+const menuLinkType = document.querySelector('#menuLinkType')
+const menuTargetSlug = document.querySelector('#menuTargetSlug')
+const menuItemUrl = document.querySelector('#menuItemUrl')
+const menuMessage = document.querySelector('#menuMessage')
+const menusList = document.querySelector('#menusList')
+const refreshMenusButton = document.querySelector('#refreshMenusButton')
+
+let menusCache = []
+let pagesCache = []
+let productsCache = []
+
+async function loadMenuResources() {
+  try {
+    const [pagesResponse, collectionsResponse, productsResponse] = await Promise.all([
+      fetch('/api/admin/pages'),
+      fetch('/api/admin/collections'),
+      fetch('/api/products'),
+    ])
+
+    const pagesData = await pagesResponse.json()
+    const collectionsData = await collectionsResponse.json()
+    const productsData = await productsResponse.json()
+
+    pagesCache = pagesData.success ? pagesData.pages : []
+    collectionsCache = collectionsData.success ? collectionsData.collections : []
+    productsCache = productsData.success ? productsData.products : []
+
+    renderMenuTargetOptions()
+  } catch {
+    menuMessage.textContent = 'Errore caricamento destinazioni menu.'
+  }
+}
+
+function renderMenuSelect() {
+  menuSelect.innerHTML = menusCache
+    .map(
+      (menu) => `
+        <option value="${menu.id}">
+          ${escapeHtml(menu.name)}
+        </option>
+      `,
+    )
+    .join('')
+}
+
+function renderMenuTargetOptions() {
+  const type = menuLinkType.value
+
+  if (type === 'url') {
+    menuTargetSlug.innerHTML = '<option value="">Usa il campo URL esterno</option>'
+    menuTargetSlug.disabled = true
+    menuItemUrl.disabled = false
+    return
+  }
+
+  menuTargetSlug.disabled = false
+  menuItemUrl.disabled = true
+  menuItemUrl.value = ''
+
+  let items = []
+
+  if (type === 'page') {
+    items = pagesCache.map((page) => ({
+      label: page.title,
+      value: page.slug,
+    }))
+  }
+
+  if (type === 'collection') {
+    items = collectionsCache.map((collection) => ({
+      label: collection.name,
+      value: collection.slug,
+    }))
+  }
+
+  if (type === 'product') {
+    items = productsCache.map((product) => ({
+      label: product.name,
+      value: product.slug,
+    }))
+  }
+
+  menuTargetSlug.innerHTML =
+    '<option value="">Seleziona destinazione</option>' +
+    items
+      .map(
+        (item) => `
+          <option value="${escapeHtml(item.value)}">
+            ${escapeHtml(item.label)}
+          </option>
+        `,
+      )
+      .join('')
+}
+
+async function loadMenus() {
+  menusList.textContent = 'Caricamento menu...'
+
+  try {
+    const response = await fetch('/api/admin/menus')
+    const data = await response.json()
+
+    if (!data.success) {
+      menusList.textContent = 'Errore nel caricamento menu.'
+      return
+    }
+
+    menusCache = data.menus || []
+    renderMenuSelect()
+
+    if (menusCache.length === 0) {
+      menusList.textContent = 'Nessun menu trovato.'
+      return
+    }
+
+    menusList.innerHTML = menusCache
+      .map(
+        (menu) => `
+          <article class="product-item">
+            <h3>${escapeHtml(menu.name)}</h3>
+
+            <div class="meta">
+              <span>Handle: ${escapeHtml(menu.handle)}</span>
+              <span>ID: ${menu.id}</span>
+              <span>Voci: ${menu.items.length}</span>
+            </div>
+
+            <div class="menu-items-list">
+              ${
+                menu.items.length === 0
+                  ? '<p>Nessuna voce in questo menu.</p>'
+                  : menu.items
+                      .map(
+                        (item) => `
+                          <div class="menu-item-row">
+                            <div>
+                              <strong>${escapeHtml(item.label)}</strong>
+                              <small>
+                                ${escapeHtml(item.link_type)}
+                                ${
+                                  item.link_type === 'url'
+                                    ? escapeHtml(item.url || '')
+                                    : escapeHtml(item.target_slug || '')
+                                }
+                              </small>
+                            </div>
+
+                            <button
+                              type="button"
+                              class="danger"
+                              data-delete-menu-item="${item.id}"
+                            >
+                              Elimina
+                            </button>
+                          </div>
+                        `,
+                      )
+                      .join('')
+              }
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-delete-menu-item]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const confirmed = confirm('Vuoi eliminare questa voce menu?')
+        if (!confirmed) return
+
+        const response = await fetch('/api/admin/menus', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'item',
+            id: Number(button.dataset.deleteMenuItem),
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore eliminazione voce menu.')
+          return
+        }
+
+        loadMenus()
+      })
+    })
+  } catch {
+    menusList.textContent = 'Errore di connessione alla API menu.'
+  }
+}
+
+menuLinkType.addEventListener('change', renderMenuTargetOptions)
+
+menuItemForm.addEventListener('submit', async (event) => {
+  event.preventDefault()
+
+  menuMessage.textContent = 'Salvataggio voce menu...'
+
+  const linkType = menuLinkType.value
+
+  const payload = {
+    type: 'item',
+    menu_id: Number(menuSelect.value),
+    label: menuItemLabel.value.trim(),
+    link_type: linkType,
+    target_slug: linkType === 'url' ? '' : menuTargetSlug.value,
+    url: linkType === 'url' ? menuItemUrl.value.trim() : '',
+  }
+
+  try {
+    const response = await fetch('/api/admin/menus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    const data = await response.json()
+
+    if (!data.success) {
+      menuMessage.textContent = data.message || 'Errore salvataggio voce menu.'
+      return
+    }
+
+    menuMessage.textContent = 'Voce menu salvata.'
+    menuItemForm.reset()
+    renderMenuTargetOptions()
+    loadMenus()
+  } catch {
+    menuMessage.textContent = 'Errore di connessione.'
+  }
+})
+
+refreshMenusButton.addEventListener('click', loadMenus)
+
+loadMenuResources()
+loadMenus()
+
 const sitePreview = document.querySelector('#sitePreview')
 const sectionsList = document.querySelector('#sectionsList')
 const sectionFields = document.querySelector('#sectionFields')

@@ -308,10 +308,10 @@
   <h3>Pagine</h3>
   <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
 </a>
-    <article>
-      <h3>Menu</h3>
-      <p>Prossima fase: menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
-    </article>
+    <a class="mini-card" href="#menu">
+  <h3>Menu</h3>
+  <p>Crea menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
+</a>
 
     <article>
       <h3>Media</h3>
@@ -373,6 +373,64 @@
 
       <div id="pagesList" class="products-list">
         Caricamento pagine...
+      </div>
+    </section>
+  </div>
+</section>
+
+<section id="menu" class="cms-area card admin-view" data-admin-view="menu">
+  <div class="section-title">
+    <div>
+      <h2>Menu</h2>
+      <p class="section-subtitle">
+        Gestisci menu principale, footer e link di navigazione del sito.
+      </p>
+    </div>
+
+    <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+  </div>
+
+  <div class="content-manager">
+    <form id="menuItemForm" class="inner-card">
+      <h3>Aggiungi voce menu</h3>
+
+      <label>Menu</label>
+      <select id="menuSelect" required>
+        <option value="">Caricamento menu...</option>
+      </select>
+
+      <label>Etichetta voce</label>
+      <input id="menuItemLabel" type="text" placeholder="Shop" required />
+
+      <label>Tipo link</label>
+      <select id="menuLinkType">
+        <option value="page">Pagina</option>
+        <option value="collection">Collezione</option>
+        <option value="product">Prodotto</option>
+        <option value="url">URL esterno</option>
+      </select>
+
+      <label>Destinazione</label>
+      <select id="menuTargetSlug"></select>
+
+      <label>URL esterno</label>
+      <input id="menuItemUrl" type="text" placeholder="https://..." />
+
+      <button id="menuItemSubmitButton" type="submit">
+        Salva voce menu
+      </button>
+
+      <p id="menuMessage"></p>
+    </form>
+
+    <section class="inner-card">
+      <div class="section-title">
+        <h3>Menu nel CMS</h3>
+        <button id="refreshMenusButton" type="button">Aggiorna</button>
+      </div>
+
+      <div id="menusList" class="products-list">
+        Caricamento menu...
       </div>
     </section>
   </div>
