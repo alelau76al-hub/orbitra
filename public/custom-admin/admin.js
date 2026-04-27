@@ -38,7 +38,7 @@ function fillForm(product) {
   document.querySelector('#description').value = product.description || ''
   document.querySelector('#price').value = product.price_cents / 100
   document.querySelector('#image_url').value = product.image_url || ''
-  document.querySelector('#collection_slug').value = product.collection_slug || ''
+  renderProductCollectionOptions(product.collection_slug || '')
   document.querySelector('#category').value = product.category || ''
   document.querySelector('#stock').value = product.stock || 0
 
@@ -194,6 +194,26 @@ const refreshCollectionsButton = document.querySelector('#refreshCollectionsButt
 const collectionFormTitle = document.querySelector('#collectionFormTitle')
 const collectionSubmitButton = document.querySelector('#collectionSubmitButton')
 const cancelCollectionEdit = document.querySelector('#cancelCollectionEdit')
+const productCollectionSelect = document.querySelector('#collection_slug')
+
+let collectionsCache = []
+
+function renderProductCollectionOptions(selectedValue = '') {
+  productCollectionSelect.innerHTML = `
+    <option value="">Senza collezione</option>
+    ${collectionsCache
+      .map(
+        (collection) => `
+          <option value="${escapeHtml(collection.slug)}">
+            ${escapeHtml(collection.name)}
+          </option>
+        `,
+      )
+      .join('')}
+  `
+
+  productCollectionSelect.value = selectedValue
+}
 
 function resetCollectionForm() {
   collectionForm.reset()
@@ -238,10 +258,16 @@ async function loadCollections() {
       return
     }
 
-    if (data.collections.length === 0) {
-      collectionsList.textContent = 'Nessuna collezione trovata.'
-      return
-    }
+    collectionsCache = data.collections || []
+renderProductCollectionOptions(document.querySelector('#collection_slug').value)
+
+collectionsCache = data.collections || []
+renderProductCollectionOptions(document.querySelector('#collection_slug').value)
+
+if (data.collections.length === 0) {
+  collectionsList.textContent = 'Nessuna collezione trovata.'
+  return
+}
 
     collectionsList.innerHTML = data.collections
       .map(
