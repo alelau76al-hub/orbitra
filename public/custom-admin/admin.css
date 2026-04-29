@@ -752,3 +752,132 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+.settings-manager {
+  display: grid;
+  gap: 22px;
+  margin-top: 22px;
+}
+
+.settings-groups {
+  display: grid;
+  gap: 22px;
+}
+
+.settings-group {
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 245, 255, 0.08), transparent 36%),
+    rgba(0, 0, 0, 0.22);
+}
+
+.settings-group-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.settings-group-head h3 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
+
+.settings-group-head p {
+  margin: 0;
+  color: #b8b8d8;
+  line-height: 1.5;
+}
+
+.settings-group-head span {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: black;
+  background: linear-gradient(135deg, #00f5ff, #52ff9f);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.settings-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.setting-field {
+  margin: 0;
+}
+
+.setting-field span {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+  font-weight: 900;
+}
+
+.setting-field input,
+.setting-field textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  color: white;
+  background: rgba(0, 0, 0, 0.34);
+  outline: none;
+}
+
+.setting-field input[type='color'] {
+  padding: 6px;
+  min-height: 54px;
+  cursor: pointer;
+}
+
+.setting-field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.setting-field small {
+  display: block;
+  margin-top: 6px;
+  color: #8e8eaa;
+  font-size: 12px;
+}
+
+.settings-actions {
+  position: sticky;
+  bottom: 18px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(0, 245, 255, 0.16);
+  border-radius: 22px;
+  background: rgba(5, 5, 16, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+#settingsMessage {
+  margin: 0;
+  color: #52ff9f;
+  font-weight: 900;
+}
+
+@media (max-width: 900px) {
+  .settings-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-actions {
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

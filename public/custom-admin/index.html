@@ -556,34 +556,32 @@
         </p>
       </section>
 
-      <section id="impostazioni" class="cms-area card placeholder-area admin-view" data-admin-view="impostazioni">
-        <div class="section-title">
-          <h2>Impostazioni</h2>
-          <span class="status-badge">In arrivo</span>
-        </div>
+      <section id="impostazioni" class="cms-area card admin-view" data-admin-view="impostazioni">
+  <div class="section-title">
+    <div>
+      <h2>Impostazioni tema</h2>
+      <p class="section-subtitle">
+        Gestisci logo, colori, header, footer, social e informazioni base del sito.
+      </p>
+    </div>
 
-        <div class="mini-grid">
-          <article>
-            <h3>Generali</h3>
-            <p>Nome sito, logo, email, dati azienda.</p>
-          </article>
+    <button id="refreshSettingsButton" type="button">Aggiorna</button>
+  </div>
 
-          <article>
-            <h3>Utenti</h3>
-            <p>Accessi admin, ruoli e permessi.</p>
-          </article>
+  <form id="settingsForm" class="settings-manager">
+    <div id="settingsGroups" class="settings-groups">
+      Caricamento impostazioni...
+    </div>
 
-          <article>
-            <h3>Domini</h3>
-            <p>Dominio cliente, sottodomini e ambiente live.</p>
-          </article>
+    <div class="settings-actions">
+      <button id="saveSettingsButton" type="submit">
+        Salva impostazioni
+      </button>
 
-          <article>
-            <h3>Privacy</h3>
-            <p>Cookie, privacy policy, consensi e GDPR.</p>
-          </article>
-        </div>
-      </section>
+      <p id="settingsMessage"></p>
+    </div>
+  </form>
+</section>
     </main>
 
     <script src="/custom-admin/admin.js"></script>

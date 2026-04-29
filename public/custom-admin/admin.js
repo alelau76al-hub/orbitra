@@ -847,6 +847,168 @@ loadMenuResources()
 loadMenus()
 
 // ===============================
+// IMPOSTAZIONI TEMA
+// ===============================
+
+const settingsForm = document.querySelector('#settingsForm')
+const settingsGroups = document.querySelector('#settingsGroups')
+const settingsMessage = document.querySelector('#settingsMessage')
+const refreshSettingsButton = document.querySelector('#refreshSettingsButton')
+
+const settingsGroupLabels = {
+  brand: 'Brand',
+  theme: 'Tema',
+  header: 'Header',
+  footer: 'Footer',
+  social: 'Social',
+  general: 'Generali',
+}
+
+const settingsGroupDescriptions = {
+  brand: 'Nome sito, logo testuale e logo immagine.',
+  theme: 'Colori principali e tipografia base del sito.',
+  header: 'Call to action e contenuti principali dell’header.',
+  footer: 'Testi, link e contenuti del footer.',
+  social: 'Link ai profili social del brand.',
+  general: 'Informazioni generali e contatti.',
+}
+
+function renderSettingInput(setting) {
+  const inputType = setting.type === 'color'
+    ? 'color'
+    : setting.type === 'email'
+      ? 'email'
+      : setting.type === 'url'
+        ? 'url'
+        : 'text'
+
+  const isLongText =
+    setting.key === 'footer_text' ||
+    setting.key === 'privacy_text' ||
+    setting.key.includes('description')
+
+  if (isLongText) {
+    return `
+      <textarea
+        data-setting-key="${escapeHtml(setting.key)}"
+        rows="3"
+      >${escapeHtml(setting.value || '')}</textarea>
+    `
+  }
+
+  return `
+    <input
+      data-setting-key="${escapeHtml(setting.key)}"
+      type="${inputType}"
+      value="${escapeHtml(setting.value || '')}"
+      placeholder="${escapeHtml(setting.label || setting.key)}"
+    />
+  `
+}
+
+function renderSettingsGroups(groups) {
+  settingsGroups.innerHTML = Object.entries(groups)
+    .map(([groupName, settings]) => {
+      const title = settingsGroupLabels[groupName] || groupName
+      const description = settingsGroupDescriptions[groupName] || ''
+
+      return `
+        <section class="settings-group">
+          <div class="settings-group-head">
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <p>${escapeHtml(description)}</p>
+            </div>
+
+            <span>${escapeHtml(groupName)}</span>
+          </div>
+
+          <div class="settings-fields">
+            ${settings
+              .map(
+                (setting) => `
+                  <label class="setting-field">
+                    <span>${escapeHtml(setting.label || setting.key)}</span>
+                    ${renderSettingInput(setting)}
+                    <small>${escapeHtml(setting.key)}</small>
+                  </label>
+                `,
+              )
+              .join('')}
+          </div>
+        </section>
+      `
+    })
+    .join('')
+}
+
+async function loadSettings() {
+  if (!settingsGroups) return
+
+  settingsGroups.textContent = 'Caricamento impostazioni...'
+
+  try {
+    const response = await fetch('/api/admin/settings')
+    const data = await response.json()
+
+    if (!data.success) {
+      settingsGroups.textContent = data.message || 'Errore caricamento impostazioni.'
+      return
+    }
+
+    renderSettingsGroups(data.groups || {})
+  } catch {
+    settingsGroups.textContent = 'Errore di connessione alla API impostazioni.'
+  }
+}
+
+async function saveSettings(event) {
+  event.preventDefault()
+
+  settingsMessage.textContent = 'Salvataggio impostazioni...'
+
+  const payload = {
+    settings: {},
+  }
+
+  document.querySelectorAll('[data-setting-key]').forEach((input) => {
+    payload.settings[input.dataset.settingKey] = input.value
+  })
+
+  try {
+    const response = await fetch('/api/admin/settings', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    const data = await response.json()
+
+    if (!data.success) {
+      settingsMessage.textContent = data.message || 'Errore salvataggio impostazioni.'
+      return
+    }
+
+    settingsMessage.textContent = 'Impostazioni salvate correttamente.'
+    await loadSettings()
+  } catch {
+    settingsMessage.textContent = 'Errore di connessione.'
+  }
+}
+
+if (settingsForm) {
+  settingsForm.addEventListener('submit', saveSettings)
+}
+
+if (refreshSettingsButton) {
+  refreshSettingsButton.addEventListener('click', loadSettings)
+}
+
+loadSettings()
+
+// ===============================
 // EDITOR SEZIONI
 // ===============================
 
