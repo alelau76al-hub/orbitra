@@ -690,7 +690,7 @@ function renderCmsSection(section) {
     `
   }
 
-    if (section.type === 'text_image') {
+  if (section.type === 'text_image') {
     return `
       <section class="section cms-text-image">
         <div class="cms-text-image-grid">
@@ -712,6 +712,238 @@ function renderCmsSection(section) {
                 : '🪐'
             }
           </div>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'brand_manifesto') {
+    return `
+      <section class="section cms-brand-manifesto">
+        <div class="cms-brand-manifesto-grid">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.text)}</p>
+
+            ${
+              data.button_text
+                ? `<a class="btn primary" href="${escapeCmsHtml(data.button_url || '#')}">${escapeCmsHtml(data.button_text)}</a>`
+                : ''
+            }
+          </div>
+
+          <div class="cms-brand-quote">
+            <blockquote>
+              “${escapeCmsHtml(data.quote)}”
+            </blockquote>
+
+            <div class="cms-brand-image">
+              ${
+                data.image_url
+                  ? `<img src="${escapeCmsHtml(data.image_url)}" alt="${escapeCmsHtml(data.title)}">`
+                  : '✦'
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'timeline_premium') {
+    return `
+      <section class="section cms-timeline-premium">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-timeline-list">
+          <article>
+            <span>${escapeCmsHtml(data.step_1_year)}</span>
+            <h3>${escapeCmsHtml(data.step_1_title)}</h3>
+            <p>${escapeCmsHtml(data.step_1_text)}</p>
+          </article>
+
+          <article>
+            <span>${escapeCmsHtml(data.step_2_year)}</span>
+            <h3>${escapeCmsHtml(data.step_2_title)}</h3>
+            <p>${escapeCmsHtml(data.step_2_text)}</p>
+          </article>
+
+          <article>
+            <span>${escapeCmsHtml(data.step_3_year)}</span>
+            <h3>${escapeCmsHtml(data.step_3_title)}</h3>
+            <p>${escapeCmsHtml(data.step_3_text)}</p>
+          </article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'process_steps') {
+    return `
+      <section class="section cms-process-steps">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-process-grid">
+          <article>
+            <span>01</span>
+            <h3>${escapeCmsHtml(data.step_1_title)}</h3>
+            <p>${escapeCmsHtml(data.step_1_text)}</p>
+          </article>
+
+          <article>
+            <span>02</span>
+            <h3>${escapeCmsHtml(data.step_2_title)}</h3>
+            <p>${escapeCmsHtml(data.step_2_text)}</p>
+          </article>
+
+          <article>
+            <span>03</span>
+            <h3>${escapeCmsHtml(data.step_3_title)}</h3>
+            <p>${escapeCmsHtml(data.step_3_text)}</p>
+          </article>
+
+          <article>
+            <span>04</span>
+            <h3>${escapeCmsHtml(data.step_4_title)}</h3>
+            <p>${escapeCmsHtml(data.step_4_text)}</p>
+          </article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'stats_numbers') {
+    return `
+      <section class="section cms-stats-numbers">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-stats-grid">
+          <article>
+            <strong>${escapeCmsHtml(data.stat_1_value)}</strong>
+            <span>${escapeCmsHtml(data.stat_1_label)}</span>
+          </article>
+
+          <article>
+            <strong>${escapeCmsHtml(data.stat_2_value)}</strong>
+            <span>${escapeCmsHtml(data.stat_2_label)}</span>
+          </article>
+
+          <article>
+            <strong>${escapeCmsHtml(data.stat_3_value)}</strong>
+            <span>${escapeCmsHtml(data.stat_3_label)}</span>
+          </article>
+
+          <article>
+            <strong>${escapeCmsHtml(data.stat_4_value)}</strong>
+            <span>${escapeCmsHtml(data.stat_4_label)}</span>
+          </article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'gallery_editorial') {
+    return `
+      <section class="section cms-gallery-editorial">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-gallery-grid">
+          <article class="large">
+            ${
+              data.image_1_url
+                ? `<img src="${escapeCmsHtml(data.image_1_url)}" alt="${escapeCmsHtml(data.image_1_caption)}">`
+                : '<span>✦</span>'
+            }
+            <p>${escapeCmsHtml(data.image_1_caption)}</p>
+          </article>
+
+          <article>
+            ${
+              data.image_2_url
+                ? `<img src="${escapeCmsHtml(data.image_2_url)}" alt="${escapeCmsHtml(data.image_2_caption)}">`
+                : '<span>☾</span>'
+            }
+            <p>${escapeCmsHtml(data.image_2_caption)}</p>
+          </article>
+
+          <article>
+            ${
+              data.image_3_url
+                ? `<img src="${escapeCmsHtml(data.image_3_url)}" alt="${escapeCmsHtml(data.image_3_caption)}">`
+                : '<span>◌</span>'
+            }
+            <p>${escapeCmsHtml(data.image_3_caption)}</p>
+          </article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'testimonials') {
+    return `
+      <section class="section cms-testimonials">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="cms-testimonials-grid">
+          <article>
+            <p>“${escapeCmsHtml(data.quote_1)}”</p>
+            <strong>${escapeCmsHtml(data.author_1)}</strong>
+            <span>${escapeCmsHtml(data.role_1)}</span>
+          </article>
+
+          <article>
+            <p>“${escapeCmsHtml(data.quote_2)}”</p>
+            <strong>${escapeCmsHtml(data.author_2)}</strong>
+            <span>${escapeCmsHtml(data.role_2)}</span>
+          </article>
+
+          <article>
+            <p>“${escapeCmsHtml(data.quote_3)}”</p>
+            <strong>${escapeCmsHtml(data.author_3)}</strong>
+            <span>${escapeCmsHtml(data.role_3)}</span>
+          </article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'featured_collection') {
+    const collectionHref = data.collection_slug
+      ? `/collections/${escapeCmsHtml(data.collection_slug)}`
+      : escapeCmsHtml(data.button_url || '#')
+
+    return `
+      <section class="section cms-featured-collection">
+        <div class="cms-featured-collection-card">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.subtitle)}</p>
+          </div>
+
+          <a class="btn primary" href="${collectionHref}">
+            ${escapeCmsHtml(data.button_text)}
+          </a>
         </div>
       </section>
     `
