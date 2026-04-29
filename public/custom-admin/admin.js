@@ -439,13 +439,18 @@ async function loadPages() {
             </div>
 
             <div class="product-actions">
-              <button type="button" data-edit-page="${page.id}">Modifica</button>
-              ${
-                page.slug === 'home'
-                  ? '<button type="button" class="secondary" disabled>Homepage protetta</button>'
-                  : `<button type="button" class="danger" data-delete-page="${page.id}">Elimina</button>`
-              }
-            </div>
+  <button type="button" data-edit-page="${page.id}">Modifica</button>
+
+  <button type="button" data-edit-page-sections="${escapeHtml(page.slug)}">
+    Modifica sezioni
+  </button>
+
+  ${
+    page.slug === 'home'
+      ? '<button type="button" class="secondary" disabled>Homepage protetta</button>'
+      : `<button type="button" class="danger" data-delete-page="${page.id}">Elimina</button>`
+  }
+</div>
           </article>
         `,
       )
@@ -457,6 +462,22 @@ async function loadPages() {
         fillPageForm(page)
       })
     })
+
+    document.querySelectorAll('[data-edit-page-sections]').forEach((button) => {
+  button.addEventListener('click', async () => {
+    currentEditorPageSlug = button.dataset.editPageSections || 'home'
+
+    if (editorPageSelect) {
+      editorPageSelect.value = currentEditorPageSlug
+    }
+
+    selectedSectionId = null
+    updateEditorPreviewUrl()
+    await loadSections()
+
+    window.location.hash = 'editor'
+  })
+})
 
     document.querySelectorAll('[data-delete-page]').forEach((button) => {
       button.addEventListener('click', async () => {
