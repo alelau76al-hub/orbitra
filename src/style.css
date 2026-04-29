@@ -1083,3 +1083,50 @@ input[type="range"] {
 .cms-cta .btn {
   margin-top: 20px;
 }
+.cms-text-image-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.cms-text-image h2 {
+  margin: 0 0 18px;
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 0.95;
+}
+
+.cms-text-image p {
+  color: #b8b8d8;
+  line-height: 1.7;
+}
+
+.cms-text-image .btn {
+  margin-top: 18px;
+}
+
+.cms-text-image-media {
+  min-height: 320px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(0, 245, 255, 0.22), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(255, 43, 214, 0.18), transparent 35%),
+    rgba(255, 255, 255, 0.06);
+  font-size: 72px;
+}
+
+.cms-text-image-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 850px) {
+  .cms-text-image-grid {
+    grid-template-columns: 1fr;
+  }
+}

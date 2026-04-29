@@ -10,6 +10,14 @@ const defaultDataByType = {
     text: 'Kit, accessori e prodotti selezionati per la tua missione spaziale.',
     button_text: 'Scopri i prodotti',
   },
+  text_image: {
+    eyebrow: 'Contenuto',
+    title: 'Titolo della sezione',
+    text: 'Scrivi qui il testo principale della pagina.',
+    image_url: '',
+    button_text: 'Scopri di più',
+    button_url: '#',
+  },
   product_grid: {
     eyebrow: 'Shop pre-lancio',
     title: 'Prodotti dal database',

@@ -901,6 +901,7 @@ async function loadEditorPages() {
 const sectionLabels = {
   hero: 'Hero',
   banner: 'Banner',
+    text_image: 'Testo + immagine',
   product_grid: 'Griglia prodotti',
   faq: 'FAQ',
   cta: 'CTA finale',
@@ -909,6 +910,7 @@ const sectionLabels = {
 const fieldsByType = {
   hero: ['eyebrow', 'title', 'subtitle', 'button_text'],
   banner: ['title', 'text', 'button_text'],
+    text_image: ['eyebrow', 'title', 'text', 'image_url', 'button_text', 'button_url'],
   product_grid: ['eyebrow', 'title', 'subtitle'],
   faq: ['title', 'question', 'answer'],
   cta: ['title', 'text', 'button_text'],
@@ -922,6 +924,8 @@ const fieldLabels = {
   text: 'Testo',
   question: 'Domanda',
   answer: 'Risposta',
+    image_url: 'URL immagine',
+  button_url: 'Link bottone',
 }
 
 function selectedSection() {

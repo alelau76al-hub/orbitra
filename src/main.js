@@ -690,6 +690,33 @@ function renderCmsSection(section) {
     `
   }
 
+    if (section.type === 'text_image') {
+    return `
+      <section class="section cms-text-image">
+        <div class="cms-text-image-grid">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.text)}</p>
+            ${
+              data.button_text
+                ? `<a class="btn primary" href="${escapeCmsHtml(data.button_url || '#')}">${escapeCmsHtml(data.button_text)}</a>`
+                : ''
+            }
+          </div>
+
+          <div class="cms-text-image-media">
+            ${
+              data.image_url
+                ? `<img src="${escapeCmsHtml(data.image_url)}" alt="${escapeCmsHtml(data.title)}">`
+                : '🪐'
+            }
+          </div>
+        </div>
+      </section>
+    `
+  }
+
   if (section.type === 'product_grid') {
     return `
       <section class="section">
