@@ -847,50 +847,172 @@ loadMenuResources()
 loadMenus()
 
 // ===============================
-// IMPOSTAZIONI TEMA
+// IMPOSTAZIONI TEMA EDITOR
 // ===============================
 
-const settingsForm = document.querySelector('#settingsForm')
-const settingsGroups = document.querySelector('#settingsGroups')
-const settingsMessage = document.querySelector('#settingsMessage')
-const refreshSettingsButton = document.querySelector('#refreshSettingsButton')
+const themeSettingsButton = document.querySelector('#themeSettingsButton')
+const closeThemeSettingsButton = document.querySelector('#closeThemeSettingsButton')
+const themeSettingsDrawer = document.querySelector('#themeSettingsDrawer')
+const themeSettingsOverlay = document.querySelector('#themeSettingsOverlay')
+const themeSettingsForm = document.querySelector('#themeSettingsForm')
+const themeSettingsGroups = document.querySelector('#themeSettingsGroups')
+const themeSettingsMessage = document.querySelector('#themeSettingsMessage')
 
-const settingsGroupLabels = {
+const themeEditorSettingKeys = new Set([
+  'site_name',
+  'logo_text',
+  'logo_url',
+  'logo_width',
+
+  'primary_color',
+  'accent_color',
+  'background_color',
+  'text_color',
+  'body_font_family',
+  'heading_font_family',
+  'font_scale',
+  'button_radius',
+  'container_width',
+  'section_spacing',
+
+  'header_cta_text',
+  'header_cta_url',
+  'header_style',
+
+  'footer_text',
+  'footer_cta_text',
+  'footer_cta_url',
+  'footer_layout',
+])
+
+const themeGroupLabels = {
   brand: 'Brand',
   theme: 'Tema',
   header: 'Header',
   footer: 'Footer',
-  social: 'Social',
-  general: 'Generali',
 }
 
-const settingsGroupDescriptions = {
-  brand: 'Nome sito, logo testuale e logo immagine.',
-  theme: 'Colori principali e tipografia base del sito.',
-  header: 'Call to action e contenuti principali dell’header.',
-  footer: 'Testi, link e contenuti del footer.',
-  social: 'Link ai profili social del brand.',
-  general: 'Informazioni generali e contatti.',
+const themeGroupDescriptions = {
+  brand: 'Logo, nome sito e identità principale.',
+  theme: 'Colori, tipografie, spaziature e stile generale.',
+  header: 'Stile header e call to action principale.',
+  footer: 'Testi e layout footer visibili sul sito.',
 }
 
-function renderSettingInput(setting) {
-  const inputType = setting.type === 'color'
-    ? 'color'
-    : setting.type === 'email'
-      ? 'email'
+const settingOptions = {
+  body_font_family: [
+    ['Inter', 'Inter'],
+    ['Arial', 'Arial'],
+    ['Helvetica', 'Helvetica'],
+    ['Georgia', 'Georgia'],
+    ['Times New Roman', 'Times New Roman'],
+    ['Verdana', 'Verdana'],
+    ['Trebuchet MS', 'Trebuchet MS'],
+    ['system-ui', 'System UI'],
+  ],
+
+  heading_font_family: [
+    ['Inter', 'Inter'],
+    ['Arial', 'Arial'],
+    ['Helvetica', 'Helvetica'],
+    ['Georgia', 'Georgia'],
+    ['Times New Roman', 'Times New Roman'],
+    ['Verdana', 'Verdana'],
+    ['Trebuchet MS', 'Trebuchet MS'],
+    ['system-ui', 'System UI'],
+  ],
+
+  font_scale: [
+    ['compact', 'Compatta'],
+    ['standard', 'Standard'],
+    ['large', 'Grande'],
+    ['editorial', 'Editoriale'],
+  ],
+
+  button_radius: [
+    ['sharp', 'Spigoloso'],
+    ['rounded', 'Arrotondato'],
+    ['pill', 'Pillola'],
+  ],
+
+  container_width: [
+    ['narrow', 'Stretta'],
+    ['standard', 'Standard'],
+    ['wide', 'Ampia'],
+  ],
+
+  section_spacing: [
+    ['compact', 'Compatta'],
+    ['standard', 'Standard'],
+    ['large', 'Ampia'],
+  ],
+
+  header_style: [
+    ['standard', 'Standard'],
+    ['transparent', 'Trasparente'],
+    ['centered', 'Centrato'],
+  ],
+
+  footer_layout: [
+    ['simple', 'Semplice'],
+    ['columns', 'Colonne'],
+    ['editorial', 'Editoriale'],
+  ],
+}
+
+function openThemeSettingsDrawer() {
+  themeSettingsDrawer?.classList.add('open')
+
+  if (themeSettingsOverlay) {
+    themeSettingsOverlay.hidden = false
+  }
+
+  themeSettingsDrawer?.setAttribute('aria-hidden', 'false')
+  loadThemeSettings()
+}
+
+function closeThemeSettingsDrawer() {
+  themeSettingsDrawer?.classList.remove('open')
+
+  if (themeSettingsOverlay) {
+    themeSettingsOverlay.hidden = true
+  }
+
+  themeSettingsDrawer?.setAttribute('aria-hidden', 'true')
+}
+
+function renderThemeSettingInput(setting) {
+  if (settingOptions[setting.key]) {
+    return `
+      <select data-theme-setting-key="${escapeHtml(setting.key)}">
+        ${settingOptions[setting.key]
+          .map(
+            ([value, label]) => `
+              <option value="${escapeHtml(value)}" ${
+                setting.value === value ? 'selected' : ''
+              }>
+                ${escapeHtml(label)}
+              </option>
+            `,
+          )
+          .join('')}
+      </select>
+    `
+  }
+
+  const inputType =
+    setting.type === 'color'
+      ? 'color'
       : setting.type === 'url'
         ? 'url'
         : 'text'
 
-  const isLongText =
-    setting.key === 'footer_text' ||
-    setting.key === 'privacy_text' ||
-    setting.key.includes('description')
+  const isLongText = setting.key === 'footer_text'
 
   if (isLongText) {
     return `
       <textarea
-        data-setting-key="${escapeHtml(setting.key)}"
+        data-theme-setting-key="${escapeHtml(setting.key)}"
         rows="3"
       >${escapeHtml(setting.value || '')}</textarea>
     `
@@ -898,7 +1020,7 @@ function renderSettingInput(setting) {
 
   return `
     <input
-      data-setting-key="${escapeHtml(setting.key)}"
+      data-theme-setting-key="${escapeHtml(setting.key)}"
       type="${inputType}"
       value="${escapeHtml(setting.value || '')}"
       placeholder="${escapeHtml(setting.label || setting.key)}"
@@ -906,30 +1028,50 @@ function renderSettingInput(setting) {
   `
 }
 
-function renderSettingsGroups(groups) {
-  settingsGroups.innerHTML = Object.entries(groups)
-    .map(([groupName, settings]) => {
-      const title = settingsGroupLabels[groupName] || groupName
-      const description = settingsGroupDescriptions[groupName] || ''
+function renderThemeSettings(settings = []) {
+  const filteredSettings = settings.filter((setting) =>
+    themeEditorSettingKeys.has(setting.key),
+  )
+
+  const grouped = filteredSettings.reduce((groups, setting) => {
+    const groupName = setting.group_name || 'theme'
+
+    if (!groups[groupName]) {
+      groups[groupName] = []
+    }
+
+    groups[groupName].push(setting)
+
+    return groups
+  }, {})
+
+  const groupOrder = ['brand', 'theme', 'header', 'footer']
+
+  themeSettingsGroups.innerHTML = groupOrder
+    .filter((groupName) => grouped[groupName]?.length)
+    .map((groupName) => {
+      const settings = grouped[groupName]
+      const title = themeGroupLabels[groupName] || groupName
+      const description = themeGroupDescriptions[groupName] || ''
 
       return `
-        <section class="settings-group">
-          <div class="settings-group-head">
+        <section class="theme-settings-group">
+          <div class="theme-settings-group-head">
             <div>
-              <h3>${escapeHtml(title)}</h3>
+              <h4>${escapeHtml(title)}</h4>
               <p>${escapeHtml(description)}</p>
             </div>
 
             <span>${escapeHtml(groupName)}</span>
           </div>
 
-          <div class="settings-fields">
+          <div class="theme-settings-fields">
             ${settings
               .map(
                 (setting) => `
-                  <label class="setting-field">
+                  <label class="theme-setting-field">
                     <span>${escapeHtml(setting.label || setting.key)}</span>
-                    ${renderSettingInput(setting)}
+                    ${renderThemeSettingInput(setting)}
                     <small>${escapeHtml(setting.key)}</small>
                   </label>
                 `,
@@ -942,37 +1084,39 @@ function renderSettingsGroups(groups) {
     .join('')
 }
 
-async function loadSettings() {
-  if (!settingsGroups) return
+async function loadThemeSettings() {
+  if (!themeSettingsGroups) return
 
-  settingsGroups.textContent = 'Caricamento impostazioni...'
+  themeSettingsGroups.textContent = 'Caricamento impostazioni tema...'
 
   try {
     const response = await fetch('/api/admin/settings')
     const data = await response.json()
 
     if (!data.success) {
-      settingsGroups.textContent = data.message || 'Errore caricamento impostazioni.'
+      themeSettingsGroups.textContent =
+        data.message || 'Errore caricamento impostazioni tema.'
       return
     }
 
-    renderSettingsGroups(data.groups || {})
+    renderThemeSettings(data.settings || [])
   } catch {
-    settingsGroups.textContent = 'Errore di connessione alla API impostazioni.'
+    themeSettingsGroups.textContent =
+      'Errore di connessione alla API impostazioni.'
   }
 }
 
-async function saveSettings(event) {
+async function saveThemeSettings(event) {
   event.preventDefault()
 
-  settingsMessage.textContent = 'Salvataggio impostazioni...'
+  themeSettingsMessage.textContent = 'Salvataggio impostazioni tema...'
 
   const payload = {
     settings: {},
   }
 
-  document.querySelectorAll('[data-setting-key]').forEach((input) => {
-    payload.settings[input.dataset.settingKey] = input.value
+  document.querySelectorAll('[data-theme-setting-key]').forEach((input) => {
+    payload.settings[input.dataset.themeSettingKey] = input.value
   })
 
   try {
@@ -987,26 +1131,25 @@ async function saveSettings(event) {
     const data = await response.json()
 
     if (!data.success) {
-      settingsMessage.textContent = data.message || 'Errore salvataggio impostazioni.'
+      themeSettingsMessage.textContent =
+        data.message || 'Errore salvataggio impostazioni tema.'
       return
     }
 
-    settingsMessage.textContent = 'Impostazioni salvate correttamente.'
-    await loadSettings()
+    themeSettingsMessage.textContent = 'Impostazioni tema salvate.'
+    await loadThemeSettings()
   } catch {
-    settingsMessage.textContent = 'Errore di connessione.'
+    themeSettingsMessage.textContent = 'Errore di connessione.'
   }
 }
 
-if (settingsForm) {
-  settingsForm.addEventListener('submit', saveSettings)
-}
+themeSettingsButton?.addEventListener('click', openThemeSettingsDrawer)
+closeThemeSettingsButton?.addEventListener('click', closeThemeSettingsDrawer)
+themeSettingsOverlay?.addEventListener('click', closeThemeSettingsDrawer)
 
-if (refreshSettingsButton) {
-  refreshSettingsButton.addEventListener('click', loadSettings)
+if (themeSettingsForm) {
+  themeSettingsForm.addEventListener('submit', saveThemeSettings)
 }
-
-loadSettings()
 
 // ===============================
 // EDITOR SEZIONI

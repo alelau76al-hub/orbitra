@@ -81,10 +81,23 @@
       </section>
 
       <section id="editor" class="visual-editor card admin-view" data-admin-view="editor">
-        <div class="section-title">
-          <h2>Editor visuale sito</h2>
-          <button id="saveSectionButton" type="button">Salva sezione</button>
-        </div>
+        <div class="section-title editor-title-bar">
+  <div>
+    <h2>Editor visuale sito</h2>
+    <p class="section-subtitle">
+      Modifica sezioni, contenuti e impostazioni tema della pagina selezionata.
+    </p>
+  </div>
+
+  <div class="editor-title-actions">
+    <button id="themeSettingsButton" class="icon-button" type="button">
+      <span>⚙️</span>
+      Impostazioni tema
+    </button>
+
+    <button id="saveSectionButton" type="button">Salva sezione</button>
+  </div>
+</div>
 
         <div class="editor-layout">
           <iframe
@@ -107,6 +120,34 @@
       Scegli una sezione già pronta e personalizzala nella pagina selezionata.
     </p>
   </div>
+
+  <div id="themeSettingsOverlay" class="theme-settings-overlay" hidden></div>
+
+<aside id="themeSettingsDrawer" class="theme-settings-drawer" aria-hidden="true">
+  <div class="theme-settings-head">
+    <div>
+      <p>Theme settings</p>
+      <h3>Impostazioni tema</h3>
+      <span>Logo, colori, tipografie, header e footer.</span>
+    </div>
+
+    <button id="closeThemeSettingsButton" type="button">×</button>
+  </div>
+
+  <form id="themeSettingsForm" class="theme-settings-form">
+    <div id="themeSettingsGroups" class="theme-settings-groups">
+      Caricamento impostazioni tema...
+    </div>
+
+    <div class="theme-settings-actions">
+      <button id="saveThemeSettingsButton" type="submit">
+        Salva impostazioni tema
+      </button>
+
+      <p id="themeSettingsMessage"></p>
+    </div>
+  </form>
+</aside>
 
   <span>Premium Library</span>
 </div>
@@ -556,31 +597,49 @@
         </p>
       </section>
 
-      <section id="impostazioni" class="cms-area card admin-view" data-admin-view="impostazioni">
+      <section id="impostazioni" class="cms-area card placeholder-area admin-view" data-admin-view="impostazioni">
   <div class="section-title">
     <div>
-      <h2>Impostazioni tema</h2>
+      <h2>Impostazioni admin</h2>
       <p class="section-subtitle">
-        Gestisci logo, colori, header, footer, social e informazioni base del sito.
+        Area futura per configurazioni generali del negozio, utenti, domini, privacy, metafields e checkout.
       </p>
     </div>
 
-    <button id="refreshSettingsButton" type="button">Aggiorna</button>
+    <span class="status-badge">In arrivo</span>
   </div>
 
-  <form id="settingsForm" class="settings-manager">
-    <div id="settingsGroups" class="settings-groups">
-      Caricamento impostazioni...
-    </div>
+  <div class="mini-grid">
+    <article>
+      <h3>Generali</h3>
+      <p>Nome azienda, dati fiscali, email di sistema e informazioni store.</p>
+    </article>
 
-    <div class="settings-actions">
-      <button id="saveSettingsButton" type="submit">
-        Salva impostazioni
-      </button>
+    <article>
+      <h3>Utenti e permessi</h3>
+      <p>Account admin, ruoli, permessi e accessi collaboratori.</p>
+    </article>
 
-      <p id="settingsMessage"></p>
-    </div>
-  </form>
+    <article>
+      <h3>Domini</h3>
+      <p>Dominio cliente, sottodomini, redirect e ambiente live.</p>
+    </article>
+
+    <article>
+      <h3>Privacy</h3>
+      <p>Cookie, GDPR, consensi, privacy policy e termini.</p>
+    </article>
+
+    <article>
+      <h3>Metafields</h3>
+      <p>Dati custom per prodotti, collezioni, pagine, clienti e ordini.</p>
+    </article>
+
+    <article>
+      <h3>Checkout</h3>
+      <p>Pagamenti, spedizioni, tasse, conferme ordine e impostazioni vendita.</p>
+    </article>
+  </div>
 </section>
     </main>
 
