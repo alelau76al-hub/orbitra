@@ -7,240 +7,254 @@
     <title>Orbitra Custom Admin</title>
     <link rel="stylesheet" href="/custom-admin/admin.css" />
   </head>
+
   <body>
     <main class="admin">
       <section class="hero admin-hero">
-  <p>Orbitra CMS Custom</p>
-  <h1>Mission Control CMS</h1>
-  <span>
-    Editor visuale, catalogo, collezioni, pagine, menu, ordini e impostazioni in un unico pannello.
-  </span>
-</section>
+        <p>Orbitra CMS Custom</p>
+        <h1>Mission Control CMS</h1>
+        <span>
+          Editor visuale, catalogo, collezioni, pagine, menu, ordini e impostazioni in un unico pannello.
+        </span>
+      </section>
 
-<section class="admin-hub">
-  <a class="hub-card active" href="#editor">
-    <span>01</span>
-    <strong>Editor sito</strong>
-    <small>Homepage, sezioni visuali e preview live</small>
-  </a>
+      <section class="admin-hub">
+        <a class="hub-card active" href="#editor">
+          <span>01</span>
+          <strong>Editor sito</strong>
+          <small>Homepage, sezioni visuali e preview live</small>
+        </a>
 
-  <a class="hub-card" href="#catalogo">
-    <span>02</span>
-    <strong>Catalogo</strong>
-    <small>Prodotti, collezioni, stock e immagini</small>
-  </a>
+        <a class="hub-card" href="#catalogo">
+          <span>02</span>
+          <strong>Catalogo</strong>
+          <small>Prodotti, collezioni, stock e immagini</small>
+        </a>
 
-  <a class="hub-card disabled" href="#ordini">
-    <span>03</span>
-    <strong>Ordini</strong>
-    <small>Pagamenti, stato ordine e clienti</small>
-  </a>
+        <a class="hub-card disabled" href="#ordini">
+          <span>03</span>
+          <strong>Ordini</strong>
+          <small>Pagamenti, stato ordine e clienti</small>
+        </a>
 
-  <a class="hub-card disabled" href="#clienti">
-    <span>04</span>
-    <strong>Clienti</strong>
-    <small>Profili, email, storico acquisti</small>
-  </a>
+        <a class="hub-card disabled" href="#clienti">
+          <span>04</span>
+          <strong>Clienti</strong>
+          <small>Profili, email, storico acquisti</small>
+        </a>
 
-  <a class="hub-card disabled" href="#contenuto">
-    <span>05</span>
-    <strong>Contenuto</strong>
-    <small>Pagine, menu, media e SEO</small>
-  </a>
+        <a class="hub-card disabled" href="#contenuto">
+          <span>05</span>
+          <strong>Contenuto</strong>
+          <small>Pagine, menu, media e SEO</small>
+        </a>
 
-  <a class="hub-card disabled" href="#marketing">
-    <span>06</span>
-    <strong>Marketing</strong>
-    <small>Campagne, sconti, coupon e promo</small>
-  </a>
+        <a class="hub-card disabled" href="#marketing">
+          <span>06</span>
+          <strong>Marketing</strong>
+          <small>Campagne, sconti, coupon e promo</small>
+        </a>
 
-  <a class="hub-card disabled" href="#markets">
-    <span>07</span>
-    <strong>Markets</strong>
-    <small>Lingue, valute, paesi e mercati</small>
-  </a>
+        <a class="hub-card disabled" href="#markets">
+          <span>07</span>
+          <strong>Markets</strong>
+          <small>Lingue, valute, paesi e mercati</small>
+        </a>
 
-  <a class="hub-card disabled" href="#analisi">
-    <span>08</span>
-    <strong>Analisi</strong>
-    <small>Vendite, traffico, conversioni e report</small>
-  </a>
+        <a class="hub-card disabled" href="#analisi">
+          <span>08</span>
+          <strong>Analisi</strong>
+          <small>Vendite, traffico, conversioni e report</small>
+        </a>
 
-  <a class="hub-card disabled" href="#checkout">
-    <span>09</span>
-    <strong>Check-out</strong>
-    <small>Stripe, spedizioni, tasse e pagamenti</small>
-  </a>
+        <a class="hub-card disabled" href="#checkout">
+          <span>09</span>
+          <strong>Check-out</strong>
+          <small>Stripe, spedizioni, tasse e pagamenti</small>
+        </a>
 
-  <a class="hub-card disabled" href="#impostazioni">
-    <span>10</span>
-    <strong>Impostazioni</strong>
-    <small>Dominio, utenti, notifiche e privacy</small>
-  </a>
-</section>
+        <a class="hub-card disabled" href="#impostazioni">
+          <span>10</span>
+          <strong>Impostazioni</strong>
+          <small>Dominio, utenti, notifiche e privacy</small>
+        </a>
+      </section>
 
-<section id="editor" class="visual-editor card admin-view" data-admin-view="editor"></section>
-  <div class="section-title">
-    <h2>Editor visuale homepage</h2>
-    <button id="saveSectionButton" type="button">Salva sezione</button>
-  </div>
+      <section id="editor" class="visual-editor card admin-view" data-admin-view="editor">
+        <div class="section-title">
+          <h2>Editor visuale sito</h2>
+          <button id="saveSectionButton" type="button">Salva sezione</button>
+        </div>
 
-  <div class="editor-layout">
-    <iframe
-      id="sitePreview"
-      class="site-preview"
-      src="/?preview=admin"
-      title="Anteprima sito"
-    ></iframe>
+        <div class="editor-layout">
+          <iframe
+            id="sitePreview"
+            class="site-preview"
+            src="/?preview=admin"
+            title="Anteprima sito"
+          ></iframe>
 
-    <div class="editor-panel">
-  <label>Pagina da modificare</label>
-  <select id="editorPageSelect">
-    <option value="home">Homepage</option>
-  </select>
+          <div class="editor-panel">
+            <label>Pagina da modificare</label>
+            <select id="editorPageSelect">
+              <option value="home">Homepage</option>
+            </select>
 
-  <label>Aggiungi sezione</label>
-      <div class="inline-controls">
-        <select id="newSectionType">
-          
-        <option value="hero">Hero</option>
-          <option value="banner">Banner</option>
-          <option value="text_image">Testo + immagine</option>
-          <option value="product_grid">Griglia prodotti</option>
-          <option value="faq">FAQ</option>
-          <option value="cta">CTA finale</option>
-        </select>
-        <button id="addSectionButton" type="button">Aggiungi</button>
-      </div>
+            <label>Aggiungi sezione</label>
+            <div class="inline-controls">
+              <select id="newSectionType">
+                <option value="hero">Hero</option>
+                <option value="banner">Banner</option>
+                <option value="text_image">Testo + immagine</option>
 
-      <h3>Sezioni pagina</h3>
-      <div id="sectionsList" class="sections-list"></div>
+                <option value="brand_manifesto">Brand Manifesto</option>
+                <option value="timeline_premium">Timeline Premium</option>
+                <option value="process_steps">Process Steps</option>
+                <option value="stats_numbers">Stats / Numeri</option>
+                <option value="gallery_editorial">Gallery Editoriale</option>
+                <option value="testimonials">Testimonials</option>
+                <option value="featured_collection">Featured Collection</option>
 
-      <h3 id="selectedSectionTitle">Seleziona una sezione</h3>
-      <div id="sectionFields"></div>
+                <option value="product_grid">Griglia prodotti</option>
+                <option value="faq">FAQ</option>
+                <option value="cta">CTA finale</option>
+              </select>
 
-      <p id="sectionMessage"></p>
-    </div>
-  </div>
-</section>
+              <button id="addSectionButton" type="button">Aggiungi</button>
+            </div>
 
-<section id="catalogo" class="cms-area card admin-view" data-admin-view="catalogo">
-  <div class="section-title">
-    <div>
-      <h2>Catalogo</h2>
-      <p class="section-subtitle">
-        Gestisci prodotti, collezioni, stock, immagini e struttura commerciale del sito.
-      </p>
-    </div>
-    <span class="status-badge">Attivo</span>
-  </div>
+            <h3>Sezioni pagina</h3>
+            <div id="sectionsList" class="sections-list"></div>
 
-  <div class="mini-grid">
-    <a class="mini-card" href="#prodotti">
-      <h3>Prodotti</h3>
-      <p>Crea, modifica e organizza i prodotti del catalogo.</p>
-    </a>
+            <h3 id="selectedSectionTitle">Seleziona una sezione</h3>
+            <div id="sectionFields"></div>
 
-    <a class="mini-card" href="#collezioni">
-      <h3>Collezioni</h3>
-      <p>Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
-    </a>
+            <p id="sectionMessage"></p>
+          </div>
+        </div>
+      </section>
 
-    <article>
-      <h3>Stock</h3>
-      <p>Gestione futura delle scorte avanzate, quantità e disponibilità.</p>
-    </article>
+      <section id="catalogo" class="cms-area card admin-view" data-admin-view="catalogo">
+        <div class="section-title">
+          <div>
+            <h2>Catalogo</h2>
+            <p class="section-subtitle">
+              Gestisci prodotti, collezioni, stock, immagini e struttura commerciale del sito.
+            </p>
+          </div>
 
-    <article>
-      <h3>Immagini</h3>
-      <p>Gestione futura di gallery prodotto, copertine e media catalogo.</p>
-    </article>
-  </div>
-</section>
+          <span class="status-badge">Attivo</span>
+        </div>
 
-<section id="collezioni" class="grid admin-section admin-view" data-admin-view="collezioni">
-  <div class="view-heading">
-    <div>
-      <h2>Collezioni</h2>
-      <p>Crea e modifica le collezioni del catalogo.</p>
-    </div>
+        <div class="mini-grid">
+          <a class="mini-card" href="#prodotti">
+            <h3>Prodotti</h3>
+            <p>Crea, modifica e organizza i prodotti del catalogo.</p>
+          </a>
 
-    <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
-  </div>
-  <form id="collectionForm" class="card">
-    <h2 id="collectionFormTitle">Aggiungi collezione</h2>
+          <a class="mini-card" href="#collezioni">
+            <h3>Collezioni</h3>
+            <p>Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
+          </a>
 
-    <input id="collectionId" type="hidden" />
+          <article>
+            <h3>Stock</h3>
+            <p>Gestione futura delle scorte avanzate, quantità e disponibilità.</p>
+          </article>
 
-    <label>Nome collezione</label>
-    <input
-      id="collectionName"
-      type="text"
-      placeholder="Viaggi lunari"
-      required
-    />
+          <article>
+            <h3>Immagini</h3>
+            <p>Gestione futura di gallery prodotto, copertine e media catalogo.</p>
+          </article>
+        </div>
+      </section>
 
-    <label>Slug URL</label>
-    <input
-      id="collectionSlug"
-      type="text"
-      placeholder="viaggi-lunari"
-      required
-    />
+      <section id="collezioni" class="grid admin-section admin-view" data-admin-view="collezioni">
+        <div class="view-heading">
+          <div>
+            <h2>Collezioni</h2>
+            <p>Crea e modifica le collezioni del catalogo.</p>
+          </div>
 
-    <label>Descrizione</label>
-    <textarea
-      id="collectionDescription"
-      placeholder="Descrizione della collezione..."
-    ></textarea>
+          <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+        </div>
 
-    <label>URL immagine</label>
-    <input
-      id="collectionImageUrl"
-      type="text"
-      placeholder="https://..."
-    />
+        <form id="collectionForm" class="card">
+          <h2 id="collectionFormTitle">Aggiungi collezione</h2>
 
-    <button id="collectionSubmitButton" type="submit">
-      Salva collezione
-    </button>
+          <input id="collectionId" type="hidden" />
 
-    <button
-      id="cancelCollectionEdit"
-      class="secondary"
-      type="button"
-      hidden
-    >
-      Annulla modifica
-    </button>
+          <label>Nome collezione</label>
+          <input
+            id="collectionName"
+            type="text"
+            placeholder="Viaggi lunari"
+            required
+          />
 
-    <p id="collectionMessage"></p>
-  </form>
+          <label>Slug URL</label>
+          <input
+            id="collectionSlug"
+            type="text"
+            placeholder="viaggi-lunari"
+            required
+          />
 
-  <section class="card">
-    <div class="section-title">
-      <h2>Collezioni nel database</h2>
-      <button id="refreshCollectionsButton" type="button">Aggiorna</button>
-    </div>
+          <label>Descrizione</label>
+          <textarea
+            id="collectionDescription"
+            placeholder="Descrizione della collezione..."
+          ></textarea>
 
-    <div id="collectionsList" class="products-list">
-      Caricamento collezioni...
-    </div>
-  </section>
-</section>
+          <label>URL immagine</label>
+          <input
+            id="collectionImageUrl"
+            type="text"
+            placeholder="https://..."
+          />
+
+          <button id="collectionSubmitButton" type="submit">
+            Salva collezione
+          </button>
+
+          <button
+            id="cancelCollectionEdit"
+            class="secondary"
+            type="button"
+            hidden
+          >
+            Annulla modifica
+          </button>
+
+          <p id="collectionMessage"></p>
+        </form>
+
+        <section class="card">
+          <div class="section-title">
+            <h2>Collezioni nel database</h2>
+            <button id="refreshCollectionsButton" type="button">Aggiorna</button>
+          </div>
+
+          <div id="collectionsList" class="products-list">
+            Caricamento collezioni...
+          </div>
+        </section>
+      </section>
 
       <section id="prodotti" class="grid admin-view" data-admin-view="prodotti">
-  <div class="view-heading">
-    <div>
-      <h2>Prodotti</h2>
-      <p>Crea, modifica, assegna collezioni e gestisci stock dei prodotti.</p>
-    </div>
+        <div class="view-heading">
+          <div>
+            <h2>Prodotti</h2>
+            <p>Crea, modifica, assegna collezioni e gestisci stock dei prodotti.</p>
+          </div>
 
-    <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
-  </div>
+          <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+        </div>
+
         <form id="productForm" class="card">
           <h2 id="formTitle">Aggiungi prodotto</h2>
-<input id="productId" type="hidden" />
+
+          <input id="productId" type="hidden" />
 
           <label>Nome prodotto</label>
           <input id="name" type="text" placeholder="Kit Energia Astronauta" required />
@@ -258,9 +272,9 @@
           <input id="image_url" type="text" placeholder="https://..." />
 
           <label>Collezione</label>
-<select id="collection_slug">
-  <option value="">Senza collezione</option>
-</select>
+          <select id="collection_slug">
+            <option value="">Senza collezione</option>
+          </select>
 
           <label>Categoria</label>
           <input id="category" type="text" placeholder="Preparazione" />
@@ -269,7 +283,10 @@
           <input id="stock" type="number" placeholder="120" required />
 
           <button id="submitButton" type="submit">Salva prodotto</button>
-<button id="cancelEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+
+          <button id="cancelEdit" class="secondary" type="button" hidden>
+            Annulla modifica
+          </button>
 
           <p id="message"></p>
         </form>
@@ -285,232 +302,234 @@
           </div>
         </section>
       </section>
-      <section id="ordini" class="cms-area card placeholder-area admin-view" data-admin-view="ordini"></section>
-  <div class="section-title">
-    <h2>Ordini</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
-  <p>
-    Qui gestiremo ordini, pagamenti, stato spedizione, cliente, totale e prodotti acquistati.
-  </p>
-</section>
 
-<section id="clienti" class="cms-area card placeholder-area">
-  <div class="section-title">
-    <h2>Clienti</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
-  <p>
-    Qui gestiremo profili cliente, email, storico acquisti, indirizzi e segmenti.
-  </p>
-</section>
+      <section id="ordini" class="cms-area card placeholder-area admin-view" data-admin-view="ordini">
+        <div class="section-title">
+          <h2>Ordini</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
 
-<section id="contenuto" class="cms-area card">
-  <div class="section-title">
-    <h2>Contenuto</h2>
-    <span class="status-badge">Pagine attive</span>
-  </div>
+        <p>
+          Qui gestiremo ordini, pagamenti, stato spedizione, cliente, totale e prodotti acquistati.
+        </p>
+      </section>
 
-  <a class="mini-card" href="#pagine">
-  <h3>Pagine</h3>
-  <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
-</a>
-    <a class="mini-card" href="#menu">
-  <h3>Menu</h3>
-  <p>Crea menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
-</a>
+      <section id="clienti" class="cms-area card placeholder-area admin-view" data-admin-view="clienti">
+        <div class="section-title">
+          <h2>Clienti</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
 
-    <article>
-      <h3>Media</h3>
-      <p>Gestione futura di immagini, file, loghi e contenuti caricati.</p>
-    </article>
+        <p>
+          Qui gestiremo profili cliente, email, storico acquisti, indirizzi e segmenti.
+        </p>
+      </section>
 
-    <article>
-      <h3>SEO</h3>
-      <p>Titoli, descrizioni, slug e dati per Google e social.</p>
-    </article>
-  </div>
+      <section id="contenuto" class="cms-area card admin-view" data-admin-view="contenuto">
+        <div class="section-title">
+          <h2>Contenuto</h2>
+          <span class="status-badge">Pagine attive</span>
+        </div>
 
-  
-      <div id="pagesList" class="products-list">
-        Caricamento pagine...
-      </div>
-    </section>
-  </div>
-</section>
+        <div class="mini-grid">
+          <a class="mini-card" href="#pagine">
+            <h3>Pagine</h3>
+            <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
+          </a>
 
-<section id="pagine" class="cms-area card admin-view" data-admin-view="pagine">
-  <div class="section-title">
-    <div>
-      <h2>Pagine</h2>
-      <p class="section-subtitle">
-        Crea, modifica e organizza le pagine del sito.
-      </p>
-    </div>
+          <a class="mini-card" href="#menu">
+            <h3>Menu</h3>
+            <p>Crea menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
+          </a>
 
-    <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
-  </div>
+          <article>
+            <h3>Media</h3>
+            <p>Gestione futura di immagini, file, loghi e contenuti caricati.</p>
+          </article>
 
-  <div class="content-manager">
-    <form id="pageForm" class="inner-card">
-      <h3 id="pageFormTitle">Aggiungi pagina</h3>
+          <article>
+            <h3>SEO</h3>
+            <p>Titoli, descrizioni, slug e dati per Google e social.</p>
+          </article>
+        </div>
+      </section>
 
-      <input id="pageId" type="hidden" />
+      <section id="pagine" class="cms-area card admin-view" data-admin-view="pagine">
+        <div class="section-title">
+          <div>
+            <h2>Pagine</h2>
+            <p class="section-subtitle">
+              Crea, modifica e organizza le pagine del sito.
+            </p>
+          </div>
 
-      <label>Titolo pagina</label>
-      <input id="pageTitle" type="text" placeholder="Chi siamo" required />
+          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+        </div>
 
-      <label>Slug URL</label>
-      <input id="pageSlug" type="text" placeholder="chi-siamo" required />
+        <div class="content-manager">
+          <form id="pageForm" class="inner-card">
+            <h3 id="pageFormTitle">Aggiungi pagina</h3>
 
-      <button id="pageSubmitButton" type="submit">Salva pagina</button>
+            <input id="pageId" type="hidden" />
 
-      <button id="cancelPageEdit" class="secondary" type="button" hidden>
-        Annulla modifica
-      </button>
+            <label>Titolo pagina</label>
+            <input id="pageTitle" type="text" placeholder="Chi siamo" required />
 
-      <p id="pageMessage"></p>
-    </form>
+            <label>Slug URL</label>
+            <input id="pageSlug" type="text" placeholder="chi-siamo" required />
 
-    <section class="inner-card">
-      <div class="section-title">
-        <h3>Pagine nel CMS</h3>
-        <button id="refreshPagesButton" type="button">Aggiorna</button>
-      </div>
+            <button id="pageSubmitButton" type="submit">Salva pagina</button>
 
-      <div id="pagesList" class="products-list">
-        Caricamento pagine...
-      </div>
-    </section>
-  </div>
-</section>
+            <button id="cancelPageEdit" class="secondary" type="button" hidden>
+              Annulla modifica
+            </button>
 
-<section id="menu" class="cms-area card admin-view" data-admin-view="menu">
-  <div class="section-title">
-    <div>
-      <h2>Menu</h2>
-      <p class="section-subtitle">
-        Gestisci menu principale, footer e link di navigazione del sito.
-      </p>
-    </div>
+            <p id="pageMessage"></p>
+          </form>
 
-    <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
-  </div>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Pagine nel CMS</h3>
+              <button id="refreshPagesButton" type="button">Aggiorna</button>
+            </div>
 
-  <div class="content-manager">
-    <form id="menuItemForm" class="inner-card">
-      <h3>Aggiungi voce menu</h3>
+            <div id="pagesList" class="products-list">
+              Caricamento pagine...
+            </div>
+          </section>
+        </div>
+      </section>
 
-      <label>Menu</label>
-      <select id="menuSelect" required>
-        <option value="">Caricamento menu...</option>
-      </select>
+      <section id="menu" class="cms-area card admin-view" data-admin-view="menu">
+        <div class="section-title">
+          <div>
+            <h2>Menu</h2>
+            <p class="section-subtitle">
+              Gestisci menu principale, footer e link di navigazione del sito.
+            </p>
+          </div>
 
-      <label>Etichetta voce</label>
-      <input id="menuItemLabel" type="text" placeholder="Shop" required />
+          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+        </div>
 
-      <label>Tipo link</label>
-      <select id="menuLinkType">
-        <option value="page">Pagina</option>
-        <option value="collection">Collezione</option>
-        <option value="product">Prodotto</option>
-        <option value="url">URL esterno</option>
-      </select>
+        <div class="content-manager">
+          <form id="menuItemForm" class="inner-card">
+            <h3>Aggiungi voce menu</h3>
 
-      <label>Destinazione</label>
-      <select id="menuTargetSlug"></select>
+            <label>Menu</label>
+            <select id="menuSelect" required>
+              <option value="">Caricamento menu...</option>
+            </select>
 
-      <label>URL esterno</label>
-      <input id="menuItemUrl" type="text" placeholder="https://..." />
+            <label>Etichetta voce</label>
+            <input id="menuItemLabel" type="text" placeholder="Shop" required />
 
-      <button id="menuItemSubmitButton" type="submit">
-        Salva voce menu
-      </button>
+            <label>Tipo link</label>
+            <select id="menuLinkType">
+              <option value="page">Pagina</option>
+              <option value="collection">Collezione</option>
+              <option value="product">Prodotto</option>
+              <option value="url">URL esterno</option>
+            </select>
 
-      <p id="menuMessage"></p>
-    </form>
+            <label>Destinazione</label>
+            <select id="menuTargetSlug"></select>
 
-    <section class="inner-card">
-      <div class="section-title">
-        <h3>Menu nel CMS</h3>
-        <button id="refreshMenusButton" type="button">Aggiorna</button>
-      </div>
+            <label>URL esterno</label>
+            <input id="menuItemUrl" type="text" placeholder="https://..." />
 
-      <div id="menusList" class="products-list">
-        Caricamento menu...
-      </div>
-    </section>
-  </div>
-</section>
+            <button id="menuItemSubmitButton" type="submit">
+              Salva voce menu
+            </button>
 
-<section id="marketing" class="cms-area card placeholder-area">
-  <div class="section-title">
-    <h2>Marketing</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
-  <p>
-    Qui gestiremo coupon, sconti, campagne, banner promozionali e automazioni.
-  </p>
-</section>
+            <p id="menuMessage"></p>
+          </form>
 
-<section id="markets" class="cms-area card placeholder-area">
-  <div class="section-title">
-    <h2>Markets</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
-  <p>
-    Qui gestiremo lingue, valute, paesi, mercati attivi e localizzazione del sito.
-  </p>
-</section>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Menu nel CMS</h3>
+              <button id="refreshMenusButton" type="button">Aggiorna</button>
+            </div>
 
-<section id="analisi" class="cms-area card placeholder-area">
-  <div class="section-title">
-    <h2>Analisi</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
-  <p>
-    Qui vedremo visite, vendite, conversioni, prodotti più visti e performance del negozio.
-  </p>
-</section>
+            <div id="menusList" class="products-list">
+              Caricamento menu...
+            </div>
+          </section>
+        </div>
+      </section>
 
-<section id="checkout" class="cms-area card placeholder-area">
-  <div class="section-title">
-    <h2>Check-out</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
-  <p>
-    Qui configureremo Stripe, PayPal, spedizioni, tasse, conferme ordine e checkout.
-  </p>
-</section>
+      <section id="marketing" class="cms-area card placeholder-area admin-view" data-admin-view="marketing">
+        <div class="section-title">
+          <h2>Marketing</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
 
-<section id="impostazioni" class="cms-area card placeholder-area">
-  <div class="section-title">
-    <h2>Impostazioni</h2>
-    <span class="status-badge">In arrivo</span>
-  </div>
+        <p>
+          Qui gestiremo coupon, sconti, campagne, banner promozionali e automazioni.
+        </p>
+      </section>
 
-  <div class="mini-grid">
-    <article>
-      <h3>Generali</h3>
-      <p>Nome sito, logo, email, dati azienda.</p>
-    </article>
+      <section id="markets" class="cms-area card placeholder-area admin-view" data-admin-view="markets">
+        <div class="section-title">
+          <h2>Markets</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
 
-    <article>
-      <h3>Utenti</h3>
-      <p>Accessi admin, ruoli e permessi.</p>
-    </article>
+        <p>
+          Qui gestiremo lingue, valute, paesi, mercati attivi e localizzazione del sito.
+        </p>
+      </section>
 
-    <article>
-      <h3>Domini</h3>
-      <p>Dominio cliente, sottodomini e ambiente live.</p>
-    </article>
+      <section id="analisi" class="cms-area card placeholder-area admin-view" data-admin-view="analisi">
+        <div class="section-title">
+          <h2>Analisi</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
 
-    <article>
-      <h3>Privacy</h3>
-      <p>Cookie, privacy policy, consensi e GDPR.</p>
-    </article>
-  </div>
-</section>
+        <p>
+          Qui vedremo visite, vendite, conversioni, prodotti più visti e performance del negozio.
+        </p>
+      </section>
+
+      <section id="checkout" class="cms-area card placeholder-area admin-view" data-admin-view="checkout">
+        <div class="section-title">
+          <h2>Check-out</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
+
+        <p>
+          Qui configureremo Stripe, PayPal, spedizioni, tasse, conferme ordine e checkout.
+        </p>
+      </section>
+
+      <section id="impostazioni" class="cms-area card placeholder-area admin-view" data-admin-view="impostazioni">
+        <div class="section-title">
+          <h2>Impostazioni</h2>
+          <span class="status-badge">In arrivo</span>
+        </div>
+
+        <div class="mini-grid">
+          <article>
+            <h3>Generali</h3>
+            <p>Nome sito, logo, email, dati azienda.</p>
+          </article>
+
+          <article>
+            <h3>Utenti</h3>
+            <p>Accessi admin, ruoli e permessi.</p>
+          </article>
+
+          <article>
+            <h3>Domini</h3>
+            <p>Dominio cliente, sottodomini e ambiente live.</p>
+          </article>
+
+          <article>
+            <h3>Privacy</h3>
+            <p>Cookie, privacy policy, consensi e GDPR.</p>
+          </article>
+        </div>
+      </section>
     </main>
 
     <script src="/custom-admin/admin.js"></script>

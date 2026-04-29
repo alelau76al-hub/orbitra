@@ -259,15 +259,12 @@ async function loadCollections() {
     }
 
     collectionsCache = data.collections || []
-renderProductCollectionOptions(document.querySelector('#collection_slug').value)
+    renderProductCollectionOptions(document.querySelector('#collection_slug').value)
 
-collectionsCache = data.collections || []
-renderProductCollectionOptions(document.querySelector('#collection_slug').value)
-
-if (data.collections.length === 0) {
-  collectionsList.textContent = 'Nessuna collezione trovata.'
-  return
-}
+    if (data.collections.length === 0) {
+      collectionsList.textContent = 'Nessuna collezione trovata.'
+      return
+    }
 
     collectionsList.innerHTML = data.collections
       .map(
@@ -361,6 +358,7 @@ collectionForm.addEventListener('submit', async (event) => {
 
     resetCollectionForm()
     loadCollections()
+    loadMenuResources()
   } catch (error) {
     collectionMessage.textContent = 'Errore di connessione.'
   }
@@ -439,18 +437,18 @@ async function loadPages() {
             </div>
 
             <div class="product-actions">
-  <button type="button" data-edit-page="${page.id}">Modifica</button>
+              <button type="button" data-edit-page="${page.id}">Modifica</button>
 
-  <button type="button" data-edit-page-sections="${escapeHtml(page.slug)}">
-    Modifica sezioni
-  </button>
+              <button type="button" data-edit-page-sections="${escapeHtml(page.slug)}">
+                Modifica sezioni
+              </button>
 
-  ${
-    page.slug === 'home'
-      ? '<button type="button" class="secondary" disabled>Homepage protetta</button>'
-      : `<button type="button" class="danger" data-delete-page="${page.id}">Elimina</button>`
-  }
-</div>
+              ${
+                page.slug === 'home'
+                  ? '<button type="button" class="secondary" disabled>Homepage protetta</button>'
+                  : `<button type="button" class="danger" data-delete-page="${page.id}">Elimina</button>`
+              }
+            </div>
           </article>
         `,
       )
@@ -464,20 +462,20 @@ async function loadPages() {
     })
 
     document.querySelectorAll('[data-edit-page-sections]').forEach((button) => {
-  button.addEventListener('click', async () => {
-    currentEditorPageSlug = button.dataset.editPageSections || 'home'
+      button.addEventListener('click', async () => {
+        currentEditorPageSlug = button.dataset.editPageSections || 'home'
 
-    if (editorPageSelect) {
-      editorPageSelect.value = currentEditorPageSlug
-    }
+        if (editorPageSelect) {
+          editorPageSelect.value = currentEditorPageSlug
+        }
 
-    selectedSectionId = null
-    updateEditorPreviewUrl()
-    await loadSections()
+        selectedSectionId = null
+        updateEditorPreviewUrl()
+        await loadSections()
 
-    window.location.hash = 'editor'
-  })
-})
+        window.location.hash = 'editor'
+      })
+    })
 
     document.querySelectorAll('[data-delete-page]').forEach((button) => {
       button.addEventListener('click', async () => {
@@ -503,6 +501,8 @@ async function loadPages() {
 
         resetPageForm()
         loadPages()
+        loadEditorPages()
+        loadMenuResources()
       })
     })
   } catch (error) {
@@ -540,6 +540,8 @@ pageForm.addEventListener('submit', async (event) => {
 
     resetPageForm()
     loadPages()
+    loadEditorPages()
+    loadMenuResources()
   } catch (error) {
     pageMessage.textContent = 'Errore di connessione.'
   }
@@ -568,13 +570,13 @@ function setupAdminViews() {
     })
 
     const catalogoViews = ['prodotti', 'collezioni', 'stock']
-const contenutoViews = ['pagine', 'menu', 'media', 'seo']
+    const contenutoViews = ['pagine', 'menu', 'media', 'seo']
 
-const activeHubHash = contenutoViews.includes(activeView)
-  ? '#contenuto'
-  : catalogoViews.includes(activeView)
-    ? '#catalogo'
-    : `#${activeView}`
+    const activeHubHash = contenutoViews.includes(activeView)
+      ? '#contenuto'
+      : catalogoViews.includes(activeView)
+        ? '#catalogo'
+        : `#${activeView}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
@@ -844,6 +846,10 @@ refreshMenusButton.addEventListener('click', loadMenus)
 loadMenuResources()
 loadMenus()
 
+// ===============================
+// EDITOR SEZIONI
+// ===============================
+
 const sitePreview = document.querySelector('#sitePreview')
 const editorPageSelect = document.querySelector('#editorPageSelect')
 const sectionsList = document.querySelector('#sectionsList')
@@ -856,7 +862,6 @@ const sectionMessage = document.querySelector('#sectionMessage')
 
 let pageSections = []
 let selectedSectionId = null
-
 let currentEditorPageSlug = 'home'
 
 function getEditorPreviewUrl(pageSlug) {
@@ -901,7 +906,16 @@ async function loadEditorPages() {
 const sectionLabels = {
   hero: 'Hero',
   banner: 'Banner',
-    text_image: 'Testo + immagine',
+  text_image: 'Testo + immagine',
+
+  brand_manifesto: 'Brand Manifesto',
+  timeline_premium: 'Timeline Premium',
+  process_steps: 'Process Steps',
+  stats_numbers: 'Stats / Numeri',
+  gallery_editorial: 'Gallery Editoriale',
+  testimonials: 'Testimonials',
+  featured_collection: 'Featured Collection',
+
   product_grid: 'Griglia prodotti',
   faq: 'FAQ',
   cta: 'CTA finale',
@@ -910,7 +924,96 @@ const sectionLabels = {
 const fieldsByType = {
   hero: ['eyebrow', 'title', 'subtitle', 'button_text'],
   banner: ['title', 'text', 'button_text'],
-    text_image: ['eyebrow', 'title', 'text', 'image_url', 'button_text', 'button_url'],
+  text_image: ['eyebrow', 'title', 'text', 'image_url', 'button_text', 'button_url'],
+
+  brand_manifesto: [
+    'eyebrow',
+    'title',
+    'text',
+    'quote',
+    'image_url',
+    'button_text',
+    'button_url',
+  ],
+
+  timeline_premium: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'step_1_year',
+    'step_1_title',
+    'step_1_text',
+    'step_2_year',
+    'step_2_title',
+    'step_2_text',
+    'step_3_year',
+    'step_3_title',
+    'step_3_text',
+  ],
+
+  process_steps: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'step_1_title',
+    'step_1_text',
+    'step_2_title',
+    'step_2_text',
+    'step_3_title',
+    'step_3_text',
+    'step_4_title',
+    'step_4_text',
+  ],
+
+  stats_numbers: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'stat_1_value',
+    'stat_1_label',
+    'stat_2_value',
+    'stat_2_label',
+    'stat_3_value',
+    'stat_3_label',
+    'stat_4_value',
+    'stat_4_label',
+  ],
+
+  gallery_editorial: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'image_1_url',
+    'image_1_caption',
+    'image_2_url',
+    'image_2_caption',
+    'image_3_url',
+    'image_3_caption',
+  ],
+
+  testimonials: [
+    'eyebrow',
+    'title',
+    'quote_1',
+    'author_1',
+    'role_1',
+    'quote_2',
+    'author_2',
+    'role_2',
+    'quote_3',
+    'author_3',
+    'role_3',
+  ],
+
+  featured_collection: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'collection_slug',
+    'button_text',
+    'button_url',
+  ],
+
   product_grid: ['eyebrow', 'title', 'subtitle'],
   faq: ['title', 'question', 'answer'],
   cta: ['title', 'text', 'button_text'],
@@ -920,12 +1023,53 @@ const fieldLabels = {
   eyebrow: 'Eyebrow',
   title: 'Titolo',
   subtitle: 'Sottotitolo',
-  button_text: 'Testo bottone',
   text: 'Testo',
+  quote: 'Citazione',
+  image_url: 'URL immagine',
+  button_text: 'Testo bottone',
+  button_url: 'Link bottone',
+  collection_slug: 'Slug collezione',
+
+  step_1_year: 'Step 1 - Anno',
+  step_1_title: 'Step 1 - Titolo',
+  step_1_text: 'Step 1 - Testo',
+  step_2_year: 'Step 2 - Anno',
+  step_2_title: 'Step 2 - Titolo',
+  step_2_text: 'Step 2 - Testo',
+  step_3_year: 'Step 3 - Anno',
+  step_3_title: 'Step 3 - Titolo',
+  step_3_text: 'Step 3 - Testo',
+  step_4_title: 'Step 4 - Titolo',
+  step_4_text: 'Step 4 - Testo',
+
+  stat_1_value: 'Stat 1 - Valore',
+  stat_1_label: 'Stat 1 - Etichetta',
+  stat_2_value: 'Stat 2 - Valore',
+  stat_2_label: 'Stat 2 - Etichetta',
+  stat_3_value: 'Stat 3 - Valore',
+  stat_3_label: 'Stat 3 - Etichetta',
+  stat_4_value: 'Stat 4 - Valore',
+  stat_4_label: 'Stat 4 - Etichetta',
+
+  image_1_url: 'Immagine 1 - URL',
+  image_1_caption: 'Immagine 1 - Caption',
+  image_2_url: 'Immagine 2 - URL',
+  image_2_caption: 'Immagine 2 - Caption',
+  image_3_url: 'Immagine 3 - URL',
+  image_3_caption: 'Immagine 3 - Caption',
+
+  quote_1: 'Testimonianza 1',
+  author_1: 'Autore 1',
+  role_1: 'Ruolo 1',
+  quote_2: 'Testimonianza 2',
+  author_2: 'Autore 2',
+  role_2: 'Ruolo 2',
+  quote_3: 'Testimonianza 3',
+  author_3: 'Autore 3',
+  role_3: 'Ruolo 3',
+
   question: 'Domanda',
   answer: 'Risposta',
-    image_url: 'URL immagine',
-  button_url: 'Link bottone',
 }
 
 function selectedSection() {
@@ -974,8 +1118,8 @@ function renderSelectedSection() {
 
 async function loadSections() {
   const response = await fetch(
-  `/api/admin/section?page_slug=${encodeURIComponent(currentEditorPageSlug)}`,
-)
+    `/api/admin/section?page_slug=${encodeURIComponent(currentEditorPageSlug)}`,
+  )
   const data = await response.json()
 
   if (!data.success) {
@@ -992,30 +1136,6 @@ async function loadSections() {
   renderSectionsList()
   renderSelectedSection()
   updateSitePreview()
-}
-
-function renderSectionsList() {
-  sectionsList.innerHTML = pageSections
-    .map(
-      (section) => `
-        <button
-          type="button"
-          class="section-button ${section.id === selectedSectionId ? 'active' : ''}"
-          data-section-id="${section.id}"
-        >
-          ${sectionLabels[section.type] || section.type}
-        </button>
-      `,
-    )
-    .join('')
-
-  document.querySelectorAll('[data-section-id]').forEach((button) => {
-    button.addEventListener('click', () => {
-      selectedSectionId = Number(button.dataset.sectionId)
-      renderSectionsList()
-      renderSelectedSection()
-    })
-  })
 }
 
 function renderSectionsList() {
@@ -1167,9 +1287,9 @@ async function addSection() {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-  type: newSectionType.value,
-  page_slug: currentEditorPageSlug,
-}),
+      type: newSectionType.value,
+      page_slug: currentEditorPageSlug,
+    }),
   })
 
   const data = await response.json()
