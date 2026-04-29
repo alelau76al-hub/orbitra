@@ -651,7 +651,13 @@ function getCmsContainer() {
     container.id = 'cmsSections'
 
     const hero = document.querySelector('.hero')
-    hero?.insertAdjacentElement('afterend', container)
+    const main = document.querySelector('main')
+
+    if (hero) {
+      hero.insertAdjacentElement('afterend', container)
+    } else if (main) {
+      main.appendChild(container)
+    }
   }
 
   return container
@@ -659,6 +665,19 @@ function getCmsContainer() {
 
 function renderCmsSection(section) {
   const data = section.data || {}
+
+  if (section.type === 'hero') {
+    return `
+      <section class="section cms-hero">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+          <a class="btn primary" href="#booking">${escapeCmsHtml(data.button_text)}</a>
+        </div>
+      </section>
+    `
+  }
 
   if (section.type === 'banner') {
     return `
@@ -763,26 +782,44 @@ async function hydrateProductGrids() {
   }
 }
 
+function getCurrentPublicPageSlug() {
+  const path = window.location.pathname
+
+  if (path === '/') return 'home'
+  if (path.startsWith('/collections/')) return null
+  if (path.startsWith('/products/')) return null
+  if (path.startsWith('/api/')) return null
+
+  return decodeURIComponent(path.replace('/', '').replaceAll('/', ''))
+}
+
 function renderCmsSections(sections) {
+  const pageSlug = getCurrentPublicPageSlug()
+  const isHome = pageSlug === 'home'
+
   const heroSection = sections.find((section) => section.type === 'hero')
 
-  if (heroSection) {
+  if (isHome && heroSection) {
     applyHeroPreview(heroSection.data)
   }
 
   const container = getCmsContainer()
 
   container.innerHTML = sections
-    .filter((section) => section.type !== 'hero')
+    .filter((section) => !(isHome && section.type === 'hero'))
     .map(renderCmsSection)
     .join('')
 
   hydrateProductGrids()
 }
 
-async function loadCmsSectionsFromD1() {
+async function loadCmsSectionsFromD1(pageSlug = getCurrentPublicPageSlug()) {
+  if (!pageSlug) return
+
   try {
-    const response = await fetch('/api/admin/section')
+    const response = await fetch(
+      `/api/sections?page_slug=${encodeURIComponent(pageSlug)}`,
+    )
     const data = await response.json()
 
     if (!data.success) return
@@ -800,13 +837,14 @@ window.addEventListener('message', (event) => {
   renderCmsSections(event.data.sections)
 })
 
-loadCmsSectionsFromD1()
 async function renderPublicCollectionPage() {
   const path = window.location.pathname
 
   if (!path.startsWith('/collections/')) return
 
-  const collectionSlug = decodeURIComponent(path.replace('/collections/', '').replaceAll('/', ''))
+  const collectionSlug = decodeURIComponent(
+    path.replace('/collections/', '').replaceAll('/', ''),
+  )
   const main = document.querySelector('main')
 
   if (!main || !collectionSlug) return
@@ -850,7 +888,8 @@ async function renderPublicCollectionPage() {
     }
 
     title.textContent = collection.name
-    intro.textContent = collection.description || 'Prodotti selezionati da questa collezione.'
+    intro.textContent =
+      collection.description || 'Prodotti selezionati da questa collezione.'
 
     const products = (productsData.products || []).filter(
       (product) => product.collection_slug === collection.slug,
@@ -896,7 +935,6 @@ async function renderPublicCollectionPage() {
   }
 }
 
-renderPublicCollectionPage()
 async function renderPublicCmsPage() {
   const path = window.location.pathname
 
@@ -942,22 +980,29 @@ async function renderPublicCmsPage() {
     }
 
     title.textContent = page.title
-    intro.textContent = 'Questa pagina è stata creata dal CMS custom Orbitra.'
+    intro.textContent = 'Contenuti caricati dal CMS custom Orbitra.'
 
-    main.innerHTML += `
-      <section class="section cms-page-content">
-        <div class="section-head reveal visible">
-          <p>
-            Qui collegheremo presto le sezioni modificabili della pagina:
-            hero, testo, immagini, prodotti, CTA, FAQ e blocchi custom.
-          </p>
-        </div>
-      </section>
-    `
+    await loadCmsSectionsFromD1(page.slug)
   } catch (error) {
     title.textContent = 'Errore caricamento pagina'
     intro.textContent = 'Non è stato possibile caricare questa pagina.'
   }
 }
 
-renderPublicCmsPage()
+async function bootPublicRouting() {
+  const path = window.location.pathname
+
+  if (path.startsWith('/collections/')) {
+    await renderPublicCollectionPage()
+    return
+  }
+
+  if (path !== '/') {
+    await renderPublicCmsPage()
+    return
+  }
+
+  await loadCmsSectionsFromD1('home')
+}
+
+bootPublicRouting()
