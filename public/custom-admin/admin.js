@@ -824,6 +824,7 @@ loadMenuResources()
 loadMenus()
 
 const sitePreview = document.querySelector('#sitePreview')
+const editorPageSelect = document.querySelector('#editorPageSelect')
 const sectionsList = document.querySelector('#sectionsList')
 const sectionFields = document.querySelector('#sectionFields')
 const selectedSectionTitle = document.querySelector('#selectedSectionTitle')
@@ -834,6 +835,47 @@ const sectionMessage = document.querySelector('#sectionMessage')
 
 let pageSections = []
 let selectedSectionId = null
+
+let currentEditorPageSlug = 'home'
+
+function getEditorPreviewUrl(pageSlug) {
+  if (pageSlug === 'home') {
+    return '/?preview=admin'
+  }
+
+  return `/${pageSlug}?preview=admin`
+}
+
+function updateEditorPreviewUrl() {
+  const nextUrl = getEditorPreviewUrl(currentEditorPageSlug)
+
+  if (sitePreview.getAttribute('src') !== nextUrl) {
+    sitePreview.setAttribute('src', nextUrl)
+  }
+}
+
+async function loadEditorPages() {
+  try {
+    const response = await fetch('/api/admin/pages')
+    const data = await response.json()
+
+    if (!data.success) return
+
+    editorPageSelect.innerHTML = data.pages
+      .map(
+        (page) => `
+          <option value="${escapeHtml(page.slug)}">
+            ${escapeHtml(page.title)}
+          </option>
+        `,
+      )
+      .join('')
+
+    editorPageSelect.value = currentEditorPageSlug
+  } catch {
+    sectionMessage.textContent = 'Errore caricamento pagine editor.'
+  }
+}
 
 const sectionLabels = {
   hero: 'Hero',
@@ -906,7 +948,9 @@ function renderSelectedSection() {
 }
 
 async function loadSections() {
-  const response = await fetch('/api/admin/section')
+  const response = await fetch(
+  `/api/admin/section?page_slug=${encodeURIComponent(currentEditorPageSlug)}`,
+)
   const data = await response.json()
 
   if (!data.success) {
@@ -1098,8 +1142,9 @@ async function addSection() {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      type: newSectionType.value,
-    }),
+  type: newSectionType.value,
+  page_slug: currentEditorPageSlug,
+}),
   })
 
   const data = await response.json()
@@ -1118,4 +1163,13 @@ saveSectionButton.addEventListener('click', saveSelectedSection)
 addSectionButton.addEventListener('click', addSection)
 sitePreview.addEventListener('load', updateSitePreview)
 
+editorPageSelect.addEventListener('change', async () => {
+  currentEditorPageSlug = editorPageSelect.value || 'home'
+  selectedSectionId = null
+  updateEditorPreviewUrl()
+  await loadSections()
+})
+
+loadEditorPages()
+updateEditorPreviewUrl()
 loadSections()
