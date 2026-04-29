@@ -103,22 +103,57 @@
             <label>Aggiungi sezione</label>
             <div class="inline-controls">
               <select id="newSectionType">
-                <option value="hero">Hero</option>
-                <option value="banner">Banner</option>
-                <option value="text_image">Testo + immagine</option>
+  <optgroup label="Sezioni base">
+    <option value="hero">Hero</option>
+    <option value="banner">Banner</option>
+    <option value="text_image">Testo + immagine</option>
+    <option value="product_grid">Griglia prodotti</option>
+    <option value="faq">FAQ</option>
+    <option value="cta">CTA finale</option>
+  </optgroup>
 
-                <option value="brand_manifesto">Brand Manifesto</option>
-                <option value="timeline_premium">Timeline Premium</option>
-                <option value="process_steps">Process Steps</option>
-                <option value="stats_numbers">Stats / Numeri</option>
-                <option value="gallery_editorial">Gallery Editoriale</option>
-                <option value="testimonials">Testimonials</option>
-                <option value="featured_collection">Featured Collection</option>
+  <optgroup label="Sezioni premium">
+    <option value="brand_manifesto">Brand Manifesto</option>
+    <option value="timeline_premium">Timeline Premium</option>
+    <option value="process_steps">Process Steps</option>
+    <option value="stats_numbers">Stats / Numeri</option>
+    <option value="gallery_editorial">Gallery Editoriale</option>
+    <option value="testimonials">Testimonials</option>
+    <option value="featured_collection">Featured Collection</option>
+  </optgroup>
 
-                <option value="product_grid">Griglia prodotti</option>
-                <option value="faq">FAQ</option>
-                <option value="cta">CTA finale</option>
-              </select>
+  <optgroup label="Ecommerce">
+    <option value="collection_grid">Griglia collezioni</option>
+    <option value="featured_product">Featured Product</option>
+    <option value="product_spotlight">Product Spotlight</option>
+    <option value="product_carousel">Product Carousel</option>
+    <option value="best_sellers">Best Sellers</option>
+    <option value="new_arrivals">New Arrivals</option>
+  </optgroup>
+
+  <optgroup label="Fiducia e conversione">
+    <option value="trust_badges">Trust Badges</option>
+    <option value="newsletter_signup">Newsletter Signup</option>
+    <option value="promo_banner">Promo Banner</option>
+    <option value="countdown_promo">Countdown Promo</option>
+  </optgroup>
+
+  <optgroup label="Brand e contenuto">
+    <option value="logo_partners">Logo Partner / Clienti</option>
+    <option value="press_mentions">Press / Media Mentions</option>
+    <option value="awards_recognition">Awards / Riconoscimenti</option>
+    <option value="team_section">Team Section</option>
+    <option value="founder_section">Founder Section</option>
+    <option value="services_grid">Services Grid</option>
+  </optgroup>
+
+  <optgroup label="Layout avanzati">
+    <option value="accordion_advanced">Accordion avanzato</option>
+    <option value="tabs_section">Tabs Section</option>
+    <option value="video_spotlight">Video Spotlight</option>
+    <option value="full_width_image">Full-width Image</option>
+  </optgroup>
+</select>
 
               <button id="addSectionButton" type="button">Aggiungi</button>
             </div>

@@ -916,6 +916,30 @@ const sectionLabels = {
   testimonials: 'Testimonials',
   featured_collection: 'Featured Collection',
 
+  collection_grid: 'Griglia collezioni',
+  featured_product: 'Featured Product',
+  product_spotlight: 'Product Spotlight',
+  product_carousel: 'Product Carousel',
+  best_sellers: 'Best Sellers',
+  new_arrivals: 'New Arrivals',
+
+  trust_badges: 'Trust Badges',
+  newsletter_signup: 'Newsletter Signup',
+  promo_banner: 'Promo Banner',
+  countdown_promo: 'Countdown Promo',
+
+  logo_partners: 'Logo Partner / Clienti',
+  press_mentions: 'Press / Media Mentions',
+  awards_recognition: 'Awards / Riconoscimenti',
+  team_section: 'Team Section',
+  founder_section: 'Founder Section',
+  services_grid: 'Services Grid',
+
+  accordion_advanced: 'Accordion avanzato',
+  tabs_section: 'Tabs Section',
+  video_spotlight: 'Video Spotlight',
+  full_width_image: 'Full-width Image',
+
   product_grid: 'Griglia prodotti',
   faq: 'FAQ',
   cta: 'CTA finale',
@@ -923,8 +947,17 @@ const sectionLabels = {
 
 const fieldsByType = {
   hero: ['eyebrow', 'title', 'subtitle', 'button_text'],
+
   banner: ['title', 'text', 'button_text'],
-  text_image: ['eyebrow', 'title', 'text', 'image_url', 'button_text', 'button_url'],
+
+  text_image: [
+    'eyebrow',
+    'title',
+    'text',
+    'image_url',
+    'button_text',
+    'button_url',
+  ],
 
   brand_manifesto: [
     'eyebrow',
@@ -1014,8 +1047,210 @@ const fieldsByType = {
     'button_url',
   ],
 
+  collection_grid: [
+    'eyebrow',
+    'title',
+    'subtitle',
+  ],
+
+  featured_product: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'product_slug',
+    'button_text',
+    'button_url',
+  ],
+
+  product_spotlight: [
+    'eyebrow',
+    'title',
+    'text',
+    'product_slug',
+    'image_url',
+    'button_text',
+    'button_url',
+  ],
+
+  product_carousel: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'collection_slug',
+  ],
+
+  best_sellers: [
+    'eyebrow',
+    'title',
+    'subtitle',
+  ],
+
+  new_arrivals: [
+    'eyebrow',
+    'title',
+    'subtitle',
+  ],
+
+  trust_badges: [
+    'eyebrow',
+    'title',
+    'badge_1_title',
+    'badge_1_text',
+    'badge_2_title',
+    'badge_2_text',
+    'badge_3_title',
+    'badge_3_text',
+    'badge_4_title',
+    'badge_4_text',
+  ],
+
+  newsletter_signup: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'placeholder',
+    'button_text',
+    'privacy_text',
+  ],
+
+  promo_banner: [
+    'eyebrow',
+    'title',
+    'text',
+    'button_text',
+    'button_url',
+  ],
+
+  countdown_promo: [
+    'eyebrow',
+    'title',
+    'text',
+    'target_date',
+    'button_text',
+    'button_url',
+  ],
+
+  logo_partners: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'logo_1_text',
+    'logo_2_text',
+    'logo_3_text',
+    'logo_4_text',
+    'logo_5_text',
+  ],
+
+  press_mentions: [
+    'eyebrow',
+    'title',
+    'quote_1',
+    'source_1',
+    'quote_2',
+    'source_2',
+    'quote_3',
+    'source_3',
+  ],
+
+  awards_recognition: [
+    'eyebrow',
+    'title',
+    'award_1_title',
+    'award_1_text',
+    'award_2_title',
+    'award_2_text',
+    'award_3_title',
+    'award_3_text',
+  ],
+
+  team_section: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'member_1_name',
+    'member_1_role',
+    'member_1_image_url',
+    'member_2_name',
+    'member_2_role',
+    'member_2_image_url',
+    'member_3_name',
+    'member_3_role',
+    'member_3_image_url',
+  ],
+
+  founder_section: [
+    'eyebrow',
+    'title',
+    'text',
+    'founder_name',
+    'founder_role',
+    'quote',
+    'image_url',
+  ],
+
+  services_grid: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'service_1_title',
+    'service_1_text',
+    'service_2_title',
+    'service_2_text',
+    'service_3_title',
+    'service_3_text',
+    'service_4_title',
+    'service_4_text',
+  ],
+
+  accordion_advanced: [
+    'eyebrow',
+    'title',
+    'item_1_title',
+    'item_1_text',
+    'item_2_title',
+    'item_2_text',
+    'item_3_title',
+    'item_3_text',
+    'item_4_title',
+    'item_4_text',
+  ],
+
+  tabs_section: [
+    'eyebrow',
+    'title',
+    'tab_1_label',
+    'tab_1_title',
+    'tab_1_text',
+    'tab_2_label',
+    'tab_2_title',
+    'tab_2_text',
+    'tab_3_label',
+    'tab_3_title',
+    'tab_3_text',
+  ],
+
+  video_spotlight: [
+    'eyebrow',
+    'title',
+    'text',
+    'video_url',
+    'poster_url',
+    'button_text',
+    'button_url',
+  ],
+
+  full_width_image: [
+    'eyebrow',
+    'title',
+    'subtitle',
+    'image_url',
+    'caption',
+  ],
+
   product_grid: ['eyebrow', 'title', 'subtitle'],
+
   faq: ['title', 'question', 'answer'],
+
   cta: ['title', 'text', 'button_text'],
 }
 
@@ -1029,6 +1264,14 @@ const fieldLabels = {
   button_text: 'Testo bottone',
   button_url: 'Link bottone',
   collection_slug: 'Slug collezione',
+  product_slug: 'Slug prodotto',
+
+  placeholder: 'Placeholder campo email',
+  privacy_text: 'Testo privacy',
+  target_date: 'Data fine countdown',
+  video_url: 'URL video',
+  poster_url: 'URL immagine anteprima video',
+  caption: 'Caption',
 
   step_1_year: 'Step 1 - Anno',
   step_1_title: 'Step 1 - Titolo',
@@ -1058,15 +1301,82 @@ const fieldLabels = {
   image_3_url: 'Immagine 3 - URL',
   image_3_caption: 'Immagine 3 - Caption',
 
-  quote_1: 'Testimonianza 1',
+  quote_1: 'Testimonianza / Citazione 1',
   author_1: 'Autore 1',
   role_1: 'Ruolo 1',
-  quote_2: 'Testimonianza 2',
+  quote_2: 'Testimonianza / Citazione 2',
   author_2: 'Autore 2',
   role_2: 'Ruolo 2',
-  quote_3: 'Testimonianza 3',
+  quote_3: 'Testimonianza / Citazione 3',
   author_3: 'Autore 3',
   role_3: 'Ruolo 3',
+
+  badge_1_title: 'Badge 1 - Titolo',
+  badge_1_text: 'Badge 1 - Testo',
+  badge_2_title: 'Badge 2 - Titolo',
+  badge_2_text: 'Badge 2 - Testo',
+  badge_3_title: 'Badge 3 - Titolo',
+  badge_3_text: 'Badge 3 - Testo',
+  badge_4_title: 'Badge 4 - Titolo',
+  badge_4_text: 'Badge 4 - Testo',
+
+  logo_1_text: 'Logo 1 - Testo',
+  logo_2_text: 'Logo 2 - Testo',
+  logo_3_text: 'Logo 3 - Testo',
+  logo_4_text: 'Logo 4 - Testo',
+  logo_5_text: 'Logo 5 - Testo',
+
+  source_1: 'Fonte 1',
+  source_2: 'Fonte 2',
+  source_3: 'Fonte 3',
+
+  award_1_title: 'Award 1 - Titolo',
+  award_1_text: 'Award 1 - Testo',
+  award_2_title: 'Award 2 - Titolo',
+  award_2_text: 'Award 2 - Testo',
+  award_3_title: 'Award 3 - Titolo',
+  award_3_text: 'Award 3 - Testo',
+
+  member_1_name: 'Membro 1 - Nome',
+  member_1_role: 'Membro 1 - Ruolo',
+  member_1_image_url: 'Membro 1 - URL immagine',
+  member_2_name: 'Membro 2 - Nome',
+  member_2_role: 'Membro 2 - Ruolo',
+  member_2_image_url: 'Membro 2 - URL immagine',
+  member_3_name: 'Membro 3 - Nome',
+  member_3_role: 'Membro 3 - Ruolo',
+  member_3_image_url: 'Membro 3 - URL immagine',
+
+  founder_name: 'Founder - Nome',
+  founder_role: 'Founder - Ruolo',
+
+  service_1_title: 'Servizio 1 - Titolo',
+  service_1_text: 'Servizio 1 - Testo',
+  service_2_title: 'Servizio 2 - Titolo',
+  service_2_text: 'Servizio 2 - Testo',
+  service_3_title: 'Servizio 3 - Titolo',
+  service_3_text: 'Servizio 3 - Testo',
+  service_4_title: 'Servizio 4 - Titolo',
+  service_4_text: 'Servizio 4 - Testo',
+
+  item_1_title: 'Item 1 - Titolo',
+  item_1_text: 'Item 1 - Testo',
+  item_2_title: 'Item 2 - Titolo',
+  item_2_text: 'Item 2 - Testo',
+  item_3_title: 'Item 3 - Titolo',
+  item_3_text: 'Item 3 - Testo',
+  item_4_title: 'Item 4 - Titolo',
+  item_4_text: 'Item 4 - Testo',
+
+  tab_1_label: 'Tab 1 - Etichetta',
+  tab_1_title: 'Tab 1 - Titolo',
+  tab_1_text: 'Tab 1 - Testo',
+  tab_2_label: 'Tab 2 - Etichetta',
+  tab_2_title: 'Tab 2 - Titolo',
+  tab_2_text: 'Tab 2 - Testo',
+  tab_3_label: 'Tab 3 - Etichetta',
+  tab_3_title: 'Tab 3 - Titolo',
+  tab_3_text: 'Tab 3 - Testo',
 
   question: 'Domanda',
   answer: 'Risposta',

@@ -725,7 +725,6 @@ function renderCmsSection(section) {
             <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
             <h2>${escapeCmsHtml(data.title)}</h2>
             <p>${escapeCmsHtml(data.text)}</p>
-
             ${
               data.button_text
                 ? `<a class="btn primary" href="${escapeCmsHtml(data.button_url || '#')}">${escapeCmsHtml(data.button_text)}</a>`
@@ -734,10 +733,7 @@ function renderCmsSection(section) {
           </div>
 
           <div class="cms-brand-quote">
-            <blockquote>
-              “${escapeCmsHtml(data.quote)}”
-            </blockquote>
-
+            <blockquote>“${escapeCmsHtml(data.quote)}”</blockquote>
             <div class="cms-brand-image">
               ${
                 data.image_url
@@ -793,29 +789,10 @@ function renderCmsSection(section) {
         </div>
 
         <div class="cms-process-grid">
-          <article>
-            <span>01</span>
-            <h3>${escapeCmsHtml(data.step_1_title)}</h3>
-            <p>${escapeCmsHtml(data.step_1_text)}</p>
-          </article>
-
-          <article>
-            <span>02</span>
-            <h3>${escapeCmsHtml(data.step_2_title)}</h3>
-            <p>${escapeCmsHtml(data.step_2_text)}</p>
-          </article>
-
-          <article>
-            <span>03</span>
-            <h3>${escapeCmsHtml(data.step_3_title)}</h3>
-            <p>${escapeCmsHtml(data.step_3_text)}</p>
-          </article>
-
-          <article>
-            <span>04</span>
-            <h3>${escapeCmsHtml(data.step_4_title)}</h3>
-            <p>${escapeCmsHtml(data.step_4_text)}</p>
-          </article>
+          <article><span>01</span><h3>${escapeCmsHtml(data.step_1_title)}</h3><p>${escapeCmsHtml(data.step_1_text)}</p></article>
+          <article><span>02</span><h3>${escapeCmsHtml(data.step_2_title)}</h3><p>${escapeCmsHtml(data.step_2_text)}</p></article>
+          <article><span>03</span><h3>${escapeCmsHtml(data.step_3_title)}</h3><p>${escapeCmsHtml(data.step_3_text)}</p></article>
+          <article><span>04</span><h3>${escapeCmsHtml(data.step_4_title)}</h3><p>${escapeCmsHtml(data.step_4_text)}</p></article>
         </div>
       </section>
     `
@@ -831,25 +808,10 @@ function renderCmsSection(section) {
         </div>
 
         <div class="cms-stats-grid">
-          <article>
-            <strong>${escapeCmsHtml(data.stat_1_value)}</strong>
-            <span>${escapeCmsHtml(data.stat_1_label)}</span>
-          </article>
-
-          <article>
-            <strong>${escapeCmsHtml(data.stat_2_value)}</strong>
-            <span>${escapeCmsHtml(data.stat_2_label)}</span>
-          </article>
-
-          <article>
-            <strong>${escapeCmsHtml(data.stat_3_value)}</strong>
-            <span>${escapeCmsHtml(data.stat_3_label)}</span>
-          </article>
-
-          <article>
-            <strong>${escapeCmsHtml(data.stat_4_value)}</strong>
-            <span>${escapeCmsHtml(data.stat_4_label)}</span>
-          </article>
+          <article><strong>${escapeCmsHtml(data.stat_1_value)}</strong><span>${escapeCmsHtml(data.stat_1_label)}</span></article>
+          <article><strong>${escapeCmsHtml(data.stat_2_value)}</strong><span>${escapeCmsHtml(data.stat_2_label)}</span></article>
+          <article><strong>${escapeCmsHtml(data.stat_3_value)}</strong><span>${escapeCmsHtml(data.stat_3_label)}</span></article>
+          <article><strong>${escapeCmsHtml(data.stat_4_value)}</strong><span>${escapeCmsHtml(data.stat_4_label)}</span></article>
         </div>
       </section>
     `
@@ -905,23 +867,9 @@ function renderCmsSection(section) {
         </div>
 
         <div class="cms-testimonials-grid">
-          <article>
-            <p>“${escapeCmsHtml(data.quote_1)}”</p>
-            <strong>${escapeCmsHtml(data.author_1)}</strong>
-            <span>${escapeCmsHtml(data.role_1)}</span>
-          </article>
-
-          <article>
-            <p>“${escapeCmsHtml(data.quote_2)}”</p>
-            <strong>${escapeCmsHtml(data.author_2)}</strong>
-            <span>${escapeCmsHtml(data.role_2)}</span>
-          </article>
-
-          <article>
-            <p>“${escapeCmsHtml(data.quote_3)}”</p>
-            <strong>${escapeCmsHtml(data.author_3)}</strong>
-            <span>${escapeCmsHtml(data.role_3)}</span>
-          </article>
+          <article><p>“${escapeCmsHtml(data.quote_1)}”</p><strong>${escapeCmsHtml(data.author_1)}</strong><span>${escapeCmsHtml(data.role_1)}</span></article>
+          <article><p>“${escapeCmsHtml(data.quote_2)}”</p><strong>${escapeCmsHtml(data.author_2)}</strong><span>${escapeCmsHtml(data.role_2)}</span></article>
+          <article><p>“${escapeCmsHtml(data.quote_3)}”</p><strong>${escapeCmsHtml(data.author_3)}</strong><span>${escapeCmsHtml(data.role_3)}</span></article>
         </div>
       </section>
     `
@@ -949,6 +897,414 @@ function renderCmsSection(section) {
     `
   }
 
+  if (section.type === 'collection_grid') {
+    return `
+      <section class="section cms-collection-grid-section">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="store-grid cms-collection-grid" data-collections-grid>
+          Caricamento collezioni...
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'featured_product') {
+    return `
+      <section class="section cms-featured-product">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div
+          class="cms-featured-product-target"
+          data-featured-product="${escapeCmsHtml(data.product_slug || '')}"
+          data-button-text="${escapeCmsHtml(data.button_text || 'Scopri il prodotto')}"
+          data-button-url="${escapeCmsHtml(data.button_url || '#')}"
+        >
+          Caricamento prodotto...
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'product_spotlight') {
+    const productHref = data.product_slug
+      ? `/products/${escapeCmsHtml(data.product_slug)}`
+      : escapeCmsHtml(data.button_url || '#')
+
+    return `
+      <section class="section cms-product-spotlight">
+        <div class="cms-product-spotlight-grid">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.text)}</p>
+            <a class="btn primary" href="${productHref}">
+              ${escapeCmsHtml(data.button_text)}
+            </a>
+          </div>
+
+          <div class="cms-product-spotlight-media">
+            ${
+              data.image_url
+                ? `<img src="${escapeCmsHtml(data.image_url)}" alt="${escapeCmsHtml(data.title)}">`
+                : '🚀'
+            }
+          </div>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'product_carousel') {
+    return `
+      <section class="section cms-product-carousel-section">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div
+          class="store-grid cms-product-carousel"
+          data-products-carousel
+          data-collection-slug="${escapeCmsHtml(data.collection_slug || '')}"
+        >
+          Caricamento prodotti...
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'best_sellers') {
+    return `
+      <section class="section cms-best-sellers">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="store-grid" data-products-grid data-products-mode="best_sellers">
+          Caricamento prodotti...
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'new_arrivals') {
+    return `
+      <section class="section cms-new-arrivals">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="store-grid" data-products-grid data-products-mode="new_arrivals">
+          Caricamento prodotti...
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'trust_badges') {
+    return `
+      <section class="section cms-trust-badges">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="cms-trust-grid">
+          <article><span>🔒</span><h3>${escapeCmsHtml(data.badge_1_title)}</h3><p>${escapeCmsHtml(data.badge_1_text)}</p></article>
+          <article><span>📦</span><h3>${escapeCmsHtml(data.badge_2_title)}</h3><p>${escapeCmsHtml(data.badge_2_text)}</p></article>
+          <article><span>💬</span><h3>${escapeCmsHtml(data.badge_3_title)}</h3><p>${escapeCmsHtml(data.badge_3_text)}</p></article>
+          <article><span>✦</span><h3>${escapeCmsHtml(data.badge_4_title)}</h3><p>${escapeCmsHtml(data.badge_4_text)}</p></article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'newsletter_signup') {
+    return `
+      <section class="section cms-newsletter">
+        <div class="cms-newsletter-card">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.subtitle)}</p>
+          </div>
+
+          <form class="cms-newsletter-form">
+            <input type="email" placeholder="${escapeCmsHtml(data.placeholder)}">
+            <button class="btn primary" type="button">${escapeCmsHtml(data.button_text)}</button>
+            <small>${escapeCmsHtml(data.privacy_text)}</small>
+          </form>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'promo_banner') {
+    return `
+      <section class="section cms-promo-banner">
+        <div>
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.text)}</p>
+        </div>
+
+        <a class="btn primary" href="${escapeCmsHtml(data.button_url || '#')}">
+          ${escapeCmsHtml(data.button_text)}
+        </a>
+      </section>
+    `
+  }
+
+  if (section.type === 'countdown_promo') {
+    const targetDate = data.target_date
+      ? new Date(data.target_date).toLocaleString('it-IT')
+      : ''
+
+    return `
+      <section class="section cms-countdown-promo">
+        <div>
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.text)}</p>
+        </div>
+
+        <div class="cms-countdown-box">
+          <span>Termina il</span>
+          <strong>${escapeCmsHtml(targetDate)}</strong>
+          <a class="btn primary" href="${escapeCmsHtml(data.button_url || '#')}">
+            ${escapeCmsHtml(data.button_text)}
+          </a>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'logo_partners') {
+    return `
+      <section class="section cms-logo-partners">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-logo-row">
+          <span>${escapeCmsHtml(data.logo_1_text)}</span>
+          <span>${escapeCmsHtml(data.logo_2_text)}</span>
+          <span>${escapeCmsHtml(data.logo_3_text)}</span>
+          <span>${escapeCmsHtml(data.logo_4_text)}</span>
+          <span>${escapeCmsHtml(data.logo_5_text)}</span>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'press_mentions') {
+    return `
+      <section class="section cms-press-mentions">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="cms-press-grid">
+          <article><p>“${escapeCmsHtml(data.quote_1)}”</p><strong>${escapeCmsHtml(data.source_1)}</strong></article>
+          <article><p>“${escapeCmsHtml(data.quote_2)}”</p><strong>${escapeCmsHtml(data.source_2)}</strong></article>
+          <article><p>“${escapeCmsHtml(data.quote_3)}”</p><strong>${escapeCmsHtml(data.source_3)}</strong></article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'awards_recognition') {
+    return `
+      <section class="section cms-awards">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="cms-awards-grid">
+          <article><span>01</span><h3>${escapeCmsHtml(data.award_1_title)}</h3><p>${escapeCmsHtml(data.award_1_text)}</p></article>
+          <article><span>02</span><h3>${escapeCmsHtml(data.award_2_title)}</h3><p>${escapeCmsHtml(data.award_2_text)}</p></article>
+          <article><span>03</span><h3>${escapeCmsHtml(data.award_3_title)}</h3><p>${escapeCmsHtml(data.award_3_text)}</p></article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'team_section') {
+    return `
+      <section class="section cms-team-section">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-team-grid">
+          <article>
+            <div>${data.member_1_image_url ? `<img src="${escapeCmsHtml(data.member_1_image_url)}" alt="${escapeCmsHtml(data.member_1_name)}">` : '👤'}</div>
+            <h3>${escapeCmsHtml(data.member_1_name)}</h3>
+            <p>${escapeCmsHtml(data.member_1_role)}</p>
+          </article>
+
+          <article>
+            <div>${data.member_2_image_url ? `<img src="${escapeCmsHtml(data.member_2_image_url)}" alt="${escapeCmsHtml(data.member_2_name)}">` : '👤'}</div>
+            <h3>${escapeCmsHtml(data.member_2_name)}</h3>
+            <p>${escapeCmsHtml(data.member_2_role)}</p>
+          </article>
+
+          <article>
+            <div>${data.member_3_image_url ? `<img src="${escapeCmsHtml(data.member_3_image_url)}" alt="${escapeCmsHtml(data.member_3_name)}">` : '👤'}</div>
+            <h3>${escapeCmsHtml(data.member_3_name)}</h3>
+            <p>${escapeCmsHtml(data.member_3_role)}</p>
+          </article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'founder_section') {
+    return `
+      <section class="section cms-founder-section">
+        <div class="cms-founder-grid">
+          <div class="cms-founder-image">
+            ${
+              data.image_url
+                ? `<img src="${escapeCmsHtml(data.image_url)}" alt="${escapeCmsHtml(data.founder_name)}">`
+                : '👤'
+            }
+          </div>
+
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.text)}</p>
+            <blockquote>“${escapeCmsHtml(data.quote)}”</blockquote>
+            <strong>${escapeCmsHtml(data.founder_name)}</strong>
+            <span>${escapeCmsHtml(data.founder_role)}</span>
+          </div>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'services_grid') {
+    return `
+      <section class="section cms-services-grid-section">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-services-grid">
+          <article><h3>${escapeCmsHtml(data.service_1_title)}</h3><p>${escapeCmsHtml(data.service_1_text)}</p></article>
+          <article><h3>${escapeCmsHtml(data.service_2_title)}</h3><p>${escapeCmsHtml(data.service_2_text)}</p></article>
+          <article><h3>${escapeCmsHtml(data.service_3_title)}</h3><p>${escapeCmsHtml(data.service_3_text)}</p></article>
+          <article><h3>${escapeCmsHtml(data.service_4_title)}</h3><p>${escapeCmsHtml(data.service_4_text)}</p></article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'accordion_advanced') {
+    return `
+      <section class="section cms-accordion-advanced">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="cms-accordion-list">
+          <details open><summary>${escapeCmsHtml(data.item_1_title)}</summary><p>${escapeCmsHtml(data.item_1_text)}</p></details>
+          <details><summary>${escapeCmsHtml(data.item_2_title)}</summary><p>${escapeCmsHtml(data.item_2_text)}</p></details>
+          <details><summary>${escapeCmsHtml(data.item_3_title)}</summary><p>${escapeCmsHtml(data.item_3_text)}</p></details>
+          <details><summary>${escapeCmsHtml(data.item_4_title)}</summary><p>${escapeCmsHtml(data.item_4_text)}</p></details>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'tabs_section') {
+    return `
+      <section class="section cms-tabs-section">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+        </div>
+
+        <div class="cms-tabs-grid">
+          <article><span>${escapeCmsHtml(data.tab_1_label)}</span><h3>${escapeCmsHtml(data.tab_1_title)}</h3><p>${escapeCmsHtml(data.tab_1_text)}</p></article>
+          <article><span>${escapeCmsHtml(data.tab_2_label)}</span><h3>${escapeCmsHtml(data.tab_2_title)}</h3><p>${escapeCmsHtml(data.tab_2_text)}</p></article>
+          <article><span>${escapeCmsHtml(data.tab_3_label)}</span><h3>${escapeCmsHtml(data.tab_3_title)}</h3><p>${escapeCmsHtml(data.tab_3_text)}</p></article>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'video_spotlight') {
+    return `
+      <section class="section cms-video-spotlight">
+        <div class="cms-video-grid">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+            <h2>${escapeCmsHtml(data.title)}</h2>
+            <p>${escapeCmsHtml(data.text)}</p>
+            <a class="btn primary" href="${escapeCmsHtml(data.button_url || '#')}">
+              ${escapeCmsHtml(data.button_text)}
+            </a>
+          </div>
+
+          <div class="cms-video-box">
+            ${
+              data.video_url
+                ? `<video controls ${data.poster_url ? `poster="${escapeCmsHtml(data.poster_url)}"` : ''} src="${escapeCmsHtml(data.video_url)}"></video>`
+                : '<span>▶</span>'
+            }
+          </div>
+        </div>
+      </section>
+    `
+  }
+
+  if (section.type === 'full_width_image') {
+    return `
+      <section class="section cms-full-width-image">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(data.eyebrow)}</p>
+          <h2>${escapeCmsHtml(data.title)}</h2>
+          <p>${escapeCmsHtml(data.subtitle)}</p>
+        </div>
+
+        <div class="cms-full-image">
+          ${
+            data.image_url
+              ? `<img src="${escapeCmsHtml(data.image_url)}" alt="${escapeCmsHtml(data.caption)}">`
+              : '✦'
+          }
+        </div>
+
+        <p class="cms-full-image-caption">${escapeCmsHtml(data.caption)}</p>
+      </section>
+    `
+  }
+
   if (section.type === 'product_grid') {
     return `
       <section class="section">
@@ -957,6 +1313,7 @@ function renderCmsSection(section) {
           <h2>${escapeCmsHtml(data.title)}</h2>
           <p>${escapeCmsHtml(data.subtitle)}</p>
         </div>
+
         <div class="store-grid cms-product-grid" data-products-grid>
           Caricamento prodotti...
         </div>
@@ -994,30 +1351,113 @@ function renderCmsSection(section) {
   return ''
 }
 
+function renderProductCard(product) {
+  return `
+    <article class="store-card">
+      <div class="store-image">
+        ${
+          product.image_url
+            ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+            : '🚀'
+        }
+      </div>
+
+      <h3>${escapeCmsHtml(product.name)}</h3>
+      <p>${escapeCmsHtml(product.description || '')}</p>
+
+      <div class="store-meta">
+        <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
+          style: 'currency',
+          currency: 'EUR',
+        })}</strong>
+        <span>Stock: ${product.stock}</span>
+      </div>
+
+      <button class="btn primary" type="button">Aggiungi al carrello</button>
+    </article>
+  `
+}
+
 async function hydrateProductGrids() {
-  const grids = document.querySelectorAll('[data-products-grid]')
-  if (grids.length === 0) return
+  const productContainers = document.querySelectorAll(
+    '[data-products-grid], [data-products-carousel], [data-featured-product]',
+  )
+
+  if (productContainers.length === 0) return
 
   try {
     const response = await fetch('/api/products')
     const data = await response.json()
 
     if (!data.success || data.products.length === 0) {
-      grids.forEach((grid) => {
-        grid.textContent = 'Nessun prodotto disponibile.'
+      productContainers.forEach((container) => {
+        container.textContent = 'Nessun prodotto disponibile.'
       })
       return
     }
 
-    const html = data.products
-      .map(
-        (product) => `
-          <article class="store-card">
-            <div class="store-image">
-              ${product.image_url ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">` : '🚀'}
-            </div>
+    const products = data.products || []
+
+    document.querySelectorAll('[data-products-grid], [data-products-carousel]').forEach((grid) => {
+      const collectionSlug = grid.dataset.collectionSlug || ''
+      const mode = grid.dataset.productsMode || ''
+
+      let visibleProducts = [...products]
+
+      if (collectionSlug) {
+        visibleProducts = visibleProducts.filter(
+          (product) => product.collection_slug === collectionSlug,
+        )
+      }
+
+      if (mode === 'best_sellers') {
+        visibleProducts = visibleProducts.slice(0, 4)
+      }
+
+      if (mode === 'new_arrivals') {
+        visibleProducts = visibleProducts.slice(0, 4)
+      }
+
+      if (grid.hasAttribute('data-products-carousel')) {
+        visibleProducts = visibleProducts.slice(0, 6)
+      }
+
+      if (visibleProducts.length === 0) {
+        grid.textContent = 'Nessun prodotto disponibile.'
+        return
+      }
+
+      grid.innerHTML = visibleProducts.map(renderProductCard).join('')
+    })
+
+    document.querySelectorAll('[data-featured-product]').forEach((target) => {
+      const productSlug = target.dataset.featuredProduct || ''
+      const buttonText = target.dataset.buttonText || 'Scopri il prodotto'
+      const buttonUrl = target.dataset.buttonUrl || '#'
+
+      const product = productSlug
+        ? products.find((item) => item.slug === productSlug)
+        : products[0]
+
+      if (!product) {
+        target.textContent = 'Prodotto non trovato.'
+        return
+      }
+
+      target.innerHTML = `
+        <article class="cms-featured-product-card">
+          <div class="store-image">
+            ${
+              product.image_url
+                ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+                : '🚀'
+            }
+          </div>
+
+          <div>
             <h3>${escapeCmsHtml(product.name)}</h3>
             <p>${escapeCmsHtml(product.description || '')}</p>
+
             <div class="store-meta">
               <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
                 style: 'currency',
@@ -1025,18 +1465,65 @@ async function hydrateProductGrids() {
               })}</strong>
               <span>Stock: ${product.stock}</span>
             </div>
-            <button class="btn primary" type="button">Aggiungi al carrello</button>
+
+            <a class="btn primary" href="${escapeCmsHtml(buttonUrl)}">
+              ${escapeCmsHtml(buttonText)}
+            </a>
+          </div>
+        </article>
+      `
+    })
+  } catch {
+    productContainers.forEach((container) => {
+      container.textContent = 'Errore caricamento prodotti.'
+    })
+  }
+}
+
+async function hydrateCollectionGrids() {
+  const collectionGrids = document.querySelectorAll('[data-collections-grid]')
+  if (collectionGrids.length === 0) return
+
+  try {
+    const response = await fetch('/api/collections')
+    const data = await response.json()
+
+    if (!data.success || data.collections.length === 0) {
+      collectionGrids.forEach((grid) => {
+        grid.textContent = 'Nessuna collezione disponibile.'
+      })
+      return
+    }
+
+    const html = data.collections
+      .map(
+        (collection) => `
+          <article class="store-card cms-collection-card">
+            <div class="store-image">
+              ${
+                collection.image_url
+                  ? `<img src="${escapeCmsHtml(collection.image_url)}" alt="${escapeCmsHtml(collection.name)}">`
+                  : '🪐'
+              }
+            </div>
+
+            <h3>${escapeCmsHtml(collection.name)}</h3>
+            <p>${escapeCmsHtml(collection.description || '')}</p>
+
+            <a class="btn primary" href="/collections/${escapeCmsHtml(collection.slug)}">
+              Vedi collezione
+            </a>
           </article>
         `,
       )
       .join('')
 
-    grids.forEach((grid) => {
+    collectionGrids.forEach((grid) => {
       grid.innerHTML = html
     })
   } catch {
-    grids.forEach((grid) => {
-      grid.textContent = 'Errore caricamento prodotti.'
+    collectionGrids.forEach((grid) => {
+      grid.textContent = 'Errore caricamento collezioni.'
     })
   }
 }
@@ -1069,7 +1556,8 @@ function renderCmsSections(sections) {
     .map(renderCmsSection)
     .join('')
 
-  hydrateProductGrids()
+    hydrateProductGrids()
+  hydrateCollectionGrids()
 }
 
 async function loadCmsSectionsFromD1(pageSlug = getCurrentPublicPageSlug()) {

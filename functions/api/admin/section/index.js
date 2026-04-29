@@ -109,6 +109,206 @@ const defaultDataByType = {
     button_url: '#',
   },
 
+  collection_grid: {
+    eyebrow: 'Collezioni',
+    title: 'Esplora le nostre collezioni.',
+    subtitle: 'Mostra una selezione di collezioni del catalogo con un layout premium e navigabile.',
+  },
+
+  featured_product: {
+    eyebrow: 'Prodotto in evidenza',
+    title: 'Il prodotto protagonista.',
+    subtitle: 'Metti in risalto un prodotto specifico con una sezione dedicata.',
+    product_slug: '',
+    button_text: 'Scopri il prodotto',
+    button_url: '#',
+  },
+
+  product_spotlight: {
+    eyebrow: 'Spotlight',
+    title: 'Un prodotto pensato per distinguersi.',
+    text: 'Racconta un prodotto con una sezione visuale forte, descrizione editoriale e call to action.',
+    product_slug: '',
+    image_url: '',
+    button_text: 'Acquista ora',
+    button_url: '#',
+  },
+
+  product_carousel: {
+    eyebrow: 'Carousel prodotti',
+    title: 'Prodotti selezionati.',
+    subtitle: 'Una sezione per mostrare più prodotti in modo dinamico e commerciale.',
+    collection_slug: '',
+  },
+
+  best_sellers: {
+    eyebrow: 'Best sellers',
+    title: 'I più scelti dai clienti.',
+    subtitle: 'Evidenzia i prodotti più importanti, popolari o strategici del catalogo.',
+  },
+
+  new_arrivals: {
+    eyebrow: 'Novità',
+    title: 'Nuovi arrivi.',
+    subtitle: 'Mostra i prodotti più recenti o le ultime uscite del catalogo.',
+  },
+
+  trust_badges: {
+    eyebrow: 'Fiducia',
+    title: 'Acquista con sicurezza.',
+    badge_1_title: 'Pagamento sicuro',
+    badge_1_text: 'Transazioni protette e sistemi di pagamento affidabili.',
+    badge_2_title: 'Spedizione tracciata',
+    badge_2_text: 'Ogni ordine può essere monitorato fino alla consegna.',
+    badge_3_title: 'Supporto dedicato',
+    badge_3_text: 'Assistenza rapida prima e dopo l’acquisto.',
+    badge_4_title: 'Qualità garantita',
+    badge_4_text: 'Prodotti selezionati e controllati con cura.',
+  },
+
+  newsletter_signup: {
+    eyebrow: 'Newsletter',
+    title: 'Resta aggiornato.',
+    subtitle: 'Invita gli utenti a iscriversi per ricevere novità, offerte e contenuti esclusivi.',
+    placeholder: 'La tua email',
+    button_text: 'Iscriviti',
+    privacy_text: 'Niente spam. Solo aggiornamenti selezionati.',
+  },
+
+  promo_banner: {
+    eyebrow: 'Promo',
+    title: 'Offerta speciale per un periodo limitato.',
+    text: 'Usa questa sezione per evidenziare campagne, sconti, lanci o comunicazioni importanti.',
+    button_text: 'Scopri l’offerta',
+    button_url: '#',
+  },
+
+  countdown_promo: {
+    eyebrow: 'Limited drop',
+    title: 'La promo termina presto.',
+    text: 'Crea urgenza con una sezione countdown per offerte, lanci o eventi.',
+    target_date: '2026-12-31T23:59:00',
+    button_text: 'Approfitta ora',
+    button_url: '#',
+  },
+
+  logo_partners: {
+    eyebrow: 'Partner',
+    title: 'Scelto da brand e realtà ambiziose.',
+    subtitle: 'Mostra loghi, partner, clienti o collaborazioni importanti.',
+    logo_1_text: 'Partner One',
+    logo_2_text: 'Partner Two',
+    logo_3_text: 'Partner Three',
+    logo_4_text: 'Partner Four',
+    logo_5_text: 'Partner Five',
+  },
+
+  press_mentions: {
+    eyebrow: 'Press',
+    title: 'Parlano di noi.',
+    quote_1: 'Un progetto digitale con una qualità visiva fuori dal comune.',
+    source_1: 'Magazine One',
+    quote_2: 'Una nuova esperienza premium per il brand.',
+    source_2: 'Business Journal',
+    quote_3: 'Design, contenuto e tecnologia lavorano insieme.',
+    source_3: 'Digital Review',
+  },
+
+  awards_recognition: {
+    eyebrow: 'Awards',
+    title: 'Riconoscimenti e risultati.',
+    award_1_title: 'Design Excellence',
+    award_1_text: 'Premio o riconoscimento legato alla qualità visiva.',
+    award_2_title: 'Customer Choice',
+    award_2_text: 'Riconoscimento legato alla soddisfazione dei clienti.',
+    award_3_title: 'Innovation Award',
+    award_3_text: 'Risultato legato a innovazione, tecnologia o crescita.',
+  },
+
+  team_section: {
+    eyebrow: 'Team',
+    title: 'Le persone dietro il progetto.',
+    subtitle: 'Presenta membri del team, ruoli e competenze.',
+    member_1_name: 'Nome Cognome',
+    member_1_role: 'Founder',
+    member_1_image_url: '',
+    member_2_name: 'Nome Cognome',
+    member_2_role: 'Creative Director',
+    member_2_image_url: '',
+    member_3_name: 'Nome Cognome',
+    member_3_role: 'Operations',
+    member_3_image_url: '',
+  },
+
+  founder_section: {
+    eyebrow: 'Founder',
+    title: 'Una visione personale, trasformata in brand.',
+    text: 'Racconta la storia del founder, la visione e il motivo per cui il progetto esiste.',
+    founder_name: 'Nome Founder',
+    founder_role: 'Founder & CEO',
+    quote: 'Abbiamo creato questo progetto per offrire qualcosa che prima non esisteva.',
+    image_url: '',
+  },
+
+  services_grid: {
+    eyebrow: 'Servizi',
+    title: 'Cosa possiamo fare per te.',
+    subtitle: 'Mostra servizi, soluzioni o aree operative in una griglia ordinata.',
+    service_1_title: 'Strategia',
+    service_1_text: 'Analisi, posizionamento e direzione del progetto.',
+    service_2_title: 'Design',
+    service_2_text: 'Esperienza visiva custom e identità digitale premium.',
+    service_3_title: 'Sviluppo',
+    service_3_text: 'Codice, CMS, performance e integrazioni.',
+    service_4_title: 'Crescita',
+    service_4_text: 'Ottimizzazione, contenuti e miglioramento continuo.',
+  },
+
+  accordion_advanced: {
+    eyebrow: 'Approfondimenti',
+    title: 'Informazioni organizzate in modo chiaro.',
+    item_1_title: 'Dettaglio principale',
+    item_1_text: 'Testo espandibile per spiegare un punto importante.',
+    item_2_title: 'Secondo dettaglio',
+    item_2_text: 'Un altro contenuto organizzato in formato accordion.',
+    item_3_title: 'Terzo dettaglio',
+    item_3_text: 'Perfetto per FAQ avanzate, servizi o informazioni tecniche.',
+    item_4_title: 'Quarto dettaglio',
+    item_4_text: 'Aggiungi contenuti senza appesantire la pagina.',
+  },
+
+  tabs_section: {
+    eyebrow: 'Tabs',
+    title: 'Contenuti divisi per argomento.',
+    tab_1_label: 'Strategia',
+    tab_1_title: 'Strategia su misura',
+    tab_1_text: 'Contenuto del primo tab.',
+    tab_2_label: 'Design',
+    tab_2_title: 'Design premium',
+    tab_2_text: 'Contenuto del secondo tab.',
+    tab_3_label: 'Tecnologia',
+    tab_3_title: 'Tecnologia custom',
+    tab_3_text: 'Contenuto del terzo tab.',
+  },
+
+  video_spotlight: {
+    eyebrow: 'Video',
+    title: 'Racconta il brand con un video.',
+    text: 'Una sezione video premium per presentazioni, campagne, backstage o contenuti emozionali.',
+    video_url: '',
+    poster_url: '',
+    button_text: 'Guarda il video',
+    button_url: '#',
+  },
+
+  full_width_image: {
+    eyebrow: 'Visual',
+    title: 'Un’immagine a tutta larghezza.',
+    subtitle: 'Usa questa sezione per creare impatto visivo con una grande immagine editoriale.',
+    image_url: '',
+    caption: 'Caption immagine',
+  },
+
   product_grid: {
     eyebrow: 'Shop pre-lancio',
     title: 'Prodotti dal database',
