@@ -175,6 +175,74 @@ button {
   font-size: 14px;
 }
 
+.admin-records-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.admin-record {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    rgba(0, 0, 0, 0.22);
+}
+
+.admin-record-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.admin-record-head h3 {
+  margin: 0 0 6px;
+}
+
+.admin-record-head p,
+.admin-record-address {
+  margin: 0;
+  color: #b8b8d8;
+}
+
+.admin-record-head strong {
+  color: #00f5ff;
+  white-space: nowrap;
+}
+
+.admin-record details {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.admin-record summary {
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.admin-lines {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.admin-lines div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: #d8d8f0;
+}
+
+.admin-status-control {
+  max-width: 320px;
+}
+
 .variant-manager {
   margin: 24px 0;
   padding: 20px;

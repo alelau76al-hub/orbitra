@@ -727,6 +727,215 @@ function setupAdminViews() {
 setupAdminViews()
 
 // ===============================
+// ORDINI
+// ===============================
+
+const ordersList = document.querySelector('#ordersList')
+const refreshOrdersButton = document.querySelector('#refreshOrdersButton')
+
+function renderOrderStatusSelect(order) {
+  const statuses = [
+    ['new', 'Nuovo'],
+    ['paid', 'Pagato'],
+    ['processing', 'In lavorazione'],
+    ['shipped', 'Spedito'],
+    ['completed', 'Completato'],
+    ['cancelled', 'Annullato'],
+  ]
+
+  return `
+    <select data-order-status="${order.id}">
+      ${statuses
+        .map(
+          ([value, label]) => `
+            <option value="${value}" ${order.order_status === value ? 'selected' : ''}>
+              ${label}
+            </option>
+          `,
+        )
+        .join('')}
+    </select>
+  `
+}
+
+async function loadOrders() {
+  if (!ordersList) return
+
+  ordersList.textContent = 'Caricamento ordini...'
+
+  try {
+    const response = await fetch('/api/admin/orders')
+    const data = await response.json()
+
+    if (!data.success) {
+      ordersList.textContent = data.message || 'Errore caricamento ordini.'
+      return
+    }
+
+    if (!data.orders.length) {
+      ordersList.textContent = 'Nessun ordine trovato.'
+      return
+    }
+
+    ordersList.innerHTML = data.orders
+      .map(
+        (order) => `
+          <article class="admin-record">
+            <div class="admin-record-head">
+              <div>
+                <h3>Ordine #${order.id}</h3>
+                <p>${escapeHtml(order.customer_name || order.email || 'Cliente')}</p>
+              </div>
+              <strong>${formatMoney(order.total_cents || 0)}</strong>
+            </div>
+
+            <div class="meta">
+              <span>Pagamento: ${escapeHtml(order.payment_status || 'pending')}</span>
+              <span>Metodo: ${escapeHtml(order.payment_method || 'manual')}</span>
+              <span>Spedizione: ${escapeHtml(order.shipping_method || 'standard')}</span>
+              <span>${escapeHtml(order.created_at || '')}</span>
+            </div>
+
+            <div class="admin-record-address">
+              ${escapeHtml(order.shipping_address_line1 || '')}
+              ${escapeHtml(order.shipping_address_city || '')}
+              ${escapeHtml(order.shipping_address_postal_code || '')}
+              ${escapeHtml(order.shipping_address_country || '')}
+            </div>
+
+            <details>
+              <summary>Righe ordine (${order.items?.length || 0})</summary>
+              <div class="admin-lines">
+                ${(order.items || [])
+                  .map(
+                    (item) => `
+                      <div>
+                        <span>
+                          ${escapeHtml(item.product_name || item.product_slug || `Prodotto ${item.product_id}`)}
+                          ${item.variant_label ? ` · ${escapeHtml(item.variant_label)}` : ''}
+                        </span>
+                        <strong>${item.quantity} × ${formatMoney(item.price_cents || 0)}</strong>
+                      </div>
+                    `,
+                  )
+                  .join('')}
+              </div>
+            </details>
+
+            <label class="admin-status-control">
+              Stato ordine
+              ${renderOrderStatusSelect(order)}
+            </label>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-order-status]').forEach((select) => {
+      select.addEventListener('change', async () => {
+        const response = await fetch('/api/admin/orders', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Number(select.dataset.orderStatus),
+            order_status: select.value,
+          }),
+        })
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore aggiornamento ordine.')
+          await loadOrders()
+        }
+      })
+    })
+  } catch {
+    ordersList.textContent = 'Errore di connessione agli ordini.'
+  }
+}
+
+refreshOrdersButton?.addEventListener('click', loadOrders)
+loadOrders()
+
+// ===============================
+// CLIENTI
+// ===============================
+
+const customersList = document.querySelector('#customersList')
+const refreshCustomersButton = document.querySelector('#refreshCustomersButton')
+
+async function loadCustomers() {
+  if (!customersList) return
+
+  customersList.textContent = 'Caricamento clienti...'
+
+  try {
+    const response = await fetch('/api/admin/customers')
+    const data = await response.json()
+
+    if (!data.success) {
+      customersList.textContent = data.message || 'Errore caricamento clienti.'
+      return
+    }
+
+    if (!data.customers.length) {
+      customersList.textContent = 'Nessun cliente trovato.'
+      return
+    }
+
+    customersList.innerHTML = data.customers
+      .map(
+        (customer) => `
+          <article class="admin-record">
+            <div class="admin-record-head">
+              <div>
+                <h3>${escapeHtml(customer.name || customer.email)}</h3>
+                <p>${escapeHtml(customer.email)}</p>
+              </div>
+              <strong>${customer.orders?.length || 0} ordini</strong>
+            </div>
+
+            <div class="meta">
+              <span>Telefono: ${escapeHtml(customer.phone || 'N/D')}</span>
+              <span>${escapeHtml(customer.shipping_address_city || 'Città N/D')}</span>
+              <span>${escapeHtml(customer.shipping_address_country || 'Paese N/D')}</span>
+            </div>
+
+            <div class="admin-record-address">
+              ${escapeHtml(customer.shipping_address_line1 || '')}
+              ${escapeHtml(customer.shipping_address_postal_code || '')}
+            </div>
+
+            <details>
+              <summary>Storico ordini</summary>
+              <div class="admin-lines">
+                ${(customer.orders || [])
+                  .map(
+                    (order) => `
+                      <div>
+                        <span>Ordine #${order.id} · ${escapeHtml(order.order_status || 'new')}</span>
+                        <strong>${formatMoney(order.total_cents || 0)}</strong>
+                      </div>
+                    `,
+                  )
+                  .join('') || '<p>Nessun ordine collegato.</p>'}
+              </div>
+            </details>
+          </article>
+        `,
+      )
+      .join('')
+  } catch {
+    customersList.textContent = 'Errore di connessione ai clienti.'
+  }
+}
+
+refreshCustomersButton?.addEventListener('click', loadCustomers)
+loadCustomers()
+
+// ===============================
 // MENU
 // ===============================
 

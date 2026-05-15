@@ -31,13 +31,13 @@
           <small>Prodotti, collezioni, stock e immagini</small>
         </a>
 
-        <a class="hub-card disabled" href="#ordini">
+        <a class="hub-card" href="#ordini">
           <span>03</span>
           <strong>Ordini</strong>
           <small>Pagamenti, stato ordine e clienti</small>
         </a>
 
-        <a class="hub-card disabled" href="#clienti">
+        <a class="hub-card" href="#clienti">
           <span>04</span>
           <strong>Clienti</strong>
           <small>Profili, email, storico acquisti</small>
@@ -415,26 +415,38 @@
         </section>
       </section>
 
-      <section id="ordini" class="cms-area card placeholder-area admin-view" data-admin-view="ordini">
+      <section id="ordini" class="cms-area card admin-view" data-admin-view="ordini">
         <div class="section-title">
-          <h2>Ordini</h2>
-          <span class="status-badge">In arrivo</span>
+          <div>
+            <h2>Ordini</h2>
+            <p class="section-subtitle">
+              Lista ordini creati dal checkout, stato pagamento e avanzamento ordine.
+            </p>
+          </div>
+
+          <button id="refreshOrdersButton" type="button">Aggiorna</button>
         </div>
 
-        <p>
-          Qui gestiremo ordini, pagamenti, stato spedizione, cliente, totale e prodotti acquistati.
-        </p>
+        <div id="ordersList" class="admin-records-list">
+          Caricamento ordini...
+        </div>
       </section>
 
-      <section id="clienti" class="cms-area card placeholder-area admin-view" data-admin-view="clienti">
+      <section id="clienti" class="cms-area card admin-view" data-admin-view="clienti">
         <div class="section-title">
-          <h2>Clienti</h2>
-          <span class="status-badge">In arrivo</span>
+          <div>
+            <h2>Clienti</h2>
+            <p class="section-subtitle">
+              Anagrafiche generate dal checkout con indirizzo e storico ordini.
+            </p>
+          </div>
+
+          <button id="refreshCustomersButton" type="button">Aggiorna</button>
         </div>
 
-        <p>
-          Qui gestiremo profili cliente, email, storico acquisti, indirizzi e segmenti.
-        </p>
+        <div id="customersList" class="admin-records-list">
+          Caricamento clienti...
+        </div>
       </section>
 
       <section id="contenuto" class="cms-area card admin-view" data-admin-view="contenuto">

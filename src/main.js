@@ -322,8 +322,9 @@ document.querySelector('#app').innerHTML = `
       <strong id="cartTotal">€0</strong>
     </div>
 
+    <a class="btn primary cart-checkout" href="/checkout">Vai al checkout</a>
     <p id="cartMessage" class="cart-message"></p>
-    <p class="cart-note">Checkout e pagamenti saranno aggiunti in un blocco successivo.</p>
+    <p class="cart-note">Pagamento manuale o simulato. Nessun pagamento reale viene elaborato.</p>
   </aside>
 `
 
@@ -504,10 +505,75 @@ function removeCartItem(key) {
   saveCart(getCart().filter((item) => item.key !== key))
 }
 
+function clearCart() {
+  saveCart([])
+}
+
+async function loadProductsForCart() {
+  if (productCache.size > 0) return [...productCache.values()]
+
+  const response = await fetch('/api/products')
+  const data = await response.json()
+
+  if (!response.ok || !data.success) {
+    throw new Error('Errore caricamento prodotti')
+  }
+
+  cacheProducts(data.products || [])
+
+  return data.products || []
+}
+
+function getDetailedCartItems() {
+  return getCart()
+    .map((item) => {
+      const product = productCache.get(item.productSlug)
+      if (!product) return null
+
+      const variant = getProductVariant(product, item.variantId)
+      const priceCents = getEffectivePriceCents(product, variant)
+      const stock = getEffectiveStock(product, variant)
+
+      return {
+        ...item,
+        product,
+        variant,
+        price_cents: priceCents,
+        stock,
+        line_total_cents: priceCents * Number(item.quantity || 1),
+      }
+    })
+    .filter(Boolean)
+}
+
+function calculateCartSubtotal(items = getDetailedCartItems()) {
+  return items.reduce((sum, item) => sum + Number(item.line_total_cents || 0), 0)
+}
+
+function getAvailableShippingMethods(methods = [], subtotalCents = 0) {
+  return methods.filter(
+    (method) => !method.free_over_cents || subtotalCents >= Number(method.free_over_cents),
+  )
+}
+
+function calculateShippingCost(methods = [], selectedHandle = '', subtotalCents = 0) {
+  const available = getAvailableShippingMethods(methods, subtotalCents)
+  const selected =
+    available.find((method) => method.handle === selectedHandle) ||
+    available[0] ||
+    methods[0]
+
+  return {
+    method: selected,
+    shipping_cents: selected ? Number(selected.price_cents || 0) : 0,
+  }
+}
+
 function renderCart() {
   const itemsContainer = document.querySelector('#cartItems')
   const countTarget = document.querySelector('#cartCount')
   const totalTarget = document.querySelector('#cartTotal')
+  const checkoutButton = document.querySelector('.cart-checkout')
 
   if (!itemsContainer || !countTarget || !totalTarget) return
 
@@ -520,8 +586,11 @@ function renderCart() {
   if (cart.length === 0) {
     itemsContainer.innerHTML = '<p class="cart-empty">Il carrello è vuoto.</p>'
     totalTarget.textContent = formatPriceCents(0)
+    if (checkoutButton) checkoutButton.classList.add('disabled')
     return
   }
+
+  if (checkoutButton) checkoutButton.classList.remove('disabled')
 
   itemsContainer.innerHTML = cart
     .map((item) => {
@@ -801,6 +870,13 @@ document.addEventListener('click', (event) => {
 
   if (event.target.closest('[data-cart-open]')) {
     openCart()
+    return
+  }
+
+  const checkoutLink = event.target.closest('.cart-checkout.disabled')
+  if (checkoutLink) {
+    event.preventDefault()
+    showCartMessage('Aggiungi almeno un prodotto prima del checkout.')
     return
   }
 
@@ -2304,6 +2380,294 @@ async function renderPublicProductPage() {
   }
 }
 
+async function loadShippingMethods() {
+  try {
+    const response = await fetch('/api/shipping')
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !Array.isArray(data.methods)) {
+      return []
+    }
+
+    return data.methods
+  } catch {
+    return []
+  }
+}
+
+function renderCheckoutSummary(items, shippingMethods, selectedHandle) {
+  const subtotalCents = calculateCartSubtotal(items)
+  const shipping = calculateShippingCost(shippingMethods, selectedHandle, subtotalCents)
+  const totalCents = subtotalCents + shipping.shipping_cents
+  const subtotalTarget = document.querySelector('#checkoutSubtotal')
+  const shippingTarget = document.querySelector('#checkoutShipping')
+  const totalTarget = document.querySelector('#checkoutTotal')
+
+  if (subtotalTarget) subtotalTarget.textContent = formatPriceCents(subtotalCents)
+  if (shippingTarget) shippingTarget.textContent = formatPriceCents(shipping.shipping_cents)
+  if (totalTarget) totalTarget.textContent = formatPriceCents(totalCents)
+}
+
+function renderOrderConfirmation(order) {
+  const main = document.querySelector('main')
+  if (!main) return
+
+  main.innerHTML = `
+    <section class="section checkout-confirmation">
+      <p class="eyebrow">Ordine creato</p>
+      <h1>Grazie, ordine #${escapeCmsHtml(order.id)} ricevuto.</h1>
+      <p>
+        Stato pagamento: ${escapeCmsHtml(order.payment_status)}.
+        Stato ordine: ${escapeCmsHtml(order.order_status)}.
+      </p>
+
+      <div class="checkout-confirmation-box">
+        <span>Totale ordine</span>
+        <strong>${formatPriceCents(order.total_cents)}</strong>
+        <small>Metodo pagamento: ${escapeCmsHtml(order.payment_method || 'manual')}</small>
+      </div>
+
+      <a class="btn primary" href="/">Torna al sito</a>
+    </section>
+  `
+}
+
+async function submitCheckoutForm(event, shippingMethods, detailedItems) {
+  event.preventDefault()
+
+  const form = event.currentTarget
+  const message = document.querySelector('#checkoutMessage')
+
+  if (!form.reportValidity()) return
+
+  if (getCart().length === 0) {
+    if (message) message.textContent = 'Il carrello è vuoto.'
+    return
+  }
+
+  const formData = new FormData(form)
+  const payload = {
+    customer: {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+    },
+    shipping_address: {
+      line1: formData.get('address_line1'),
+      city: formData.get('city'),
+      postal_code: formData.get('postal_code'),
+      country: formData.get('country'),
+    },
+    shipping_method: formData.get('shipping_method'),
+    payment_method: formData.get('payment_method'),
+    items: getCart().map((item) => ({
+      productSlug: item.productSlug,
+      variantId: item.variantId,
+      quantity: item.quantity,
+    })),
+  }
+
+  if (message) message.textContent = 'Creazione ordine in corso...'
+
+  try {
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+
+    if (!response.ok || !data.success) {
+      if (message) message.textContent = data.message || 'Errore creazione ordine.'
+      renderCheckoutSummary(detailedItems, shippingMethods, payload.shipping_method)
+      return
+    }
+
+    clearCart()
+    closeCart()
+    renderOrderConfirmation(data.order)
+  } catch {
+    if (message) message.textContent = 'Errore di connessione durante il checkout.'
+  }
+}
+
+async function renderPublicCheckoutPage() {
+  const path = window.location.pathname
+  if (path !== '/checkout') return
+
+  const main = document.querySelector('main')
+  if (!main) return
+
+  main.innerHTML = `
+    <section class="section checkout-page">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Checkout</p>
+        <h2>Caricamento checkout...</h2>
+        <p>Stiamo preparando riepilogo, spedizione e pagamento.</p>
+      </div>
+    </section>
+  `
+
+  try {
+    await loadProductsForCart()
+    const detailedItems = getDetailedCartItems()
+
+    if (getCart().length === 0 || detailedItems.length === 0) {
+      main.innerHTML = `
+        <section class="section checkout-empty">
+          <p class="eyebrow">Checkout</p>
+          <h1>Il carrello è vuoto</h1>
+          <p>Aggiungi almeno un prodotto prima di completare l'ordine.</p>
+          <a class="btn primary" href="/#shop">Vai allo shop</a>
+        </section>
+      `
+      return
+    }
+
+    const shippingMethods = await loadShippingMethods()
+    const subtotalCents = calculateCartSubtotal(detailedItems)
+    const methods = shippingMethods.length
+      ? shippingMethods
+      : [
+          {
+            handle: 'standard',
+            name: 'Spedizione standard',
+            description: 'Metodo standard disponibile come fallback.',
+            price_cents: 990,
+            free_over_cents: null,
+          },
+        ]
+    const availableMethods = getAvailableShippingMethods(methods, subtotalCents)
+    const defaultMethod = availableMethods[0] || methods[0]
+
+    main.innerHTML = `
+      <section class="section checkout-page">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">Checkout</p>
+          <h2>Completa l'ordine.</h2>
+          <p>Pagamento manuale o simulato. Nessuna transazione reale viene eseguita.</p>
+        </div>
+
+        <div class="checkout-layout">
+          <form id="checkoutForm" class="checkout-form">
+            <section>
+              <h3>Dati cliente</h3>
+              <label>Nome completo<input name="name" type="text" required></label>
+              <label>Email<input name="email" type="email" required></label>
+              <label>Telefono opzionale<input name="phone" type="tel"></label>
+            </section>
+
+            <section>
+              <h3>Indirizzo spedizione</h3>
+              <label>Indirizzo<input name="address_line1" type="text" required></label>
+              <label>Città<input name="city" type="text" required></label>
+              <label>CAP<input name="postal_code" type="text" required></label>
+              <label>Paese<input name="country" type="text" value="Italia" required></label>
+            </section>
+
+            <section>
+              <h3>Metodo spedizione</h3>
+              <div class="checkout-shipping-options">
+                ${methods
+                  .map((method) => {
+                    const isAvailable =
+                      !method.free_over_cents || subtotalCents >= Number(method.free_over_cents)
+                    return `
+                      <label class="checkout-option ${isAvailable ? '' : 'disabled'}">
+                        <input
+                          name="shipping_method"
+                          type="radio"
+                          value="${escapeCmsHtml(method.handle)}"
+                          ${defaultMethod?.handle === method.handle ? 'checked' : ''}
+                          ${isAvailable ? '' : 'disabled'}
+                        >
+                        <span>
+                          <strong>${escapeCmsHtml(method.name)}</strong>
+                          <small>
+                            ${escapeCmsHtml(method.description || '')}
+                            ${method.free_over_cents ? ` · sopra ${formatPriceCents(method.free_over_cents)}` : ''}
+                          </small>
+                        </span>
+                        <em>${formatPriceCents(method.price_cents)}</em>
+                      </label>
+                    `
+                  })
+                  .join('')}
+              </div>
+            </section>
+
+            <section>
+              <h3>Pagamento</h3>
+              <label>
+                Metodo pagamento
+                <select name="payment_method">
+                  <option value="manual">Pagamento manuale / pending</option>
+                  <option value="test_paid">Pagamento simulato riuscito</option>
+                  <option value="test_failed">Pagamento simulato fallito</option>
+                </select>
+              </label>
+            </section>
+
+            <button class="btn primary" type="submit">Crea ordine</button>
+            <p id="checkoutMessage" class="checkout-message"></p>
+          </form>
+
+          <aside class="checkout-summary">
+            <h3>Riepilogo</h3>
+            <div class="checkout-items">
+              ${detailedItems
+                .map(
+                  (item) => `
+                    <article>
+                      <div>
+                        <strong>${escapeCmsHtml(item.product.name)}</strong>
+                        ${item.variant ? `<span>${escapeCmsHtml(item.variant.option_name)}: ${escapeCmsHtml(item.variant.option_value)}</span>` : ''}
+                        <small>Quantità: ${item.quantity}</small>
+                      </div>
+                      <b>${formatPriceCents(item.line_total_cents)}</b>
+                    </article>
+                  `,
+                )
+                .join('')}
+            </div>
+
+            <div class="checkout-totals">
+              <span>Subtotale <strong id="checkoutSubtotal">${formatPriceCents(subtotalCents)}</strong></span>
+              <span>Spedizione <strong id="checkoutShipping">€0</strong></span>
+              <span class="grand-total">Totale <strong id="checkoutTotal">€0</strong></span>
+            </div>
+          </aside>
+        </div>
+      </section>
+    `
+
+    renderCheckoutSummary(detailedItems, methods, defaultMethod?.handle)
+
+    document.querySelectorAll('input[name="shipping_method"]').forEach((input) => {
+      input.addEventListener('change', () => {
+        renderCheckoutSummary(detailedItems, methods, input.value)
+      })
+    })
+
+    document
+      .querySelector('#checkoutForm')
+      ?.addEventListener('submit', (event) =>
+        submitCheckoutForm(event, methods, detailedItems),
+      )
+  } catch {
+    main.innerHTML = `
+      <section class="section checkout-empty">
+        <p class="eyebrow">Checkout</p>
+        <h1>Checkout non disponibile</h1>
+        <p>Non è stato possibile preparare il checkout.</p>
+        <a class="btn primary" href="/">Torna al sito</a>
+      </section>
+    `
+  }
+}
+
 async function renderPublicCmsPage() {
   const path = window.location.pathname
 
@@ -2368,6 +2732,11 @@ async function bootPublicRouting() {
 
   if (path.startsWith('/products/')) {
     await renderPublicProductPage()
+    return
+  }
+
+  if (path === '/checkout') {
+    await renderPublicCheckoutPage()
     return
   }
 
