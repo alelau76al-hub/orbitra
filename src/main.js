@@ -68,6 +68,7 @@ document.querySelector('#app').innerHTML = `
 </nav>
 
     <a class="nav-cta" href="#booking">Launch Pass</a>
+    <select class="market-selector" id="marketSelector" aria-label="Mercato" hidden></select>
     <button class="cart-toggle" type="button" data-cart-open>
       Carrello <span id="cartCount">0</span>
     </button>
@@ -350,6 +351,8 @@ function buildMenuItemUrl(item) {
 }
 
 const CART_STORAGE_KEY = 'orbitra_cart_v1'
+const ANALYTICS_SESSION_KEY = 'orbitra_analytics_session_v1'
+const MARKET_STORAGE_KEY = 'orbitra_market_v1'
 const productCache = new Map()
 
 function formatPriceCents(priceCents = 0) {
@@ -459,6 +462,59 @@ function calculateTaxSummary(subtotalCents, shippingCents, discountCents, taxSet
     tax_cents: taxCents,
     total_cents: taxableCents + taxCents,
     prices_include_tax: false,
+  }
+}
+
+function getAnalyticsSessionId() {
+  try {
+    let sessionId = localStorage.getItem(ANALYTICS_SESSION_KEY)
+
+    if (!sessionId) {
+      sessionId = `${Date.now()}-${Math.random().toString(16).slice(2)}`
+      localStorage.setItem(ANALYTICS_SESSION_KEY, sessionId)
+    }
+
+    return sessionId
+  } catch {
+    return ''
+  }
+}
+
+function trackAnalyticsEvent(eventType, details = {}) {
+  try {
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        event_type: eventType,
+        path: window.location.pathname,
+        entity_type: details.entity_type || '',
+        entity_id: details.entity_id || '',
+        session_id: getAnalyticsSessionId(),
+        metadata: details.metadata || {},
+      }),
+      keepalive: true,
+    }).catch(() => {})
+  } catch {
+    // Analytics non deve mai bloccare navigazione o acquisto.
+  }
+}
+
+function getSelectedMarket() {
+  try {
+    return JSON.parse(localStorage.getItem(MARKET_STORAGE_KEY) || 'null')
+  } catch {
+    return null
+  }
+}
+
+function saveSelectedMarket(market) {
+  try {
+    localStorage.setItem(MARKET_STORAGE_KEY, JSON.stringify(market))
+  } catch {
+    // Market selector resta opzionale.
   }
 }
 
@@ -587,6 +643,14 @@ function addProductToCart(productSlug, variantId = '', quantity = 1) {
 
   saveCart(cart)
   showCartMessage(`${product.name} aggiunto al carrello.`)
+  trackAnalyticsEvent('add_to_cart', {
+    entity_type: 'product',
+    entity_id: product.slug,
+    metadata: {
+      variant_id: selectedVariantId,
+      quantity: Number(quantity || 1),
+    },
+  })
   openCart()
 }
 
@@ -954,6 +1018,45 @@ async function loadPublicFooterMenu() {
 }
 
 loadPublicFooterMenu()
+
+async function loadPublicMarkets() {
+  const selector = document.querySelector('#marketSelector')
+  if (!selector) return
+
+  try {
+    const response = await fetch('/api/markets')
+    const data = await response.json()
+    const markets = data.success && Array.isArray(data.markets) ? data.markets : []
+
+    if (!markets.length) return
+
+    const selectedMarket = getSelectedMarket()
+    const fallbackMarket = data.default_market || markets[0]
+    const activeMarket =
+      markets.find((market) => market.handle === selectedMarket?.handle) || fallbackMarket
+
+    selector.innerHTML = markets
+      .map(
+        (market) => `
+          <option value="${escapeCmsHtml(market.handle)}" ${market.handle === activeMarket.handle ? 'selected' : ''}>
+            ${escapeCmsHtml(market.language_code?.toUpperCase() || 'IT')} / ${escapeCmsHtml(market.currency_code || 'EUR')}
+          </option>
+        `,
+      )
+      .join('')
+    selector.hidden = false
+    saveSelectedMarket(activeMarket)
+
+    selector.addEventListener('change', () => {
+      const market = markets.find((item) => item.handle === selector.value) || fallbackMarket
+      saveSelectedMarket(market)
+    })
+  } catch {
+    selector.hidden = true
+  }
+}
+
+loadPublicMarkets()
 
 document.addEventListener('click', (event) => {
   const addButton = event.target.closest('[data-add-to-cart]')
@@ -2422,6 +2525,10 @@ async function renderPublicProductPage() {
       description: product.description || 'Scheda prodotto Orbitra.',
       image: product.image_url || '',
     })
+    trackAnalyticsEvent('product_view', {
+      entity_type: 'product',
+      entity_id: product.slug,
+    })
 
     const collection = (collectionsData.collections || []).find(
       (item) => item.slug === product.collection_slug,
@@ -2700,6 +2807,14 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
 
     clearCart()
     closeCart()
+    trackAnalyticsEvent('order_created', {
+      entity_type: 'order',
+      entity_id: data.order?.id,
+      metadata: {
+        total_cents: data.order?.total_cents || 0,
+        payment_status: data.order?.payment_status || 'pending',
+      },
+    })
     renderOrderConfirmation(data.order)
   } catch {
     if (message) message.textContent = 'Errore di connessione durante il checkout.'
@@ -2745,6 +2860,13 @@ async function renderPublicCheckoutPage() {
       loadTaxSettings(),
     ])
     const subtotalCents = calculateCartSubtotal(detailedItems)
+    trackAnalyticsEvent('checkout_start', {
+      entity_type: 'checkout',
+      metadata: {
+        subtotal_cents: subtotalCents,
+        items_count: detailedItems.length,
+      },
+    })
     const methods = shippingMethods.length
       ? shippingMethods
       : [
@@ -2900,6 +3022,158 @@ async function renderPublicCheckoutPage() {
   }
 }
 
+function renderBlogDate(value = '') {
+  if (!value) return ''
+
+  try {
+    return new Date(value).toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+  } catch {
+    return ''
+  }
+}
+
+function renderBlogContent(content = '') {
+  return escapeCmsHtml(content)
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+    .join('')
+}
+
+async function renderPublicBlogPage() {
+  const path = window.location.pathname
+  if (path !== '/blog' && path !== '/blog/' && !path.startsWith('/blog/')) return
+
+  const main = document.querySelector('main')
+  if (!main) return
+
+  const slug = path.startsWith('/blog/') ? decodeURIComponent(path.replace('/blog/', '').replaceAll('/', '')) : ''
+
+  main.innerHTML = `
+    <section class="section blog-page">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Blog</p>
+        <h1>${slug ? 'Caricamento articolo...' : 'Caricamento blog...'}</h1>
+        <p>Contenuti editoriali dal CMS.</p>
+      </div>
+    </section>
+  `
+
+  try {
+    const response = await fetch(slug ? `/api/blog?slug=${encodeURIComponent(slug)}` : '/api/blog')
+    const data = await response.json()
+
+    if (slug) {
+      if (!response.ok || !data.success || !data.post) {
+        main.innerHTML = `
+          <section class="section blog-empty">
+            <p class="eyebrow">Blog</p>
+            <h1>Articolo non trovato</h1>
+            <p>Questo articolo non esiste o non e pubblicato.</p>
+            <a class="btn primary" href="/blog">Torna al blog</a>
+          </section>
+        `
+        applySeoMeta({}, {
+          title: 'Articolo non trovato | Orbitra',
+          description: 'Articolo blog non disponibile.',
+        })
+        return
+      }
+
+      const post = data.post
+      applySeoMeta(
+        {
+          meta_title: post.meta_title,
+          meta_description: post.meta_description,
+          og_image: post.og_image || post.image_url,
+        },
+        {
+          title: `${post.title} | Orbitra Blog`,
+          description: post.excerpt || 'Articolo blog Orbitra.',
+          image: post.image_url || '',
+        },
+      )
+
+      trackAnalyticsEvent('page_view', {
+        entity_type: 'blog_post',
+        entity_id: post.slug,
+      })
+
+      main.innerHTML = `
+        <article class="section blog-article">
+          ${
+            post.image_url
+              ? `<img class="blog-hero-image" src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}">`
+              : ''
+          }
+          <p class="eyebrow">Blog ${post.author ? `Â· ${escapeCmsHtml(post.author)}` : ''}</p>
+          <h1>${escapeCmsHtml(post.title)}</h1>
+          <p class="blog-date">${escapeCmsHtml(renderBlogDate(post.created_at))}</p>
+          <div class="blog-content">
+            ${renderBlogContent(post.content || post.excerpt || '')}
+          </div>
+          <a class="btn ghost" href="/blog">Tutti gli articoli</a>
+        </article>
+      `
+      return
+    }
+
+    const posts = data.posts || []
+    applySeoMeta({}, {
+      title: 'Blog | Orbitra',
+      description: 'Articoli e aggiornamenti dal CMS Orbitra.',
+    })
+
+    main.innerHTML = `
+      <section class="section blog-page">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">Blog</p>
+          <h1>Articoli e aggiornamenti.</h1>
+          <p>Una vista editoriale minima gestita dal CMS.</p>
+        </div>
+
+        ${
+          posts.length
+            ? `<div class="blog-grid">
+                ${posts
+                  .map(
+                    (post) => `
+                      <article class="blog-card">
+                        <a class="blog-card-image" href="/blog/${escapeCmsHtml(post.slug)}">
+                          ${
+                            post.image_url
+                              ? `<img src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}">`
+                              : '<span>Blog</span>'
+                          }
+                        </a>
+                        <p class="eyebrow">${escapeCmsHtml(renderBlogDate(post.created_at))}</p>
+                        <h2><a href="/blog/${escapeCmsHtml(post.slug)}">${escapeCmsHtml(post.title)}</a></h2>
+                        <p>${escapeCmsHtml(post.excerpt || '')}</p>
+                        <a class="btn ghost" href="/blog/${escapeCmsHtml(post.slug)}">Leggi</a>
+                      </article>
+                    `,
+                  )
+                  .join('')}
+              </div>`
+            : '<p class="blog-empty-text">Nessun articolo pubblicato.</p>'
+        }
+      </section>
+    `
+  } catch {
+    main.innerHTML = `
+      <section class="section blog-empty">
+        <p class="eyebrow">Blog</p>
+        <h1>Blog non disponibile</h1>
+        <p>Non e stato possibile caricare gli articoli.</p>
+        <a class="btn primary" href="/">Torna al sito</a>
+      </section>
+    `
+  }
+}
+
 async function renderPublicCmsPage() {
   const path = window.location.pathname
 
@@ -2981,6 +3255,7 @@ async function applyHomeSeoMeta() {
 
 async function bootPublicRouting() {
   const path = window.location.pathname
+  trackAnalyticsEvent('page_view')
 
   if (path.startsWith('/collections/')) {
     await renderPublicCollectionPage()
@@ -2994,6 +3269,11 @@ async function bootPublicRouting() {
 
   if (path === '/checkout') {
     await renderPublicCheckoutPage()
+    return
+  }
+
+  if (path === '/blog' || path === '/blog/' || path.startsWith('/blog/')) {
+    await renderPublicBlogPage()
     return
   }
 

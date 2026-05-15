@@ -731,8 +731,8 @@ function setupAdminViews() {
     })
 
     const catalogoViews = ['prodotti', 'collezioni', 'stock']
-    const contenutoViews = ['pagine', 'menu', 'media', 'seo']
-    const impostazioniViews = ['metafields']
+    const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects']
+    const impostazioniViews = ['metafields', 'integrazioni', 'utenti', 'activity', 'notifiche']
 
     const activeHubHash = contenutoViews.includes(activeView)
       ? '#contenuto'
@@ -758,6 +758,342 @@ function setupAdminViews() {
 }
 
 setupAdminViews()
+
+function readJsonTextarea(selector, fallback = {}) {
+  const value = document.querySelector(selector)?.value.trim()
+  if (!value) return fallback
+
+  try {
+    return JSON.parse(value)
+  } catch {
+    throw new Error('JSON non valido.')
+  }
+}
+
+function stringifyForTextarea(value, fallback = {}) {
+  return JSON.stringify(value || fallback, null, 2)
+}
+
+// ===============================
+// BLOG
+// ===============================
+
+const blogPostForm = document.querySelector('#blogPostForm')
+const blogPostsList = document.querySelector('#blogPostsList')
+const blogMessage = document.querySelector('#blogMessage')
+const refreshBlogButton = document.querySelector('#refreshBlogButton')
+const blogPostFormTitle = document.querySelector('#blogPostFormTitle')
+const blogSubmitButton = document.querySelector('#blogSubmitButton')
+const cancelBlogEdit = document.querySelector('#cancelBlogEdit')
+
+function resetBlogForm() {
+  if (!blogPostForm) return
+  blogPostForm.reset()
+  document.querySelector('#blogPostId').value = ''
+  blogPostFormTitle.textContent = 'Aggiungi articolo'
+  blogSubmitButton.textContent = 'Salva articolo'
+  cancelBlogEdit.hidden = true
+  blogMessage.textContent = ''
+}
+
+function fillBlogForm(post) {
+  document.querySelector('#blogPostId').value = post.id
+  document.querySelector('#blogTitle').value = post.title || ''
+  document.querySelector('#blogSlug').value = post.slug || ''
+  document.querySelector('#blogExcerpt').value = post.excerpt || ''
+  document.querySelector('#blogContent').value = post.content || ''
+  document.querySelector('#blogImageUrl').value = post.image_url || ''
+  document.querySelector('#blogAuthor').value = post.author || ''
+  document.querySelector('#blogStatus').value = post.status || 'draft'
+  document.querySelector('#blogMetaTitle').value = post.meta_title || ''
+  document.querySelector('#blogMetaDescription').value = post.meta_description || ''
+  document.querySelector('#blogOgImage').value = post.og_image || ''
+  blogPostFormTitle.textContent = 'Modifica articolo'
+  blogSubmitButton.textContent = 'Aggiorna articolo'
+  cancelBlogEdit.hidden = false
+}
+
+function readBlogPayload() {
+  return {
+    id: document.querySelector('#blogPostId').value,
+    title: document.querySelector('#blogTitle').value.trim(),
+    slug: document.querySelector('#blogSlug').value.trim(),
+    excerpt: document.querySelector('#blogExcerpt').value.trim(),
+    content: document.querySelector('#blogContent').value.trim(),
+    image_url: document.querySelector('#blogImageUrl').value.trim(),
+    author: document.querySelector('#blogAuthor').value.trim(),
+    status: document.querySelector('#blogStatus').value,
+    meta_title: document.querySelector('#blogMetaTitle').value.trim(),
+    meta_description: document.querySelector('#blogMetaDescription').value.trim(),
+    og_image: document.querySelector('#blogOgImage').value.trim(),
+  }
+}
+
+async function loadBlogPosts() {
+  if (!blogPostsList) return
+  blogPostsList.textContent = 'Caricamento articoli...'
+
+  try {
+    const response = await fetch('/api/admin/blog')
+    const data = await response.json()
+
+    if (!data.success) {
+      blogPostsList.textContent = data.message || 'Errore caricamento blog.'
+      return
+    }
+
+    if (!data.posts.length) {
+      blogPostsList.textContent = 'Nessun articolo creato.'
+      return
+    }
+
+    blogPostsList.innerHTML = data.posts
+      .map(
+        (post) => `
+          <article class="product-item">
+            <h3>${escapeHtml(post.title)}</h3>
+            <p>${escapeHtml(post.excerpt || 'Nessun excerpt')}</p>
+            <div class="meta">
+              <span>Slug: ${escapeHtml(post.slug)}</span>
+              <span>${escapeHtml(post.status)}</span>
+              <span>${escapeHtml(post.author || 'Autore N/D')}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-blog="${post.id}">Modifica</button>
+              <a class="button-link" href="/blog/${escapeHtml(post.slug)}" target="_blank" rel="noreferrer">Apri</a>
+              <button type="button" class="danger" data-unpublish-blog="${post.id}">Bozza</button>
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-edit-blog]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const post = data.posts.find((item) => item.id === Number(button.dataset.editBlog))
+        fillBlogForm(post)
+      })
+    })
+
+    document.querySelectorAll('[data-unpublish-blog]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch('/api/admin/blog', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.unpublishBlog) }),
+        })
+        const result = await response.json()
+        if (!result.success) alert(result.message || 'Errore articolo.')
+        resetBlogForm()
+        loadBlogPosts()
+      })
+    })
+  } catch {
+    blogPostsList.textContent = 'Errore di connessione blog.'
+  }
+}
+
+blogPostForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  blogMessage.textContent = 'Salvataggio articolo...'
+  const payload = readBlogPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/blog', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    blogMessage.textContent = data.message || (data.success ? 'Articolo salvato.' : 'Errore articolo.')
+    if (data.success) {
+      resetBlogForm()
+      loadBlogPosts()
+    }
+  } catch {
+    blogMessage.textContent = 'Errore di connessione blog.'
+  }
+})
+
+cancelBlogEdit?.addEventListener('click', resetBlogForm)
+refreshBlogButton?.addEventListener('click', loadBlogPosts)
+loadBlogPosts()
+
+// ===============================
+// METAOBJECTS
+// ===============================
+
+const metaobjectDefinitionForm = document.querySelector('#metaobjectDefinitionForm')
+const metaobjectEntryForm = document.querySelector('#metaobjectEntryForm')
+const metaobjectsList = document.querySelector('#metaobjectsList')
+const metaobjectEntryDefinition = document.querySelector('#metaobjectEntryDefinition')
+const metaobjectDefinitionMessage = document.querySelector('#metaobjectDefinitionMessage')
+const metaobjectEntryMessage = document.querySelector('#metaobjectEntryMessage')
+const cancelMetaobjectEntryEdit = document.querySelector('#cancelMetaobjectEntryEdit')
+
+let metaobjectDefinitionsCache = []
+let metaobjectEntriesCache = []
+
+function renderMetaobjectDefinitionOptions() {
+  if (!metaobjectEntryDefinition) return
+  metaobjectEntryDefinition.innerHTML = metaobjectDefinitionsCache
+    .map((definition) => `<option value="${definition.id}">${escapeHtml(definition.name)}</option>`)
+    .join('')
+}
+
+function resetMetaobjectEntryForm() {
+  if (!metaobjectEntryForm) return
+  metaobjectEntryForm.reset()
+  document.querySelector('#metaobjectEntryId').value = ''
+  document.querySelector('#metaobjectEntryDataJson').value = '{}'
+  cancelMetaobjectEntryEdit.hidden = true
+  metaobjectEntryMessage.textContent = ''
+}
+
+function fillMetaobjectEntryForm(entry) {
+  document.querySelector('#metaobjectEntryId').value = entry.id
+  document.querySelector('#metaobjectEntryDefinition').value = entry.definition_id
+  document.querySelector('#metaobjectEntryTitle').value = entry.title || ''
+  document.querySelector('#metaobjectEntrySlug').value = entry.slug || ''
+  document.querySelector('#metaobjectEntryDataJson').value = stringifyForTextarea(entry.data, {})
+  cancelMetaobjectEntryEdit.hidden = false
+}
+
+async function loadMetaobjects() {
+  if (!metaobjectsList) return
+  metaobjectsList.textContent = 'Caricamento metaobjects...'
+
+  try {
+    const response = await fetch('/api/admin/metaobjects')
+    const data = await response.json()
+
+    if (!data.success) {
+      metaobjectsList.textContent = data.message || 'Errore metaobjects.'
+      return
+    }
+
+    metaobjectDefinitionsCache = data.definitions || []
+    metaobjectEntriesCache = data.entries || []
+    renderMetaobjectDefinitionOptions()
+
+    if (!metaobjectDefinitionsCache.length && !metaobjectEntriesCache.length) {
+      metaobjectsList.textContent = 'Nessun metaobject creato.'
+      return
+    }
+
+    metaobjectsList.innerHTML = `
+      ${metaobjectDefinitionsCache
+        .map(
+          (definition) => `
+            <article class="product-item">
+              <h3>${escapeHtml(definition.name)}</h3>
+              <p>Type key: ${escapeHtml(definition.type_key)}</p>
+              <div class="meta">
+                ${(definition.fields || [])
+                  .map((field) => `<span>${escapeHtml(field.label)}: ${escapeHtml(field.type)}</span>`)
+                  .join('')}
+              </div>
+            </article>
+          `,
+        )
+        .join('')}
+      ${metaobjectEntriesCache
+        .map(
+          (entry) => `
+            <article class="product-item">
+              <h3>${escapeHtml(entry.title)}</h3>
+              <p>${escapeHtml(entry.type_key)} / ${escapeHtml(entry.slug)}</p>
+              <div class="product-actions">
+                <button type="button" data-edit-metaobject-entry="${entry.id}">Modifica</button>
+                <button type="button" class="danger" data-delete-metaobject-entry="${entry.id}">Disattiva</button>
+              </div>
+            </article>
+          `,
+        )
+        .join('')}
+    `
+
+    document.querySelectorAll('[data-edit-metaobject-entry]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const entry = metaobjectEntriesCache.find((item) => item.id === Number(button.dataset.editMetaobjectEntry))
+        fillMetaobjectEntryForm(entry)
+      })
+    })
+
+    document.querySelectorAll('[data-delete-metaobject-entry]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/metaobjects', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'entry', id: Number(button.dataset.deleteMetaobjectEntry) }),
+        })
+        resetMetaobjectEntryForm()
+        loadMetaobjects()
+      })
+    })
+  } catch {
+    metaobjectsList.textContent = 'Errore di connessione metaobjects.'
+  }
+}
+
+metaobjectDefinitionForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  metaobjectDefinitionMessage.textContent = 'Salvataggio definizione...'
+
+  try {
+    const response = await fetch('/api/admin/metaobjects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'definition',
+        name: document.querySelector('#metaobjectName').value.trim(),
+        type_key: document.querySelector('#metaobjectTypeKey').value.trim(),
+        fields: readJsonTextarea('#metaobjectFieldsJson', []),
+      }),
+    })
+    const data = await response.json()
+    metaobjectDefinitionMessage.textContent = data.message || 'Definizione salvata.'
+    if (data.success) {
+      metaobjectDefinitionForm.reset()
+      loadMetaobjects()
+    }
+  } catch (error) {
+    metaobjectDefinitionMessage.textContent = error.message || 'Errore metaobject.'
+  }
+})
+
+metaobjectEntryForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  metaobjectEntryMessage.textContent = 'Salvataggio entry...'
+  const id = document.querySelector('#metaobjectEntryId').value
+
+  try {
+    const response = await fetch('/api/admin/metaobjects', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'entry',
+        id,
+        definition_id: Number(document.querySelector('#metaobjectEntryDefinition').value),
+        title: document.querySelector('#metaobjectEntryTitle').value.trim(),
+        slug: document.querySelector('#metaobjectEntrySlug').value.trim(),
+        data: readJsonTextarea('#metaobjectEntryDataJson', {}),
+      }),
+    })
+    const data = await response.json()
+    metaobjectEntryMessage.textContent = data.message || 'Entry salvata.'
+    if (data.success) {
+      resetMetaobjectEntryForm()
+      loadMetaobjects()
+    }
+  } catch (error) {
+    metaobjectEntryMessage.textContent = error.message || 'Errore entry.'
+  }
+})
+
+cancelMetaobjectEntryEdit?.addEventListener('click', resetMetaobjectEntryForm)
+loadMetaobjects()
 
 // ===============================
 // TASSE / IVA
@@ -986,6 +1322,141 @@ discountForm?.addEventListener('submit', async (event) => {
 cancelDiscountEdit?.addEventListener('click', resetDiscountForm)
 refreshDiscountsButton?.addEventListener('click', loadDiscounts)
 loadDiscounts()
+
+// ===============================
+// CAMPAGNE MARKETING
+// ===============================
+
+const campaignForm = document.querySelector('#campaignForm')
+const campaignsList = document.querySelector('#campaignsList')
+const refreshCampaignsButton = document.querySelector('#refreshCampaignsButton')
+const campaignMessage = document.querySelector('#campaignMessage')
+const campaignFormTitle = document.querySelector('#campaignFormTitle')
+const campaignSubmitButton = document.querySelector('#campaignSubmitButton')
+const cancelCampaignEdit = document.querySelector('#cancelCampaignEdit')
+
+function resetCampaignForm() {
+  if (!campaignForm) return
+  campaignForm.reset()
+  document.querySelector('#campaignId').value = ''
+  document.querySelector('#campaignActive').checked = true
+  campaignFormTitle.textContent = 'Aggiungi campagna'
+  campaignSubmitButton.textContent = 'Salva campagna'
+  cancelCampaignEdit.hidden = true
+  campaignMessage.textContent = ''
+}
+
+function fillCampaignForm(campaign) {
+  document.querySelector('#campaignId').value = campaign.id
+  document.querySelector('#campaignTitle').value = campaign.title || ''
+  document.querySelector('#campaignDescription').value = campaign.description || ''
+  document.querySelector('#campaignDiscountCode').value = campaign.discount_code || ''
+  document.querySelector('#campaignStartsAt').value = campaign.starts_at || ''
+  document.querySelector('#campaignEndsAt').value = campaign.ends_at || ''
+  document.querySelector('#campaignActive').checked = Number(campaign.active) !== 0
+  campaignFormTitle.textContent = 'Modifica campagna'
+  campaignSubmitButton.textContent = 'Aggiorna campagna'
+  cancelCampaignEdit.hidden = false
+}
+
+function readCampaignPayload() {
+  return {
+    id: document.querySelector('#campaignId').value,
+    title: document.querySelector('#campaignTitle').value.trim(),
+    description: document.querySelector('#campaignDescription').value.trim(),
+    discount_code: document.querySelector('#campaignDiscountCode').value.trim(),
+    starts_at: document.querySelector('#campaignStartsAt').value,
+    ends_at: document.querySelector('#campaignEndsAt').value,
+    active: document.querySelector('#campaignActive').checked,
+  }
+}
+
+async function loadCampaigns() {
+  if (!campaignsList) return
+  campaignsList.textContent = 'Caricamento campagne...'
+
+  try {
+    const response = await fetch('/api/admin/marketing')
+    const data = await response.json()
+
+    if (!data.success) {
+      campaignsList.textContent = data.message || 'Errore caricamento campagne.'
+      return
+    }
+
+    if (!data.campaigns.length) {
+      campaignsList.textContent = 'Nessuna campagna creata.'
+      return
+    }
+
+    campaignsList.innerHTML = data.campaigns
+      .map(
+        (campaign) => `
+          <article class="product-item">
+            <h3>${escapeHtml(campaign.title)}</h3>
+            <p>${escapeHtml(campaign.description || 'Nessuna descrizione')}</p>
+            <div class="meta">
+              <span>${Number(campaign.active) === 0 ? 'Disattiva' : 'Attiva'}</span>
+              <span>Coupon: ${escapeHtml(campaign.discount_code || 'N/D')}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-campaign="${campaign.id}">Modifica</button>
+              <button type="button" class="danger" data-disable-campaign="${campaign.id}">Disattiva</button>
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-edit-campaign]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const campaign = data.campaigns.find((item) => item.id === Number(button.dataset.editCampaign))
+        fillCampaignForm(campaign)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-campaign]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/marketing', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableCampaign) }),
+        })
+        resetCampaignForm()
+        loadCampaigns()
+      })
+    })
+  } catch {
+    campaignsList.textContent = 'Errore di connessione campagne.'
+  }
+}
+
+campaignForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  campaignMessage.textContent = 'Salvataggio campagna...'
+  const payload = readCampaignPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/marketing', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    campaignMessage.textContent = data.message || 'Campagna salvata.'
+    if (data.success) {
+      resetCampaignForm()
+      loadCampaigns()
+    }
+  } catch {
+    campaignMessage.textContent = 'Errore di connessione campagne.'
+  }
+})
+
+cancelCampaignEdit?.addEventListener('click', resetCampaignForm)
+refreshCampaignsButton?.addEventListener('click', loadCampaigns)
+loadCampaigns()
 
 // ===============================
 // MEDIA MANAGER
@@ -1371,6 +1842,654 @@ saveMetafieldValuesButton?.addEventListener('click', async () => {
 })
 
 loadMetafieldResources()
+
+// ===============================
+// MARKETS
+// ===============================
+
+const marketForm = document.querySelector('#marketForm')
+const marketsList = document.querySelector('#marketsList')
+const marketMessage = document.querySelector('#marketMessage')
+const refreshMarketsButton = document.querySelector('#refreshMarketsButton')
+const marketFormTitle = document.querySelector('#marketFormTitle')
+const marketSubmitButton = document.querySelector('#marketSubmitButton')
+const cancelMarketEdit = document.querySelector('#cancelMarketEdit')
+
+function resetMarketForm() {
+  if (!marketForm) return
+  marketForm.reset()
+  document.querySelector('#marketId').value = ''
+  document.querySelector('#marketActive').checked = true
+  document.querySelector('#marketDefault').checked = false
+  marketFormTitle.textContent = 'Aggiungi mercato'
+  marketSubmitButton.textContent = 'Salva mercato'
+  cancelMarketEdit.hidden = true
+  marketMessage.textContent = ''
+}
+
+function fillMarketForm(market) {
+  document.querySelector('#marketId').value = market.id
+  document.querySelector('#marketName').value = market.name || ''
+  document.querySelector('#marketHandle').value = market.handle || ''
+  document.querySelector('#marketCountryCode').value = market.country_code || 'IT'
+  document.querySelector('#marketLanguageCode').value = market.language_code || 'it'
+  document.querySelector('#marketCurrencyCode').value = market.currency_code || 'EUR'
+  document.querySelector('#marketActive').checked = Number(market.active) !== 0
+  document.querySelector('#marketDefault').checked = Number(market.is_default) === 1
+  marketFormTitle.textContent = 'Modifica mercato'
+  marketSubmitButton.textContent = 'Aggiorna mercato'
+  cancelMarketEdit.hidden = false
+}
+
+function readMarketPayload() {
+  return {
+    id: document.querySelector('#marketId').value,
+    name: document.querySelector('#marketName').value.trim(),
+    handle: document.querySelector('#marketHandle').value.trim(),
+    country_code: document.querySelector('#marketCountryCode').value.trim(),
+    language_code: document.querySelector('#marketLanguageCode').value.trim(),
+    currency_code: document.querySelector('#marketCurrencyCode').value.trim(),
+    active: document.querySelector('#marketActive').checked,
+    is_default: document.querySelector('#marketDefault').checked,
+  }
+}
+
+async function loadMarketsAdmin() {
+  if (!marketsList) return
+  marketsList.textContent = 'Caricamento markets...'
+
+  try {
+    const response = await fetch('/api/admin/markets')
+    const data = await response.json()
+
+    if (!data.success) {
+      marketsList.textContent = data.message || 'Errore markets.'
+      return
+    }
+
+    if (!data.markets.length) {
+      marketsList.textContent = 'Nessun mercato.'
+      return
+    }
+
+    marketsList.innerHTML = data.markets
+      .map(
+        (market) => `
+          <article class="product-item">
+            <h3>${escapeHtml(market.name)}</h3>
+            <div class="meta">
+              <span>${escapeHtml(market.handle)}</span>
+              <span>${escapeHtml(market.country_code)} / ${escapeHtml(market.language_code)}</span>
+              <span>${escapeHtml(market.currency_code)}</span>
+              <span>${market.is_default ? 'Default' : 'Non default'}</span>
+              <span>${market.active ? 'Attivo' : 'Disattivo'}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-market="${market.id}">Modifica</button>
+              <button type="button" class="danger" data-disable-market="${market.id}">Disattiva</button>
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-edit-market]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const market = data.markets.find((item) => item.id === Number(button.dataset.editMarket))
+        fillMarketForm(market)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-market]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/markets', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableMarket) }),
+        })
+        resetMarketForm()
+        loadMarketsAdmin()
+      })
+    })
+  } catch {
+    marketsList.textContent = 'Errore di connessione markets.'
+  }
+}
+
+marketForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  marketMessage.textContent = 'Salvataggio mercato...'
+  const payload = readMarketPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/markets', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    marketMessage.textContent = data.message || 'Mercato salvato.'
+    if (data.success) {
+      resetMarketForm()
+      loadMarketsAdmin()
+    }
+  } catch {
+    marketMessage.textContent = 'Errore di connessione markets.'
+  }
+})
+
+cancelMarketEdit?.addEventListener('click', resetMarketForm)
+refreshMarketsButton?.addEventListener('click', loadMarketsAdmin)
+loadMarketsAdmin()
+
+// ===============================
+// ANALYTICS
+// ===============================
+
+const analyticsDashboard = document.querySelector('#analyticsDashboard')
+const refreshAnalyticsButton = document.querySelector('#refreshAnalyticsButton')
+
+async function loadAnalyticsDashboard() {
+  if (!analyticsDashboard) return
+  analyticsDashboard.textContent = 'Caricamento analytics...'
+
+  try {
+    const response = await fetch('/api/admin/analytics')
+    const data = await response.json()
+
+    if (!data.success) {
+      analyticsDashboard.textContent = data.message || 'Errore analytics.'
+      return
+    }
+
+    analyticsDashboard.innerHTML = `
+      <article class="admin-record">
+        <div class="admin-record-head">
+          <div>
+            <h3>Conteggi eventi</h3>
+            <p>Eventi registrati senza dati personali sensibili.</p>
+          </div>
+        </div>
+        <div class="meta">
+          ${(data.counts || [])
+            .map((item) => `<span>${escapeHtml(item.event_type)}: ${item.count}</span>`)
+            .join('') || '<span>Nessun evento</span>'}
+        </div>
+      </article>
+      ${(data.recent || [])
+        .map(
+          (event) => `
+            <article class="admin-record">
+              <div class="admin-record-head">
+                <div>
+                  <h3>${escapeHtml(event.event_type)}</h3>
+                  <p>${escapeHtml(event.path || '/')} ${event.entity_id ? `Â· ${escapeHtml(event.entity_id)}` : ''}</p>
+                </div>
+                <strong>${escapeHtml(event.created_at || '')}</strong>
+              </div>
+            </article>
+          `,
+        )
+        .join('')}
+    `
+  } catch {
+    analyticsDashboard.textContent = 'Errore di connessione analytics.'
+  }
+}
+
+refreshAnalyticsButton?.addEventListener('click', loadAnalyticsDashboard)
+loadAnalyticsDashboard()
+
+// ===============================
+// INTEGRAZIONI
+// ===============================
+
+const integrationForm = document.querySelector('#integrationForm')
+const integrationsList = document.querySelector('#integrationsList')
+const integrationMessage = document.querySelector('#integrationMessage')
+const refreshIntegrationsButton = document.querySelector('#refreshIntegrationsButton')
+const integrationFormTitle = document.querySelector('#integrationFormTitle')
+const integrationSubmitButton = document.querySelector('#integrationSubmitButton')
+const cancelIntegrationEdit = document.querySelector('#cancelIntegrationEdit')
+
+function resetIntegrationForm() {
+  if (!integrationForm) return
+  integrationForm.reset()
+  document.querySelector('#integrationId').value = ''
+  document.querySelector('#integrationConfigJson').value = '{}'
+  document.querySelector('#integrationActive').checked = true
+  integrationFormTitle.textContent = 'Aggiungi integrazione'
+  integrationSubmitButton.textContent = 'Salva integrazione'
+  cancelIntegrationEdit.hidden = true
+  integrationMessage.textContent = ''
+}
+
+function fillIntegrationForm(integration) {
+  document.querySelector('#integrationId').value = integration.id
+  document.querySelector('#integrationName').value = integration.name || ''
+  document.querySelector('#integrationType').value = integration.type || 'custom'
+  document.querySelector('#integrationWebhookUrl').value = integration.webhook_url || ''
+  document.querySelector('#integrationConfigJson').value = stringifyForTextarea(integration.config, {})
+  document.querySelector('#integrationActive').checked = Number(integration.active) !== 0
+  integrationFormTitle.textContent = 'Modifica integrazione'
+  integrationSubmitButton.textContent = 'Aggiorna integrazione'
+  cancelIntegrationEdit.hidden = false
+}
+
+async function loadIntegrations() {
+  if (!integrationsList) return
+  integrationsList.textContent = 'Caricamento integrazioni...'
+
+  try {
+    const response = await fetch('/api/admin/integrations')
+    const data = await response.json()
+
+    if (!data.success) {
+      integrationsList.textContent = data.message || 'Errore integrazioni.'
+      return
+    }
+
+    integrationsList.innerHTML = data.integrations.length
+      ? data.integrations
+          .map(
+            (integration) => `
+              <article class="product-item">
+                <h3>${escapeHtml(integration.name)}</h3>
+                <p>${escapeHtml(integration.webhook_url || 'Nessun webhook')}</p>
+                <div class="meta">
+                  <span>${escapeHtml(integration.type)}</span>
+                  <span>${integration.active ? 'Attiva' : 'Disattiva'}</span>
+                </div>
+                <div class="product-actions">
+                  <button type="button" data-edit-integration="${integration.id}">Modifica</button>
+                  <button type="button" class="danger" data-disable-integration="${integration.id}">Disattiva</button>
+                </div>
+              </article>
+            `,
+          )
+          .join('')
+      : 'Nessuna integrazione.'
+
+    document.querySelectorAll('[data-edit-integration]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const integration = data.integrations.find((item) => item.id === Number(button.dataset.editIntegration))
+        fillIntegrationForm(integration)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-integration]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/integrations', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableIntegration) }),
+        })
+        resetIntegrationForm()
+        loadIntegrations()
+      })
+    })
+  } catch {
+    integrationsList.textContent = 'Errore di connessione integrazioni.'
+  }
+}
+
+integrationForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  integrationMessage.textContent = 'Salvataggio integrazione...'
+  const id = document.querySelector('#integrationId').value
+
+  try {
+    const payload = {
+      id,
+      name: document.querySelector('#integrationName').value.trim(),
+      type: document.querySelector('#integrationType').value.trim(),
+      webhook_url: document.querySelector('#integrationWebhookUrl').value.trim(),
+      config: readJsonTextarea('#integrationConfigJson', {}),
+      active: document.querySelector('#integrationActive').checked,
+    }
+    const response = await fetch('/api/admin/integrations', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    integrationMessage.textContent = data.message || 'Integrazione salvata.'
+    if (data.success) {
+      resetIntegrationForm()
+      loadIntegrations()
+    }
+  } catch (error) {
+    integrationMessage.textContent = error.message || 'Errore integrazione.'
+  }
+})
+
+cancelIntegrationEdit?.addEventListener('click', resetIntegrationForm)
+refreshIntegrationsButton?.addEventListener('click', loadIntegrations)
+loadIntegrations()
+
+// ===============================
+// UTENTI / PERMESSI
+// ===============================
+
+const adminUserForm = document.querySelector('#adminUserForm')
+const adminUsersList = document.querySelector('#adminUsersList')
+const adminUserMessage = document.querySelector('#adminUserMessage')
+const refreshAdminUsersButton = document.querySelector('#refreshAdminUsersButton')
+const adminUserFormTitle = document.querySelector('#adminUserFormTitle')
+const adminUserSubmitButton = document.querySelector('#adminUserSubmitButton')
+const cancelAdminUserEdit = document.querySelector('#cancelAdminUserEdit')
+
+function resetAdminUserForm() {
+  if (!adminUserForm) return
+  adminUserForm.reset()
+  document.querySelector('#adminUserId').value = ''
+  document.querySelector('#adminUserActive').checked = true
+  adminUserFormTitle.textContent = 'Aggiungi utente'
+  adminUserSubmitButton.textContent = 'Salva utente'
+  cancelAdminUserEdit.hidden = true
+  adminUserMessage.textContent = ''
+}
+
+function fillAdminUserForm(user) {
+  document.querySelector('#adminUserId').value = user.id
+  document.querySelector('#adminUserName').value = user.name || ''
+  document.querySelector('#adminUserEmail').value = user.email || ''
+  document.querySelector('#adminUserRole').value = user.role || 'viewer'
+  document.querySelector('#adminUserActive').checked = Number(user.active) !== 0
+  adminUserFormTitle.textContent = 'Modifica utente'
+  adminUserSubmitButton.textContent = 'Aggiorna utente'
+  cancelAdminUserEdit.hidden = false
+}
+
+async function loadAdminUsers() {
+  if (!adminUsersList) return
+  adminUsersList.textContent = 'Caricamento utenti...'
+
+  try {
+    const response = await fetch('/api/admin/users')
+    const data = await response.json()
+
+    if (!data.success) {
+      adminUsersList.textContent = data.message || 'Errore utenti.'
+      return
+    }
+
+    adminUsersList.innerHTML = data.users.length
+      ? data.users
+          .map(
+            (user) => `
+              <article class="product-item">
+                <h3>${escapeHtml(user.name)}</h3>
+                <p>${escapeHtml(user.email)}</p>
+                <div class="meta">
+                  <span>${escapeHtml(user.role)}</span>
+                  <span>${user.active ? 'Attivo' : 'Disattivo'}</span>
+                </div>
+                <div class="product-actions">
+                  <button type="button" data-edit-admin-user="${user.id}">Modifica</button>
+                  <button type="button" class="danger" data-disable-admin-user="${user.id}">Disattiva</button>
+                </div>
+              </article>
+            `,
+          )
+          .join('')
+      : 'Nessun utente admin.'
+
+    document.querySelectorAll('[data-edit-admin-user]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const user = data.users.find((item) => item.id === Number(button.dataset.editAdminUser))
+        fillAdminUserForm(user)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-admin-user]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/users', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableAdminUser) }),
+        })
+        resetAdminUserForm()
+        loadAdminUsers()
+      })
+    })
+  } catch {
+    adminUsersList.textContent = 'Errore di connessione utenti.'
+  }
+}
+
+adminUserForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  adminUserMessage.textContent = 'Salvataggio utente...'
+  const id = document.querySelector('#adminUserId').value
+
+  try {
+    const response = await fetch('/api/admin/users', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        name: document.querySelector('#adminUserName').value.trim(),
+        email: document.querySelector('#adminUserEmail').value.trim(),
+        role: document.querySelector('#adminUserRole').value,
+        active: document.querySelector('#adminUserActive').checked,
+      }),
+    })
+    const data = await response.json()
+    adminUserMessage.textContent = data.message || 'Utente salvato.'
+    if (data.success) {
+      resetAdminUserForm()
+      loadAdminUsers()
+    }
+  } catch {
+    adminUserMessage.textContent = 'Errore di connessione utenti.'
+  }
+})
+
+cancelAdminUserEdit?.addEventListener('click', resetAdminUserForm)
+refreshAdminUsersButton?.addEventListener('click', loadAdminUsers)
+loadAdminUsers()
+
+// ===============================
+// ACTIVITY LOG
+// ===============================
+
+const activityLogList = document.querySelector('#activityLogList')
+const refreshActivityButton = document.querySelector('#refreshActivityButton')
+
+async function loadActivityLog() {
+  if (!activityLogList) return
+  activityLogList.textContent = 'Caricamento activity log...'
+
+  try {
+    const response = await fetch('/api/admin/activity')
+    const data = await response.json()
+
+    if (!data.success) {
+      activityLogList.textContent = data.message || 'Errore activity log.'
+      return
+    }
+
+    activityLogList.innerHTML = data.logs.length
+      ? data.logs
+          .map(
+            (log) => `
+              <article class="admin-record">
+                <div class="admin-record-head">
+                  <div>
+                    <h3>${escapeHtml(log.action)} / ${escapeHtml(log.entity_type)}</h3>
+                    <p>${escapeHtml(log.description || '')}</p>
+                  </div>
+                  <strong>${escapeHtml(log.created_at || '')}</strong>
+                </div>
+                <div class="meta"><span>ID: ${escapeHtml(log.entity_id || 'N/D')}</span></div>
+              </article>
+            `,
+          )
+          .join('')
+      : 'Nessun log.'
+  } catch {
+    activityLogList.textContent = 'Errore di connessione activity log.'
+  }
+}
+
+refreshActivityButton?.addEventListener('click', loadActivityLog)
+loadActivityLog()
+
+// ===============================
+// NOTIFICHE
+// ===============================
+
+const notificationForm = document.querySelector('#notificationForm')
+const notificationsList = document.querySelector('#notificationsList')
+const notificationMessage = document.querySelector('#notificationMessage')
+const refreshNotificationsButton = document.querySelector('#refreshNotificationsButton')
+const notificationFormTitle = document.querySelector('#notificationFormTitle')
+const notificationSubmitButton = document.querySelector('#notificationSubmitButton')
+const cancelNotificationEdit = document.querySelector('#cancelNotificationEdit')
+
+function resetNotificationForm() {
+  if (!notificationForm) return
+  notificationForm.reset()
+  document.querySelector('#notificationId').value = ''
+  document.querySelector('#notificationActive').checked = true
+  notificationFormTitle.textContent = 'Aggiungi template'
+  notificationSubmitButton.textContent = 'Salva template'
+  cancelNotificationEdit.hidden = true
+  notificationMessage.textContent = ''
+}
+
+function fillNotificationForm(template) {
+  document.querySelector('#notificationId').value = template.id
+  document.querySelector('#notificationType').value = template.type || 'generic'
+  document.querySelector('#notificationTitle').value = template.title || ''
+  document.querySelector('#notificationSubject').value = template.subject || ''
+  document.querySelector('#notificationBody').value = template.body || ''
+  document.querySelector('#notificationActive').checked = Number(template.active) !== 0
+  notificationFormTitle.textContent = 'Modifica template'
+  notificationSubmitButton.textContent = 'Aggiorna template'
+  cancelNotificationEdit.hidden = false
+}
+
+async function loadNotifications() {
+  if (!notificationsList) return
+  notificationsList.textContent = 'Caricamento notifiche...'
+
+  try {
+    const response = await fetch('/api/admin/notifications')
+    const data = await response.json()
+
+    if (!data.success) {
+      notificationsList.textContent = data.message || 'Errore notifiche.'
+      return
+    }
+
+    notificationsList.innerHTML = `
+      ${(data.templates || [])
+        .map(
+          (template) => `
+            <article class="product-item">
+              <h3>${escapeHtml(template.title)}</h3>
+              <p>${escapeHtml(template.subject || '')}</p>
+              <div class="meta">
+                <span>${escapeHtml(template.type)}</span>
+                <span>${template.active ? 'Attivo' : 'Disattivo'}</span>
+              </div>
+              <div class="product-actions">
+                <button type="button" data-edit-notification="${template.id}">Modifica</button>
+                <button type="button" data-send-notification-mock="${template.id}">Invio mock</button>
+                <button type="button" class="danger" data-disable-notification="${template.id}">Disattiva</button>
+              </div>
+            </article>
+          `,
+        )
+        .join('') || 'Nessun template.'}
+      ${(data.logs || [])
+        .slice(0, 5)
+        .map(
+          (log) => `
+            <article class="admin-record">
+              <div class="admin-record-head">
+                <div>
+                  <h3>Log ${escapeHtml(log.type)}</h3>
+                  <p>${escapeHtml(log.description || '')}</p>
+                </div>
+                <strong>${escapeHtml(log.created_at || '')}</strong>
+              </div>
+            </article>
+          `,
+        )
+        .join('')}
+    `
+
+    document.querySelectorAll('[data-edit-notification]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const template = data.templates.find((item) => item.id === Number(button.dataset.editNotification))
+        fillNotificationForm(template)
+      })
+    })
+
+    document.querySelectorAll('[data-send-notification-mock]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'send_mock', template_id: Number(button.dataset.sendNotificationMock) }),
+        })
+        loadNotifications()
+        loadActivityLog()
+      })
+    })
+
+    document.querySelectorAll('[data-disable-notification]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/notifications', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableNotification) }),
+        })
+        resetNotificationForm()
+        loadNotifications()
+      })
+    })
+  } catch {
+    notificationsList.textContent = 'Errore di connessione notifiche.'
+  }
+}
+
+notificationForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  notificationMessage.textContent = 'Salvataggio notifica...'
+  const id = document.querySelector('#notificationId').value
+
+  try {
+    const response = await fetch('/api/admin/notifications', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        type: document.querySelector('#notificationType').value,
+        title: document.querySelector('#notificationTitle').value.trim(),
+        subject: document.querySelector('#notificationSubject').value.trim(),
+        body: document.querySelector('#notificationBody').value.trim(),
+        active: document.querySelector('#notificationActive').checked,
+      }),
+    })
+    const data = await response.json()
+    notificationMessage.textContent = data.message || 'Notifica salvata.'
+    if (data.success) {
+      resetNotificationForm()
+      loadNotifications()
+    }
+  } catch {
+    notificationMessage.textContent = 'Errore di connessione notifiche.'
+  }
+})
+
+cancelNotificationEdit?.addEventListener('click', resetNotificationForm)
+refreshNotificationsButton?.addEventListener('click', loadNotifications)
+loadNotifications()
 
 // ===============================
 // ORDINI

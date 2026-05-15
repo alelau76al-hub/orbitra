@@ -55,13 +55,13 @@
           <small>Campagne, sconti, coupon e promo</small>
         </a>
 
-        <a class="hub-card disabled" href="#markets">
+        <a class="hub-card" href="#markets">
           <span>07</span>
           <strong>Markets</strong>
           <small>Lingue, valute, paesi e mercati</small>
         </a>
 
-        <a class="hub-card disabled" href="#analisi">
+        <a class="hub-card" href="#analisi">
           <span>08</span>
           <strong>Analisi</strong>
           <small>Vendite, traffico, conversioni e report</small>
@@ -501,10 +501,134 @@
             <p>Gestisci URL media, anteprime, alt text e asset riutilizzabili.</p>
           </a>
 
-          <article>
-            <h3>SEO</h3>
-            <p>Titoli, descrizioni, slug e dati per Google e social.</p>
-          </article>
+          <a class="mini-card" href="#blog-admin">
+            <h3>Blog</h3>
+            <p>Articoli pubblici, bozze, contenuti e SEO base.</p>
+          </a>
+
+          <a class="mini-card" href="#metaobjects">
+            <h3>Metaobjects</h3>
+            <p>Oggetti contenuto riutilizzabili e API pubblica read-only.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="blog-admin" class="cms-area card admin-view" data-admin-view="blog-admin">
+        <div class="section-title">
+          <div>
+            <h2>Blog</h2>
+            <p class="section-subtitle">Crea articoli blog con stato bozza/pubblicato e SEO base.</p>
+          </div>
+
+          <a class="back-link" href="#contenuto">â† Torna a Contenuto</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="blogPostForm" class="inner-card">
+            <h3 id="blogPostFormTitle">Aggiungi articolo</h3>
+            <input id="blogPostId" type="hidden" />
+
+            <label>Titolo</label>
+            <input id="blogTitle" type="text" placeholder="Nuovo articolo" required />
+
+            <label>Slug</label>
+            <input id="blogSlug" type="text" placeholder="nuovo-articolo" required />
+
+            <label>Excerpt</label>
+            <textarea id="blogExcerpt" placeholder="Sintesi articolo"></textarea>
+
+            <label>Contenuto</label>
+            <textarea id="blogContent" placeholder="Testo articolo"></textarea>
+
+            <label>URL immagine</label>
+            <input id="blogImageUrl" type="text" placeholder="https://..." />
+
+            <label>Autore opzionale</label>
+            <input id="blogAuthor" type="text" placeholder="Orbitra Team" />
+
+            <label>Status</label>
+            <select id="blogStatus">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+
+            <section class="seo-editor">
+              <h3>SEO</h3>
+              <label>Meta title</label>
+              <input id="blogMetaTitle" type="text" placeholder="Titolo SEO" />
+              <label>Meta description</label>
+              <textarea id="blogMetaDescription" placeholder="Descrizione SEO"></textarea>
+              <label>OG image</label>
+              <input id="blogOgImage" type="text" placeholder="https://..." />
+            </section>
+
+            <button id="blogSubmitButton" type="submit">Salva articolo</button>
+            <button id="cancelBlogEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="blogMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Articoli</h3>
+              <button id="refreshBlogButton" type="button">Aggiorna</button>
+            </div>
+            <div id="blogPostsList" class="products-list">Caricamento articoli...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="metaobjects" class="cms-area card admin-view" data-admin-view="metaobjects">
+        <div class="section-title">
+          <div>
+            <h2>Metaobjects</h2>
+            <p class="section-subtitle">Definizioni e entries riutilizzabili, senza references avanzate.</p>
+          </div>
+
+          <a class="back-link" href="#contenuto">â† Torna a Contenuto</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="metaobjectDefinitionForm" class="inner-card">
+            <h3>Definizione</h3>
+            <input id="metaobjectDefinitionId" type="hidden" />
+
+            <label>Nome</label>
+            <input id="metaobjectName" type="text" placeholder="Materiali" required />
+
+            <label>Type key</label>
+            <input id="metaobjectTypeKey" type="text" placeholder="materiali" required />
+
+            <label>Campi JSON</label>
+            <textarea id="metaobjectFieldsJson" placeholder='[{"key":"nome","label":"Nome","type":"text"}]' required></textarea>
+
+            <button id="metaobjectDefinitionSubmit" type="submit">Salva definizione</button>
+            <p id="metaobjectDefinitionMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <h3>Entry</h3>
+            <form id="metaobjectEntryForm">
+              <input id="metaobjectEntryId" type="hidden" />
+
+              <label>Definizione</label>
+              <select id="metaobjectEntryDefinition"></select>
+
+              <label>Titolo</label>
+              <input id="metaobjectEntryTitle" type="text" placeholder="Titanio" required />
+
+              <label>Slug</label>
+              <input id="metaobjectEntrySlug" type="text" placeholder="titanio" required />
+
+              <label>Dati JSON</label>
+              <textarea id="metaobjectEntryDataJson" placeholder='{"nome":"Titanio"}'></textarea>
+
+              <button id="metaobjectEntrySubmit" type="submit">Salva entry</button>
+              <button id="cancelMetaobjectEntryEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+              <p id="metaobjectEntryMessage"></p>
+            </form>
+
+            <div id="metaobjectsList" class="products-list">Caricamento metaobjects...</div>
+          </section>
         </div>
       </section>
 
@@ -735,28 +859,100 @@
             <div id="discountsList" class="products-list">Caricamento sconti...</div>
           </section>
         </div>
+
+        <div class="content-manager admin-subsection">
+          <form id="campaignForm" class="inner-card">
+            <h3 id="campaignFormTitle">Aggiungi campagna</h3>
+            <input id="campaignId" type="hidden" />
+
+            <label>Titolo campagna</label>
+            <input id="campaignTitle" type="text" placeholder="Promo lancio" required />
+
+            <label>Descrizione</label>
+            <textarea id="campaignDescription" placeholder="Descrizione campagna"></textarea>
+
+            <label>Codice coupon opzionale</label>
+            <input id="campaignDiscountCode" type="text" placeholder="WELCOME10" />
+
+            <label>Data inizio opzionale</label>
+            <input id="campaignStartsAt" type="datetime-local" />
+
+            <label>Data fine opzionale</label>
+            <input id="campaignEndsAt" type="datetime-local" />
+
+            <label class="inline-check">
+              <input id="campaignActive" type="checkbox" checked />
+              Attiva
+            </label>
+
+            <button id="campaignSubmitButton" type="submit">Salva campagna</button>
+            <button id="cancelCampaignEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="campaignMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Campagne</h3>
+              <button id="refreshCampaignsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="campaignsList" class="products-list">Caricamento campagne...</div>
+          </section>
+        </div>
       </section>
 
-      <section id="markets" class="cms-area card placeholder-area admin-view" data-admin-view="markets">
+      <section id="markets" class="cms-area card admin-view" data-admin-view="markets">
         <div class="section-title">
-          <h2>Markets</h2>
-          <span class="status-badge">In arrivo</span>
+          <div>
+            <h2>Markets</h2>
+            <p class="section-subtitle">Mercati MVP: paese, lingua, valuta, default e stato.</p>
+          </div>
+          <button id="refreshMarketsButton" type="button">Aggiorna</button>
         </div>
 
-        <p>
-          Qui gestiremo lingue, valute, paesi, mercati attivi e localizzazione del sito.
-        </p>
+        <div class="content-manager">
+          <form id="marketForm" class="inner-card">
+            <h3 id="marketFormTitle">Aggiungi mercato</h3>
+            <input id="marketId" type="hidden" />
+
+            <label>Nome</label>
+            <input id="marketName" type="text" placeholder="Italia / EUR" required />
+
+            <label>Handle</label>
+            <input id="marketHandle" type="text" placeholder="it-eur" required />
+
+            <label>Paese</label>
+            <input id="marketCountryCode" type="text" maxlength="2" placeholder="IT" />
+
+            <label>Lingua</label>
+            <input id="marketLanguageCode" type="text" placeholder="it" />
+
+            <label>Valuta</label>
+            <input id="marketCurrencyCode" type="text" maxlength="3" placeholder="EUR" />
+
+            <label class="inline-check"><input id="marketActive" type="checkbox" checked /> Attivo</label>
+            <label class="inline-check"><input id="marketDefault" type="checkbox" /> Default</label>
+
+            <button id="marketSubmitButton" type="submit">Salva mercato</button>
+            <button id="cancelMarketEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="marketMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div id="marketsList" class="products-list">Caricamento markets...</div>
+          </section>
+        </div>
       </section>
 
-      <section id="analisi" class="cms-area card placeholder-area admin-view" data-admin-view="analisi">
+      <section id="analisi" class="cms-area card admin-view" data-admin-view="analisi">
         <div class="section-title">
-          <h2>Analisi</h2>
-          <span class="status-badge">In arrivo</span>
+          <div>
+            <h2>Analisi</h2>
+            <p class="section-subtitle">Conteggi analytics MVP e ultimi eventi registrati.</p>
+          </div>
+          <button id="refreshAnalyticsButton" type="button">Aggiorna</button>
         </div>
 
-        <p>
-          Qui vedremo visite, vendite, conversioni, prodotti più visti e performance del negozio.
-        </p>
+        <div id="analyticsDashboard" class="admin-records-list">Caricamento analytics...</div>
       </section>
 
       <section id="checkout" class="cms-area card admin-view" data-admin-view="checkout">
@@ -803,10 +999,10 @@
       <p>Nome azienda, dati fiscali, email di sistema e informazioni store.</p>
     </article>
 
-    <article>
+    <a class="mini-card" href="#utenti">
       <h3>Utenti e permessi</h3>
-      <p>Account admin, ruoli, permessi e accessi collaboratori.</p>
-    </article>
+      <p>Base dati utenti admin e ruoli, senza login obbligatorio.</p>
+    </a>
 
     <article>
       <h3>Domini</h3>
@@ -823,10 +1019,20 @@
       <p>Dati custom per prodotti, collezioni e pagine.</p>
     </a>
 
-    <article>
-      <h3>Checkout</h3>
-      <p>Pagamenti, spedizioni, tasse, conferme ordine e impostazioni vendita.</p>
-    </article>
+    <a class="mini-card" href="#integrazioni">
+      <h3>Integrazioni</h3>
+      <p>App esterne, webhook URL e configurazioni non sensibili.</p>
+    </a>
+
+    <a class="mini-card" href="#activity">
+      <h3>Activity log</h3>
+      <p>Registro azioni admin importanti e modifiche recenti.</p>
+    </a>
+
+    <a class="mini-card" href="#notifiche">
+      <h3>Notifiche</h3>
+      <p>Template e invii mock senza provider email reale.</p>
+    </a>
   </div>
 </section>
 
@@ -890,6 +1096,136 @@
 
             <button id="saveMetafieldValuesButton" type="button">Salva valori</button>
             <p id="metafieldValuesMessage"></p>
+          </section>
+        </div>
+      </section>
+
+      <section id="integrazioni" class="cms-area card admin-view" data-admin-view="integrazioni">
+        <div class="section-title">
+          <div>
+            <h2>Integrazioni</h2>
+            <p class="section-subtitle">Configurazioni non sensibili e webhook URL opzionale.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">â† Torna a Impostazioni</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="integrationForm" class="inner-card">
+            <h3 id="integrationFormTitle">Aggiungi integrazione</h3>
+            <input id="integrationId" type="hidden" />
+            <label>Nome</label>
+            <input id="integrationName" type="text" placeholder="CRM" required />
+            <label>Tipo</label>
+            <input id="integrationType" type="text" placeholder="crm" required />
+            <label>Webhook URL opzionale</label>
+            <input id="integrationWebhookUrl" type="text" placeholder="https://..." />
+            <label>Config JSON non sensibile</label>
+            <textarea id="integrationConfigJson" placeholder='{"channel":"orders"}'></textarea>
+            <label class="inline-check"><input id="integrationActive" type="checkbox" checked /> Attiva</label>
+            <button id="integrationSubmitButton" type="submit">Salva integrazione</button>
+            <button id="cancelIntegrationEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="integrationMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Integrazioni</h3>
+              <button id="refreshIntegrationsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="integrationsList" class="products-list">Caricamento integrazioni...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="utenti" class="cms-area card admin-view" data-admin-view="utenti">
+        <div class="section-title">
+          <div>
+            <h2>Utenti / permessi</h2>
+            <p class="section-subtitle">Base dati ruoli admin. Non abilita login obbligatorio.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">â† Torna a Impostazioni</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="adminUserForm" class="inner-card">
+            <h3 id="adminUserFormTitle">Aggiungi utente</h3>
+            <input id="adminUserId" type="hidden" />
+            <label>Nome</label>
+            <input id="adminUserName" type="text" required />
+            <label>Email</label>
+            <input id="adminUserEmail" type="email" required />
+            <label>Ruolo</label>
+            <select id="adminUserRole">
+              <option value="owner">Owner</option>
+              <option value="admin">Admin</option>
+              <option value="editor">Editor</option>
+              <option value="viewer">Viewer</option>
+            </select>
+            <label class="inline-check"><input id="adminUserActive" type="checkbox" checked /> Attivo</label>
+            <button id="adminUserSubmitButton" type="submit">Salva utente</button>
+            <button id="cancelAdminUserEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="adminUserMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Utenti admin</h3>
+              <button id="refreshAdminUsersButton" type="button">Aggiorna</button>
+            </div>
+            <div id="adminUsersList" class="products-list">Caricamento utenti...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="activity" class="cms-area card admin-view" data-admin-view="activity">
+        <div class="section-title">
+          <div>
+            <h2>Activity log</h2>
+            <p class="section-subtitle">Ultime azioni registrate dalle nuove aree MVP.</p>
+          </div>
+          <button id="refreshActivityButton" type="button">Aggiorna</button>
+        </div>
+        <div id="activityLogList" class="admin-records-list">Caricamento activity log...</div>
+      </section>
+
+      <section id="notifiche" class="cms-area card admin-view" data-admin-view="notifiche">
+        <div class="section-title">
+          <div>
+            <h2>Notifiche</h2>
+            <p class="section-subtitle">Template e invii mock. Nessuna email reale viene inviata.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">â† Torna a Impostazioni</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="notificationForm" class="inner-card">
+            <h3 id="notificationFormTitle">Aggiungi template</h3>
+            <input id="notificationId" type="hidden" />
+            <label>Tipo</label>
+            <select id="notificationType">
+              <option value="order_created">order_created</option>
+              <option value="payment_pending">payment_pending</option>
+              <option value="customer_created">customer_created</option>
+              <option value="generic">generic</option>
+            </select>
+            <label>Titolo</label>
+            <input id="notificationTitle" type="text" required />
+            <label>Subject</label>
+            <input id="notificationSubject" type="text" required />
+            <label>Body</label>
+            <textarea id="notificationBody"></textarea>
+            <label class="inline-check"><input id="notificationActive" type="checkbox" checked /> Attivo</label>
+            <button id="notificationSubmitButton" type="submit">Salva template</button>
+            <button id="cancelNotificationEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="notificationMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Template e log</h3>
+              <button id="refreshNotificationsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="notificationsList" class="products-list">Caricamento notifiche...</div>
           </section>
         </div>
       </section>

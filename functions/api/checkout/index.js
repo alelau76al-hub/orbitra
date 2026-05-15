@@ -172,6 +172,32 @@ async function resolveDiscount(env, code, subtotalCents) {
   }
 }
 
+async function recordMockNotification(env, type, metadata = {}) {
+  try {
+    const template = await env.DB.prepare(`
+      SELECT id
+      FROM notification_templates
+      WHERE type = ? AND active = 1
+    `)
+      .bind(type)
+      .first()
+
+    await env.DB.prepare(`
+      INSERT INTO notification_logs (template_id, type, status, description, metadata_json)
+      VALUES (?, ?, 'mocked', ?, ?)
+    `)
+      .bind(
+        template?.id || null,
+        type,
+        `Notifica mock ${type} registrata dal checkout. Nessuna email reale inviata.`,
+        JSON.stringify(metadata),
+      )
+      .run()
+  } catch {
+    // Notifiche MVP opzionali: il checkout non deve fallire se la tabella manca.
+  }
+}
+
 function calculateTaxAndTotal(subtotalCents, shippingCents, discountCents, taxSettings) {
   const taxableBaseCents = Math.max(0, subtotalCents - discountCents + shippingCents)
   const taxRate = Math.max(0, Number(taxSettings.vat_rate || 0))
@@ -495,6 +521,12 @@ export async function onRequestPost({ request, env }) {
         )
         .run()
     }
+
+    await recordMockNotification(env, 'order_created', {
+      order_id: orderId,
+      total_cents: totalCents,
+      payment_status: paymentStatus,
+    })
 
     return json({
       success: true,

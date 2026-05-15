@@ -708,6 +708,11 @@ select:focus {
   align-items: start;
 }
 
+.admin-subsection {
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .inner-card {
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -855,10 +860,18 @@ button:disabled {
 }
 
 #discountMessage,
+#campaignMessage,
 #mediaMessage,
 #taxSettingsMessage,
 #metafieldDefinitionMessage,
-#metafieldValuesMessage {
+#metafieldValuesMessage,
+#blogMessage,
+#metaobjectDefinitionMessage,
+#metaobjectEntryMessage,
+#marketMessage,
+#integrationMessage,
+#adminUserMessage,
+#notificationMessage {
   min-height: 24px;
   color: #52ff9f;
   font-weight: bold;
