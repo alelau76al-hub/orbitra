@@ -850,8 +850,7 @@ input[type="range"] {
 .footer {
   position: relative;
   z-index: 2;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
   gap: 24px;
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto 28px;
@@ -862,6 +861,13 @@ input[type="range"] {
   background: rgba(255,255,255,.05);
 }
 
+.footer-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
 .footer p {
   margin: 0;
 }
@@ -869,6 +875,31 @@ input[type="range"] {
 .footer a {
   color: var(--cyan);
   font-weight: 900;
+}
+
+.footer-links,
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-links[hidden],
+.footer-social[hidden] {
+  display: none;
+}
+
+.footer-links a,
+.footer-social a {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.footer-links a:hover,
+.footer-social a:hover {
+  color: var(--cyan);
 }
 
 .reveal {
@@ -991,6 +1022,11 @@ input[type="range"] {
   }
 
   .footer {
+    gap: 18px;
+  }
+
+  .footer-main {
+    align-items: flex-start;
     flex-direction: column;
   }
 

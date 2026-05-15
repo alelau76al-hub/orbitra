@@ -293,8 +293,13 @@ document.querySelector('#app').innerHTML = `
   </main>
 
   <footer class="footer">
-    <p>ORBITRA © 2026 — Space travel for the impossible generation.</p>
-    <a href="#booking">Request launch access</a>
+    <div class="footer-main">
+      <p class="footer-text">ORBITRA © 2026 — Space travel for the impossible generation.</p>
+      <a class="footer-cta" href="#booking">Request launch access</a>
+    </div>
+
+    <nav class="footer-links" id="footerMenuLinks" aria-label="Menu footer" hidden></nav>
+    <div class="footer-social" id="footerSocialLinks" aria-label="Link social" hidden></div>
   </footer>
 `
 
@@ -317,6 +322,24 @@ function buildMenuItemUrl(item) {
   }
 
   return '#'
+}
+
+function renderPublicMenuLinks(container, items = []) {
+  if (!container || !items.length) return false
+
+  container.innerHTML = items
+    .map(
+      (item) => `
+        <a href="${escapeCmsHtml(buildMenuItemUrl(item))}">
+          ${escapeCmsHtml(item.label)}
+        </a>
+      `,
+    )
+    .join('')
+
+  container.hidden = false
+
+  return true
 }
 
 function settingsToMap(settings = []) {
@@ -376,8 +399,8 @@ function applyPublicFooter(settings) {
   const footer = document.querySelector('.footer')
   if (!footer) return
 
-  const footerText = footer.querySelector('p')
-  const footerCta = footer.querySelector('a')
+  const footerText = footer.querySelector('.footer-text')
+  const footerCta = footer.querySelector('.footer-cta')
   const text = settings.footer_text?.trim()
   const ctaText = settings.footer_cta_text?.trim()
   const ctaUrl = settings.footer_cta_url?.trim()
@@ -385,6 +408,36 @@ function applyPublicFooter(settings) {
   if (footerText && text) footerText.textContent = text
   if (footerCta && ctaText) footerCta.textContent = ctaText
   if (footerCta && ctaUrl) footerCta.setAttribute('href', ctaUrl)
+}
+
+function applyPublicSocialLinks(settings) {
+  const socialContainer = document.querySelector('#footerSocialLinks')
+  if (!socialContainer) return
+
+  const socialLinks = [
+    ['instagram_url', 'Instagram'],
+    ['linkedin_url', 'LinkedIn'],
+    ['youtube_url', 'YouTube'],
+  ]
+    .map(([key, label]) => ({
+      label,
+      url: settings[key]?.trim(),
+    }))
+    .filter((item) => item.url)
+
+  if (!socialLinks.length) return
+
+  socialContainer.innerHTML = socialLinks
+    .map(
+      (item) => `
+        <a href="${escapeCmsHtml(item.url)}" target="_blank" rel="noopener noreferrer">
+          ${escapeCmsHtml(item.label)}
+        </a>
+      `,
+    )
+    .join('')
+
+  socialContainer.hidden = false
 }
 
 function applyPublicThemeSettings(settings) {
@@ -398,6 +451,7 @@ function applyPublicThemeSettings(settings) {
   applyPublicLogo(settings)
   applyPublicHeaderCta(settings)
   applyPublicFooter(settings)
+  applyPublicSocialLinks(settings)
 }
 
 async function loadPublicThemeSettings() {
@@ -425,27 +479,37 @@ async function loadPublicMainMenu() {
     const response = await fetch('/api/menus?handle=main')
     const data = await response.json()
 
-    if (!data.success || !data.menus?.[0]?.items?.length) {
+    if (!response.ok || !data.success || !data.menus?.[0]?.items?.length) {
       return
     }
 
-    const menu = data.menus[0]
-
-    menuContainer.innerHTML = menu.items
-      .map(
-        (item) => `
-          <a href="${escapeCmsHtml(buildMenuItemUrl(item))}">
-            ${escapeCmsHtml(item.label)}
-          </a>
-        `,
-      )
-      .join('')
+    renderPublicMenuLinks(menuContainer, data.menus[0].items)
   } catch (error) {
     console.error('Errore caricamento menu principale:', error)
   }
 }
 
 loadPublicMainMenu()
+
+async function loadPublicFooterMenu() {
+  const menuContainer = document.querySelector('#footerMenuLinks')
+  if (!menuContainer) return
+
+  try {
+    const response = await fetch('/api/menus?handle=footer')
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !data.menus?.[0]?.items?.length) {
+      return
+    }
+
+    renderPublicMenuLinks(menuContainer, data.menus[0].items)
+  } catch (error) {
+    console.error('Errore caricamento menu footer:', error)
+  }
+}
+
+loadPublicFooterMenu()
 
 const grid = document.querySelector('#destinationGrid')
 
