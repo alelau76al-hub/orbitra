@@ -799,9 +799,40 @@ function setupAdminViews() {
       view.hidden = view.dataset.adminView !== activeView
     })
 
-    const catalogoViews = ['prodotti', 'collezioni', 'stock', 'import-export']
+    const catalogoViews = ['prodotti', 'collezioni', 'inventario', 'import-export']
     const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy']
+    const marketingViews = [
+      'marketing-campaigns',
+      'marketing-discounts',
+      'marketing-coupons',
+      'marketing-newsletter',
+    ]
+    const marketsViews = [
+      'markets-mercati',
+      'markets-paesi',
+      'markets-lingue',
+      'markets-valute',
+      'markets-prezzi',
+    ]
+    const analyticsViews = [
+      'analytics-dashboard',
+      'analytics-traffic',
+      'analytics-sales',
+      'analytics-products',
+      'analytics-conversions',
+    ]
+    const checkoutViews = [
+      'checkout-settings',
+      'checkout-payments',
+      'checkout-shipping',
+      'checkout-taxes',
+      'checkout-confirmation',
+    ]
     const impostazioniViews = [
+      'settings-general',
+      'privacy-settings',
+      'cookie-settings',
+      'settings-import-export',
       'metafields',
       'integrazioni',
       'utenti',
@@ -816,9 +847,17 @@ function setupAdminViews() {
       ? '#contenuto'
       : catalogoViews.includes(activeView)
         ? '#catalogo'
-        : impostazioniViews.includes(activeView)
-          ? '#impostazioni'
-          : `#${activeView}`
+        : marketingViews.includes(activeView)
+          ? '#marketing'
+          : marketsViews.includes(activeView)
+            ? '#markets'
+            : analyticsViews.includes(activeView)
+              ? '#analisi'
+              : checkoutViews.includes(activeView)
+                ? '#checkout'
+                : impostazioniViews.includes(activeView)
+                  ? '#impostazioni'
+                  : `#${activeView}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)

@@ -664,6 +664,14 @@ select:focus {
   font-weight: 900;
 }
 
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .mini-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -775,10 +783,27 @@ button:disabled {
     background 0.2s ease;
 }
 
+.mini-card.placeholder-card {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .mini-card:hover {
   transform: translateY(-3px);
   border-color: rgba(0, 245, 255, 0.55);
   background: rgba(0, 245, 255, 0.08);
+}
+
+.mini-card-status {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #52ff9f;
+  background: rgba(82, 255, 159, 0.1);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .mini-card h3 {
@@ -790,6 +815,26 @@ button:disabled {
   color: #b8b8d8;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.placeholder-panel {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.placeholder-panel p {
+  margin: 14px 0 0;
+  color: #b8b8d8;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .section-actions {
+    justify-content: flex-start;
+  }
 }
 
 .button-link {

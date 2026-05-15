@@ -22,13 +22,13 @@
         <a class="hub-card active" href="#editor">
           <span>01</span>
           <strong>Editor sito</strong>
-          <small>Homepage, sezioni visuali e preview live</small>
+          <small>Homepage, sezioni visuali, tema e preview live</small>
         </a>
 
         <a class="hub-card" href="#catalogo">
           <span>02</span>
           <strong>Catalogo</strong>
-          <small>Prodotti, collezioni, stock e immagini</small>
+          <small>Prodotti, collezioni, varianti e inventario</small>
         </a>
 
         <a class="hub-card" href="#ordini">
@@ -58,7 +58,7 @@
         <a class="hub-card" href="#markets">
           <span>07</span>
           <strong>Markets</strong>
-          <small>Lingue, valute, paesi e mercati</small>
+          <small>Mercati, paesi, lingue, valute e prezzi</small>
         </a>
 
         <a class="hub-card" href="#analisi">
@@ -70,13 +70,13 @@
         <a class="hub-card" href="#checkout">
           <span>09</span>
           <strong>Check-out</strong>
-          <small>Stripe, spedizioni, tasse e pagamenti</small>
+          <small>Checkout, pagamenti, spedizioni, IVA e conferma</small>
         </a>
 
         <a class="hub-card" href="#impostazioni">
           <span>10</span>
           <strong>Impostazioni</strong>
-          <small>Dominio, utenti, notifiche e privacy</small>
+          <small>Generali, domini, utenti, privacy e operativita</small>
         </a>
       </section>
 
@@ -252,20 +252,40 @@
             <p>Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
           </a>
 
+          <a class="mini-card" href="#prodotti">
+            <span class="mini-card-status">Nel prodotto</span>
+            <h3>Varianti</h3>
+            <p>Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#inventario">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Inventario</h3>
+            <p>Vista dedicata a scorte, disponibilita e movimenti futuri.</p>
+          </a>
+
           <a class="mini-card" href="#import-export">
-            <h3>Import / Export</h3>
+            <h3>Import / Export prodotti</h3>
             <p>Esporta dati e importa prodotti con validazione e dry-run.</p>
           </a>
 
-          <article>
-            <h3>Stock</h3>
-            <p>Gestione futura delle scorte avanzate, quantità e disponibilità.</p>
-          </article>
+        </div>
+      </section>
 
-          <article>
-            <h3>Immagini</h3>
-            <p>Gestione futura di gallery prodotto, copertine e media catalogo.</p>
-          </article>
+      <section id="inventario" class="cms-area card placeholder-area admin-view" data-admin-view="inventario">
+        <div class="section-title">
+          <div>
+            <h2>Inventario</h2>
+            <p class="section-subtitle">
+              Vista futura per scorte avanzate, movimenti e disponibilita per variante.
+            </p>
+          </div>
+          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
+        </div>
+
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Lo stock base resta gestito nel form prodotto. La vista inventario dedicata arrivera quando serviranno movimenti, filtri e soglie.</p>
         </div>
       </section>
 
@@ -565,6 +585,29 @@
             <h3>Policy</h3>
             <p>Privacy, termini, resi, spedizioni e cookie policy pubbliche.</p>
           </a>
+
+          <a class="mini-card placeholder-card" href="#seo">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>SEO</h3>
+            <p>Vista centrale futura per metadati, canonical e anteprime social.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="seo" class="cms-area card placeholder-area admin-view" data-admin-view="seo">
+        <div class="section-title">
+          <div>
+            <h2>SEO</h2>
+            <p class="section-subtitle">
+              Vista centrale per SEO prodotto, collezione e pagina.
+            </p>
+          </div>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
+        </div>
+
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>I campi SEO esistenti restano nei form di prodotti, collezioni e pagine. Questa vista servira per audit e gestione centralizzata.</p>
         </div>
       </section>
 
@@ -915,11 +958,50 @@
           <div>
             <h2>Marketing</h2>
             <p class="section-subtitle">
+              Campagne, sconti, coupon e automazioni future organizzate per area.
+            </p>
+          </div>
+          <span class="status-badge">Hub</span>
+        </div>
+
+        <div class="mini-grid">
+          <a class="mini-card" href="#marketing-campaigns">
+            <h3>Campagne</h3>
+            <p>Crea e modifica campagne MVP con date e coupon opzionale.</p>
+          </a>
+
+          <a class="mini-card" href="#marketing-discounts">
+            <h3>Sconti</h3>
+            <p>Gestisci codici sconto percentuali o a importo fisso.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#marketing-coupons">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Coupon</h3>
+            <p>Area dedicata ai coupon avanzati; oggi i codici vivono in Sconti.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#marketing-newsletter">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Newsletter / Automazioni</h3>
+            <p>Base futura per flussi email, segmenti e automazioni.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="marketing-discounts" class="cms-area card admin-view" data-admin-view="marketing-discounts">
+        <div class="section-title">
+          <div>
+            <h2>Sconti</h2>
+            <p class="section-subtitle">
               Gestione MVP di codici sconto percentuali o a importo fisso.
             </p>
           </div>
 
-          <button id="refreshDiscountsButton" type="button">Aggiorna</button>
+          <div class="section-actions">
+            <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
+            <button id="refreshDiscountsButton" type="button">Aggiorna</button>
+          </div>
         </div>
 
         <div class="content-manager">
@@ -968,7 +1050,20 @@
           </section>
         </div>
 
-        <div class="content-manager admin-subsection">
+      </section>
+
+      <section id="marketing-campaigns" class="cms-area card admin-view" data-admin-view="marketing-campaigns">
+        <div class="section-title">
+          <div>
+            <h2>Campagne</h2>
+            <p class="section-subtitle">
+              Campagne marketing base con stato attivo, date e codice coupon opzionale.
+            </p>
+          </div>
+          <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
+        </div>
+
+        <div class="content-manager">
           <form id="campaignForm" class="inner-card">
             <h3 id="campaignFormTitle">Aggiungi campagna</h3>
             <input id="campaignId" type="hidden" />
@@ -1008,13 +1103,89 @@
         </div>
       </section>
 
+      <section id="marketing-coupons" class="cms-area card placeholder-area admin-view" data-admin-view="marketing-coupons">
+        <div class="section-title">
+          <div>
+            <h2>Coupon</h2>
+            <p class="section-subtitle">Area dedicata a coupon avanzati e regole promozionali future.</p>
+          </div>
+          <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
+        </div>
+
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Per ora i coupon semplici sono gestiti come codici sconto nella sezione Sconti.</p>
+        </div>
+      </section>
+
+      <section id="marketing-newsletter" class="cms-area card placeholder-area admin-view" data-admin-view="marketing-newsletter">
+        <div class="section-title">
+          <div>
+            <h2>Newsletter / Automazioni</h2>
+            <p class="section-subtitle">Predisposizione futura per newsletter, segmenti e automazioni.</p>
+          </div>
+          <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
+        </div>
+
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Nessun invio email reale viene configurato qui finche non esiste un provider sicuro.</p>
+        </div>
+      </section>
+
       <section id="markets" class="cms-area card admin-view" data-admin-view="markets">
         <div class="section-title">
           <div>
             <h2>Markets</h2>
+            <p class="section-subtitle">
+              Mercati, paesi, lingue, valute e prezzi localizzati separati in viste operative.
+            </p>
+          </div>
+          <span class="status-badge">Hub</span>
+        </div>
+
+        <div class="mini-grid">
+          <a class="mini-card" href="#markets-mercati">
+            <h3>Mercati</h3>
+            <p>Gestisci mercato default, paese, lingua, valuta e stato.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#markets-paesi">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Paesi</h3>
+            <p>Zone paese e regole di disponibilita dedicate.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#markets-lingue">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Lingue</h3>
+            <p>Lingue supportate e fallback contenuti.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#markets-valute">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Valute</h3>
+            <p>Valute, formati e tassi futuri senza cambio prezzi reale.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#markets-prezzi">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Prezzi localizzati</h3>
+            <p>Listini e prezzi per mercato quando il modello dati sara pronto.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="markets-mercati" class="cms-area card admin-view" data-admin-view="markets-mercati">
+        <div class="section-title">
+          <div>
+            <h2>Mercati</h2>
             <p class="section-subtitle">Mercati MVP: paese, lingua, valuta, default e stato.</p>
           </div>
-          <button id="refreshMarketsButton" type="button">Aggiorna</button>
+          <div class="section-actions">
+            <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+            <button id="refreshMarketsButton" type="button">Aggiorna</button>
+          </div>
         </div>
 
         <div class="content-manager">
@@ -1051,16 +1222,174 @@
         </div>
       </section>
 
+      <section id="markets-paesi" class="cms-area card placeholder-area admin-view" data-admin-view="markets-paesi">
+        <div class="section-title">
+          <div>
+            <h2>Paesi</h2>
+            <p class="section-subtitle">Configurazione paese e zone di disponibilita per mercato.</p>
+          </div>
+          <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Oggi il paese e salvato nel singolo mercato. La vista dedicata arrivera con regole paese piu granulari.</p>
+        </div>
+      </section>
+
+      <section id="markets-lingue" class="cms-area card placeholder-area admin-view" data-admin-view="markets-lingue">
+        <div class="section-title">
+          <div>
+            <h2>Lingue</h2>
+            <p class="section-subtitle">Lingue supportate, fallback e traduzioni future.</p>
+          </div>
+          <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>La lingua base e salvata nel mercato. Traduzioni e contenuti localizzati restano fuori da questo cleanup.</p>
+        </div>
+      </section>
+
+      <section id="markets-valute" class="cms-area card placeholder-area admin-view" data-admin-view="markets-valute">
+        <div class="section-title">
+          <div>
+            <h2>Valute</h2>
+            <p class="section-subtitle">Valute e formati monetari per mercati futuri.</p>
+          </div>
+          <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>La valuta base e salvata nel mercato. Tassi, conversioni e arrotondamenti arriveranno in un blocco dedicato.</p>
+        </div>
+      </section>
+
+      <section id="markets-prezzi" class="cms-area card placeholder-area admin-view" data-admin-view="markets-prezzi">
+        <div class="section-title">
+          <div>
+            <h2>Prezzi localizzati</h2>
+            <p class="section-subtitle">Listini per mercato e prezzi localizzati futuri.</p>
+          </div>
+          <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>I prodotti mantengono il prezzo unico attuale. Questa area servira per listini localizzati quando il database sara esteso.</p>
+        </div>
+      </section>
+
       <section id="analisi" class="cms-area card admin-view" data-admin-view="analisi">
         <div class="section-title">
           <div>
             <h2>Analisi</h2>
+            <p class="section-subtitle">
+              Dashboard analytics, traffico, vendite, prodotti e conversioni separati.
+            </p>
+          </div>
+          <span class="status-badge">Hub</span>
+        </div>
+
+        <div class="mini-grid">
+          <a class="mini-card" href="#analytics-dashboard">
+            <h3>Dashboard</h3>
+            <p>Conteggi MVP e ultimi eventi analytics raccolti.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#analytics-traffic">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Traffico</h3>
+            <p>Page view, sorgenti e percorsi utenti futuri.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#analytics-sales">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Vendite</h3>
+            <p>Ricavi, ordini e trend vendita dedicati.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#analytics-products">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Prodotti</h3>
+            <p>Performance prodotti, visualizzazioni e add to cart.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#analytics-conversions">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Conversioni</h3>
+            <p>Funnel carrello, checkout e ordine completato.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="analytics-dashboard" class="cms-area card admin-view" data-admin-view="analytics-dashboard">
+        <div class="section-title">
+          <div>
+            <h2>Dashboard analisi</h2>
             <p class="section-subtitle">Conteggi analytics MVP e ultimi eventi registrati.</p>
           </div>
-          <button id="refreshAnalyticsButton" type="button">Aggiorna</button>
+          <div class="section-actions">
+            <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
+            <button id="refreshAnalyticsButton" type="button">Aggiorna</button>
+          </div>
         </div>
 
         <div id="analyticsDashboard" class="admin-records-list">Caricamento analytics...</div>
+      </section>
+
+      <section id="analytics-traffic" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-traffic">
+        <div class="section-title">
+          <div>
+            <h2>Traffico</h2>
+            <p class="section-subtitle">Vista futura per sorgenti, sessioni e page view aggregate.</p>
+          </div>
+          <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Gli eventi page_view sono gia raccolti nella dashboard MVP. La segmentazione traffico resta futura.</p>
+        </div>
+      </section>
+
+      <section id="analytics-sales" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-sales">
+        <div class="section-title">
+          <div>
+            <h2>Vendite</h2>
+            <p class="section-subtitle">Vista futura per ricavi, ordini e andamento vendite.</p>
+          </div>
+          <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Gli ordini restano nella sezione Ordini. Qui arrivera il reporting vendite aggregato.</p>
+        </div>
+      </section>
+
+      <section id="analytics-products" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-products">
+        <div class="section-title">
+          <div>
+            <h2>Prodotti</h2>
+            <p class="section-subtitle">Vista futura per prodotti piu visti, aggiunti al carrello e venduti.</p>
+          </div>
+          <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Gli eventi product_view e add_to_cart sono raccolti a livello base. L'analisi per prodotto resta da aggregare.</p>
+        </div>
+      </section>
+
+      <section id="analytics-conversions" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-conversions">
+        <div class="section-title">
+          <div>
+            <h2>Conversioni</h2>
+            <p class="section-subtitle">Vista futura per funnel carrello, checkout e ordini creati.</p>
+          </div>
+          <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>La dashboard MVP mostra eventi recenti; il funnel completo verra costruito con metriche dedicate.</p>
+        </div>
       </section>
 
       <section id="checkout" class="cms-area card admin-view" data-admin-view="checkout">
@@ -1068,9 +1397,53 @@
           <div>
             <h2>Check-out</h2>
             <p class="section-subtitle">
+              Configurazioni checkout organizzate per impostazioni, pagamenti, spedizioni, IVA e conferma ordine.
+            </p>
+          </div>
+          <span class="status-badge">Hub</span>
+        </div>
+
+        <div class="mini-grid">
+          <a class="mini-card placeholder-card" href="#checkout-settings">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Checkout settings</h3>
+            <p>Campi richiesti, note e opzioni checkout future.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#checkout-payments">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Pagamenti</h3>
+            <p>Modalita manuale/test oggi, provider reali in futuro.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#checkout-shipping">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Spedizioni</h3>
+            <p>Metodi e soglie spedizione future lato admin.</p>
+          </a>
+
+          <a class="mini-card" href="#checkout-taxes">
+            <h3>Tasse / IVA</h3>
+            <p>Aliquota IVA base e prezzi inclusi o esclusi.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#checkout-confirmation">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Conferma ordine</h3>
+            <p>Testi, contenuti e notifiche della conferma ordine.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="checkout-taxes" class="cms-area card admin-view" data-admin-view="checkout-taxes">
+        <div class="section-title">
+          <div>
+            <h2>Tasse / IVA</h2>
+            <p class="section-subtitle">
               Configurazione fiscale MVP usata dal riepilogo checkout.
             </p>
           </div>
+          <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
 
         <form id="taxSettingsForm" class="inner-card settings-form-compact">
@@ -1089,75 +1462,196 @@
         </form>
       </section>
 
-      <section id="impostazioni" class="cms-area card placeholder-area admin-view" data-admin-view="impostazioni">
-  <div class="section-title">
-    <div>
-      <h2>Impostazioni admin</h2>
-      <p class="section-subtitle">
-        Area futura per configurazioni generali del negozio, utenti, domini, privacy, metafields e checkout.
-      </p>
-    </div>
+      <section id="checkout-settings" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-settings">
+        <div class="section-title">
+          <div>
+            <h2>Checkout settings</h2>
+            <p class="section-subtitle">Impostazioni checkout generali, campi richiesti e note operative.</p>
+          </div>
+          <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Il checkout pubblico resta quello esistente. Questa vista raccogliera opzioni admin senza cambiare il flusso live.</p>
+        </div>
+      </section>
 
-    <span class="status-badge">In arrivo</span>
-  </div>
+      <section id="checkout-payments" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-payments">
+        <div class="section-title">
+          <div>
+            <h2>Pagamenti</h2>
+            <p class="section-subtitle">Provider pagamento, modalita test/manuale e stato integrazioni future.</p>
+          </div>
+          <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>La modalita manual/test payment continua a funzionare. Nessuna chiave o provider reale viene configurato in questo cleanup.</p>
+        </div>
+      </section>
 
-  <div class="mini-grid">
-    <article>
-      <h3>Generali</h3>
-      <p>Nome azienda, dati fiscali, email di sistema e informazioni store.</p>
-    </article>
+      <section id="checkout-shipping" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-shipping">
+        <div class="section-title">
+          <div>
+            <h2>Spedizioni</h2>
+            <p class="section-subtitle">Metodi, soglie e zone spedizione da gestire in una UI dedicata futura.</p>
+          </div>
+          <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Il checkout mantiene i fallback spedizione esistenti. La configurazione admin completa resta futura.</p>
+        </div>
+      </section>
 
-    <a class="mini-card" href="#utenti">
-      <h3>Utenti e permessi</h3>
-      <p>Base dati utenti admin e ruoli, senza login obbligatorio.</p>
-    </a>
+      <section id="checkout-confirmation" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-confirmation">
+        <div class="section-title">
+          <div>
+            <h2>Conferma ordine</h2>
+            <p class="section-subtitle">Messaggi post-ordine, contenuti conferma e azioni future.</p>
+          </div>
+          <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>La conferma ordine pubblica resta invariata. Qui arriveranno testi e opzioni configurabili.</p>
+        </div>
+      </section>
 
-    <article>
-      <h3>Domini</h3>
-      <p>Dominio cliente, sottodomini, redirect e ambiente live.</p>
-    </article>
+      <section id="impostazioni" class="cms-area card admin-view" data-admin-view="impostazioni">
+        <div class="section-title">
+          <div>
+            <h2>Impostazioni admin</h2>
+            <p class="section-subtitle">
+              Configurazioni generali, accessi, domini, privacy e operativita del CMS.
+            </p>
+          </div>
 
-    <article>
-      <h3>Privacy</h3>
-      <p>Cookie, GDPR, consensi, privacy policy e termini.</p>
-    </article>
+          <span class="status-badge">Hub</span>
+        </div>
 
-    <a class="mini-card" href="#metafields">
-      <h3>Metafields</h3>
-      <p>Dati custom per prodotti, collezioni e pagine.</p>
-    </a>
+        <div class="mini-grid">
+          <a class="mini-card placeholder-card" href="#settings-general">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Generali</h3>
+            <p>Nome azienda, dati fiscali, email di sistema e informazioni store.</p>
+          </a>
 
-    <a class="mini-card" href="#integrazioni">
-      <h3>Integrazioni</h3>
-      <p>App esterne, webhook URL e configurazioni non sensibili.</p>
-    </a>
+          <a class="mini-card" href="#utenti">
+            <h3>Utenti e permessi</h3>
+            <p>Base dati utenti admin e ruoli, senza login obbligatorio.</p>
+          </a>
 
-    <a class="mini-card" href="#activity">
-      <h3>Activity log</h3>
-      <p>Registro azioni admin importanti e modifiche recenti.</p>
-    </a>
+          <a class="mini-card" href="#domini">
+            <h3>Domini</h3>
+            <p>Dominio primario, redirect, preview e note DNS documentali.</p>
+          </a>
 
-    <a class="mini-card" href="#notifiche">
-      <h3>Notifiche</h3>
-      <p>Template e invii mock senza provider email reale.</p>
-    </a>
+          <a class="mini-card placeholder-card" href="#privacy-settings">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Privacy</h3>
+            <p>Consensi, GDPR e raccordo con le policy pubbliche.</p>
+          </a>
 
-    <a class="mini-card" href="#domini">
-      <h3>Domini</h3>
-      <p>Base documentale per dominio primario, redirect e preview.</p>
-    </a>
+          <a class="mini-card placeholder-card" href="#cookie-settings">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Cookie</h3>
+            <p>Preferenze cookie e banner consenso futuri.</p>
+          </a>
 
-    <a class="mini-card" href="#tenants">
-      <h3>Multi-cliente</h3>
-      <p>Tenant default e predisposizione futura senza migrare dati.</p>
-    </a>
+          <a class="mini-card" href="#metafields">
+            <h3>Metafields</h3>
+            <p>Dati custom per prodotti, collezioni e pagine.</p>
+          </a>
 
-    <a class="mini-card" href="#performance">
-      <h3>Performance</h3>
-      <p>Checklist produzione, cache e fallback pubblici.</p>
-    </a>
-  </div>
-</section>
+          <a class="mini-card" href="#notifiche">
+            <h3>Notifiche</h3>
+            <p>Template e invii mock senza provider email reale.</p>
+          </a>
+
+          <a class="mini-card placeholder-card" href="#settings-import-export">
+            <span class="mini-card-status">In arrivo</span>
+            <h3>Import / Export</h3>
+            <p>Area impostazioni futura per backup e trasferimenti globali.</p>
+          </a>
+
+          <a class="mini-card" href="#tenants">
+            <h3>Multi-cliente</h3>
+            <p>Tenant default e predisposizione futura senza migrare dati.</p>
+          </a>
+
+          <a class="mini-card" href="#performance">
+            <h3>Performance</h3>
+            <p>Checklist produzione, cache e fallback pubblici.</p>
+          </a>
+
+          <a class="mini-card" href="#integrazioni">
+            <h3>Integrazioni</h3>
+            <p>App esterne, webhook URL e configurazioni non sensibili.</p>
+          </a>
+
+          <a class="mini-card" href="#activity">
+            <h3>Activity log</h3>
+            <p>Registro azioni admin importanti e modifiche recenti.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="settings-general" class="cms-area card placeholder-area admin-view" data-admin-view="settings-general">
+        <div class="section-title">
+          <div>
+            <h2>Generali</h2>
+            <p class="section-subtitle">Dati store, azienda, email operative e informazioni fiscali future.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Le impostazioni tema restano nel drawer dell'editor visuale. Qui arriveranno le impostazioni generali di negozio.</p>
+        </div>
+      </section>
+
+      <section id="privacy-settings" class="cms-area card placeholder-area admin-view" data-admin-view="privacy-settings">
+        <div class="section-title">
+          <div>
+            <h2>Privacy</h2>
+            <p class="section-subtitle">Consensi, GDPR e collegamento alle policy pubbliche.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>Le privacy policy pubbliche sono gestite in Contenuto > Policy. Questa vista servira per consensi e impostazioni privacy.</p>
+        </div>
+      </section>
+
+      <section id="cookie-settings" class="cms-area card placeholder-area admin-view" data-admin-view="cookie-settings">
+        <div class="section-title">
+          <div>
+            <h2>Cookie</h2>
+            <p class="section-subtitle">Banner, preferenze e categorie cookie future.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>La cookie policy e gestita tra le Policy. Il banner consenso non viene aggiunto in questo cleanup.</p>
+        </div>
+      </section>
+
+      <section id="settings-import-export" class="cms-area card placeholder-area admin-view" data-admin-view="settings-import-export">
+        <div class="section-title">
+          <div>
+            <h2>Import / Export impostazioni</h2>
+            <p class="section-subtitle">Backup e trasferimenti globali futuri per configurazioni CMS.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
+        </div>
+        <div class="placeholder-panel">
+          <span class="status-badge">In arrivo</span>
+          <p>L'import/export operativo dei prodotti resta in Catalogo. Questa vista separera in futuro configurazioni e backup globali.</p>
+        </div>
+      </section>
 
       <section id="metafields" class="cms-area card admin-view" data-admin-view="metafields">
         <div class="section-title">
