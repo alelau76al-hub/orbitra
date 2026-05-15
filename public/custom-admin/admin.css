@@ -177,7 +177,7 @@ button {
 
 .variant-manager {
   margin: 24px 0;
-  padding: 18px;
+  padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.04);
@@ -185,45 +185,119 @@ button {
 
 .variant-manager .section-title {
   align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
 }
 
 .variant-manager h3 {
   margin: 0 0 6px;
 }
 
+.variant-manager .section-subtitle {
+  max-width: 620px;
+}
+
+.variant-manager #addVariantButton {
+  flex-shrink: 0;
+  width: auto;
+  min-height: 42px;
+  margin: 0;
+  white-space: nowrap;
+}
+
 .variant-list {
   display: grid;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 16px;
+  margin-top: 18px;
 }
 
 .variant-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
-  gap: 10px;
-  align-items: end;
-  padding: 14px;
+  grid-template-columns:
+    minmax(180px, 1.1fr)
+    minmax(180px, 1.1fr)
+    minmax(160px, 0.95fr)
+    minmax(150px, 0.85fr)
+    minmax(130px, 0.75fr);
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    rgba(0, 0, 0, 0.2);
 }
 
 .variant-row label {
+  display: grid;
+  gap: 8px;
   margin: 0;
+  min-width: 0;
+  color: #b8b8d8;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .variant-row input {
-  min-height: 42px;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.variant-row [data-remove-variant] {
+  grid-column: 1 / -1;
+  justify-self: end;
+  width: auto;
+  min-height: 40px;
+  margin: 2px 0 0;
+  padding: 10px 16px;
+  white-space: nowrap;
 }
 
 .empty-variants {
   margin: 0;
+  padding: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
   color: #b8b8d8;
+  background: rgba(0, 0, 0, 0.16);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
   .variant-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+
+  .variant-row label:nth-of-type(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .variant-manager {
+    padding: 16px;
+  }
+
+  .variant-manager .section-title {
+    display: grid;
+  }
+
+  .variant-manager #addVariantButton {
+    justify-self: start;
+  }
+
+  .variant-row {
+    grid-template-columns: 1fr;
+  }
+
+  .variant-row label:nth-of-type(3) {
+    grid-column: auto;
+  }
+
+  .variant-row [data-remove-variant] {
+    justify-self: stretch;
   }
 }
 
