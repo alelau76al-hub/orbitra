@@ -5,6 +5,10 @@ const refreshButton = document.querySelector('#refreshButton')
 const formTitle = document.querySelector('#formTitle')
 const submitButton = document.querySelector('#submitButton')
 const cancelEdit = document.querySelector('#cancelEdit')
+const productVariantsList = document.querySelector('#productVariantsList')
+const addVariantButton = document.querySelector('#addVariantButton')
+
+let productVariantsDraft = []
 
 function formatMoney(priceCents) {
   return new Intl.NumberFormat('it-IT', {
@@ -25,6 +29,8 @@ function escapeHtml(value = '') {
 function resetForm() {
   productForm.reset()
   document.querySelector('#productId').value = ''
+  productVariantsDraft = []
+  renderVariantRows()
   formTitle.textContent = 'Aggiungi prodotto'
   submitButton.textContent = 'Salva prodotto'
   cancelEdit.hidden = true
@@ -41,6 +47,15 @@ function fillForm(product) {
   renderProductCollectionOptions(product.collection_slug || '')
   document.querySelector('#category').value = product.category || ''
   document.querySelector('#stock').value = product.stock || 0
+  productVariantsDraft = (product.variants || []).map((variant) => ({
+    id: variant.id || '',
+    option_name: variant.option_name || '',
+    option_value: variant.option_value || '',
+    sku: variant.sku || '',
+    price_cents: variant.price_cents ?? '',
+    stock: variant.stock ?? '',
+  }))
+  renderVariantRows()
 
   formTitle.textContent = 'Modifica prodotto'
   submitButton.textContent = 'Aggiorna prodotto'
@@ -63,7 +78,110 @@ function getFormProduct() {
     collection_slug: document.querySelector('#collection_slug').value.trim(),
     category: document.querySelector('#category').value.trim(),
     stock: Number(document.querySelector('#stock').value),
+    variants: readVariantRows(),
   }
+}
+
+function renderVariantRows() {
+  if (!productVariantsList) return
+
+  if (productVariantsDraft.length === 0) {
+    productVariantsList.innerHTML = '<p class="empty-variants">Nessuna variante configurata.</p>'
+    return
+  }
+
+  productVariantsList.innerHTML = productVariantsDraft
+    .map(
+      (variant, index) => `
+        <div class="variant-row" data-variant-row="${index}">
+          <label>
+            Nome opzione
+            <input
+              type="text"
+              data-variant-field="option_name"
+              value="${escapeHtml(variant.option_name)}"
+              placeholder="Colore"
+            />
+          </label>
+
+          <label>
+            Valore
+            <input
+              type="text"
+              data-variant-field="option_value"
+              value="${escapeHtml(variant.option_value)}"
+              placeholder="Rosso"
+            />
+          </label>
+
+          <label>
+            SKU
+            <input
+              type="text"
+              data-variant-field="sku"
+              value="${escapeHtml(variant.sku)}"
+              placeholder="SKU opzionale"
+            />
+          </label>
+
+          <label>
+            Prezzo variante
+            <input
+              type="number"
+              step="0.01"
+              data-variant-field="price"
+              value="${variant.price_cents === '' ? '' : Number(variant.price_cents) / 100}"
+              placeholder="Lascia vuoto"
+            />
+          </label>
+
+          <label>
+            Stock variante
+            <input
+              type="number"
+              data-variant-field="stock"
+              value="${variant.stock ?? ''}"
+              placeholder="Lascia vuoto"
+            />
+          </label>
+
+          <button class="danger" type="button" data-remove-variant="${index}">
+            Rimuovi
+          </button>
+        </div>
+      `,
+    )
+    .join('')
+
+  document.querySelectorAll('[data-remove-variant]').forEach((button) => {
+    button.addEventListener('click', () => {
+      productVariantsDraft.splice(Number(button.dataset.removeVariant), 1)
+      renderVariantRows()
+    })
+  })
+}
+
+function readVariantRows() {
+  if (!productVariantsList) return []
+
+  return [...productVariantsList.querySelectorAll('[data-variant-row]')]
+    .map((row, index) => {
+      const optionName = row.querySelector('[data-variant-field="option_name"]').value.trim()
+      const optionValue = row.querySelector('[data-variant-field="option_value"]').value.trim()
+      const sku = row.querySelector('[data-variant-field="sku"]').value.trim()
+      const price = row.querySelector('[data-variant-field="price"]').value
+      const stock = row.querySelector('[data-variant-field="stock"]').value
+
+      return {
+        option_name: optionName,
+        option_value: optionValue,
+        sku,
+        price_cents: price === '' ? null : Math.round(Number(price) * 100),
+        stock: stock === '' ? null : Number(stock),
+        sort_order: index,
+      }
+    })
+    .filter((variant) => variant.option_name || variant.option_value || variant.sku)
 }
 
 async function loadProducts() {
@@ -95,6 +213,7 @@ async function loadProducts() {
               <span>Stock: ${product.stock}</span>
               <span>${escapeHtml(product.category || 'Senza categoria')}</span>
               <span>${escapeHtml(product.collection_slug || 'Senza collezione')}</span>
+              <span>${product.variants?.length || 0} varianti</span>
             </div>
 
             <div class="product-actions">
@@ -180,7 +299,19 @@ productForm.addEventListener('submit', async (event) => {
 
 cancelEdit.addEventListener('click', resetForm)
 refreshButton.addEventListener('click', loadProducts)
+addVariantButton?.addEventListener('click', () => {
+  productVariantsDraft = readVariantRows()
+  productVariantsDraft.push({
+    option_name: '',
+    option_value: '',
+    sku: '',
+    price_cents: '',
+    stock: '',
+  })
+  renderVariantRows()
+})
 
+renderVariantRows()
 loadProducts()
 
 // ===============================

@@ -1,4 +1,24 @@
 function validateProduct(body) {
+  const variants = Array.isArray(body.variants)
+    ? body.variants
+        .map((variant, index) => ({
+          id: variant.id ? Number(variant.id) : null,
+          option_name: variant.option_name?.trim() || '',
+          option_value: variant.option_value?.trim() || '',
+          sku: variant.sku?.trim() || '',
+          price_cents:
+            variant.price_cents === '' || variant.price_cents === null || variant.price_cents === undefined
+              ? null
+              : Number(variant.price_cents),
+          stock:
+            variant.stock === '' || variant.stock === null || variant.stock === undefined
+              ? null
+              : Number(variant.stock),
+          sort_order: index,
+        }))
+        .filter((variant) => variant.option_name || variant.option_value || variant.sku)
+    : []
+
   const product = {
     id: body.id ? Number(body.id) : null,
     name: body.name?.trim(),
@@ -9,6 +29,7 @@ function validateProduct(body) {
     collection_slug: body.collection_slug?.trim() || '',
     category: body.category?.trim() || '',
     stock: Number(body.stock),
+    variants,
   }
 
   if (!product.name || !product.slug || !product.price_cents || Number.isNaN(product.price_cents)) {
@@ -25,9 +46,80 @@ function validateProduct(body) {
     }
   }
 
+  const invalidVariant = product.variants.find(
+    (variant) =>
+      !variant.option_name ||
+      !variant.option_value ||
+      (variant.price_cents !== null && (Number.isNaN(variant.price_cents) || variant.price_cents < 0)) ||
+      (variant.stock !== null && (Number.isNaN(variant.stock) || variant.stock < 0)),
+  )
+
+  if (invalidVariant) {
+    return {
+      valid: false,
+      message: 'Varianti non valide: nome opzione, valore, prezzo e stock devono essere corretti.',
+    }
+  }
+
   return {
     valid: true,
     product,
+  }
+}
+
+async function hasVariantTable(env) {
+  try {
+    await env.DB.prepare('SELECT id FROM product_variants LIMIT 1').first()
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function saveProductVariants(env, productId, variants) {
+  if (!(await hasVariantTable(env))) {
+    return {
+      success: variants.length === 0,
+      message: 'La tabella product_variants non esiste. Applica la migration 0006 prima di salvare varianti.',
+    }
+  }
+
+  await env.DB.prepare(`
+    UPDATE product_variants
+    SET active = 0, updated_at = CURRENT_TIMESTAMP
+    WHERE product_id = ?
+  `)
+    .bind(productId)
+    .run()
+
+  for (const variant of variants) {
+    await env.DB.prepare(`
+      INSERT INTO product_variants (
+        product_id,
+        option_name,
+        option_value,
+        sku,
+        price_cents,
+        stock,
+        active,
+        sort_order
+      )
+      VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+    `)
+      .bind(
+        productId,
+        variant.option_name,
+        variant.option_value,
+        variant.sku,
+        variant.price_cents,
+        variant.stock,
+        variant.sort_order,
+      )
+      .run()
+  }
+
+  return {
+    success: true,
   }
 }
 
@@ -47,6 +139,16 @@ export async function onRequestPost({ request, env }) {
     }
 
     const product = validation.product
+
+    if (product.variants.length > 0 && !(await hasVariantTable(env))) {
+      return Response.json(
+        {
+          success: false,
+          message: 'Per salvare varianti devi prima applicare la migration 0006_create_product_variants.sql.',
+        },
+        { status: 400 },
+      )
+    }
 
     const existing = await env.DB.prepare(
       'SELECT id FROM products WHERE slug = ?',
@@ -100,6 +202,18 @@ export async function onRequestPost({ request, env }) {
       .bind(productId, product.stock)
       .run()
 
+    const variantsResult = await saveProductVariants(env, productId, product.variants)
+
+    if (!variantsResult.success) {
+      return Response.json(
+        {
+          success: false,
+          message: variantsResult.message,
+        },
+        { status: 400 },
+      )
+    }
+
     return Response.json({
       success: true,
       message: 'Prodotto creato correttamente.',
@@ -133,6 +247,16 @@ export async function onRequestPut({ request, env }) {
     }
 
     const product = validation.product
+
+    if (product.variants.length > 0 && !(await hasVariantTable(env))) {
+      return Response.json(
+        {
+          success: false,
+          message: 'Per salvare varianti devi prima applicare la migration 0006_create_product_variants.sql.',
+        },
+        { status: 400 },
+      )
+    }
 
     const slugUsed = await env.DB.prepare(
       'SELECT id FROM products WHERE slug = ? AND id != ?',
@@ -185,6 +309,18 @@ export async function onRequestPut({ request, env }) {
     `)
       .bind(product.id, product.stock)
       .run()
+
+    const variantsResult = await saveProductVariants(env, product.id, product.variants)
+
+    if (!variantsResult.success) {
+      return Response.json(
+        {
+          success: false,
+          message: variantsResult.message,
+        },
+        { status: 400 },
+      )
+    }
 
     return Response.json({
       success: true,

@@ -68,6 +68,9 @@ document.querySelector('#app').innerHTML = `
 </nav>
 
     <a class="nav-cta" href="#booking">Launch Pass</a>
+    <button class="cart-toggle" type="button" data-cart-open>
+      Carrello <span id="cartCount">0</span>
+    </button>
   </header>
 
   <main>
@@ -301,6 +304,27 @@ document.querySelector('#app').innerHTML = `
     <nav class="footer-links" id="footerMenuLinks" aria-label="Menu footer" hidden></nav>
     <div class="footer-social" id="footerSocialLinks" aria-label="Link social" hidden></div>
   </footer>
+
+  <div class="cart-overlay" id="cartOverlay" hidden data-cart-close></div>
+  <aside class="cart-panel" id="cartPanel" aria-hidden="true">
+    <div class="cart-head">
+      <div>
+        <p class="eyebrow">Carrello</p>
+        <h2>Il tuo carrello</h2>
+      </div>
+      <button type="button" class="cart-close" data-cart-close>Chiudi</button>
+    </div>
+
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-summary">
+      <span>Totale</span>
+      <strong id="cartTotal">€0</strong>
+    </div>
+
+    <p id="cartMessage" class="cart-message"></p>
+    <p class="cart-note">Checkout e pagamenti saranno aggiunti in un blocco successivo.</p>
+  </aside>
 `
 
 function buildMenuItemUrl(item) {
@@ -322,6 +346,254 @@ function buildMenuItemUrl(item) {
   }
 
   return '#'
+}
+
+const CART_STORAGE_KEY = 'orbitra_cart_v1'
+const productCache = new Map()
+
+function formatPriceCents(priceCents = 0) {
+  return (Number(priceCents || 0) / 100).toLocaleString('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+  })
+}
+
+function cacheProducts(products = []) {
+  products.forEach((product) => {
+    if (product.slug) {
+      productCache.set(product.slug, {
+        ...product,
+        variants: product.variants || [],
+      })
+    }
+  })
+
+  renderCart()
+}
+
+function getProductVariant(product, variantId) {
+  if (!product || !variantId) return null
+
+  return (product.variants || []).find(
+    (variant) => String(variant.id) === String(variantId),
+  )
+}
+
+function getDefaultVariant(product) {
+  if (!product?.variants?.length) return null
+
+  return product.variants.find((variant) => getEffectiveStock(product, variant) > 0)
+    || product.variants[0]
+}
+
+function getEffectivePriceCents(product, variant = null) {
+  if (variant && variant.price_cents !== null && variant.price_cents !== undefined) {
+    return Number(variant.price_cents)
+  }
+
+  return Number(product?.price_cents || 0)
+}
+
+function getEffectiveStock(product, variant = null) {
+  if (variant && variant.stock !== null && variant.stock !== undefined) {
+    return Number(variant.stock)
+  }
+
+  return Number(product?.stock || 0)
+}
+
+function getCart() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]')
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function saveCart(items) {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+  renderCart()
+}
+
+function getCartItemKey(productSlug, variantId = '') {
+  return `${productSlug}::${variantId || 'base'}`
+}
+
+function showCartMessage(message) {
+  const target = document.querySelector('#cartMessage')
+  if (!target) return
+
+  target.textContent = message
+}
+
+function openCart() {
+  document.querySelector('#cartPanel')?.setAttribute('aria-hidden', 'false')
+
+  const overlay = document.querySelector('#cartOverlay')
+  if (overlay) overlay.hidden = false
+}
+
+function closeCart() {
+  document.querySelector('#cartPanel')?.setAttribute('aria-hidden', 'true')
+
+  const overlay = document.querySelector('#cartOverlay')
+  if (overlay) overlay.hidden = true
+}
+
+function addProductToCart(productSlug, variantId = '', quantity = 1) {
+  const product = productCache.get(productSlug)
+
+  if (!product) {
+    showCartMessage('Prodotto non disponibile.')
+    return
+  }
+
+  const variant = getProductVariant(product, variantId)
+  const selectedVariantId = variant?.id || ''
+  const stock = getEffectiveStock(product, variant)
+
+  if (stock <= 0) {
+    showCartMessage('Prodotto non disponibile.')
+    openCart()
+    return
+  }
+
+  const key = getCartItemKey(product.slug, selectedVariantId)
+  const cart = getCart()
+  const existing = cart.find((item) => item.key === key)
+  const nextQuantity = (existing?.quantity || 0) + Number(quantity || 1)
+
+  if (nextQuantity > stock) {
+    showCartMessage('Quantità richiesta superiore allo stock disponibile.')
+    openCart()
+    return
+  }
+
+  if (existing) {
+    existing.quantity = nextQuantity
+  } else {
+    cart.push({
+      key,
+      productSlug: product.slug,
+      variantId: selectedVariantId,
+      quantity: Number(quantity || 1),
+    })
+  }
+
+  saveCart(cart)
+  showCartMessage(`${product.name} aggiunto al carrello.`)
+  openCart()
+}
+
+function updateCartQuantity(key, quantity) {
+  const cart = getCart()
+  const item = cart.find((entry) => entry.key === key)
+  if (!item) return
+
+  const product = productCache.get(item.productSlug)
+  const variant = getProductVariant(product, item.variantId)
+  const stock = getEffectiveStock(product, variant)
+  const nextQuantity = Math.max(1, Number(quantity || 1))
+
+  item.quantity = stock > 0 ? Math.min(nextQuantity, stock) : 1
+  saveCart(cart)
+}
+
+function removeCartItem(key) {
+  saveCart(getCart().filter((item) => item.key !== key))
+}
+
+function renderCart() {
+  const itemsContainer = document.querySelector('#cartItems')
+  const countTarget = document.querySelector('#cartCount')
+  const totalTarget = document.querySelector('#cartTotal')
+
+  if (!itemsContainer || !countTarget || !totalTarget) return
+
+  const cart = getCart()
+  const totalQuantity = cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+  let totalCents = 0
+
+  countTarget.textContent = String(totalQuantity)
+
+  if (cart.length === 0) {
+    itemsContainer.innerHTML = '<p class="cart-empty">Il carrello è vuoto.</p>'
+    totalTarget.textContent = formatPriceCents(0)
+    return
+  }
+
+  itemsContainer.innerHTML = cart
+    .map((item) => {
+      const product = productCache.get(item.productSlug)
+
+      if (!product) {
+        return `
+          <article class="cart-item">
+            <div>
+              <h3>${escapeCmsHtml(item.productSlug)}</h3>
+              <p>Dettagli prodotto non ancora caricati.</p>
+            </div>
+            <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">Rimuovi</button>
+          </article>
+        `
+      }
+
+      const variant = getProductVariant(product, item.variantId)
+      const priceCents = getEffectivePriceCents(product, variant)
+      totalCents += priceCents * Number(item.quantity || 1)
+
+      return `
+        <article class="cart-item">
+          <div class="cart-item-image">
+            ${
+              product.image_url
+                ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+                : '<span>Prodotto</span>'
+            }
+          </div>
+
+          <div>
+            <h3>${escapeCmsHtml(product.name)}</h3>
+            ${variant ? `<p>${escapeCmsHtml(variant.option_name)}: ${escapeCmsHtml(variant.option_value)}</p>` : ''}
+            <strong>${formatPriceCents(priceCents)}</strong>
+          </div>
+
+          <div class="cart-quantity">
+            <button type="button" data-cart-quantity="${escapeCmsHtml(item.key)}" data-cart-delta="-1">-</button>
+            <span>${item.quantity}</span>
+            <button type="button" data-cart-quantity="${escapeCmsHtml(item.key)}" data-cart-delta="1">+</button>
+          </div>
+
+          <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">Rimuovi</button>
+        </article>
+      `
+    })
+    .join('')
+
+  totalTarget.textContent = formatPriceCents(totalCents)
+}
+
+function renderAddToCartButton(product, variant = null, extraAttributes = '') {
+  const stock = getEffectiveStock(product, variant)
+  const variantId = variant?.id || ''
+
+  if (stock <= 0) {
+    return '<button class="btn primary" type="button" disabled>Non disponibile</button>'
+  }
+
+  return `
+    <button
+      class="btn primary"
+      type="button"
+      data-add-to-cart
+      data-product-slug="${escapeCmsHtml(product.slug)}"
+      data-variant-id="${escapeCmsHtml(variantId)}"
+      ${extraAttributes}
+    >
+      Aggiungi al carrello
+    </button>
+  `
 }
 
 function renderPublicMenuLinks(container, items = []) {
@@ -510,6 +782,59 @@ async function loadPublicFooterMenu() {
 }
 
 loadPublicFooterMenu()
+
+document.addEventListener('click', (event) => {
+  const addButton = event.target.closest('[data-add-to-cart]')
+  if (addButton) {
+    const quantityInputSelector = addButton.dataset.cartQuantityInput
+    const quantityInput = quantityInputSelector
+      ? document.querySelector(quantityInputSelector)
+      : null
+
+    addProductToCart(
+      addButton.dataset.productSlug,
+      addButton.dataset.variantId || '',
+      quantityInput ? Number(quantityInput.value || 1) : 1,
+    )
+    return
+  }
+
+  if (event.target.closest('[data-cart-open]')) {
+    openCart()
+    return
+  }
+
+  if (event.target.closest('[data-cart-close]')) {
+    closeCart()
+    return
+  }
+
+  const removeButton = event.target.closest('[data-cart-remove]')
+  if (removeButton) {
+    removeCartItem(removeButton.dataset.cartRemove)
+    return
+  }
+
+  const quantityButton = event.target.closest('[data-cart-quantity]')
+  if (quantityButton) {
+    const cart = getCart()
+    const item = cart.find((entry) => entry.key === quantityButton.dataset.cartQuantity)
+    if (!item) return
+
+    updateCartQuantity(
+      item.key,
+      Number(item.quantity || 1) + Number(quantityButton.dataset.cartDelta || 0),
+    )
+  }
+})
+
+document.addEventListener('change', (event) => {
+  if (event.target.matches('#productVariantSelect')) {
+    updateProductPageVariant(event.target)
+  }
+})
+
+renderCart()
 
 const grid = document.querySelector('#destinationGrid')
 
@@ -727,23 +1052,8 @@ async function loadStoreProducts() {
       return
     }
 
-    container.innerHTML = data.products.map((product) => `
-      <article class="store-card">
-        <div class="store-image">
-          ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}">` : '🚀'}
-        </div>
-        <h3>${product.name}</h3>
-        <p>${product.description || ''}</p>
-        <div class="store-meta">
-          <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
-            style: 'currency',
-            currency: 'EUR'
-          })}</strong>
-          <span>Stock: ${product.stock}</span>
-        </div>
-        <button class="btn primary" type="button">Aggiungi al carrello</button>
-      </article>
-    `).join('')
+    cacheProducts(data.products)
+    container.innerHTML = data.products.map(renderProductCard).join('')
   } catch {
     container.textContent = 'Errore nel caricamento prodotti.'
   }
@@ -1514,28 +1824,39 @@ function renderCmsSection(section) {
 }
 
 function renderProductCard(product) {
+  const defaultVariant = getDefaultVariant(product)
+  const priceCents = getEffectivePriceCents(product, defaultVariant)
+  const stock = getEffectiveStock(product, defaultVariant)
+  const productHref = `/products/${escapeCmsHtml(product.slug)}`
+
   return `
     <article class="store-card">
-      <div class="store-image">
+      <a class="store-image" href="${productHref}">
         ${
           product.image_url
             ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
-            : '🚀'
+            : '<span>Prodotto</span>'
         }
-      </div>
+      </a>
 
-      <h3>${escapeCmsHtml(product.name)}</h3>
+      <h3><a href="${productHref}">${escapeCmsHtml(product.name)}</a></h3>
       <p>${escapeCmsHtml(product.description || '')}</p>
 
       <div class="store-meta">
-        <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
-          style: 'currency',
-          currency: 'EUR',
-        })}</strong>
-        <span>Stock: ${product.stock}</span>
+        <strong>${formatPriceCents(priceCents)}</strong>
+        <span>Stock: ${stock}</span>
       </div>
 
-      <button class="btn primary" type="button">Aggiungi al carrello</button>
+      ${
+        product.variants?.length
+          ? `<p class="variant-summary">${product.variants.length} varianti disponibili</p>`
+          : ''
+      }
+
+      <div class="store-actions">
+        <a class="btn ghost" href="${productHref}">Dettagli</a>
+        ${renderAddToCartButton(product, defaultVariant)}
+      </div>
     </article>
   `
 }
@@ -1559,6 +1880,7 @@ async function hydrateProductGrids() {
     }
 
     const products = data.products || []
+    cacheProducts(products)
 
     document.querySelectorAll('[data-products-grid], [data-products-carousel]').forEach((grid) => {
       const collectionSlug = grid.dataset.collectionSlug || ''
@@ -1804,43 +2126,181 @@ async function renderPublicCollectionPage() {
       (product) => product.collection_slug === collection.slug,
     )
 
+    cacheProducts(productsData.products || [])
+
     if (products.length === 0) {
       container.textContent = 'Nessun prodotto disponibile in questa collezione.'
       return
     }
 
-    container.innerHTML = products
-      .map(
-        (product) => `
-          <article class="store-card">
-            <div class="store-image">
-              ${
-                product.image_url
-                  ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
-                  : '🚀'
-              }
-            </div>
-
-            <h3>${escapeCmsHtml(product.name)}</h3>
-            <p>${escapeCmsHtml(product.description || '')}</p>
-
-            <div class="store-meta">
-              <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
-                style: 'currency',
-                currency: 'EUR',
-              })}</strong>
-              <span>Stock: ${product.stock}</span>
-            </div>
-
-            <button class="btn primary" type="button">Aggiungi al carrello</button>
-          </article>
-        `,
-      )
-      .join('')
+    container.innerHTML = products.map(renderProductCard).join('')
   } catch (error) {
     title.textContent = 'Errore caricamento collezione'
     intro.textContent = 'Non è stato possibile caricare questa pagina.'
     container.textContent = ''
+  }
+}
+
+function updateProductPageVariant(select) {
+  const product = productCache.get(select.dataset.productSlug)
+  if (!product) return
+
+  const variant = getProductVariant(product, select.value)
+  const priceTarget = document.querySelector('#productPagePrice')
+  const stockTarget = document.querySelector('#productPageStock')
+  const addButton = document.querySelector('#productAddToCartButton')
+  const stock = getEffectiveStock(product, variant)
+
+  if (priceTarget) {
+    priceTarget.textContent = formatPriceCents(getEffectivePriceCents(product, variant))
+  }
+
+  if (stockTarget) {
+    stockTarget.textContent = `Stock: ${stock}`
+  }
+
+  if (addButton) {
+    addButton.dataset.variantId = variant?.id || ''
+    addButton.disabled = stock <= 0
+    addButton.textContent = stock <= 0 ? 'Non disponibile' : 'Aggiungi al carrello'
+  }
+}
+
+async function renderPublicProductPage() {
+  const path = window.location.pathname
+
+  if (!path.startsWith('/products/')) return
+
+  const productSlug = decodeURIComponent(
+    path.replace('/products/', '').replaceAll('/', ''),
+  )
+  const main = document.querySelector('main')
+
+  if (!main || !productSlug) return
+
+  main.innerHTML = `
+    <section class="section">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Prodotto</p>
+        <h2>Caricamento prodotto...</h2>
+        <p>Stiamo recuperando i dettagli dal catalogo.</p>
+      </div>
+    </section>
+  `
+
+  try {
+    const [productsResponse, collectionsResponse] = await Promise.all([
+      fetch('/api/products'),
+      fetch('/api/collections'),
+    ])
+
+    const productsData = await productsResponse.json()
+    const collectionsData = await collectionsResponse.json()
+
+    if (!productsResponse.ok || !productsData.success) {
+      throw new Error('Errore caricamento prodotti')
+    }
+
+    const products = productsData.products || []
+    cacheProducts(products)
+
+    const product = products.find((item) => item.slug === productSlug)
+
+    if (!product) {
+      main.innerHTML = `
+        <section class="section product-detail-empty">
+          <p class="eyebrow">Prodotto</p>
+          <h1>Prodotto non trovato</h1>
+          <p>Questo prodotto non esiste o non è più disponibile.</p>
+          <a class="btn primary" href="/#shop">Torna allo shop</a>
+        </section>
+      `
+      return
+    }
+
+    const collection = (collectionsData.collections || []).find(
+      (item) => item.slug === product.collection_slug,
+    )
+    const defaultVariant = getDefaultVariant(product)
+    const priceCents = getEffectivePriceCents(product, defaultVariant)
+    const stock = getEffectiveStock(product, defaultVariant)
+
+    main.innerHTML = `
+      <section class="section product-detail">
+        <div class="product-detail-media">
+          ${
+            product.image_url
+              ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+              : '<span>Prodotto senza immagine</span>'
+          }
+        </div>
+
+        <div class="product-detail-info">
+          <p class="eyebrow">${escapeCmsHtml(product.category || 'Prodotto')}</p>
+          <h1>${escapeCmsHtml(product.name)}</h1>
+          <p>${escapeCmsHtml(product.description || 'Nessuna descrizione disponibile.')}</p>
+
+          <div class="product-detail-price" id="productPagePrice">
+            ${formatPriceCents(priceCents)}
+          </div>
+
+          <div class="product-detail-meta">
+            <span id="productPageStock">Stock: ${stock}</span>
+            <span>Categoria: ${escapeCmsHtml(product.category || 'Senza categoria')}</span>
+            <span>
+              Collezione:
+              ${
+                product.collection_slug
+                  ? `<a href="/collections/${escapeCmsHtml(product.collection_slug)}">${escapeCmsHtml(collection?.name || product.collection_slug)}</a>`
+                  : 'Senza collezione'
+              }
+            </span>
+          </div>
+
+          ${
+            product.variants?.length
+              ? `
+                <label class="product-variant-field">
+                  Variante
+                  <select id="productVariantSelect" data-product-slug="${escapeCmsHtml(product.slug)}">
+                    ${product.variants
+                      .map(
+                        (variant) => `
+                          <option value="${variant.id}" ${defaultVariant?.id === variant.id ? 'selected' : ''}>
+                            ${escapeCmsHtml(variant.option_name)}: ${escapeCmsHtml(variant.option_value)}
+                            ${variant.sku ? ` · ${escapeCmsHtml(variant.sku)}` : ''}
+                          </option>
+                        `,
+                      )
+                      .join('')}
+                  </select>
+                </label>
+              `
+              : ''
+          }
+
+          <label class="product-quantity-field">
+            Quantità
+            <input id="productQuantity" type="number" min="1" value="1">
+          </label>
+
+          ${renderAddToCartButton(
+            product,
+            defaultVariant,
+            'id="productAddToCartButton" data-cart-quantity-input="#productQuantity"',
+          )}
+        </div>
+      </section>
+    `
+  } catch (error) {
+    main.innerHTML = `
+      <section class="section product-detail-empty">
+        <p class="eyebrow">Prodotto</p>
+        <h1>Errore caricamento prodotto</h1>
+        <p>Non è stato possibile recuperare questo prodotto.</p>
+        <a class="btn primary" href="/#shop">Torna allo shop</a>
+      </section>
+    `
   }
 }
 
@@ -1903,6 +2363,11 @@ async function bootPublicRouting() {
 
   if (path.startsWith('/collections/')) {
     await renderPublicCollectionPage()
+    return
+  }
+
+  if (path.startsWith('/products/')) {
+    await renderPublicProductPage()
     return
   }
 

@@ -377,6 +377,23 @@
           <label>Stock</label>
           <input id="stock" type="number" placeholder="120" required />
 
+          <section class="variant-manager">
+            <div class="section-title">
+              <div>
+                <h3>Varianti prodotto</h3>
+                <p class="section-subtitle">
+                  Opzioni semplici come taglia, colore o formato. Lascia vuoto se il prodotto non ha varianti.
+                </p>
+              </div>
+
+              <button id="addVariantButton" class="secondary" type="button">
+                Aggiungi variante
+              </button>
+            </div>
+
+            <div id="productVariantsList" class="variant-list"></div>
+          </section>
+
           <button id="submitButton" type="submit">Salva prodotto</button>
 
           <button id="cancelEdit" class="secondary" type="button" hidden>

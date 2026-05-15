@@ -18,9 +18,48 @@ export async function onRequestGet({ env }) {
       ORDER BY products.created_at DESC
     `).all()
 
+    const products = results || []
+
+    let variants = []
+
+    try {
+      const variantsResult = await env.DB.prepare(`
+        SELECT
+          id,
+          product_id,
+          option_name,
+          option_value,
+          sku,
+          price_cents,
+          stock,
+          active,
+          sort_order
+        FROM product_variants
+        WHERE active = 1
+        ORDER BY product_id ASC, sort_order ASC, id ASC
+      `).all()
+
+      variants = variantsResult.results || []
+    } catch {
+      variants = []
+    }
+
+    const variantsByProductId = variants.reduce((groups, variant) => {
+      if (!groups[variant.product_id]) {
+        groups[variant.product_id] = []
+      }
+
+      groups[variant.product_id].push(variant)
+
+      return groups
+    }, {})
+
     return Response.json({
       success: true,
-      products: results,
+      products: products.map((product) => ({
+        ...product,
+        variants: variantsByProductId[product.id] || [],
+      })),
     })
   } catch (error) {
     return Response.json(
