@@ -319,6 +319,104 @@ function buildMenuItemUrl(item) {
   return '#'
 }
 
+function settingsToMap(settings = []) {
+  return settings.reduce((map, setting) => {
+    if (setting.key) {
+      map[setting.key] = setting.value || ''
+    }
+
+    return map
+  }, {})
+}
+
+function setThemeVariable(settings, key, cssVariable) {
+  const value = settings[key]?.trim()
+  if (!value) return
+
+  document.documentElement.style.setProperty(cssVariable, value)
+}
+
+function applyPublicLogo(settings) {
+  const logo = document.querySelector('.logo')
+  if (!logo) return
+
+  const logoText = settings.logo_text?.trim()
+  const logoUrl = settings.logo_url?.trim()
+  const logoWidth = Number(settings.logo_width)
+
+  if (logoUrl) {
+    logo.innerHTML = `
+      <img class="logo-image" src="${escapeCmsHtml(logoUrl)}" alt="${escapeCmsHtml(logoText || 'Logo')}">
+      ${logoText ? `<span class="logo-text">${escapeCmsHtml(logoText)}</span>` : ''}
+    `
+  } else if (logoText) {
+    logo.innerHTML = `
+      <span class="logo-mark">✦</span>
+      <span class="logo-text">${escapeCmsHtml(logoText)}</span>
+    `
+  }
+
+  if (Number.isFinite(logoWidth) && logoWidth > 0) {
+    document.documentElement.style.setProperty('--logo-width', `${logoWidth}px`)
+  }
+}
+
+function applyPublicHeaderCta(settings) {
+  const headerCta = document.querySelector('.nav-cta')
+  if (!headerCta) return
+
+  const text = settings.header_cta_text?.trim()
+  const url = settings.header_cta_url?.trim()
+
+  if (text) headerCta.textContent = text
+  if (url) headerCta.setAttribute('href', url)
+}
+
+function applyPublicFooter(settings) {
+  const footer = document.querySelector('.footer')
+  if (!footer) return
+
+  const footerText = footer.querySelector('p')
+  const footerCta = footer.querySelector('a')
+  const text = settings.footer_text?.trim()
+  const ctaText = settings.footer_cta_text?.trim()
+  const ctaUrl = settings.footer_cta_url?.trim()
+
+  if (footerText && text) footerText.textContent = text
+  if (footerCta && ctaText) footerCta.textContent = ctaText
+  if (footerCta && ctaUrl) footerCta.setAttribute('href', ctaUrl)
+}
+
+function applyPublicThemeSettings(settings) {
+  setThemeVariable(settings, 'primary_color', '--cyan')
+  setThemeVariable(settings, 'accent_color', '--green')
+  setThemeVariable(settings, 'background_color', '--bg')
+  setThemeVariable(settings, 'text_color', '--text')
+  setThemeVariable(settings, 'body_font_family', '--body-font')
+  setThemeVariable(settings, 'heading_font_family', '--heading-font')
+
+  applyPublicLogo(settings)
+  applyPublicHeaderCta(settings)
+  applyPublicFooter(settings)
+}
+
+async function loadPublicThemeSettings() {
+  try {
+    const response = await fetch('/api/settings')
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !Array.isArray(data.settings)) {
+      return
+    }
+
+    applyPublicThemeSettings(settingsToMap(data.settings))
+  } catch (error) {
+    console.error('Errore caricamento impostazioni tema pubbliche:', error)
+  }
+}
+
+loadPublicThemeSettings()
+
 async function loadPublicMainMenu() {
   const menuContainer = document.querySelector('#mainMenuLinks')
   if (!menuContainer) return
