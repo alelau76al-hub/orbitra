@@ -339,6 +339,75 @@ renderVariantRows()
 loadProducts()
 
 // ===============================
+// IMPORT / EXPORT
+// ===============================
+
+const exportDataButton = document.querySelector('#exportDataButton')
+const exportPreview = document.querySelector('#exportPreview')
+const importProductsButton = document.querySelector('#importProductsButton')
+const importPreview = document.querySelector('#importPreview')
+const importExportMessage = document.querySelector('#importExportMessage')
+
+exportDataButton?.addEventListener('click', async () => {
+  const resource = document.querySelector('#exportResource').value
+  const format = document.querySelector('#exportFormat').value
+
+  exportPreview.textContent = 'Preparazione export...'
+
+  try {
+    const response = await fetch(
+      `/api/admin/import-export?resource=${encodeURIComponent(resource)}&format=${encodeURIComponent(format)}`,
+    )
+
+    if (format === 'csv') {
+      exportPreview.textContent = await response.text()
+      return
+    }
+
+    const data = await response.json()
+    exportPreview.textContent = JSON.stringify(data, null, 2)
+  } catch {
+    exportPreview.textContent = 'Errore export.'
+  }
+})
+
+importProductsButton?.addEventListener('click', async () => {
+  importExportMessage.textContent = 'Validazione import...'
+  importPreview.textContent = ''
+
+  try {
+    const format = document.querySelector('#importFormat').value
+    const content = document.querySelector('#importContent').value.trim()
+    let rows = []
+
+    if (format === 'json' && content) {
+      rows = JSON.parse(content)
+    }
+
+    const response = await fetch('/api/admin/import-export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        format,
+        content,
+        rows,
+        dry_run: document.querySelector('#importDryRun').checked,
+      }),
+    })
+    const data = await response.json()
+
+    importExportMessage.textContent = data.message || (data.success ? 'Import validato.' : 'Errore import.')
+    importPreview.textContent = JSON.stringify(data, null, 2)
+
+    if (data.success && !data.dry_run) {
+      loadProducts()
+    }
+  } catch (error) {
+    importExportMessage.textContent = error.message || 'Errore import.'
+  }
+})
+
+// ===============================
 // COLLEZIONI
 // ===============================
 
@@ -730,9 +799,18 @@ function setupAdminViews() {
       view.hidden = view.dataset.adminView !== activeView
     })
 
-    const catalogoViews = ['prodotti', 'collezioni', 'stock']
-    const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects']
-    const impostazioniViews = ['metafields', 'integrazioni', 'utenti', 'activity', 'notifiche']
+    const catalogoViews = ['prodotti', 'collezioni', 'stock', 'import-export']
+    const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy']
+    const impostazioniViews = [
+      'metafields',
+      'integrazioni',
+      'utenti',
+      'activity',
+      'notifiche',
+      'domini',
+      'tenants',
+      'performance',
+    ]
 
     const activeHubHash = contenutoViews.includes(activeView)
       ? '#contenuto'
@@ -773,6 +851,136 @@ function readJsonTextarea(selector, fallback = {}) {
 function stringifyForTextarea(value, fallback = {}) {
   return JSON.stringify(value || fallback, null, 2)
 }
+
+// ===============================
+// POLICY
+// ===============================
+
+const policyForm = document.querySelector('#policyForm')
+const policiesList = document.querySelector('#policiesList')
+const policyMessage = document.querySelector('#policyMessage')
+const refreshPoliciesButton = document.querySelector('#refreshPoliciesButton')
+const policyFormTitle = document.querySelector('#policyFormTitle')
+const policySubmitButton = document.querySelector('#policySubmitButton')
+const cancelPolicyEdit = document.querySelector('#cancelPolicyEdit')
+
+function resetPolicyForm() {
+  if (!policyForm) return
+  policyForm.reset()
+  document.querySelector('#policyId').value = ''
+  policyFormTitle.textContent = 'Aggiungi policy'
+  policySubmitButton.textContent = 'Salva policy'
+  cancelPolicyEdit.hidden = true
+  policyMessage.textContent = ''
+}
+
+function fillPolicyForm(policy) {
+  document.querySelector('#policyId').value = policy.id
+  document.querySelector('#policyType').value = policy.type || 'privacy_policy'
+  document.querySelector('#policyTitle').value = policy.title || ''
+  document.querySelector('#policySlug').value = policy.slug || ''
+  document.querySelector('#policyContent').value = policy.content || ''
+  document.querySelector('#policyStatus').value = policy.status || 'draft'
+  policyFormTitle.textContent = 'Modifica policy'
+  policySubmitButton.textContent = 'Aggiorna policy'
+  cancelPolicyEdit.hidden = false
+}
+
+function readPolicyPayload() {
+  return {
+    id: document.querySelector('#policyId').value,
+    type: document.querySelector('#policyType').value,
+    title: document.querySelector('#policyTitle').value.trim(),
+    slug: document.querySelector('#policySlug').value.trim(),
+    content: document.querySelector('#policyContent').value.trim(),
+    status: document.querySelector('#policyStatus').value,
+  }
+}
+
+async function loadPoliciesAdmin() {
+  if (!policiesList) return
+  policiesList.textContent = 'Caricamento policy...'
+
+  try {
+    const response = await fetch('/api/admin/policies')
+    const data = await response.json()
+
+    if (!data.success) {
+      policiesList.textContent = data.message || 'Errore caricamento policy.'
+      return
+    }
+
+    policiesList.innerHTML = data.policies.length
+      ? data.policies
+          .map(
+            (policy) => `
+              <article class="product-item">
+                <h3>${escapeHtml(policy.title)}</h3>
+                <p>${escapeHtml(policy.type)} / ${escapeHtml(policy.slug)}</p>
+                <div class="meta">
+                  <span>${escapeHtml(policy.status)}</span>
+                  <span>${escapeHtml(policy.updated_at || '')}</span>
+                </div>
+                <div class="product-actions">
+                  <button type="button" data-edit-policy="${policy.id}">Modifica</button>
+                  <a class="button-link" href="/policies/${escapeHtml(policy.slug)}" target="_blank" rel="noreferrer">Apri</a>
+                  <button type="button" class="danger" data-unpublish-policy="${policy.id}">Bozza</button>
+                </div>
+              </article>
+            `,
+          )
+          .join('')
+      : 'Nessuna policy.'
+
+    document.querySelectorAll('[data-edit-policy]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const policy = data.policies.find((item) => item.id === Number(button.dataset.editPolicy))
+        fillPolicyForm(policy)
+      })
+    })
+
+    document.querySelectorAll('[data-unpublish-policy]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/policies', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.unpublishPolicy) }),
+        })
+        resetPolicyForm()
+        loadPoliciesAdmin()
+      })
+    })
+  } catch {
+    policiesList.textContent = 'Errore di connessione policy.'
+  }
+}
+
+policyForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  policyMessage.textContent = 'Salvataggio policy...'
+  const payload = readPolicyPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/policies', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    policyMessage.textContent = data.message || 'Policy salvata.'
+    if (data.success) {
+      resetPolicyForm()
+      loadPoliciesAdmin()
+    }
+  } catch {
+    policyMessage.textContent = 'Errore di connessione policy.'
+  }
+})
+
+cancelPolicyEdit?.addEventListener('click', resetPolicyForm)
+refreshPoliciesButton?.addEventListener('click', loadPoliciesAdmin)
+loadPoliciesAdmin()
 
 // ===============================
 // BLOG
@@ -2490,6 +2698,343 @@ notificationForm?.addEventListener('submit', async (event) => {
 cancelNotificationEdit?.addEventListener('click', resetNotificationForm)
 refreshNotificationsButton?.addEventListener('click', loadNotifications)
 loadNotifications()
+
+// ===============================
+// DOMINI
+// ===============================
+
+const domainForm = document.querySelector('#domainForm')
+const domainsList = document.querySelector('#domainsList')
+const domainMessage = document.querySelector('#domainMessage')
+const refreshDomainsButton = document.querySelector('#refreshDomainsButton')
+const domainFormTitle = document.querySelector('#domainFormTitle')
+const domainSubmitButton = document.querySelector('#domainSubmitButton')
+const cancelDomainEdit = document.querySelector('#cancelDomainEdit')
+
+function resetDomainForm() {
+  if (!domainForm) return
+  domainForm.reset()
+  document.querySelector('#domainId').value = ''
+  document.querySelector('#domainPrimary').checked = false
+  domainFormTitle.textContent = 'Aggiungi dominio'
+  domainSubmitButton.textContent = 'Salva dominio'
+  cancelDomainEdit.hidden = true
+  domainMessage.textContent = ''
+}
+
+function fillDomainForm(domain) {
+  document.querySelector('#domainId').value = domain.id
+  document.querySelector('#domainName').value = domain.domain || ''
+  document.querySelector('#domainType').value = domain.type || 'preview'
+  document.querySelector('#domainStatus').value = domain.status || 'pending'
+  document.querySelector('#domainDnsNotes').value = domain.dns_notes || ''
+  document.querySelector('#domainPrimary').checked = Number(domain.is_primary) === 1
+  domainFormTitle.textContent = 'Modifica dominio'
+  domainSubmitButton.textContent = 'Aggiorna dominio'
+  cancelDomainEdit.hidden = false
+}
+
+function readDomainPayload() {
+  return {
+    id: document.querySelector('#domainId').value,
+    domain: document.querySelector('#domainName').value.trim(),
+    type: document.querySelector('#domainType').value,
+    status: document.querySelector('#domainStatus').value,
+    dns_notes: document.querySelector('#domainDnsNotes').value.trim(),
+    is_primary: document.querySelector('#domainPrimary').checked,
+  }
+}
+
+async function loadDomainsAdmin() {
+  if (!domainsList) return
+  domainsList.textContent = 'Caricamento domini...'
+
+  try {
+    const response = await fetch('/api/admin/domains')
+    const data = await response.json()
+
+    if (!data.success) {
+      domainsList.textContent = data.message || 'Errore domini.'
+      return
+    }
+
+    domainsList.innerHTML = data.domains.length
+      ? data.domains
+          .map(
+            (domain) => `
+              <article class="product-item">
+                <h3>${escapeHtml(domain.domain)}</h3>
+                <p>${escapeHtml(domain.dns_notes || 'Nessuna nota DNS')}</p>
+                <div class="meta">
+                  <span>${escapeHtml(domain.type)}</span>
+                  <span>${escapeHtml(domain.status)}</span>
+                  <span>${domain.is_primary ? 'Primario' : 'Non primario'}</span>
+                </div>
+                <div class="product-actions">
+                  <button type="button" data-edit-domain="${domain.id}">Modifica</button>
+                  <button type="button" class="danger" data-disable-domain="${domain.id}">Disabilita</button>
+                </div>
+              </article>
+            `,
+          )
+          .join('')
+      : 'Nessun dominio configurato.'
+
+    document.querySelectorAll('[data-edit-domain]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const domain = data.domains.find((item) => item.id === Number(button.dataset.editDomain))
+        fillDomainForm(domain)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-domain]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/domains', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableDomain) }),
+        })
+        resetDomainForm()
+        loadDomainsAdmin()
+      })
+    })
+  } catch {
+    domainsList.textContent = 'Errore di connessione domini.'
+  }
+}
+
+domainForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  domainMessage.textContent = 'Salvataggio dominio...'
+  const payload = readDomainPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/domains', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    domainMessage.textContent = data.message || 'Dominio salvato.'
+    if (data.success) {
+      resetDomainForm()
+      loadDomainsAdmin()
+    }
+  } catch {
+    domainMessage.textContent = 'Errore di connessione domini.'
+  }
+})
+
+cancelDomainEdit?.addEventListener('click', resetDomainForm)
+refreshDomainsButton?.addEventListener('click', loadDomainsAdmin)
+loadDomainsAdmin()
+
+// ===============================
+// TENANTS
+// ===============================
+
+const tenantForm = document.querySelector('#tenantForm')
+const tenantsList = document.querySelector('#tenantsList')
+const tenantMessage = document.querySelector('#tenantMessage')
+const refreshTenantsButton = document.querySelector('#refreshTenantsButton')
+const tenantFormTitle = document.querySelector('#tenantFormTitle')
+const tenantSubmitButton = document.querySelector('#tenantSubmitButton')
+const cancelTenantEdit = document.querySelector('#cancelTenantEdit')
+
+function resetTenantForm() {
+  if (!tenantForm) return
+  tenantForm.reset()
+  document.querySelector('#tenantId').value = ''
+  document.querySelector('#tenantDefault').checked = false
+  tenantFormTitle.textContent = 'Aggiungi tenant'
+  tenantSubmitButton.textContent = 'Salva tenant'
+  cancelTenantEdit.hidden = true
+  tenantMessage.textContent = ''
+}
+
+function fillTenantForm(tenant) {
+  document.querySelector('#tenantId').value = tenant.id
+  document.querySelector('#tenantName').value = tenant.name || ''
+  document.querySelector('#tenantHandle').value = tenant.handle || ''
+  document.querySelector('#tenantStatus').value = tenant.status || 'active'
+  document.querySelector('#tenantNotes').value = tenant.notes || ''
+  document.querySelector('#tenantDefault').checked = Number(tenant.is_default) === 1
+  tenantFormTitle.textContent = 'Modifica tenant'
+  tenantSubmitButton.textContent = 'Aggiorna tenant'
+  cancelTenantEdit.hidden = false
+}
+
+function readTenantPayload() {
+  return {
+    id: document.querySelector('#tenantId').value,
+    name: document.querySelector('#tenantName').value.trim(),
+    handle: document.querySelector('#tenantHandle').value.trim(),
+    status: document.querySelector('#tenantStatus').value,
+    notes: document.querySelector('#tenantNotes').value.trim(),
+    is_default: document.querySelector('#tenantDefault').checked,
+  }
+}
+
+async function loadTenantsAdmin() {
+  if (!tenantsList) return
+  tenantsList.textContent = 'Caricamento tenants...'
+
+  try {
+    const response = await fetch('/api/admin/tenants')
+    const data = await response.json()
+
+    if (!data.success) {
+      tenantsList.textContent = data.message || 'Errore tenants.'
+      return
+    }
+
+    tenantsList.innerHTML = `
+      <article class="admin-record">
+        <p>${escapeHtml(data.note || '')}</p>
+      </article>
+      ${
+        data.tenants.length
+          ? data.tenants
+              .map(
+                (tenant) => `
+                  <article class="product-item">
+                    <h3>${escapeHtml(tenant.name)}</h3>
+                    <p>${escapeHtml(tenant.notes || 'Nessuna nota')}</p>
+                    <div class="meta">
+                      <span>${escapeHtml(tenant.handle)}</span>
+                      <span>${escapeHtml(tenant.status)}</span>
+                      <span>${tenant.is_default ? 'Default' : 'Non default'}</span>
+                    </div>
+                    <div class="product-actions">
+                      <button type="button" data-edit-tenant="${tenant.id}">Modifica</button>
+                    </div>
+                  </article>
+                `,
+              )
+              .join('')
+          : 'Nessun tenant.'
+      }
+    `
+
+    document.querySelectorAll('[data-edit-tenant]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const tenant = data.tenants.find((item) => item.id === Number(button.dataset.editTenant))
+        fillTenantForm(tenant)
+      })
+    })
+  } catch {
+    tenantsList.textContent = 'Errore di connessione tenants.'
+  }
+}
+
+tenantForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  tenantMessage.textContent = 'Salvataggio tenant...'
+  const payload = readTenantPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/tenants', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    tenantMessage.textContent = data.message || 'Tenant salvato.'
+    if (data.success) {
+      resetTenantForm()
+      loadTenantsAdmin()
+    }
+  } catch {
+    tenantMessage.textContent = 'Errore di connessione tenants.'
+  }
+})
+
+cancelTenantEdit?.addEventListener('click', resetTenantForm)
+refreshTenantsButton?.addEventListener('click', loadTenantsAdmin)
+loadTenantsAdmin()
+
+// ===============================
+// PERFORMANCE
+// ===============================
+
+const performanceForm = document.querySelector('#performanceForm')
+const performanceDashboard = document.querySelector('#performanceDashboard')
+const performanceMessage = document.querySelector('#performanceMessage')
+const refreshPerformanceButton = document.querySelector('#refreshPerformanceButton')
+
+async function loadPerformanceAdmin() {
+  if (!performanceDashboard) return
+  performanceDashboard.textContent = 'Caricamento performance...'
+
+  try {
+    const response = await fetch('/api/admin/performance')
+    const data = await response.json()
+
+    if (!data.success) {
+      performanceDashboard.textContent = data.message || 'Errore performance.'
+      return
+    }
+
+    document.querySelector('#performanceCacheSeconds').value = data.map?.public_cache_seconds || 120
+    document.querySelector('#performanceFetchTimeout').value = data.map?.fetch_timeout_ms || 8000
+    document.querySelector('#performanceLazyImages').checked = String(data.map?.lazy_images ?? '1') !== '0'
+
+    performanceDashboard.innerHTML = `
+      <article class="admin-record">
+        <div class="admin-record-head">
+          <div>
+            <h3>Checklist produzione</h3>
+            <p>Stato base non invasivo.</p>
+          </div>
+        </div>
+        <div class="admin-lines">
+          ${(data.checklist || [])
+            .map((item) => `<div><span>${escapeHtml(item)}</span><strong>OK</strong></div>`)
+            .join('')}
+        </div>
+      </article>
+      <article class="admin-record">
+        <div class="admin-record-head">
+          <div>
+            <h3>Domini / Tenant</h3>
+            <p>${data.domains?.length || 0} domini, ${data.tenants?.length || 0} tenants configurati.</p>
+          </div>
+        </div>
+      </article>
+    `
+  } catch {
+    performanceDashboard.textContent = 'Errore di connessione performance.'
+  }
+}
+
+performanceForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  performanceMessage.textContent = 'Salvataggio performance...'
+
+  try {
+    const response = await fetch('/api/admin/performance', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        settings: {
+          public_cache_seconds: document.querySelector('#performanceCacheSeconds').value,
+          fetch_timeout_ms: document.querySelector('#performanceFetchTimeout').value,
+          lazy_images: document.querySelector('#performanceLazyImages').checked ? '1' : '0',
+        },
+      }),
+    })
+    const data = await response.json()
+    performanceMessage.textContent = data.message || 'Performance salvata.'
+    if (data.success) loadPerformanceAdmin()
+  } catch {
+    performanceMessage.textContent = 'Errore di connessione performance.'
+  }
+})
+
+refreshPerformanceButton?.addEventListener('click', loadPerformanceAdmin)
+loadPerformanceAdmin()
 
 // ===============================
 // ORDINI

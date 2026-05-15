@@ -1683,6 +1683,27 @@ input[type="range"] {
   line-height: 1.8;
 }
 
+.policy-page {
+  width: min(860px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.policy-page h1 {
+  margin-bottom: 14px;
+  font-size: clamp(46px, 7vw, 82px);
+}
+
+.policy-date {
+  color: var(--muted);
+}
+
+.policy-content {
+  margin-top: 28px;
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.8;
+}
+
 @media (max-width: 900px) {
   .product-detail,
   .checkout-layout {

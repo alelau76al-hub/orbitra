@@ -368,6 +368,23 @@ const DEFAULT_TAX_SETTINGS = {
 }
 
 let activeCheckoutDiscount = null
+let primaryCanonicalOrigin = ''
+
+async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+    const data = await response.json()
+    return { response, data }
+  } finally {
+    window.clearTimeout(timeout)
+  }
+}
 
 function setMetaTag(selector, attributes) {
   let element = document.head.querySelector(selector)
@@ -389,7 +406,12 @@ function applySeoMeta(seo = {}, fallback = {}) {
     fallback.description ||
     'CMS ecommerce custom Orbitra.'
   const image = seo.og_image || fallback.image || ''
-  const canonical = seo.canonical_url || fallback.canonical || window.location.href
+  const canonical =
+    seo.canonical_url ||
+    fallback.canonical ||
+    (primaryCanonicalOrigin
+      ? `${primaryCanonicalOrigin}${window.location.pathname}`
+      : window.location.href)
 
   document.title = title
 
@@ -784,7 +806,7 @@ function renderCart() {
           <div class="cart-item-image">
             ${
               product.image_url
-                ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+                ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
                 : '<span>Prodotto</span>'
             }
           </div>
@@ -1018,6 +1040,49 @@ async function loadPublicFooterMenu() {
 }
 
 loadPublicFooterMenu()
+
+async function loadPublicPolicyLinks() {
+  const menuContainer = document.querySelector('#footerMenuLinks')
+  if (!menuContainer) return
+
+  try {
+    const response = await fetch('/api/policies')
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !data.policies?.length) return
+
+    const links = data.policies
+      .map(
+        (policy) => `
+          <a href="/policies/${escapeCmsHtml(policy.slug)}">
+            ${escapeCmsHtml(policy.title)}
+          </a>
+        `,
+      )
+      .join('')
+
+    menuContainer.insertAdjacentHTML('beforeend', links)
+    menuContainer.hidden = false
+  } catch {
+    // Le policy nel footer sono additive: il footer esistente resta valido.
+  }
+}
+
+loadPublicPolicyLinks()
+
+async function loadPrimaryCanonicalDomain() {
+  try {
+    const response = await fetch('/api/domains')
+    const data = await response.json()
+    const domain = data.primary_domain?.domain
+
+    if (response.ok && data.success && domain) {
+      primaryCanonicalOrigin = `https://${domain}`
+    }
+  } catch {
+    primaryCanonicalOrigin = ''
+  }
+}
 
 async function loadPublicMarkets() {
   const selector = document.querySelector('#marketSelector')
@@ -1285,7 +1350,7 @@ async function loadStoreCollections() {
             <div class="store-image">
               ${
                 collection.image_url
-                  ? `<img src="${escapeCmsHtml(collection.image_url)}" alt="${escapeCmsHtml(collection.name)}">`
+                  ? `<img src="${escapeCmsHtml(collection.image_url)}" alt="${escapeCmsHtml(collection.name)}" loading="lazy">`
                   : '🪐'
               }
             </div>
@@ -2116,7 +2181,7 @@ function renderProductCard(product) {
       <a class="store-image" href="${productHref}">
         ${
           product.image_url
-            ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+            ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
             : '<span>Prodotto</span>'
         }
       </a>
@@ -2215,7 +2280,7 @@ async function hydrateProductGrids() {
           <div class="store-image">
             ${
               product.image_url
-                ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+                ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
                 : '🚀'
             }
           </div>
@@ -2268,7 +2333,7 @@ async function hydrateCollectionGrids() {
             <div class="store-image">
               ${
                 collection.image_url
-                  ? `<img src="${escapeCmsHtml(collection.image_url)}" alt="${escapeCmsHtml(collection.name)}">`
+                  ? `<img src="${escapeCmsHtml(collection.image_url)}" alt="${escapeCmsHtml(collection.name)}" loading="lazy">`
                   : '🪐'
               }
             </div>
@@ -2542,7 +2607,7 @@ async function renderPublicProductPage() {
         <div class="product-detail-media">
           ${
             product.image_url
-              ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}">`
+              ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
               : '<span>Prodotto senza immagine</span>'
           }
         </div>
@@ -3106,7 +3171,7 @@ async function renderPublicBlogPage() {
         <article class="section blog-article">
           ${
             post.image_url
-              ? `<img class="blog-hero-image" src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}">`
+              ? `<img class="blog-hero-image" src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}" loading="lazy">`
               : ''
           }
           <p class="eyebrow">Blog ${post.author ? `Â· ${escapeCmsHtml(post.author)}` : ''}</p>
@@ -3145,7 +3210,7 @@ async function renderPublicBlogPage() {
                         <a class="blog-card-image" href="/blog/${escapeCmsHtml(post.slug)}">
                           ${
                             post.image_url
-                              ? `<img src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}">`
+                              ? `<img src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}" loading="lazy">`
                               : '<span>Blog</span>'
                           }
                         </a>
@@ -3174,12 +3239,79 @@ async function renderPublicBlogPage() {
   }
 }
 
+async function renderPublicPolicyPage() {
+  const path = window.location.pathname
+  if (!path.startsWith('/policies/')) return
+
+  const slug = decodeURIComponent(path.replace('/policies/', '').replaceAll('/', ''))
+  const main = document.querySelector('main')
+  if (!main || !slug) return
+
+  main.innerHTML = `
+    <section class="section policy-page">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Policy</p>
+        <h1>Caricamento policy...</h1>
+        <p>Stiamo recuperando il contenuto dal CMS.</p>
+      </div>
+    </section>
+  `
+
+  try {
+    const response = await fetch(`/api/policies?slug=${encodeURIComponent(slug)}`)
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !data.policy) {
+      main.innerHTML = `
+        <section class="section policy-page policy-empty">
+          <p class="eyebrow">Policy</p>
+          <h1>Policy non trovata</h1>
+          <p>Questa policy non esiste o non e pubblicata.</p>
+          <a class="btn primary" href="/">Torna al sito</a>
+        </section>
+      `
+      applySeoMeta({}, {
+        title: 'Policy non trovata | Orbitra',
+        description: 'Policy non disponibile.',
+      })
+      return
+    }
+
+    const policy = data.policy
+    applySeoMeta({}, {
+      title: `${policy.title} | Orbitra`,
+      description: `${policy.title} aggiornata dal CMS.`,
+    })
+
+    main.innerHTML = `
+      <article class="section policy-page">
+        <p class="eyebrow">Policy</p>
+        <h1>${escapeCmsHtml(policy.title)}</h1>
+        <p class="policy-date">Ultimo aggiornamento: ${escapeCmsHtml(policy.updated_at || '')}</p>
+        <div class="policy-content">
+          ${renderBlogContent(policy.content || '')}
+        </div>
+      </article>
+    `
+  } catch {
+    main.innerHTML = `
+      <section class="section policy-page policy-empty">
+        <p class="eyebrow">Policy</p>
+        <h1>Policy non disponibile</h1>
+        <p>Non e stato possibile caricare questa policy.</p>
+        <a class="btn primary" href="/">Torna al sito</a>
+      </section>
+    `
+  }
+}
+
 async function renderPublicCmsPage() {
   const path = window.location.pathname
 
   if (path === '/') return
   if (path.startsWith('/collections/')) return
   if (path.startsWith('/products/')) return
+  if (path.startsWith('/policies/')) return
   if (path.startsWith('/api/')) return
 
   const pageSlug = decodeURIComponent(path.replace('/', '').replaceAll('/', ''))
@@ -3255,6 +3387,7 @@ async function applyHomeSeoMeta() {
 
 async function bootPublicRouting() {
   const path = window.location.pathname
+  await loadPrimaryCanonicalDomain()
   trackAnalyticsEvent('page_view')
 
   if (path.startsWith('/collections/')) {
@@ -3274,6 +3407,11 @@ async function bootPublicRouting() {
 
   if (path === '/blog' || path === '/blog/' || path.startsWith('/blog/')) {
     await renderPublicBlogPage()
+    return
+  }
+
+  if (path.startsWith('/policies/')) {
+    await renderPublicPolicyPage()
     return
   }
 

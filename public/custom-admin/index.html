@@ -252,6 +252,11 @@
             <p>Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
           </a>
 
+          <a class="mini-card" href="#import-export">
+            <h3>Import / Export</h3>
+            <p>Esporta dati e importa prodotti con validazione e dry-run.</p>
+          </a>
+
           <article>
             <h3>Stock</h3>
             <p>Gestione futura delle scorte avanzate, quantità e disponibilità.</p>
@@ -445,6 +450,51 @@
         </section>
       </section>
 
+      <section id="import-export" class="cms-area card admin-view" data-admin-view="import-export">
+        <div class="section-title">
+          <div>
+            <h2>Import / Export</h2>
+            <p class="section-subtitle">Export dati e import prodotti con dry-run e validazione base.</p>
+          </div>
+          <a class="back-link" href="#catalogo">â† Torna a Catalogo</a>
+        </div>
+
+        <div class="content-manager">
+          <section class="inner-card">
+            <h3>Export</h3>
+            <label>Risorsa</label>
+            <select id="exportResource">
+              <option value="products">Prodotti</option>
+              <option value="collections">Collezioni</option>
+              <option value="customers">Clienti</option>
+              <option value="orders">Ordini</option>
+            </select>
+            <label>Formato</label>
+            <select id="exportFormat">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+            <button id="exportDataButton" type="button">Prepara export</button>
+            <pre id="exportPreview" class="admin-pre">Nessun export ancora.</pre>
+          </section>
+
+          <section class="inner-card">
+            <h3>Import prodotti</h3>
+            <label>Formato</label>
+            <select id="importFormat">
+              <option value="json">JSON rows</option>
+              <option value="csv">CSV</option>
+            </select>
+            <label>Dati import</label>
+            <textarea id="importContent" placeholder='[{"name":"Prodotto","slug":"prodotto","price_cents":4900,"stock":10}]'></textarea>
+            <label class="inline-check"><input id="importDryRun" type="checkbox" checked /> Dry-run / preview</label>
+            <button id="importProductsButton" type="button">Valida import</button>
+            <p id="importExportMessage"></p>
+            <pre id="importPreview" class="admin-pre">Nessuna preview.</pre>
+          </section>
+        </div>
+      </section>
+
       <section id="ordini" class="cms-area card admin-view" data-admin-view="ordini">
         <div class="section-title">
           <div>
@@ -510,6 +560,64 @@
             <h3>Metaobjects</h3>
             <p>Oggetti contenuto riutilizzabili e API pubblica read-only.</p>
           </a>
+
+          <a class="mini-card" href="#policy">
+            <h3>Policy</h3>
+            <p>Privacy, termini, resi, spedizioni e cookie policy pubbliche.</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="policy" class="cms-area card admin-view" data-admin-view="policy">
+        <div class="section-title">
+          <div>
+            <h2>Policy</h2>
+            <p class="section-subtitle">Gestisci policy legali in bozza o pubblicate.</p>
+          </div>
+          <a class="back-link" href="#contenuto">â† Torna a Contenuto</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="policyForm" class="inner-card">
+            <h3 id="policyFormTitle">Aggiungi policy</h3>
+            <input id="policyId" type="hidden" />
+
+            <label>Tipo policy</label>
+            <select id="policyType">
+              <option value="privacy_policy">Privacy policy</option>
+              <option value="terms_conditions">Termini e condizioni</option>
+              <option value="refund_policy">Refund policy</option>
+              <option value="shipping_policy">Shipping policy</option>
+              <option value="cookie_policy">Cookie policy</option>
+            </select>
+
+            <label>Titolo</label>
+            <input id="policyTitle" type="text" required />
+
+            <label>Slug</label>
+            <input id="policySlug" type="text" placeholder="privacy-policy" required />
+
+            <label>Contenuto</label>
+            <textarea id="policyContent" placeholder="Testo policy..."></textarea>
+
+            <label>Status</label>
+            <select id="policyStatus">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+
+            <button id="policySubmitButton" type="submit">Salva policy</button>
+            <button id="cancelPolicyEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="policyMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Policy</h3>
+              <button id="refreshPoliciesButton" type="button">Aggiorna</button>
+            </div>
+            <div id="policiesList" class="products-list">Caricamento policy...</div>
+          </section>
         </div>
       </section>
 
@@ -1033,6 +1141,21 @@
       <h3>Notifiche</h3>
       <p>Template e invii mock senza provider email reale.</p>
     </a>
+
+    <a class="mini-card" href="#domini">
+      <h3>Domini</h3>
+      <p>Base documentale per dominio primario, redirect e preview.</p>
+    </a>
+
+    <a class="mini-card" href="#tenants">
+      <h3>Multi-cliente</h3>
+      <p>Tenant default e predisposizione futura senza migrare dati.</p>
+    </a>
+
+    <a class="mini-card" href="#performance">
+      <h3>Performance</h3>
+      <p>Checklist produzione, cache e fallback pubblici.</p>
+    </a>
   </div>
 </section>
 
@@ -1228,6 +1351,114 @@
             <div id="notificationsList" class="products-list">Caricamento notifiche...</div>
           </section>
         </div>
+      </section>
+
+      <section id="domini" class="cms-area card admin-view" data-admin-view="domini">
+        <div class="section-title">
+          <div>
+            <h2>Domini</h2>
+            <p class="section-subtitle">Base CMS per tracciare domini. Nessun DNS reale viene modificato.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">â† Torna a Impostazioni</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="domainForm" class="inner-card">
+            <h3 id="domainFormTitle">Aggiungi dominio</h3>
+            <input id="domainId" type="hidden" />
+            <label>Dominio</label>
+            <input id="domainName" type="text" placeholder="example.com" required />
+            <label>Tipo</label>
+            <select id="domainType">
+              <option value="primary">Primary</option>
+              <option value="redirect">Redirect</option>
+              <option value="preview">Preview</option>
+            </select>
+            <label>Status</label>
+            <select id="domainStatus">
+              <option value="pending">Pending</option>
+              <option value="active">Active</option>
+              <option value="disabled">Disabled</option>
+            </select>
+            <label>Note DNS</label>
+            <textarea id="domainDnsNotes" placeholder="CNAME, TXT verification, note operative"></textarea>
+            <label class="inline-check"><input id="domainPrimary" type="checkbox" /> Dominio primario</label>
+            <button id="domainSubmitButton" type="submit">Salva dominio</button>
+            <button id="cancelDomainEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="domainMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Domini configurati</h3>
+              <button id="refreshDomainsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="domainsList" class="products-list">Caricamento domini...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="tenants" class="cms-area card admin-view" data-admin-view="tenants">
+        <div class="section-title">
+          <div>
+            <h2>Multi-cliente / Store</h2>
+            <p class="section-subtitle">Predisposizione tenant: lo store attuale resta sul tenant default.</p>
+          </div>
+          <a class="back-link" href="#impostazioni">â† Torna a Impostazioni</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="tenantForm" class="inner-card">
+            <h3 id="tenantFormTitle">Aggiungi tenant</h3>
+            <input id="tenantId" type="hidden" />
+            <label>Nome store</label>
+            <input id="tenantName" type="text" placeholder="Store default" required />
+            <label>Handle</label>
+            <input id="tenantHandle" type="text" placeholder="default" required />
+            <label>Status</label>
+            <select id="tenantStatus">
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+              <option value="disabled">Disabled</option>
+            </select>
+            <label>Note</label>
+            <textarea id="tenantNotes" placeholder="Note tecniche isolamento futuro"></textarea>
+            <label class="inline-check"><input id="tenantDefault" type="checkbox" /> Tenant default</label>
+            <button id="tenantSubmitButton" type="submit">Salva tenant</button>
+            <button id="cancelTenantEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="tenantMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Tenants</h3>
+              <button id="refreshTenantsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="tenantsList" class="products-list">Caricamento tenants...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="performance" class="cms-area card admin-view" data-admin-view="performance">
+        <div class="section-title">
+          <div>
+            <h2>Performance produzione</h2>
+            <p class="section-subtitle">Checklist e impostazioni MVP per produzione, senza refactor radicali.</p>
+          </div>
+          <button id="refreshPerformanceButton" type="button">Aggiorna</button>
+        </div>
+
+        <form id="performanceForm" class="inner-card settings-form-compact">
+          <label>Cache API pubbliche (secondi)</label>
+          <input id="performanceCacheSeconds" type="number" min="0" placeholder="120" />
+          <label>Timeout fetch pubbliche (ms)</label>
+          <input id="performanceFetchTimeout" type="number" min="1000" placeholder="8000" />
+          <label class="inline-check"><input id="performanceLazyImages" type="checkbox" checked /> Lazy loading immagini</label>
+          <button type="submit">Salva performance</button>
+          <p id="performanceMessage"></p>
+        </form>
+
+        <div id="performanceDashboard" class="admin-records-list">Caricamento performance...</div>
       </section>
     </main>
 
