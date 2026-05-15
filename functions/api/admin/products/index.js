@@ -1,3 +1,49 @@
+function normalizeSeo(seo = {}) {
+  return {
+    meta_title: String(seo.meta_title || '').trim(),
+    meta_description: String(seo.meta_description || '').trim(),
+    og_image: String(seo.og_image || '').trim(),
+    canonical_url: String(seo.canonical_url || '').trim(),
+  }
+}
+
+async function saveSeoMetadata(env, entityType, entityId, seo) {
+  const normalizedSeo = normalizeSeo(seo)
+
+  try {
+    await env.DB.prepare(`
+      INSERT INTO seo_metadata (
+        entity_type,
+        entity_id,
+        meta_title,
+        meta_description,
+        og_image,
+        canonical_url,
+        updated_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(entity_type, entity_id)
+      DO UPDATE SET
+        meta_title = excluded.meta_title,
+        meta_description = excluded.meta_description,
+        og_image = excluded.og_image,
+        canonical_url = excluded.canonical_url,
+        updated_at = CURRENT_TIMESTAMP
+    `)
+      .bind(
+        entityType,
+        entityId,
+        normalizedSeo.meta_title,
+        normalizedSeo.meta_description,
+        normalizedSeo.og_image,
+        normalizedSeo.canonical_url,
+      )
+      .run()
+  } catch {
+    // SEO resta opzionale finche la migration 0008 non viene applicata.
+  }
+}
+
 function validateProduct(body) {
   const variants = Array.isArray(body.variants)
     ? body.variants
@@ -30,6 +76,7 @@ function validateProduct(body) {
     category: body.category?.trim() || '',
     stock: Number(body.stock),
     variants,
+    seo: normalizeSeo(body.seo || {}),
   }
 
   if (!product.name || !product.slug || !product.price_cents || Number.isNaN(product.price_cents)) {
@@ -203,6 +250,7 @@ export async function onRequestPost({ request, env }) {
       .run()
 
     const variantsResult = await saveProductVariants(env, productId, product.variants)
+    await saveSeoMetadata(env, 'product', productId, product.seo)
 
     if (!variantsResult.success) {
       return Response.json(
@@ -311,6 +359,7 @@ export async function onRequestPut({ request, env }) {
       .run()
 
     const variantsResult = await saveProductVariants(env, product.id, product.variants)
+    await saveSeoMetadata(env, 'product', product.id, product.seo)
 
     if (!variantsResult.success) {
       return Response.json(

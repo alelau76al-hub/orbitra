@@ -10,6 +10,10 @@ function readText(value = '') {
   return String(value || '').trim()
 }
 
+function normalizeCode(value = '') {
+  return String(value || '').trim().toUpperCase()
+}
+
 function fallbackShippingMethods() {
   return [
     {
@@ -70,6 +74,139 @@ function resolvePaymentStatus(paymentMethod) {
   if (paymentMethod === 'test_paid') return 'paid'
   if (paymentMethod === 'test_failed') return 'failed'
   return 'pending'
+}
+
+async function loadTaxSettings(env) {
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT key, value
+      FROM tax_settings
+    `).all()
+
+    const map = (results || []).reduce((settings, row) => {
+      settings[row.key] = row.value
+      return settings
+    }, {})
+    const vatRate = Number(map.vat_rate)
+
+    return {
+      vat_rate: Number.isFinite(vatRate) && vatRate >= 0 ? vatRate : 22,
+      prices_include_tax: String(map.prices_include_tax ?? '1') !== '0',
+    }
+  } catch {
+    return {
+      vat_rate: 22,
+      prices_include_tax: true,
+    }
+  }
+}
+
+function isDiscountDateValid(discount) {
+  const now = Date.now()
+  const startsAt = discount.starts_at ? Date.parse(discount.starts_at) : null
+  const endsAt = discount.ends_at ? Date.parse(discount.ends_at) : null
+
+  if (startsAt && Number.isFinite(startsAt) && now < startsAt) return false
+  if (endsAt && Number.isFinite(endsAt) && now > endsAt) return false
+  return true
+}
+
+function calculateDiscountCents(discount, subtotalCents) {
+  if (!discount || subtotalCents <= 0) return 0
+
+  if (discount.type === 'fixed') {
+    return Math.min(subtotalCents, Math.max(0, Number(discount.value || 0)))
+  }
+
+  const percent = Math.min(100, Math.max(0, Number(discount.value || 0)))
+  return Math.round((subtotalCents * percent) / 100)
+}
+
+async function resolveDiscount(env, code, subtotalCents) {
+  const discountCode = normalizeCode(code)
+
+  if (!discountCode) {
+    return {
+      code: '',
+      discount_cents: 0,
+    }
+  }
+
+  const discount = await env.DB.prepare(`
+    SELECT
+      code,
+      type,
+      value,
+      starts_at,
+      ends_at,
+      min_subtotal_cents,
+      active
+    FROM discount_codes
+    WHERE code = ? AND active = 1
+  `)
+    .bind(discountCode)
+    .first()
+
+  if (!discount) {
+    return {
+      error: 'Codice sconto non valido.',
+    }
+  }
+
+  if (!isDiscountDateValid(discount)) {
+    return {
+      error: 'Codice sconto non attivo in questo momento.',
+    }
+  }
+
+  const minimum = Number(discount.min_subtotal_cents || 0)
+  if (minimum > 0 && subtotalCents < minimum) {
+    return {
+      error: 'Il carrello non raggiunge il minimo richiesto per questo codice sconto.',
+    }
+  }
+
+  return {
+    code: discount.code,
+    discount_cents: calculateDiscountCents(discount, subtotalCents),
+  }
+}
+
+function calculateTaxAndTotal(subtotalCents, shippingCents, discountCents, taxSettings) {
+  const taxableBaseCents = Math.max(0, subtotalCents - discountCents + shippingCents)
+  const taxRate = Math.max(0, Number(taxSettings.vat_rate || 0))
+  const pricesIncludeTax = taxSettings.prices_include_tax !== false
+
+  if (taxRate <= 0) {
+    return {
+      taxable_base_cents: taxableBaseCents,
+      tax_cents: 0,
+      total_cents: taxableBaseCents,
+      tax_rate: 0,
+      prices_include_tax: pricesIncludeTax,
+    }
+  }
+
+  if (pricesIncludeTax) {
+    const netCents = Math.round(taxableBaseCents / (1 + taxRate / 100))
+    return {
+      taxable_base_cents: netCents,
+      tax_cents: Math.max(0, taxableBaseCents - netCents),
+      total_cents: taxableBaseCents,
+      tax_rate: taxRate,
+      prices_include_tax: true,
+    }
+  }
+
+  const taxCents = Math.round((taxableBaseCents * taxRate) / 100)
+
+  return {
+    taxable_base_cents: taxableBaseCents,
+    tax_cents: taxCents,
+    total_cents: taxableBaseCents + taxCents,
+    tax_rate: taxRate,
+    prices_include_tax: false,
+  }
 }
 
 async function loadProduct(env, slug) {
@@ -188,6 +325,7 @@ export async function onRequestPost({ request, env }) {
     }
     const items = Array.isArray(body.items) ? body.items : []
     const paymentMethod = readText(body.payment_method || 'manual')
+    const requestedDiscountCode = normalizeCode(body.discount_code)
 
     if (!customer.name || !customer.email || !customer.email.includes('@')) {
       return json({ success: false, message: 'Nome ed email valida sono obbligatori.' }, 400)
@@ -253,7 +391,20 @@ export async function onRequestPost({ request, env }) {
       readText(body.shipping_method || 'standard'),
       subtotalCents,
     )
-    const totalCents = subtotalCents + shipping.price_cents
+    const discount = await resolveDiscount(env, requestedDiscountCode, subtotalCents)
+
+    if (discount.error) {
+      return json({ success: false, message: discount.error }, 400)
+    }
+
+    const taxSettings = await loadTaxSettings(env)
+    const taxSummary = calculateTaxAndTotal(
+      subtotalCents,
+      shipping.price_cents,
+      discount.discount_cents,
+      taxSettings,
+    )
+    const totalCents = taxSummary.total_cents
     const paymentStatus = resolvePaymentStatus(paymentMethod)
     const orderStatus = paymentStatus === 'paid' ? 'paid' : 'new'
     const customerId = await upsertCustomer(env, customer, address)
@@ -276,9 +427,14 @@ export async function onRequestPost({ request, env }) {
         shipping_address_city,
         shipping_address_postal_code,
         shipping_address_country,
+        discount_code,
+        discount_cents,
+        tax_cents,
+        tax_rate,
+        prices_include_tax,
         updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `)
       .bind(
         customer.email,
@@ -297,6 +453,11 @@ export async function onRequestPost({ request, env }) {
         address.city,
         address.postal_code,
         address.country,
+        discount.code || '',
+        discount.discount_cents,
+        taxSummary.tax_cents,
+        taxSummary.tax_rate,
+        taxSummary.prices_include_tax ? 1 : 0,
       )
       .run()
 
@@ -342,6 +503,12 @@ export async function onRequestPost({ request, env }) {
         customer_id: customerId,
         subtotal_cents: subtotalCents,
         shipping_cents: shipping.price_cents,
+        discount_code: discount.code || '',
+        discount_cents: discount.discount_cents,
+        taxable_base_cents: taxSummary.taxable_base_cents,
+        tax_cents: taxSummary.tax_cents,
+        tax_rate: taxSummary.tax_rate,
+        prices_include_tax: taxSummary.prices_include_tax,
         total_cents: totalCents,
         payment_status: paymentStatus,
         payment_method: paymentMethod,

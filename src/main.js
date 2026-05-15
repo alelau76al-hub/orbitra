@@ -359,6 +359,109 @@ function formatPriceCents(priceCents = 0) {
   })
 }
 
+const DEFAULT_TAX_SETTINGS = {
+  vat_rate: 22,
+  prices_include_tax: true,
+}
+
+let activeCheckoutDiscount = null
+
+function setMetaTag(selector, attributes) {
+  let element = document.head.querySelector(selector)
+
+  if (!element) {
+    element = document.createElement(selector.startsWith('link') ? 'link' : 'meta')
+    document.head.appendChild(element)
+  }
+
+  Object.entries(attributes).forEach(([key, value]) => {
+    if (value) element.setAttribute(key, value)
+  })
+}
+
+function applySeoMeta(seo = {}, fallback = {}) {
+  const title = seo.meta_title || fallback.title || 'Orbitra'
+  const description =
+    seo.meta_description ||
+    fallback.description ||
+    'CMS ecommerce custom Orbitra.'
+  const image = seo.og_image || fallback.image || ''
+  const canonical = seo.canonical_url || fallback.canonical || window.location.href
+
+  document.title = title
+
+  setMetaTag('meta[name="description"]', {
+    name: 'description',
+    content: description,
+  })
+  setMetaTag('meta[property="og:title"]', {
+    property: 'og:title',
+    content: title,
+  })
+  setMetaTag('meta[property="og:description"]', {
+    property: 'og:description',
+    content: description,
+  })
+
+  if (image) {
+    setMetaTag('meta[property="og:image"]', {
+      property: 'og:image',
+      content: image,
+    })
+  }
+
+  setMetaTag('link[rel="canonical"]', {
+    rel: 'canonical',
+    href: canonical,
+  })
+}
+
+async function loadTaxSettings() {
+  try {
+    const response = await fetch('/api/tax')
+    const data = await response.json()
+
+    if (!response.ok || !data.success) return DEFAULT_TAX_SETTINGS
+
+    return {
+      vat_rate: Number(data.settings?.vat_rate ?? DEFAULT_TAX_SETTINGS.vat_rate),
+      prices_include_tax: data.settings?.prices_include_tax !== false,
+    }
+  } catch {
+    return DEFAULT_TAX_SETTINGS
+  }
+}
+
+function calculateTaxSummary(subtotalCents, shippingCents, discountCents, taxSettings) {
+  const taxableCents = Math.max(0, subtotalCents - discountCents + shippingCents)
+  const vatRate = Math.max(0, Number(taxSettings?.vat_rate || 0))
+  const pricesIncludeTax = taxSettings?.prices_include_tax !== false
+
+  if (vatRate <= 0) {
+    return {
+      tax_cents: 0,
+      total_cents: taxableCents,
+      prices_include_tax: pricesIncludeTax,
+    }
+  }
+
+  if (pricesIncludeTax) {
+    const netCents = Math.round(taxableCents / (1 + vatRate / 100))
+    return {
+      tax_cents: Math.max(0, taxableCents - netCents),
+      total_cents: taxableCents,
+      prices_include_tax: true,
+    }
+  }
+
+  const taxCents = Math.round((taxableCents * vatRate) / 100)
+  return {
+    tax_cents: taxCents,
+    total_cents: taxableCents + taxCents,
+    prices_include_tax: false,
+  }
+}
+
 function cacheProducts(products = []) {
   products.forEach((product) => {
     if (product.slug) {
@@ -2191,8 +2294,21 @@ async function renderPublicCollectionPage() {
       title.textContent = 'Collezione non trovata'
       intro.textContent = 'Questa collezione non esiste o non è più attiva.'
       container.textContent = ''
+      applySeoMeta(
+        {},
+        {
+          title: 'Collezione non trovata | Orbitra',
+          description: 'Questa collezione non e disponibile.',
+        },
+      )
       return
     }
+
+    applySeoMeta(collection.seo || {}, {
+      title: `${collection.name} | Orbitra`,
+      description: collection.description || 'Collezione prodotti Orbitra.',
+      image: collection.image_url || '',
+    })
 
     title.textContent = collection.name
     intro.textContent =
@@ -2291,8 +2407,21 @@ async function renderPublicProductPage() {
           <a class="btn primary" href="/#shop">Torna allo shop</a>
         </section>
       `
+      applySeoMeta(
+        {},
+        {
+          title: 'Prodotto non trovato | Orbitra',
+          description: 'Questo prodotto non e disponibile.',
+        },
+      )
       return
     }
+
+    applySeoMeta(product.seo || {}, {
+      title: `${product.name} | Orbitra`,
+      description: product.description || 'Scheda prodotto Orbitra.',
+      image: product.image_url || '',
+    })
 
     const collection = (collectionsData.collections || []).find(
       (item) => item.slug === product.collection_slug,
@@ -2395,17 +2524,89 @@ async function loadShippingMethods() {
   }
 }
 
-function renderCheckoutSummary(items, shippingMethods, selectedHandle) {
+function renderCheckoutSummary(
+  items,
+  shippingMethods,
+  selectedHandle,
+  taxSettings = DEFAULT_TAX_SETTINGS,
+  discount = activeCheckoutDiscount,
+) {
   const subtotalCents = calculateCartSubtotal(items)
   const shipping = calculateShippingCost(shippingMethods, selectedHandle, subtotalCents)
-  const totalCents = subtotalCents + shipping.shipping_cents
+  const discountCents = Math.min(subtotalCents, Math.max(0, Number(discount?.discount_cents || 0)))
+  const taxSummary = calculateTaxSummary(
+    subtotalCents,
+    shipping.shipping_cents,
+    discountCents,
+    taxSettings,
+  )
   const subtotalTarget = document.querySelector('#checkoutSubtotal')
   const shippingTarget = document.querySelector('#checkoutShipping')
+  const discountRow = document.querySelector('#checkoutDiscountRow')
+  const discountTarget = document.querySelector('#checkoutDiscount')
+  const taxLabel = document.querySelector('#checkoutTaxLabel')
+  const taxTarget = document.querySelector('#checkoutTax')
   const totalTarget = document.querySelector('#checkoutTotal')
 
   if (subtotalTarget) subtotalTarget.textContent = formatPriceCents(subtotalCents)
   if (shippingTarget) shippingTarget.textContent = formatPriceCents(shipping.shipping_cents)
-  if (totalTarget) totalTarget.textContent = formatPriceCents(totalCents)
+  if (discountRow) discountRow.hidden = discountCents <= 0
+  if (discountTarget) discountTarget.textContent = `-${formatPriceCents(discountCents)}`
+  if (taxLabel) {
+    taxLabel.textContent = taxSummary.prices_include_tax
+      ? `IVA inclusa (${Number(taxSettings.vat_rate || 0)}%)`
+      : `IVA (${Number(taxSettings.vat_rate || 0)}%)`
+  }
+  if (taxTarget) taxTarget.textContent = formatPriceCents(taxSummary.tax_cents)
+  if (totalTarget) totalTarget.textContent = formatPriceCents(taxSummary.total_cents)
+}
+
+async function applyCheckoutDiscount(items, shippingMethods, taxSettings) {
+  const input = document.querySelector('#discountCode')
+  const message = document.querySelector('#checkoutDiscountMessage')
+  const selectedHandle = document.querySelector('input[name="shipping_method"]:checked')?.value
+  const code = input?.value.trim() || ''
+
+  if (!code) {
+    activeCheckoutDiscount = null
+    if (message) message.textContent = 'Inserisci un codice sconto.'
+    renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
+    return
+  }
+
+  if (message) message.textContent = 'Verifica codice sconto...'
+
+  try {
+    const response = await fetch('/api/discounts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        code,
+        subtotal_cents: calculateCartSubtotal(items),
+      }),
+    })
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !data.discount) {
+      activeCheckoutDiscount = null
+      if (message) message.textContent = data.message || 'Codice sconto non valido.'
+      renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
+      return
+    }
+
+    activeCheckoutDiscount = data.discount
+    if (input) input.value = data.discount.code
+    if (message) {
+      message.textContent = `${data.discount.code} applicato: -${formatPriceCents(data.discount.discount_cents)}`
+    }
+    renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
+  } catch {
+    activeCheckoutDiscount = null
+    if (message) message.textContent = 'Sconti non disponibili ora. Puoi completare senza coupon.'
+    renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
+  }
 }
 
 function renderOrderConfirmation(order) {
@@ -2424,6 +2625,12 @@ function renderOrderConfirmation(order) {
       <div class="checkout-confirmation-box">
         <span>Totale ordine</span>
         <strong>${formatPriceCents(order.total_cents)}</strong>
+        ${
+          order.discount_cents
+            ? `<small>Sconto ${escapeCmsHtml(order.discount_code || '')}: -${formatPriceCents(order.discount_cents)}</small>`
+            : ''
+        }
+        <small>IVA: ${formatPriceCents(order.tax_cents || 0)}</small>
         <small>Metodo pagamento: ${escapeCmsHtml(order.payment_method || 'manual')}</small>
       </div>
 
@@ -2432,7 +2639,7 @@ function renderOrderConfirmation(order) {
   `
 }
 
-async function submitCheckoutForm(event, shippingMethods, detailedItems) {
+async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSettings) {
   event.preventDefault()
 
   const form = event.currentTarget
@@ -2460,6 +2667,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems) {
     },
     shipping_method: formData.get('shipping_method'),
     payment_method: formData.get('payment_method'),
+    discount_code: activeCheckoutDiscount?.code || document.querySelector('#discountCode')?.value.trim() || '',
     items: getCart().map((item) => ({
       productSlug: item.productSlug,
       variantId: item.variantId,
@@ -2481,7 +2689,12 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems) {
 
     if (!response.ok || !data.success) {
       if (message) message.textContent = data.message || 'Errore creazione ordine.'
-      renderCheckoutSummary(detailedItems, shippingMethods, payload.shipping_method)
+      renderCheckoutSummary(
+        detailedItems,
+        shippingMethods,
+        payload.shipping_method,
+        taxSettings,
+      )
       return
     }
 
@@ -2526,7 +2739,11 @@ async function renderPublicCheckoutPage() {
       return
     }
 
-    const shippingMethods = await loadShippingMethods()
+    activeCheckoutDiscount = null
+    const [shippingMethods, taxSettings] = await Promise.all([
+      loadShippingMethods(),
+      loadTaxSettings(),
+    ])
     const subtotalCents = calculateCartSubtotal(detailedItems)
     const methods = shippingMethods.length
       ? shippingMethods
@@ -2633,9 +2850,20 @@ async function renderPublicCheckoutPage() {
                 .join('')}
             </div>
 
+            <div class="checkout-discount">
+              <label>
+                Codice sconto
+                <input id="discountCode" name="discount_code" type="text" placeholder="WELCOME10">
+              </label>
+              <button id="applyDiscountButton" class="btn ghost" type="button">Applica</button>
+              <p id="checkoutDiscountMessage" class="checkout-message"></p>
+            </div>
+
             <div class="checkout-totals">
               <span>Subtotale <strong id="checkoutSubtotal">${formatPriceCents(subtotalCents)}</strong></span>
               <span>Spedizione <strong id="checkoutShipping">€0</strong></span>
+              <span id="checkoutDiscountRow" hidden>Sconto <strong id="checkoutDiscount">-€0</strong></span>
+              <span><span id="checkoutTaxLabel">IVA inclusa</span> <strong id="checkoutTax">€0</strong></span>
               <span class="grand-total">Totale <strong id="checkoutTotal">€0</strong></span>
             </div>
           </aside>
@@ -2643,18 +2871,22 @@ async function renderPublicCheckoutPage() {
       </section>
     `
 
-    renderCheckoutSummary(detailedItems, methods, defaultMethod?.handle)
+    renderCheckoutSummary(detailedItems, methods, defaultMethod?.handle, taxSettings)
 
     document.querySelectorAll('input[name="shipping_method"]').forEach((input) => {
       input.addEventListener('change', () => {
-        renderCheckoutSummary(detailedItems, methods, input.value)
+        renderCheckoutSummary(detailedItems, methods, input.value, taxSettings)
       })
     })
 
     document
+      .querySelector('#applyDiscountButton')
+      ?.addEventListener('click', () => applyCheckoutDiscount(detailedItems, methods, taxSettings))
+
+    document
       .querySelector('#checkoutForm')
       ?.addEventListener('submit', (event) =>
-        submitCheckoutForm(event, methods, detailedItems),
+        submitCheckoutForm(event, methods, detailedItems, taxSettings),
       )
   } catch {
     main.innerHTML = `
@@ -2714,11 +2946,36 @@ async function renderPublicCmsPage() {
 
     title.textContent = page.title
     intro.textContent = 'Contenuti caricati dal CMS custom Orbitra.'
+    applySeoMeta(page.seo || {}, {
+      title: `${page.title} | Orbitra`,
+      description: 'Pagina CMS Orbitra.',
+    })
 
     await loadCmsSectionsFromD1(page.slug)
   } catch (error) {
     title.textContent = 'Errore caricamento pagina'
     intro.textContent = 'Non è stato possibile caricare questa pagina.'
+  }
+}
+
+async function applyHomeSeoMeta() {
+  try {
+    const response = await fetch('/api/pages')
+    const data = await response.json()
+    const homePage = data.pages?.find((page) => page.slug === 'home')
+
+    applySeoMeta(homePage?.seo || {}, {
+      title: `${homePage?.title || 'Orbitra'} | Luxury Space Travel`,
+      description: 'Store e CMS custom Orbitra.',
+    })
+  } catch {
+    applySeoMeta(
+      {},
+      {
+        title: 'Orbitra | Luxury Space Travel',
+        description: 'Store e CMS custom Orbitra.',
+      },
+    )
   }
 }
 
@@ -2745,6 +3002,7 @@ async function bootPublicRouting() {
     return
   }
 
+  await applyHomeSeoMeta()
   await loadCmsSectionsFromD1('home')
 }
 

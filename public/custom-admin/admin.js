@@ -26,9 +26,31 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#039;')
 }
 
+function setInputValue(selector, value = '') {
+  const input = document.querySelector(selector)
+  if (input) input.value = value || ''
+}
+
+function readSeoFields(prefix) {
+  return {
+    meta_title: document.querySelector(`#${prefix}SeoTitle`)?.value.trim() || '',
+    meta_description: document.querySelector(`#${prefix}SeoDescription`)?.value.trim() || '',
+    og_image: document.querySelector(`#${prefix}SeoImage`)?.value.trim() || '',
+    canonical_url: document.querySelector(`#${prefix}SeoCanonical`)?.value.trim() || '',
+  }
+}
+
+function fillSeoFields(prefix, seo = {}) {
+  setInputValue(`#${prefix}SeoTitle`, seo.meta_title)
+  setInputValue(`#${prefix}SeoDescription`, seo.meta_description)
+  setInputValue(`#${prefix}SeoImage`, seo.og_image)
+  setInputValue(`#${prefix}SeoCanonical`, seo.canonical_url)
+}
+
 function resetForm() {
   productForm.reset()
   document.querySelector('#productId').value = ''
+  fillSeoFields('product')
   productVariantsDraft = []
   renderVariantRows()
   formTitle.textContent = 'Aggiungi prodotto'
@@ -47,6 +69,7 @@ function fillForm(product) {
   renderProductCollectionOptions(product.collection_slug || '')
   document.querySelector('#category').value = product.category || ''
   document.querySelector('#stock').value = product.stock || 0
+  fillSeoFields('product', product.seo || {})
   productVariantsDraft = (product.variants || []).map((variant) => ({
     id: variant.id || '',
     option_name: variant.option_name || '',
@@ -79,6 +102,7 @@ function getFormProduct() {
     category: document.querySelector('#category').value.trim(),
     stock: Number(document.querySelector('#stock').value),
     variants: readVariantRows(),
+    seo: readSeoFields('product'),
   }
 }
 
@@ -349,6 +373,7 @@ function renderProductCollectionOptions(selectedValue = '') {
 function resetCollectionForm() {
   collectionForm.reset()
   document.querySelector('#collectionId').value = ''
+  fillSeoFields('collection')
   collectionFormTitle.textContent = 'Aggiungi collezione'
   collectionSubmitButton.textContent = 'Salva collezione'
   cancelCollectionEdit.hidden = true
@@ -361,6 +386,7 @@ function fillCollectionForm(collection) {
   document.querySelector('#collectionSlug').value = collection.slug || ''
   document.querySelector('#collectionDescription').value = collection.description || ''
   document.querySelector('#collectionImageUrl').value = collection.image_url || ''
+  fillSeoFields('collection', collection.seo || {})
 
   collectionFormTitle.textContent = 'Modifica collezione'
   collectionSubmitButton.textContent = 'Aggiorna collezione'
@@ -374,6 +400,7 @@ function getFormCollection() {
     slug: document.querySelector('#collectionSlug').value.trim(),
     description: document.querySelector('#collectionDescription').value.trim(),
     image_url: document.querySelector('#collectionImageUrl').value.trim(),
+    seo: readSeoFields('collection'),
   }
 }
 
@@ -515,6 +542,7 @@ const cancelPageEdit = document.querySelector('#cancelPageEdit')
 function resetPageForm() {
   pageForm.reset()
   document.querySelector('#pageId').value = ''
+  fillSeoFields('page')
   pageFormTitle.textContent = 'Aggiungi pagina'
   pageSubmitButton.textContent = 'Salva pagina'
   cancelPageEdit.hidden = true
@@ -525,6 +553,7 @@ function fillPageForm(page) {
   document.querySelector('#pageId').value = page.id
   document.querySelector('#pageTitle').value = page.title || ''
   document.querySelector('#pageSlug').value = page.slug || ''
+  fillSeoFields('page', page.seo || {})
 
   pageFormTitle.textContent = 'Modifica pagina'
   pageSubmitButton.textContent = 'Aggiorna pagina'
@@ -536,6 +565,7 @@ function getFormPage() {
     id: document.querySelector('#pageId').value,
     title: document.querySelector('#pageTitle').value.trim(),
     slug: document.querySelector('#pageSlug').value.trim(),
+    seo: readSeoFields('page'),
   }
 }
 
@@ -702,12 +732,15 @@ function setupAdminViews() {
 
     const catalogoViews = ['prodotti', 'collezioni', 'stock']
     const contenutoViews = ['pagine', 'menu', 'media', 'seo']
+    const impostazioniViews = ['metafields']
 
     const activeHubHash = contenutoViews.includes(activeView)
       ? '#contenuto'
       : catalogoViews.includes(activeView)
         ? '#catalogo'
-        : `#${activeView}`
+        : impostazioniViews.includes(activeView)
+          ? '#impostazioni'
+          : `#${activeView}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
@@ -725,6 +758,619 @@ function setupAdminViews() {
 }
 
 setupAdminViews()
+
+// ===============================
+// TASSE / IVA
+// ===============================
+
+const taxSettingsForm = document.querySelector('#taxSettingsForm')
+const taxVatRate = document.querySelector('#taxVatRate')
+const taxPricesIncludeTax = document.querySelector('#taxPricesIncludeTax')
+const taxSettingsMessage = document.querySelector('#taxSettingsMessage')
+
+async function loadTaxSettingsAdmin() {
+  if (!taxSettingsForm) return
+
+  taxSettingsMessage.textContent = 'Caricamento IVA...'
+
+  try {
+    const response = await fetch('/api/admin/tax')
+    const data = await response.json()
+
+    if (!data.success) {
+      taxSettingsMessage.textContent = data.message || 'Errore caricamento IVA.'
+      return
+    }
+
+    taxVatRate.value = data.settings?.vat_rate ?? 22
+    taxPricesIncludeTax.checked = data.settings?.prices_include_tax !== false
+    taxSettingsMessage.textContent = ''
+  } catch {
+    taxSettingsMessage.textContent = 'Errore di connessione IVA.'
+  }
+}
+
+taxSettingsForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  taxSettingsMessage.textContent = 'Salvataggio IVA...'
+
+  try {
+    const response = await fetch('/api/admin/tax', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        vat_rate: Number(taxVatRate.value || 0),
+        prices_include_tax: taxPricesIncludeTax.checked,
+      }),
+    })
+    const data = await response.json()
+
+    taxSettingsMessage.textContent = data.message || (data.success ? 'IVA salvata.' : 'Errore IVA.')
+  } catch {
+    taxSettingsMessage.textContent = 'Errore di connessione IVA.'
+  }
+})
+
+loadTaxSettingsAdmin()
+
+// ===============================
+// SCONTI
+// ===============================
+
+const discountForm = document.querySelector('#discountForm')
+const discountsList = document.querySelector('#discountsList')
+const refreshDiscountsButton = document.querySelector('#refreshDiscountsButton')
+const discountMessage = document.querySelector('#discountMessage')
+const discountFormTitle = document.querySelector('#discountFormTitle')
+const discountSubmitButton = document.querySelector('#discountSubmitButton')
+const cancelDiscountEdit = document.querySelector('#cancelDiscountEdit')
+
+function resetDiscountForm() {
+  if (!discountForm) return
+  discountForm.reset()
+  document.querySelector('#discountId').value = ''
+  document.querySelector('#discountActive').checked = true
+  discountFormTitle.textContent = 'Aggiungi sconto'
+  discountSubmitButton.textContent = 'Salva sconto'
+  cancelDiscountEdit.hidden = true
+  discountMessage.textContent = ''
+}
+
+function fillDiscountForm(discount) {
+  document.querySelector('#discountId').value = discount.id
+  document.querySelector('#discountCodeAdmin').value = discount.code || ''
+  document.querySelector('#discountDescription').value = discount.description || ''
+  document.querySelector('#discountType').value = discount.type || 'percentage'
+  document.querySelector('#discountValue').value =
+    discount.type === 'fixed' ? Number(discount.value || 0) / 100 : Number(discount.value || 0)
+  document.querySelector('#discountMinimum').value = Number(discount.min_subtotal_cents || 0) / 100
+  document.querySelector('#discountStartsAt').value = discount.starts_at || ''
+  document.querySelector('#discountEndsAt').value = discount.ends_at || ''
+  document.querySelector('#discountActive').checked = Number(discount.active) !== 0
+  discountFormTitle.textContent = 'Modifica sconto'
+  discountSubmitButton.textContent = 'Aggiorna sconto'
+  cancelDiscountEdit.hidden = false
+}
+
+function getDiscountFormPayload() {
+  const type = document.querySelector('#discountType').value
+  const rawValue = Number(document.querySelector('#discountValue').value || 0)
+
+  return {
+    id: document.querySelector('#discountId').value,
+    code: document.querySelector('#discountCodeAdmin').value.trim(),
+    description: document.querySelector('#discountDescription').value.trim(),
+    type,
+    value: type === 'fixed' ? Math.round(rawValue * 100) : Math.round(rawValue),
+    min_subtotal_cents: Math.round(Number(document.querySelector('#discountMinimum').value || 0) * 100),
+    starts_at: document.querySelector('#discountStartsAt').value,
+    ends_at: document.querySelector('#discountEndsAt').value,
+    active: document.querySelector('#discountActive').checked,
+  }
+}
+
+async function loadDiscounts() {
+  if (!discountsList) return
+
+  discountsList.textContent = 'Caricamento sconti...'
+
+  try {
+    const response = await fetch('/api/admin/discounts')
+    const data = await response.json()
+
+    if (!data.success) {
+      discountsList.textContent = data.message || 'Errore caricamento sconti.'
+      return
+    }
+
+    if (!data.discounts.length) {
+      discountsList.textContent = 'Nessuno sconto creato.'
+      return
+    }
+
+    discountsList.innerHTML = data.discounts
+      .map((discount) => {
+        const valueLabel =
+          discount.type === 'fixed'
+            ? formatMoney(discount.value || 0)
+            : `${discount.value || 0}%`
+
+        return `
+          <article class="product-item">
+            <h3>${escapeHtml(discount.code)}</h3>
+            <p>${escapeHtml(discount.description || 'Nessuna descrizione')}</p>
+            <div class="meta">
+              <span>${escapeHtml(discount.type)}</span>
+              <span>${valueLabel}</span>
+              <span>Minimo: ${formatMoney(discount.min_subtotal_cents || 0)}</span>
+              <span>${Number(discount.active) === 0 ? 'Disattivo' : 'Attivo'}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-discount="${discount.id}">Modifica</button>
+              <button type="button" class="danger" data-disable-discount="${discount.id}">Disattiva</button>
+            </div>
+          </article>
+        `
+      })
+      .join('')
+
+    document.querySelectorAll('[data-edit-discount]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const discount = data.discounts.find((item) => item.id === Number(button.dataset.editDiscount))
+        fillDiscountForm(discount)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-discount]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const confirmed = confirm('Vuoi disattivare questo sconto?')
+        if (!confirmed) return
+
+        const response = await fetch('/api/admin/discounts', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Number(button.dataset.disableDiscount),
+          }),
+        })
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore disattivazione sconto.')
+          return
+        }
+
+        resetDiscountForm()
+        loadDiscounts()
+      })
+    })
+  } catch {
+    discountsList.textContent = 'Errore di connessione sconti.'
+  }
+}
+
+discountForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  discountMessage.textContent = 'Salvataggio sconto...'
+
+  const payload = getDiscountFormPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/discounts', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+
+    if (!data.success) {
+      discountMessage.textContent = data.message || 'Errore salvataggio sconto.'
+      return
+    }
+
+    discountMessage.textContent = data.message || 'Sconto salvato.'
+    resetDiscountForm()
+    loadDiscounts()
+  } catch {
+    discountMessage.textContent = 'Errore di connessione sconti.'
+  }
+})
+
+cancelDiscountEdit?.addEventListener('click', resetDiscountForm)
+refreshDiscountsButton?.addEventListener('click', loadDiscounts)
+loadDiscounts()
+
+// ===============================
+// MEDIA MANAGER
+// ===============================
+
+const mediaForm = document.querySelector('#mediaForm')
+const mediaList = document.querySelector('#mediaList')
+const refreshMediaButton = document.querySelector('#refreshMediaButton')
+const mediaMessage = document.querySelector('#mediaMessage')
+const mediaFormTitle = document.querySelector('#mediaFormTitle')
+const mediaSubmitButton = document.querySelector('#mediaSubmitButton')
+const cancelMediaEdit = document.querySelector('#cancelMediaEdit')
+
+function resetMediaForm() {
+  if (!mediaForm) return
+  mediaForm.reset()
+  document.querySelector('#mediaId').value = ''
+  mediaFormTitle.textContent = 'Aggiungi media'
+  mediaSubmitButton.textContent = 'Salva media'
+  cancelMediaEdit.hidden = true
+  mediaMessage.textContent = ''
+}
+
+function fillMediaForm(media) {
+  document.querySelector('#mediaId').value = media.id
+  document.querySelector('#mediaName').value = media.name || ''
+  document.querySelector('#mediaUrl').value = media.url || ''
+  document.querySelector('#mediaType').value = media.type || 'image'
+  document.querySelector('#mediaAltText').value = media.alt_text || ''
+  mediaFormTitle.textContent = 'Modifica media'
+  mediaSubmitButton.textContent = 'Aggiorna media'
+  cancelMediaEdit.hidden = false
+}
+
+function getMediaPayload() {
+  return {
+    id: document.querySelector('#mediaId').value,
+    name: document.querySelector('#mediaName').value.trim(),
+    url: document.querySelector('#mediaUrl').value.trim(),
+    type: document.querySelector('#mediaType').value,
+    alt_text: document.querySelector('#mediaAltText').value.trim(),
+  }
+}
+
+async function loadMediaItems() {
+  if (!mediaList) return
+
+  mediaList.textContent = 'Caricamento media...'
+
+  try {
+    const response = await fetch('/api/admin/media')
+    const data = await response.json()
+
+    if (!data.success) {
+      mediaList.textContent = data.message || 'Errore caricamento media.'
+      return
+    }
+
+    if (!data.media.length) {
+      mediaList.textContent = 'Nessun media salvato.'
+      return
+    }
+
+    mediaList.innerHTML = data.media
+      .map(
+        (media) => `
+          <article class="product-item media-item">
+            ${
+              media.type === 'image'
+                ? `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.alt_text || media.name)}">`
+                : '<div class="media-file-preview">File</div>'
+            }
+            <h3>${escapeHtml(media.name)}</h3>
+            <p>${escapeHtml(media.url)}</p>
+            <div class="meta">
+              <span>${escapeHtml(media.type)}</span>
+              <span>${escapeHtml(media.alt_text || 'Alt text vuoto')}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-media="${media.id}">Modifica</button>
+              <a class="button-link" href="${escapeHtml(media.url)}" target="_blank" rel="noreferrer">Apri</a>
+              <button type="button" data-copy-media="${escapeHtml(media.url)}">Copia URL</button>
+              <button type="button" class="danger" data-delete-media="${media.id}">Elimina</button>
+            </div>
+          </article>
+        `,
+      )
+      .join('')
+
+    document.querySelectorAll('[data-edit-media]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const media = data.media.find((item) => item.id === Number(button.dataset.editMedia))
+        fillMediaForm(media)
+      })
+    })
+
+    document.querySelectorAll('[data-copy-media]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(button.dataset.copyMedia)
+        } catch {
+          alert(button.dataset.copyMedia)
+        }
+      })
+    })
+
+    document.querySelectorAll('[data-delete-media]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const confirmed = confirm('Vuoi eliminare questo media dalla libreria?')
+        if (!confirmed) return
+
+        const response = await fetch('/api/admin/media', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Number(button.dataset.deleteMedia),
+          }),
+        })
+        const result = await response.json()
+
+        if (!result.success) {
+          alert(result.message || 'Errore eliminazione media.')
+          return
+        }
+
+        resetMediaForm()
+        loadMediaItems()
+      })
+    })
+  } catch {
+    mediaList.textContent = 'Errore di connessione media.'
+  }
+}
+
+mediaForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  mediaMessage.textContent = 'Salvataggio media...'
+
+  const payload = getMediaPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/media', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+
+    if (!data.success) {
+      mediaMessage.textContent = data.message || 'Errore salvataggio media.'
+      return
+    }
+
+    mediaMessage.textContent = data.message || 'Media salvato.'
+    resetMediaForm()
+    loadMediaItems()
+  } catch {
+    mediaMessage.textContent = 'Errore di connessione media.'
+  }
+})
+
+cancelMediaEdit?.addEventListener('click', resetMediaForm)
+refreshMediaButton?.addEventListener('click', loadMediaItems)
+loadMediaItems()
+
+// ===============================
+// METAFIELDS
+// ===============================
+
+const metafieldDefinitionForm = document.querySelector('#metafieldDefinitionForm')
+const metafieldDefinitionMessage = document.querySelector('#metafieldDefinitionMessage')
+const metafieldValueEntityType = document.querySelector('#metafieldValueEntityType')
+const metafieldEntitySelect = document.querySelector('#metafieldEntitySelect')
+const metafieldValuesFields = document.querySelector('#metafieldValuesFields')
+const metafieldValuesMessage = document.querySelector('#metafieldValuesMessage')
+const saveMetafieldValuesButton = document.querySelector('#saveMetafieldValuesButton')
+
+let metafieldResources = {
+  product: [],
+  collection: [],
+  page: [],
+}
+let currentMetafieldDefinitions = []
+
+function getMetafieldEntityLabel(entityType, record) {
+  if (entityType === 'product') return record.name || record.slug || `Prodotto ${record.id}`
+  if (entityType === 'collection') return record.name || record.slug || `Collezione ${record.id}`
+  return record.title || record.slug || `Pagina ${record.id}`
+}
+
+async function loadMetafieldResources() {
+  if (!metafieldDefinitionForm) return
+
+  try {
+    const [productsResponse, collectionsResponse, pagesResponse] = await Promise.all([
+      fetch('/api/products'),
+      fetch('/api/admin/collections'),
+      fetch('/api/admin/pages'),
+    ])
+
+    const productsData = await productsResponse.json()
+    const collectionsData = await collectionsResponse.json()
+    const pagesData = await pagesResponse.json()
+
+    metafieldResources = {
+      product: productsData.success ? productsData.products || [] : [],
+      collection: collectionsData.success ? collectionsData.collections || [] : [],
+      page: pagesData.success ? pagesData.pages || [] : [],
+    }
+
+    renderMetafieldEntityOptions()
+    loadMetafieldValues()
+  } catch {
+    metafieldValuesFields.textContent = 'Errore caricamento record metafields.'
+  }
+}
+
+function renderMetafieldEntityOptions() {
+  if (!metafieldEntitySelect) return
+
+  const entityType = metafieldValueEntityType.value
+  const records = metafieldResources[entityType] || []
+
+  metafieldEntitySelect.innerHTML =
+    '<option value="">Seleziona record</option>' +
+    records
+      .map(
+        (record) => `
+          <option value="${record.id}">
+            ${escapeHtml(getMetafieldEntityLabel(entityType, record))}
+          </option>
+        `,
+      )
+      .join('')
+}
+
+function renderMetafieldValueFields(definitions = []) {
+  if (!metafieldValuesFields) return
+
+  currentMetafieldDefinitions = definitions
+
+  if (!definitions.length) {
+    metafieldValuesFields.textContent = 'Nessuna definizione metafield per questa entita.'
+    return
+  }
+
+  metafieldValuesFields.innerHTML = definitions
+    .map((definition) => {
+      if (definition.type === 'boolean') {
+        return `
+          <label class="inline-check">
+            <input
+              type="checkbox"
+              data-metafield-key="${escapeHtml(definition.key)}"
+              ${definition.value === true || definition.value === '1' ? 'checked' : ''}
+            />
+            ${escapeHtml(definition.label)}
+          </label>
+        `
+      }
+
+      const inputType = definition.type === 'url' ? 'url' : definition.type === 'number' ? 'number' : 'text'
+
+      return `
+        <label>
+          ${escapeHtml(definition.label)}
+          <input
+            type="${inputType}"
+            data-metafield-key="${escapeHtml(definition.key)}"
+            value="${escapeHtml(definition.value || '')}"
+          />
+        </label>
+      `
+    })
+    .join('')
+}
+
+async function loadMetafieldValues() {
+  if (!metafieldValuesFields || !metafieldEntitySelect?.value) {
+    renderMetafieldValueFields([])
+    return
+  }
+
+  const entityType = metafieldValueEntityType.value
+  const entityId = metafieldEntitySelect.value
+  metafieldValuesFields.textContent = 'Caricamento metafields...'
+
+  try {
+    const response = await fetch(
+      `/api/admin/metafields?entity_type=${encodeURIComponent(entityType)}&entity_id=${encodeURIComponent(entityId)}`,
+    )
+    const data = await response.json()
+
+    if (!data.success) {
+      metafieldValuesFields.textContent = data.message || 'Errore caricamento metafields.'
+      return
+    }
+
+    renderMetafieldValueFields(data.definitions || [])
+  } catch {
+    metafieldValuesFields.textContent = 'Errore di connessione metafields.'
+  }
+}
+
+function readMetafieldValueFields() {
+  return currentMetafieldDefinitions.reduce((values, definition) => {
+    const field = metafieldValuesFields.querySelector(`[data-metafield-key="${definition.key}"]`)
+    values[definition.key] = definition.type === 'boolean' ? field?.checked || false : field?.value || ''
+    return values
+  }, {})
+}
+
+metafieldDefinitionForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  metafieldDefinitionMessage.textContent = 'Creazione metafield...'
+
+  try {
+    const response = await fetch('/api/admin/metafields', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        entity_type: document.querySelector('#metafieldEntityType').value,
+        key: document.querySelector('#metafieldKey').value.trim(),
+        label: document.querySelector('#metafieldLabel').value.trim(),
+        type: document.querySelector('#metafieldType').value,
+      }),
+    })
+    const data = await response.json()
+
+    if (!data.success) {
+      metafieldDefinitionMessage.textContent = data.message || 'Errore creazione metafield.'
+      return
+    }
+
+    metafieldDefinitionMessage.textContent = data.message || 'Metafield creato.'
+    metafieldDefinitionForm.reset()
+    await loadMetafieldValues()
+  } catch {
+    metafieldDefinitionMessage.textContent = 'Errore di connessione metafields.'
+  }
+})
+
+metafieldValueEntityType?.addEventListener('change', () => {
+  renderMetafieldEntityOptions()
+  loadMetafieldValues()
+})
+
+metafieldEntitySelect?.addEventListener('change', loadMetafieldValues)
+
+saveMetafieldValuesButton?.addEventListener('click', async () => {
+  if (!metafieldEntitySelect.value) {
+    metafieldValuesMessage.textContent = 'Seleziona un record.'
+    return
+  }
+
+  metafieldValuesMessage.textContent = 'Salvataggio metafields...'
+
+  try {
+    const response = await fetch('/api/admin/metafields', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        entity_type: metafieldValueEntityType.value,
+        entity_id: Number(metafieldEntitySelect.value),
+        values: readMetafieldValueFields(),
+      }),
+    })
+    const data = await response.json()
+
+    metafieldValuesMessage.textContent = data.message || (data.success ? 'Metafields salvati.' : 'Errore metafields.')
+  } catch {
+    metafieldValuesMessage.textContent = 'Errore di connessione metafields.'
+  }
+})
+
+loadMetafieldResources()
 
 // ===============================
 // ORDINI
@@ -793,6 +1439,8 @@ async function loadOrders() {
               <span>Pagamento: ${escapeHtml(order.payment_status || 'pending')}</span>
               <span>Metodo: ${escapeHtml(order.payment_method || 'manual')}</span>
               <span>Spedizione: ${escapeHtml(order.shipping_method || 'standard')}</span>
+              <span>Sconto: ${order.discount_cents ? `-${formatMoney(order.discount_cents)}` : formatMoney(0)}</span>
+              <span>IVA: ${formatMoney(order.tax_cents || 0)}</span>
               <span>${escapeHtml(order.created_at || '')}</span>
             </div>
 

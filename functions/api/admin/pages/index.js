@@ -24,6 +24,85 @@ async function readBody(request) {
   }
 }
 
+function normalizeSeo(seo = {}) {
+  return {
+    meta_title: String(seo.meta_title || '').trim(),
+    meta_description: String(seo.meta_description || '').trim(),
+    og_image: String(seo.og_image || '').trim(),
+    canonical_url: String(seo.canonical_url || '').trim(),
+  }
+}
+
+async function loadSeoByEntityId(env, ids) {
+  if (!ids.length) return {}
+
+  try {
+    const placeholders = ids.map(() => '?').join(', ')
+    const result = await env.DB.prepare(
+      `
+      SELECT
+        entity_id,
+        meta_title,
+        meta_description,
+        og_image,
+        canonical_url
+      FROM seo_metadata
+      WHERE entity_type = 'page' AND entity_id IN (${placeholders})
+      `,
+    )
+      .bind(...ids)
+      .all()
+
+    return (result.results || []).reduce((map, row) => {
+      map[row.entity_id] = {
+        meta_title: row.meta_title || '',
+        meta_description: row.meta_description || '',
+        og_image: row.og_image || '',
+        canonical_url: row.canonical_url || '',
+      }
+      return map
+    }, {})
+  } catch {
+    return {}
+  }
+}
+
+async function saveSeoMetadata(env, entityId, seo) {
+  const normalizedSeo = normalizeSeo(seo)
+
+  try {
+    await env.DB.prepare(`
+      INSERT INTO seo_metadata (
+        entity_type,
+        entity_id,
+        meta_title,
+        meta_description,
+        og_image,
+        canonical_url,
+        updated_at
+      )
+      VALUES ('page', ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(entity_type, entity_id)
+      DO UPDATE SET
+        meta_title = excluded.meta_title,
+        meta_description = excluded.meta_description,
+        og_image = excluded.og_image,
+        canonical_url = excluded.canonical_url,
+        updated_at = CURRENT_TIMESTAMP
+    `)
+      .bind(
+        entityId,
+        normalizedSeo.meta_title,
+        normalizedSeo.meta_description,
+        normalizedSeo.og_image,
+        normalizedSeo.canonical_url,
+      )
+      .run()
+  } catch {
+    // SEO resta opzionale finche la migration 0008 non viene applicata.
+  }
+}
+
 export async function onRequestGet({ env }) {
   try {
     const result = await env.DB.prepare(
@@ -39,9 +118,18 @@ export async function onRequestGet({ env }) {
       `,
     ).all()
 
+    const pages = result.results || []
+    const seoByPageId = await loadSeoByEntityId(
+      env,
+      pages.map((page) => page.id),
+    )
+
     return json({
       success: true,
-      pages: result.results || [],
+      pages: pages.map((page) => ({
+        ...page,
+        seo: seoByPageId[page.id] || {},
+      })),
     })
   } catch (error) {
     return json(
@@ -82,7 +170,7 @@ export async function onRequestPost({ request, env }) {
       )
     }
 
-    await env.DB.prepare(
+    const inserted = await env.DB.prepare(
       `
       INSERT INTO pages (
         slug,
@@ -93,6 +181,8 @@ export async function onRequestPost({ request, env }) {
     )
       .bind(slug, title)
       .run()
+
+    await saveSeoMetadata(env, inserted.meta.last_row_id, body.seo || {})
 
     return json({
       success: true,
@@ -150,6 +240,8 @@ export async function onRequestPut({ request, env }) {
     )
       .bind(slug, title, id)
       .run()
+
+    await saveSeoMetadata(env, id, body.seo || {})
 
     return json({
       success: true,

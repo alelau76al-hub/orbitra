@@ -1502,6 +1502,37 @@ input[type="range"] {
   color: var(--muted);
 }
 
+.checkout-discount {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.checkout-discount label {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.checkout-discount input {
+  margin-top: 8px;
+}
+
+.checkout-discount button {
+  align-self: end;
+  min-height: 48px;
+}
+
+.checkout-discount .checkout-message {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
 .checkout-totals {
   display: grid;
   gap: 12px;
@@ -1570,6 +1601,10 @@ input[type="range"] {
 }
 
 @media (max-width: 560px) {
+  .checkout-discount {
+    grid-template-columns: 1fr;
+  }
+
   .cart-item {
     grid-template-columns: 62px 1fr;
   }

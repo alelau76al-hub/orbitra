@@ -786,6 +786,83 @@ button:disabled {
   font-size: 14px;
   line-height: 1.5;
 }
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: black;
+  background: linear-gradient(135deg, #00f5ff, #52ff9f);
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.inline-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.inline-check input {
+  width: auto;
+}
+
+.seo-editor,
+.settings-form-compact {
+  margin: 22px 0;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.seo-editor h3,
+.settings-form-compact h3 {
+  margin: 0 0 14px;
+}
+
+.media-item img,
+.media-file-preview {
+  width: 100%;
+  height: 170px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.28);
+  object-fit: cover;
+}
+
+.media-file-preview {
+  display: grid;
+  place-items: center;
+  color: #b8b8d8;
+  font-weight: 900;
+}
+
+.metafield-values-fields {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+  color: #b8b8d8;
+}
+
+.metafield-values-fields label {
+  margin: 0;
+}
+
+#discountMessage,
+#mediaMessage,
+#taxSettingsMessage,
+#metafieldDefinitionMessage,
+#metafieldValuesMessage {
+  min-height: 24px;
+  color: #52ff9f;
+  font-weight: bold;
+}
 .view-heading {
   grid-column: 1 / -1;
   display: flex;

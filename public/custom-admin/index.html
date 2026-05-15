@@ -43,13 +43,13 @@
           <small>Profili, email, storico acquisti</small>
         </a>
 
-        <a class="hub-card disabled" href="#contenuto">
+        <a class="hub-card" href="#contenuto">
           <span>05</span>
           <strong>Contenuto</strong>
           <small>Pagine, menu, media e SEO</small>
         </a>
 
-        <a class="hub-card disabled" href="#marketing">
+        <a class="hub-card" href="#marketing">
           <span>06</span>
           <strong>Marketing</strong>
           <small>Campagne, sconti, coupon e promo</small>
@@ -67,13 +67,13 @@
           <small>Vendite, traffico, conversioni e report</small>
         </a>
 
-        <a class="hub-card disabled" href="#checkout">
+        <a class="hub-card" href="#checkout">
           <span>09</span>
           <strong>Check-out</strong>
           <small>Stripe, spedizioni, tasse e pagamenti</small>
         </a>
 
-        <a class="hub-card disabled" href="#impostazioni">
+        <a class="hub-card" href="#impostazioni">
           <span>10</span>
           <strong>Impostazioni</strong>
           <small>Dominio, utenti, notifiche e privacy</small>
@@ -308,6 +308,21 @@
             placeholder="https://..."
           />
 
+          <section class="seo-editor">
+            <h3>SEO</h3>
+            <label>Meta title</label>
+            <input id="collectionSeoTitle" type="text" placeholder="Titolo SEO collezione" />
+
+            <label>Meta description</label>
+            <textarea id="collectionSeoDescription" placeholder="Descrizione SEO..."></textarea>
+
+            <label>Open Graph image</label>
+            <input id="collectionSeoImage" type="text" placeholder="https://..." />
+
+            <label>Canonical URL</label>
+            <input id="collectionSeoCanonical" type="text" placeholder="https://..." />
+          </section>
+
           <button id="collectionSubmitButton" type="submit">
             Salva collezione
           </button>
@@ -376,6 +391,21 @@
 
           <label>Stock</label>
           <input id="stock" type="number" placeholder="120" required />
+
+          <section class="seo-editor">
+            <h3>SEO</h3>
+            <label>Meta title</label>
+            <input id="productSeoTitle" type="text" placeholder="Titolo SEO prodotto" />
+
+            <label>Meta description</label>
+            <textarea id="productSeoDescription" placeholder="Descrizione SEO..."></textarea>
+
+            <label>Open Graph image</label>
+            <input id="productSeoImage" type="text" placeholder="https://..." />
+
+            <label>Canonical URL</label>
+            <input id="productSeoCanonical" type="text" placeholder="https://..." />
+          </section>
 
           <section class="variant-manager">
             <div class="section-title">
@@ -466,15 +496,66 @@
             <p>Crea menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
           </a>
 
-          <article>
+          <a class="mini-card" href="#media">
             <h3>Media</h3>
-            <p>Gestione futura di immagini, file, loghi e contenuti caricati.</p>
-          </article>
+            <p>Gestisci URL media, anteprime, alt text e asset riutilizzabili.</p>
+          </a>
 
           <article>
             <h3>SEO</h3>
             <p>Titoli, descrizioni, slug e dati per Google e social.</p>
           </article>
+        </div>
+      </section>
+
+      <section id="media" class="cms-area card admin-view" data-admin-view="media">
+        <div class="section-title">
+          <div>
+            <h2>Media</h2>
+            <p class="section-subtitle">
+              Libreria media MVP basata su URL, senza upload file reale.
+            </p>
+          </div>
+
+          <a class="back-link" href="#contenuto">â† Torna a Contenuto</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="mediaForm" class="inner-card">
+            <h3 id="mediaFormTitle">Aggiungi media</h3>
+            <input id="mediaId" type="hidden" />
+
+            <label>Nome media</label>
+            <input id="mediaName" type="text" placeholder="Hero prodotto" required />
+
+            <label>URL media</label>
+            <input id="mediaUrl" type="text" placeholder="https://..." required />
+
+            <label>Tipo media</label>
+            <select id="mediaType">
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+              <option value="file">File</option>
+            </select>
+
+            <label>Alt text</label>
+            <input id="mediaAltText" type="text" placeholder="Descrizione immagine" />
+
+            <button id="mediaSubmitButton" type="submit">Salva media</button>
+            <button id="cancelMediaEdit" class="secondary" type="button" hidden>
+              Annulla modifica
+            </button>
+            <p id="mediaMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Media salvati</h3>
+              <button id="refreshMediaButton" type="button">Aggiorna</button>
+            </div>
+
+            <div id="mediaList" class="products-list">Caricamento media...</div>
+          </section>
         </div>
       </section>
 
@@ -501,6 +582,21 @@
 
             <label>Slug URL</label>
             <input id="pageSlug" type="text" placeholder="chi-siamo" required />
+
+            <section class="seo-editor">
+              <h3>SEO</h3>
+              <label>Meta title</label>
+              <input id="pageSeoTitle" type="text" placeholder="Titolo SEO pagina" />
+
+              <label>Meta description</label>
+              <textarea id="pageSeoDescription" placeholder="Descrizione SEO..."></textarea>
+
+              <label>Open Graph image</label>
+              <input id="pageSeoImage" type="text" placeholder="https://..." />
+
+              <label>Canonical URL</label>
+              <input id="pageSeoCanonical" type="text" placeholder="https://..." />
+            </section>
 
             <button id="pageSubmitButton" type="submit">Salva pagina</button>
 
@@ -582,15 +678,63 @@
         </div>
       </section>
 
-      <section id="marketing" class="cms-area card placeholder-area admin-view" data-admin-view="marketing">
+      <section id="marketing" class="cms-area card admin-view" data-admin-view="marketing">
         <div class="section-title">
-          <h2>Marketing</h2>
-          <span class="status-badge">In arrivo</span>
+          <div>
+            <h2>Marketing</h2>
+            <p class="section-subtitle">
+              Gestione MVP di codici sconto percentuali o a importo fisso.
+            </p>
+          </div>
+
+          <button id="refreshDiscountsButton" type="button">Aggiorna</button>
         </div>
 
-        <p>
-          Qui gestiremo coupon, sconti, campagne, banner promozionali e automazioni.
-        </p>
+        <div class="content-manager">
+          <form id="discountForm" class="inner-card">
+            <h3 id="discountFormTitle">Aggiungi sconto</h3>
+            <input id="discountId" type="hidden" />
+
+            <label>Codice</label>
+            <input id="discountCodeAdmin" type="text" placeholder="WELCOME10" required />
+
+            <label>Descrizione</label>
+            <input id="discountDescription" type="text" placeholder="Sconto benvenuto" />
+
+            <label>Tipo</label>
+            <select id="discountType">
+              <option value="percentage">Percentuale</option>
+              <option value="fixed">Importo fisso</option>
+            </select>
+
+            <label>Valore</label>
+            <input id="discountValue" type="number" step="0.01" placeholder="10" required />
+
+            <label>Minimo carrello in euro</label>
+            <input id="discountMinimum" type="number" step="0.01" placeholder="0" />
+
+            <label>Data inizio opzionale</label>
+            <input id="discountStartsAt" type="datetime-local" />
+
+            <label>Data fine opzionale</label>
+            <input id="discountEndsAt" type="datetime-local" />
+
+            <label class="inline-check">
+              <input id="discountActive" type="checkbox" checked />
+              Attivo
+            </label>
+
+            <button id="discountSubmitButton" type="submit">Salva sconto</button>
+            <button id="cancelDiscountEdit" class="secondary" type="button" hidden>
+              Annulla modifica
+            </button>
+            <p id="discountMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div id="discountsList" class="products-list">Caricamento sconti...</div>
+          </section>
+        </div>
       </section>
 
       <section id="markets" class="cms-area card placeholder-area admin-view" data-admin-view="markets">
@@ -615,15 +759,30 @@
         </p>
       </section>
 
-      <section id="checkout" class="cms-area card placeholder-area admin-view" data-admin-view="checkout">
+      <section id="checkout" class="cms-area card admin-view" data-admin-view="checkout">
         <div class="section-title">
-          <h2>Check-out</h2>
-          <span class="status-badge">In arrivo</span>
+          <div>
+            <h2>Check-out</h2>
+            <p class="section-subtitle">
+              Configurazione fiscale MVP usata dal riepilogo checkout.
+            </p>
+          </div>
         </div>
 
-        <p>
-          Qui configureremo Stripe, PayPal, spedizioni, tasse, conferme ordine e checkout.
-        </p>
+        <form id="taxSettingsForm" class="inner-card settings-form-compact">
+          <h3>Tasse / IVA</h3>
+
+          <label>Aliquota IVA base (%)</label>
+          <input id="taxVatRate" type="number" step="0.01" min="0" placeholder="22" />
+
+          <label class="inline-check">
+            <input id="taxPricesIncludeTax" type="checkbox" checked />
+            I prezzi catalogo includono IVA
+          </label>
+
+          <button type="submit">Salva impostazioni IVA</button>
+          <p id="taxSettingsMessage"></p>
+        </form>
       </section>
 
       <section id="impostazioni" class="cms-area card placeholder-area admin-view" data-admin-view="impostazioni">
@@ -659,10 +818,10 @@
       <p>Cookie, GDPR, consensi, privacy policy e termini.</p>
     </article>
 
-    <article>
+    <a class="mini-card" href="#metafields">
       <h3>Metafields</h3>
-      <p>Dati custom per prodotti, collezioni, pagine, clienti e ordini.</p>
-    </article>
+      <p>Dati custom per prodotti, collezioni e pagine.</p>
+    </a>
 
     <article>
       <h3>Checkout</h3>
@@ -670,6 +829,70 @@
     </article>
   </div>
 </section>
+
+      <section id="metafields" class="cms-area card admin-view" data-admin-view="metafields">
+        <div class="section-title">
+          <div>
+            <h2>Metafields</h2>
+            <p class="section-subtitle">
+              Definisci campi custom MVP e salva valori per prodotti, collezioni o pagine.
+            </p>
+          </div>
+
+          <a class="back-link" href="#impostazioni">â† Torna a Impostazioni</a>
+        </div>
+
+        <div class="content-manager">
+          <form id="metafieldDefinitionForm" class="inner-card">
+            <h3>Nuova definizione</h3>
+
+            <label>Entita</label>
+            <select id="metafieldEntityType">
+              <option value="product">Prodotto</option>
+              <option value="collection">Collezione</option>
+              <option value="page">Pagina</option>
+            </select>
+
+            <label>Key</label>
+            <input id="metafieldKey" type="text" placeholder="materiale" required />
+
+            <label>Label</label>
+            <input id="metafieldLabel" type="text" placeholder="Materiale" required />
+
+            <label>Tipo</label>
+            <select id="metafieldType">
+              <option value="text">Text</option>
+              <option value="number">Number</option>
+              <option value="boolean">Boolean</option>
+              <option value="url">URL</option>
+            </select>
+
+            <button type="submit">Crea definizione</button>
+            <p id="metafieldDefinitionMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <h3>Valori metafields</h3>
+
+            <label>Entita</label>
+            <select id="metafieldValueEntityType">
+              <option value="product">Prodotto</option>
+              <option value="collection">Collezione</option>
+              <option value="page">Pagina</option>
+            </select>
+
+            <label>Record</label>
+            <select id="metafieldEntitySelect"></select>
+
+            <div id="metafieldValuesFields" class="metafield-values-fields">
+              Seleziona un record.
+            </div>
+
+            <button id="saveMetafieldValuesButton" type="button">Salva valori</button>
+            <p id="metafieldValuesMessage"></p>
+          </section>
+        </div>
+      </section>
     </main>
 
     <script src="/custom-admin/admin.js"></script>
