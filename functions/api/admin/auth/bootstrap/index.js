@@ -1,7 +1,7 @@
 import {
   createAdminSession,
+  createPasswordHash,
   getAdminAuthSetupState,
-  hashPassword,
   json,
   logAdminActivity,
   normalizeEmail,
@@ -77,7 +77,7 @@ async function handleBootstrap({ request, env }) {
   let passwordData = null
 
   try {
-    passwordData = await hashPassword(password)
+    passwordData = await createPasswordHash(password)
   } catch {
     return json(
       {
@@ -92,6 +92,8 @@ async function handleBootstrap({ request, env }) {
   if (
     !passwordData?.password_hash ||
     !passwordData?.password_salt ||
+    !/^[0-9a-f]{64}$/.test(passwordData.password_hash) ||
+    !/^[0-9a-f]{32}$/.test(passwordData.password_salt) ||
     !Number.isFinite(Number(passwordData.password_iterations))
   ) {
     return json(

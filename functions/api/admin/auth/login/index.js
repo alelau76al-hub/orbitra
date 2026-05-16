@@ -70,7 +70,15 @@ async function handleLogin({ request, env }) {
     .bind(email)
     .first()
 
-  if (!user || !(await verifyPassword(password, user))) {
+  if (
+    !user ||
+    !(await verifyPassword(
+      password,
+      user.password_salt,
+      user.password_hash,
+      user.password_iterations,
+    ))
+  ) {
     return json({ success: false, message: 'Credenziali non valide.' }, 401)
   }
 

@@ -120,19 +120,40 @@ async function importPasswordKey(password) {
   )
 }
 
-async function derivePasswordHash(password, saltBase64, iterations = PASSWORD_ITERATIONS) {
+export function bytesToHex(bytes) {
+  return [...bytes]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+export function hexToBytes(value = '') {
+  const hex = String(value || '').trim().toLowerCase()
+
+  if (!hex || hex.length % 2 !== 0 || !/^[0-9a-f]+$/.test(hex)) {
+    throw new Error('Invalid hex data')
+  }
+
+  const bytes = new Uint8Array(hex.length / 2)
+
+  for (let index = 0; index < hex.length; index += 2) {
+    bytes[index / 2] = Number.parseInt(hex.slice(index, index + 2), 16)
+  }
+
+  return bytes
+}
+
+async function derivePasswordBits(password, saltBytes, iterations = PASSWORD_ITERATIONS) {
   const key = await importPasswordKey(password)
-  const derived = await getWebCrypto().subtle.deriveBits(
+  return getWebCrypto().subtle.deriveBits(
     {
       name: 'PBKDF2',
       hash: 'SHA-256',
-      salt: base64ToBytes(saltBase64),
-      iterations,
+      salt: saltBytes,
+      iterations: Number(iterations || PASSWORD_ITERATIONS),
     },
     key,
     256,
   )
-  return bytesToBase64(new Uint8Array(derived))
 }
 
 function safeEqual(left = '', right = '') {
@@ -159,23 +180,46 @@ export function validatePassword(password = '') {
   }
 }
 
-export async function hashPassword(password) {
-  const salt = bytesToBase64(randomBytes(16))
-  const hash = await derivePasswordHash(password, salt, PASSWORD_ITERATIONS)
+export async function createPasswordHash(password) {
+  const saltBytes = randomBytes(16)
+  const hashBytes = new Uint8Array(await derivePasswordBits(password, saltBytes, PASSWORD_ITERATIONS))
 
   return {
-    password_hash: hash,
-    password_salt: salt,
+    password_hash: bytesToHex(hashBytes),
+    password_salt: bytesToHex(saltBytes),
     password_iterations: PASSWORD_ITERATIONS,
   }
 }
 
-export async function verifyPassword(password, user) {
-  if (!user?.password_hash || !user?.password_salt) return false
+export async function hashPassword(password) {
+  return createPasswordHash(password)
+}
 
-  const iterations = Number(user.password_iterations || PASSWORD_ITERATIONS)
-  const hash = await derivePasswordHash(password, user.password_salt, iterations)
-  return safeEqual(hash, user.password_hash)
+export async function verifyPassword(password, saltHexOrUser, hashHex, iterations = PASSWORD_ITERATIONS) {
+  const saltHex =
+    typeof saltHexOrUser === 'object'
+      ? saltHexOrUser?.password_salt
+      : saltHexOrUser
+  const expectedHashHex =
+    typeof saltHexOrUser === 'object'
+      ? saltHexOrUser?.password_hash
+      : hashHex
+  const passwordIterations =
+    typeof saltHexOrUser === 'object'
+      ? saltHexOrUser?.password_iterations
+      : iterations
+
+  if (!saltHex || !expectedHashHex) return false
+
+  try {
+    const saltBytes = hexToBytes(saltHex)
+    const hashBytes = new Uint8Array(
+      await derivePasswordBits(password, saltBytes, Number(passwordIterations || PASSWORD_ITERATIONS)),
+    )
+    return safeEqual(bytesToHex(hashBytes), String(expectedHashHex).trim().toLowerCase())
+  } catch {
+    return false
+  }
 }
 
 export function getSessionToken(request) {
