@@ -9,7 +9,45 @@
   </head>
 
   <body>
-    <main class="admin">
+    <section id="adminAuthGate" class="admin-auth-gate">
+      <div class="admin-auth-card">
+        <p class="auth-eyebrow">Orbitra Admin</p>
+        <h1>Accesso al CMS</h1>
+        <p id="adminAuthIntro">
+          Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni.
+        </p>
+
+        <form id="adminLoginForm" class="admin-auth-form">
+          <label>Email</label>
+          <input id="adminLoginEmail" type="email" autocomplete="username" required />
+          <label>Password</label>
+          <input id="adminLoginPassword" type="password" autocomplete="current-password" required />
+          <button type="submit">Accedi</button>
+        </form>
+
+        <form id="adminBootstrapForm" class="admin-auth-form" hidden>
+          <label>Nome owner</label>
+          <input id="adminBootstrapName" type="text" autocomplete="name" required />
+          <label>Email owner</label>
+          <input id="adminBootstrapEmail" type="email" autocomplete="username" required />
+          <label>Password</label>
+          <input id="adminBootstrapPassword" type="password" autocomplete="new-password" minlength="8" required />
+          <button type="submit">Crea primo owner</button>
+        </form>
+
+        <p id="adminAuthMessage" class="admin-auth-message"></p>
+      </div>
+    </section>
+
+    <main id="adminApp" class="admin" hidden>
+      <section id="adminSessionBar" class="admin-session-bar">
+        <div>
+          <strong id="adminSessionName">Admin</strong>
+          <span id="adminSessionRole">viewer</span>
+        </div>
+        <button id="adminLogoutButton" class="secondary" type="button">Logout</button>
+      </section>
+
       <section class="hero admin-hero">
         <p>Orbitra CMS Custom</p>
         <h1>Mission Control CMS</h1>
@@ -1771,6 +1809,9 @@
             <input id="adminUserName" type="text" required />
             <label>Email</label>
             <input id="adminUserEmail" type="email" required />
+            <label>Password</label>
+            <input id="adminUserPassword" type="password" minlength="8" autocomplete="new-password" />
+            <p class="field-help">Obbligatoria per nuovi utenti. Lascia vuota in modifica per non cambiarla.</p>
             <label>Ruolo</label>
             <select id="adminUserRole">
               <option value="owner">Owner</option>

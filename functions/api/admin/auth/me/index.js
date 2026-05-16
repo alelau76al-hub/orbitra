@@ -1,0 +1,48 @@
+import { getAdminAuthSetupState, getAdminSession, json } from '../../../../_shared/admin-auth.js'
+
+export async function onRequestGet({ request, env }) {
+  const setup = await getAdminAuthSetupState(env)
+
+  if (!setup.schema_ready) {
+    return json(
+      {
+        success: false,
+        authenticated: false,
+        migration_required: true,
+        message: setup.message,
+      },
+      503,
+    )
+  }
+
+  if (setup.bootstrap_required) {
+    return json({
+      success: true,
+      authenticated: false,
+      bootstrap_required: true,
+      legacy_users_without_password: setup.legacy_users_without_password,
+      message: setup.legacy_users_without_password
+        ? 'Utenti admin legacy rilevati senza password. Crea il primo owner autenticabile.'
+        : 'Crea il primo owner per proteggere il CMS.',
+    })
+  }
+
+  const session = await getAdminSession(request, env)
+
+  if (!session.authenticated) {
+    return json({
+      success: true,
+      authenticated: false,
+      expired: session.expired || false,
+      message: session.expired
+        ? 'Sessione scaduta. Effettua di nuovo il login.'
+        : 'Login admin richiesto.',
+    })
+  }
+
+  return json({
+    success: true,
+    authenticated: true,
+    user: session.user,
+  })
+}

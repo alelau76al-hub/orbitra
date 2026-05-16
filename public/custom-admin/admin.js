@@ -1,3 +1,255 @@
+const adminAuthGate = document.querySelector('#adminAuthGate')
+const adminApp = document.querySelector('#adminApp')
+const adminLoginForm = document.querySelector('#adminLoginForm')
+const adminBootstrapForm = document.querySelector('#adminBootstrapForm')
+const adminAuthIntro = document.querySelector('#adminAuthIntro')
+const adminAuthMessage = document.querySelector('#adminAuthMessage')
+const adminSessionName = document.querySelector('#adminSessionName')
+const adminSessionRole = document.querySelector('#adminSessionRole')
+const adminLogoutButton = document.querySelector('#adminLogoutButton')
+const nativeFetch = window.fetch.bind(window)
+
+let adminCurrentUser = null
+let adminAllowProtectedFetches = false
+
+function isProtectedAdminRequest(resource) {
+  const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
+
+  try {
+    const url = new URL(rawUrl, window.location.origin)
+    return (
+      url.origin === window.location.origin &&
+      url.pathname.startsWith('/api/admin/') &&
+      !url.pathname.startsWith('/api/admin/auth/')
+    )
+  } catch {
+    return false
+  }
+}
+
+function localAdminAuthResponse(message = 'Login admin richiesto.', status = 401) {
+  return new Response(
+    JSON.stringify({
+      success: false,
+      authenticated: false,
+      message,
+    }),
+    {
+      status,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
+}
+
+window.fetch = async (resource, options) => {
+  const protectedAdminRequest = isProtectedAdminRequest(resource)
+
+  if (protectedAdminRequest && !adminAllowProtectedFetches) {
+    return localAdminAuthResponse()
+  }
+
+  const response = await nativeFetch(resource, options)
+
+  if (protectedAdminRequest && response.status === 401) {
+    showAdminLogin('Sessione scaduta. Effettua di nuovo il login.')
+  }
+
+  return response
+}
+
+function setAdminAuthMessage(message = '', isError = false) {
+  if (!adminAuthMessage) return
+  adminAuthMessage.textContent = message
+  adminAuthMessage.classList.toggle('is-error', isError)
+}
+
+function showAdminAuthGate({ bootstrap = false, migration = false, message = '' } = {}) {
+  adminAllowProtectedFetches = false
+  adminCurrentUser = null
+
+  if (adminApp) adminApp.hidden = true
+  if (adminAuthGate) adminAuthGate.hidden = false
+  if (adminLoginForm) adminLoginForm.hidden = bootstrap || migration
+  if (adminBootstrapForm) adminBootstrapForm.hidden = !bootstrap || migration
+
+  if (adminAuthIntro) {
+    adminAuthIntro.textContent = migration
+      ? 'Prima di proteggere il CMS devi applicare la migration di autenticazione.'
+      : bootstrap
+        ? 'Crea il primo owner con una password scelta da te. Dopo questa operazione il bootstrap verra disattivato.'
+        : 'Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni.'
+  }
+
+  setAdminAuthMessage(message, Boolean(migration))
+}
+
+function showAdminLogin(message = '') {
+  showAdminAuthGate({ message })
+}
+
+function showAdminApp(user) {
+  adminCurrentUser = user
+  adminAllowProtectedFetches = true
+
+  if (adminAuthGate) adminAuthGate.hidden = true
+  if (adminApp) adminApp.hidden = false
+  if (adminSessionName) adminSessionName.textContent = user?.name || user?.email || 'Admin'
+  if (adminSessionRole) adminSessionRole.textContent = user?.role || 'viewer'
+}
+
+function refreshAdminDataAfterAuth() {
+  const loaders = [
+    loadProducts,
+    loadCollections,
+    loadPages,
+    loadPoliciesAdmin,
+    loadBlogPosts,
+    loadMetaobjects,
+    loadTaxSettingsAdmin,
+    loadDiscounts,
+    loadCampaigns,
+    loadMediaItems,
+    loadMetafieldResources,
+    loadMarketsAdmin,
+    loadAnalyticsDashboard,
+    loadIntegrations,
+    loadAdminUsers,
+    loadActivityLog,
+    loadNotifications,
+    loadDomainsAdmin,
+    loadTenantsAdmin,
+    loadPerformanceAdmin,
+    loadOrders,
+    loadCustomers,
+    loadMenuResources,
+    loadMenus,
+    loadEditorPages,
+    loadSections,
+  ]
+
+  loaders.forEach((loader) => {
+    try {
+      if (typeof loader === 'function') loader()
+    } catch {}
+  })
+}
+
+async function initAdminAuth() {
+  showAdminAuthGate({ message: 'Verifica sessione admin...' })
+
+  try {
+    const response = await nativeFetch('/api/admin/auth/me', {
+      credentials: 'same-origin',
+    })
+    const data = await response.json()
+
+    if (data.migration_required) {
+      showAdminAuthGate({
+        migration: true,
+        message: data.message || 'Applica la migration 0011 prima di usare il login admin.',
+      })
+      return
+    }
+
+    if (data.bootstrap_required) {
+      showAdminAuthGate({
+        bootstrap: true,
+        message: data.message || 'Crea il primo owner.',
+      })
+      return
+    }
+
+    if (data.authenticated && data.user) {
+      showAdminApp(data.user)
+      refreshAdminDataAfterAuth()
+      return
+    }
+
+    showAdminLogin(data.message || '')
+  } catch {
+    showAdminAuthGate({
+      message: 'Non e stato possibile verificare la sessione admin.',
+    })
+  }
+}
+
+adminLoginForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  setAdminAuthMessage('Accesso in corso...')
+
+  try {
+    const response = await nativeFetch('/api/admin/auth/login', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.querySelector('#adminLoginEmail')?.value.trim() || '',
+        password: document.querySelector('#adminLoginPassword')?.value || '',
+      }),
+    })
+    const data = await response.json()
+
+    if (!data.success) {
+      if (data.bootstrap_required) {
+        showAdminAuthGate({ bootstrap: true, message: data.message || 'Crea il primo owner.' })
+        return
+      }
+
+      setAdminAuthMessage(data.message || 'Credenziali non valide.', true)
+      return
+    }
+
+    adminLoginForm.reset()
+    showAdminApp(data.user)
+    refreshAdminDataAfterAuth()
+  } catch {
+    setAdminAuthMessage('Login non riuscito. Riprova.', true)
+  }
+})
+
+adminBootstrapForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  setAdminAuthMessage('Creazione owner...')
+
+  try {
+    const response = await nativeFetch('/api/admin/auth/bootstrap', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.querySelector('#adminBootstrapName')?.value.trim() || '',
+        email: document.querySelector('#adminBootstrapEmail')?.value.trim() || '',
+        password: document.querySelector('#adminBootstrapPassword')?.value || '',
+      }),
+    })
+    const data = await response.json()
+
+    if (!data.success) {
+      setAdminAuthMessage(data.message || 'Bootstrap non riuscito.', true)
+      return
+    }
+
+    adminBootstrapForm.reset()
+    showAdminApp(data.user)
+    refreshAdminDataAfterAuth()
+  } catch {
+    setAdminAuthMessage('Bootstrap non riuscito. Riprova.', true)
+  }
+})
+
+adminLogoutButton?.addEventListener('click', async () => {
+  try {
+    await nativeFetch('/api/admin/auth/logout', {
+      method: 'POST',
+      credentials: 'same-origin',
+    })
+  } catch {}
+
+  showAdminLogin('Logout effettuato.')
+})
+
 const productsList = document.querySelector('#productsList')
 const productForm = document.querySelector('#productForm')
 const message = document.querySelector('#message')
@@ -2426,12 +2678,18 @@ const refreshAdminUsersButton = document.querySelector('#refreshAdminUsersButton
 const adminUserFormTitle = document.querySelector('#adminUserFormTitle')
 const adminUserSubmitButton = document.querySelector('#adminUserSubmitButton')
 const cancelAdminUserEdit = document.querySelector('#cancelAdminUserEdit')
+const adminUserPasswordInput = document.querySelector('#adminUserPassword')
 
 function resetAdminUserForm() {
   if (!adminUserForm) return
   adminUserForm.reset()
   document.querySelector('#adminUserId').value = ''
   document.querySelector('#adminUserActive').checked = true
+  if (adminUserPasswordInput) {
+    adminUserPasswordInput.value = ''
+    adminUserPasswordInput.required = true
+    adminUserPasswordInput.placeholder = 'Minimo 8 caratteri'
+  }
   adminUserFormTitle.textContent = 'Aggiungi utente'
   adminUserSubmitButton.textContent = 'Salva utente'
   cancelAdminUserEdit.hidden = true
@@ -2444,6 +2702,11 @@ function fillAdminUserForm(user) {
   document.querySelector('#adminUserEmail').value = user.email || ''
   document.querySelector('#adminUserRole').value = user.role || 'viewer'
   document.querySelector('#adminUserActive').checked = Number(user.active) !== 0
+  if (adminUserPasswordInput) {
+    adminUserPasswordInput.value = ''
+    adminUserPasswordInput.required = false
+    adminUserPasswordInput.placeholder = 'Lascia vuota per non cambiarla'
+  }
   adminUserFormTitle.textContent = 'Modifica utente'
   adminUserSubmitButton.textContent = 'Aggiorna utente'
   cancelAdminUserEdit.hidden = false
@@ -2472,6 +2735,7 @@ async function loadAdminUsers() {
                 <div class="meta">
                   <span>${escapeHtml(user.role)}</span>
                   <span>${user.active ? 'Attivo' : 'Disattivo'}</span>
+                  <span>${user.has_password ? 'Login attivo' : 'Password mancante'}</span>
                 </div>
                 <div class="product-actions">
                   <button type="button" data-edit-admin-user="${user.id}">Modifica</button>
@@ -2519,6 +2783,7 @@ adminUserForm?.addEventListener('submit', async (event) => {
         id,
         name: document.querySelector('#adminUserName').value.trim(),
         email: document.querySelector('#adminUserEmail').value.trim(),
+        password: document.querySelector('#adminUserPassword')?.value || '',
         role: document.querySelector('#adminUserRole').value,
         active: document.querySelector('#adminUserActive').checked,
       }),
@@ -4624,3 +4889,4 @@ editorPageSelect.addEventListener('change', async () => {
 loadEditorPages()
 updateEditorPreviewUrl()
 loadSections()
+initAdminAuth()

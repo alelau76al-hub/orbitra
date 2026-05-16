@@ -1,3 +1,5 @@
+import { hashPassword, validatePassword } from '../../../_shared/admin-auth.js'
+
 function json(data, status = 200) {
   return Response.json(data, { status })
 }
@@ -23,6 +25,7 @@ function normalizeUser(body = {}) {
     email: normalizeEmail(body.email),
     role: roles.has(body.role) ? body.role : 'viewer',
     active: body.active === false || String(body.active) === '0' ? 0 : 1,
+    password: String(body.password || ''),
   }
 }
 
@@ -40,7 +43,16 @@ async function logActivity(env, action, entityId, description) {
 export async function onRequestGet({ env }) {
   try {
     const { results } = await env.DB.prepare(`
-      SELECT id, name, email, role, active, created_at, updated_at
+      SELECT
+        id,
+        name,
+        email,
+        role,
+        active,
+        last_login_at,
+        CASE WHEN password_hash IS NOT NULL AND password_hash != '' THEN 1 ELSE 0 END AS has_password,
+        created_at,
+        updated_at
       FROM admin_users
       ORDER BY active DESC, role ASC, name ASC
     `).all()
@@ -59,11 +71,34 @@ export async function onRequestPost({ request, env }) {
       return json({ success: false, message: 'Nome ed email valida sono obbligatori.' }, 400)
     }
 
+    const passwordValidation = validatePassword(user.password)
+    if (!passwordValidation.valid) {
+      return json({ success: false, message: passwordValidation.message }, 400)
+    }
+
+    const passwordData = await hashPassword(user.password)
+
     const inserted = await env.DB.prepare(`
-      INSERT INTO admin_users (name, email, role, active)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO admin_users (
+        name,
+        email,
+        role,
+        active,
+        password_hash,
+        password_salt,
+        password_iterations
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `)
-      .bind(user.name, user.email, user.role, user.active)
+      .bind(
+        user.name,
+        user.email,
+        user.role,
+        user.active,
+        passwordData.password_hash,
+        passwordData.password_salt,
+        passwordData.password_iterations,
+      )
       .run()
 
     await logActivity(env, 'create', inserted.meta.last_row_id, `Utente admin ${user.email} creato.`)
@@ -81,13 +116,47 @@ export async function onRequestPut({ request, env }) {
       return json({ success: false, message: 'Dati utente non validi.' }, 400)
     }
 
-    await env.DB.prepare(`
-      UPDATE admin_users
-      SET name = ?, email = ?, role = ?, active = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `)
-      .bind(user.name, user.email, user.role, user.active, user.id)
-      .run()
+    if (user.password) {
+      const passwordValidation = validatePassword(user.password)
+      if (!passwordValidation.valid) {
+        return json({ success: false, message: passwordValidation.message }, 400)
+      }
+
+      const passwordData = await hashPassword(user.password)
+
+      await env.DB.prepare(`
+        UPDATE admin_users
+        SET
+          name = ?,
+          email = ?,
+          role = ?,
+          active = ?,
+          password_hash = ?,
+          password_salt = ?,
+          password_iterations = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `)
+        .bind(
+          user.name,
+          user.email,
+          user.role,
+          user.active,
+          passwordData.password_hash,
+          passwordData.password_salt,
+          passwordData.password_iterations,
+          user.id,
+        )
+        .run()
+    } else {
+      await env.DB.prepare(`
+        UPDATE admin_users
+        SET name = ?, email = ?, role = ?, active = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `)
+        .bind(user.name, user.email, user.role, user.active, user.id)
+        .run()
+    }
 
     await logActivity(env, 'update', user.id, `Utente admin ${user.email} aggiornato.`)
     return json({ success: true, message: 'Utente aggiornato.' })

@@ -12,6 +12,100 @@ body {
   font-family: Arial, sans-serif;
 }
 
+[hidden] {
+  display: none !important;
+}
+
+.admin-auth-gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.admin-auth-card {
+  width: min(460px, 100%);
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+    rgba(0, 0, 0, 0.46);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+}
+
+.auth-eyebrow {
+  margin: 0 0 10px;
+  color: #00f5ff;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.admin-auth-card h1 {
+  margin: 0 0 12px;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.admin-auth-card p {
+  color: #b8b8d8;
+  line-height: 1.5;
+}
+
+.admin-auth-form {
+  margin-top: 22px;
+}
+
+.admin-auth-form button {
+  width: 100%;
+}
+
+.admin-auth-message {
+  min-height: 24px;
+  color: #52ff9f;
+  font-weight: 800;
+}
+
+.admin-auth-message.is-error {
+  color: #ff7a90;
+}
+
+.admin-session-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.admin-session-bar strong {
+  display: block;
+}
+
+.admin-session-bar span {
+  color: #b8b8d8;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-session-bar button {
+  margin-top: 0;
+}
+
+.field-help {
+  margin: -2px 0 12px;
+  color: #b8b8d8;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .admin {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
