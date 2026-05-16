@@ -11,6 +11,29 @@ const adminCurrentView = document.querySelector('#adminCurrentView')
 const adminLogoutButton = document.querySelector('#adminLogoutButton')
 const nativeFetch = window.fetch.bind(window)
 
+function setupAdminLogoFallbacks() {
+  document.querySelectorAll('[data-admin-logo]').forEach((logo) => {
+    logo.addEventListener('error', () => {
+      const fallbackSrc = logo.dataset.fallbackSrc
+
+      if (fallbackSrc && logo.dataset.fallbackUsed !== 'true') {
+        logo.dataset.fallbackUsed = 'true'
+        logo.src = fallbackSrc
+        return
+      }
+
+      logo.hidden = true
+      const fallbackText = logo
+        .closest('.admin-logo-lockup')
+        ?.querySelector('.admin-logo-fallback')
+
+      if (fallbackText) fallbackText.hidden = false
+    })
+  })
+}
+
+setupAdminLogoFallbacks()
+
 let adminCurrentUser = null
 let adminAllowProtectedFetches = false
 let adminAuditObserver = null

@@ -11,6 +11,17 @@
   <body>
     <section id="adminAuthGate" class="admin-auth-gate">
       <div class="admin-auth-card">
+        <div class="admin-logo-lockup admin-logo-lockup--auth">
+          <img
+            class="admin-logo-image"
+            src="/custom-admin/takeoffmilan-logo.png"
+            data-fallback-src="/custom-admin/takeoff%20logo.png"
+            alt="TakeOffMilan CMS"
+            data-admin-logo
+          />
+          <span class="admin-logo-fallback" hidden>TakeOffMilan CMS</span>
+        </div>
+
         <p class="auth-eyebrow">TakeOffMilan CMS</p>
         <h1>TakeOff Control Panel</h1>
         <p id="adminAuthIntro">
@@ -41,7 +52,18 @@
 
     <main id="adminApp" class="admin" hidden>
       <section id="adminSessionBar" class="admin-session-bar">
-        <div>
+        <a class="admin-topbar-brand admin-logo-lockup" href="#editor" aria-label="TakeOffMilan CMS">
+          <img
+            class="admin-logo-image"
+            src="/custom-admin/takeoffmilan-logo.png"
+            data-fallback-src="/custom-admin/takeoff%20logo.png"
+            alt="TakeOffMilan CMS"
+            data-admin-logo
+          />
+          <span class="admin-logo-fallback" hidden>TakeOffMilan CMS</span>
+        </a>
+
+        <div class="admin-session-user">
           <strong id="adminSessionName">Admin</strong>
           <span id="adminSessionRole">viewer</span>
           <span id="adminCurrentView" class="admin-current-view">Editor sito</span>
@@ -57,7 +79,24 @@
         </span>
       </section>
 
-      <section class="admin-hub">
+      <aside class="admin-sidebar" aria-label="Navigazione TakeOffMilan CMS">
+        <a class="admin-sidebar-brand admin-logo-lockup" href="#editor" aria-label="TakeOffMilan CMS">
+          <img
+            class="admin-logo-image"
+            src="/custom-admin/takeoffmilan-logo.png"
+            data-fallback-src="/custom-admin/takeoff%20logo.png"
+            alt="TakeOffMilan CMS"
+            data-admin-logo
+          />
+          <span class="admin-logo-fallback" hidden>TakeOffMilan CMS</span>
+        </a>
+
+        <div class="admin-sidebar-copy">
+          <strong>Website Operating System</strong>
+          <span>Next Generation Website CMS</span>
+        </div>
+
+      <nav class="admin-hub">
         <a class="hub-card active" href="#editor">
           <span>01</span>
           <strong>Editor sito</strong>
@@ -117,7 +156,8 @@
           <strong>Impostazioni</strong>
           <small>Generali, domini, utenti, privacy e operativita</small>
         </a>
-      </section>
+      </nav>
+      </aside>
 
       <section id="editor" class="visual-editor card admin-view" data-admin-view="editor">
         <div class="section-title editor-title-bar">
