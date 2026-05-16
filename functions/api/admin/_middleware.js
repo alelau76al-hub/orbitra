@@ -36,6 +36,30 @@ function pathMatches(pathname, paths) {
   return [...paths].some((path) => pathname === path || pathname.startsWith(`${path}/`))
 }
 
+function isAdminAuditMode(env) {
+  return String(env.ADMIN_AUDIT_MODE || '').toLowerCase() === 'true'
+}
+
+function auditModeUser() {
+  return {
+    name: 'Audit Viewer',
+    email: 'audit@orbitra.local',
+    role: 'viewer',
+    active: 1,
+    audit_mode: true,
+  }
+}
+
+function auditModeWriteDeniedResponse() {
+  return Response.json(
+    {
+      success: false,
+      message: 'Audit mode: modifiche disabilitate.',
+    },
+    { status: 403 },
+  )
+}
+
 function canAccessAdminPath(user, request) {
   const { method } = request
   const pathname = new URL(request.url).pathname
@@ -74,6 +98,21 @@ async function logPermissionDenied(env, user, request) {
 export async function onRequest(context) {
   const { env, request } = context
   const url = new URL(request.url)
+  const auditMode = isAdminAuditMode(env)
+
+  if (auditMode) {
+    if (!isReadMethod(request.method)) {
+      return auditModeWriteDeniedResponse()
+    }
+
+    context.data = {
+      ...(context.data || {}),
+      adminUser: auditModeUser(),
+      adminAuditMode: true,
+    }
+
+    return context.next()
+  }
 
   if (request.method === 'OPTIONS' || url.pathname.startsWith('/api/admin/auth/')) {
     return context.next()

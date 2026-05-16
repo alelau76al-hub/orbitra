@@ -13,6 +13,9 @@ const nativeFetch = window.fetch.bind(window)
 
 let adminCurrentUser = null
 let adminAllowProtectedFetches = false
+let adminAuditObserver = null
+
+const ADMIN_AUDIT_MESSAGE = 'Audit mode: modifiche disabilitate.'
 
 function isProtectedAdminRequest(resource) {
   const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
@@ -43,6 +46,35 @@ function localAdminAuthResponse(message = 'Login admin richiesto.', status = 401
       },
     },
   )
+}
+
+function localAdminAuditResponse() {
+  return new Response(
+    JSON.stringify({
+      success: false,
+      message: ADMIN_AUDIT_MESSAGE,
+    }),
+    {
+      status: 403,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
+}
+
+function isReadMethod(method = 'GET') {
+  return ['GET', 'HEAD', 'OPTIONS'].includes(String(method || 'GET').toUpperCase())
+}
+
+function getRequestMethod(resource, options = {}) {
+  if (options?.method) return options.method
+  if (resource instanceof Request) return resource.method || 'GET'
+  return 'GET'
+}
+
+function isAdminAuditMode() {
+  return adminCurrentUser?.audit_mode === true
 }
 
 function getAdminRole() {
@@ -76,6 +108,97 @@ function showAdminPermissionNotice(message = 'Permessi insufficienti.') {
   notice.textContent = message
 }
 
+function ensureAdminAuditBadge() {
+  if (!adminSessionBar) return null
+
+  let badge = document.querySelector('#adminAuditBadge')
+
+  if (!badge) {
+    badge = document.createElement('strong')
+    badge.id = 'adminAuditBadge'
+    badge.className = 'admin-audit-badge'
+    badge.textContent = 'AUDIT MODE - READ ONLY'
+    adminSessionBar.appendChild(badge)
+  }
+
+  return badge
+}
+
+function isAuditMutationControl(button) {
+  if (!button) return false
+  if (button.id === 'exportDataButton') return false
+  if (button.id?.startsWith('refresh')) return false
+
+  const text = button.textContent || ''
+  const mutationText = /(salva|crea|elimina|disattiva|importa|upload|carica|aggiungi|rimuovi|bozza|valida import)/i
+
+  return (
+    button.type === 'submit' ||
+    button.id === 'adminLogoutButton' ||
+    button.id === 'importProductsButton' ||
+    button.id === 'addVariantButton' ||
+    button.id === 'saveSectionButton' ||
+    button.id === 'saveThemeSettingsButton' ||
+    button.matches(
+      [
+        '[data-delete-collection]',
+        '[data-disable]',
+        '[data-delete-media]',
+        '[data-remove-variant]',
+        '[data-unpublish-blog]',
+        '[data-unpublish-policy]',
+        '[data-disable-campaign]',
+        '[data-delete-menu-item]',
+        '[data-delete-section]',
+        '[data-remove-section]',
+      ].join(', '),
+    ) ||
+    mutationText.test(text)
+  )
+}
+
+function applyAdminAuditUi() {
+  const auditMode = isAdminAuditMode()
+  document.body.dataset.adminAuditMode = auditMode ? 'true' : 'false'
+
+  const badge = ensureAdminAuditBadge()
+  if (badge) badge.hidden = !auditMode
+
+  document.querySelectorAll('button').forEach((button) => {
+    if (!isAuditMutationControl(button)) return
+
+    button.disabled = auditMode
+    button.classList.toggle('audit-disabled', auditMode)
+    if (auditMode) {
+      button.title = ADMIN_AUDIT_MESSAGE
+      button.dataset.auditDisabled = 'true'
+    } else if (button.dataset.auditDisabled === 'true') {
+      button.title = ''
+      delete button.dataset.auditDisabled
+    }
+  })
+
+  document.querySelectorAll('input[type="file"]').forEach((input) => {
+    input.disabled = auditMode
+    input.classList.toggle('audit-disabled', auditMode)
+  })
+}
+
+function startAdminAuditObserver() {
+  if (adminAuditObserver || !adminApp) return
+
+  adminAuditObserver = new MutationObserver(() => {
+    if (isAdminAuditMode()) {
+      window.requestAnimationFrame(applyAdminAuditUi)
+    }
+  })
+
+  adminAuditObserver.observe(adminApp, {
+    childList: true,
+    subtree: true,
+  })
+}
+
 function applyAdminPermissionUi() {
   document.body.dataset.adminRole = getAdminRole()
 
@@ -91,13 +214,21 @@ function applyAdminPermissionUi() {
       ? ''
       : 'Permessi insufficienti per modificare impostazioni sensibili.'
   }
+
+  applyAdminAuditUi()
 }
 
 window.fetch = async (resource, options) => {
   const protectedAdminRequest = isProtectedAdminRequest(resource)
+  const requestMethod = getRequestMethod(resource, options)
 
   if (protectedAdminRequest && !adminAllowProtectedFetches) {
     return localAdminAuthResponse()
+  }
+
+  if (protectedAdminRequest && isAdminAuditMode() && !isReadMethod(requestMethod)) {
+    showAdminPermissionNotice(ADMIN_AUDIT_MESSAGE)
+    return localAdminAuditResponse()
   }
 
   const response = await nativeFetch(resource, options)
@@ -120,6 +251,33 @@ window.fetch = async (resource, options) => {
 
   return response
 }
+
+document.addEventListener(
+  'submit',
+  (event) => {
+    if (!isAdminAuditMode() || !event.target.closest('#adminApp')) return
+
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    showAdminPermissionNotice(ADMIN_AUDIT_MESSAGE)
+  },
+  true,
+)
+
+document.addEventListener(
+  'click',
+  (event) => {
+    if (!isAdminAuditMode()) return
+
+    const button = event.target.closest('button')
+    if (!button || !isAuditMutationControl(button)) return
+
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    showAdminPermissionNotice(ADMIN_AUDIT_MESSAGE)
+  },
+  true,
+)
 
 function setAdminAuthMessage(message = '', isError = false) {
   if (!adminAuthMessage) return
@@ -161,6 +319,8 @@ function showAdminApp(user) {
   if (adminSessionRole) adminSessionRole.textContent = user?.role || 'viewer'
 
   applyAdminPermissionUi()
+  startAdminAuditObserver()
+  applyAdminAuditUi()
 }
 
 function refreshAdminDataAfterAuth() {

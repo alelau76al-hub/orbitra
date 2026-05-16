@@ -1,6 +1,23 @@
 import { getAdminAuthSetupState, getAdminSession, json } from '../../../../_shared/admin-auth.js'
 
+function isAdminAuditMode(env) {
+  return String(env.ADMIN_AUDIT_MODE || '').toLowerCase() === 'true'
+}
+
 async function handleMe({ request, env }) {
+  if (isAdminAuditMode(env)) {
+    return json({
+      success: true,
+      authenticated: true,
+      user: {
+        name: 'Audit Viewer',
+        email: 'audit@orbitra.local',
+        role: 'viewer',
+        audit_mode: true,
+      },
+    })
+  }
+
   const setup = await getAdminAuthSetupState(env)
 
   if (!setup.schema_ready) {

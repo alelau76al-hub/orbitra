@@ -107,6 +107,22 @@ body {
   text-transform: none;
 }
 
+.admin-audit-badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 207, 117, 0.5);
+  border-radius: 999px;
+  color: #ffcf75;
+  background: rgba(255, 207, 117, 0.12);
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  box-shadow: 0 0 28px rgba(255, 207, 117, 0.12);
+}
+
 .admin-session-bar button {
   margin-top: 0;
 }
@@ -121,6 +137,16 @@ body {
 button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+body[data-admin-audit-mode="true"] .audit-disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+body[data-admin-audit-mode="true"] .admin-session-bar {
+  border-color: rgba(255, 207, 117, 0.32);
+  box-shadow: 0 0 36px rgba(255, 207, 117, 0.08);
 }
 
 .field-help {
