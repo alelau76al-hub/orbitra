@@ -2,9 +2,8 @@ export const ADMIN_SESSION_COOKIE = 'orbitra_admin_session'
 
 export const ADMIN_ROLES = new Set(['owner', 'admin', 'editor', 'viewer'])
 
-const PASSWORD_ITERATIONS = 150000
+const PASSWORD_ITERATIONS = 50000
 const SESSION_TTL_SECONDS = 60 * 60 * 12
-const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 export class PasswordHashError extends Error {
   constructor(debugStep) {
@@ -45,41 +44,15 @@ function getWebCrypto() {
   return globalThis.crypto
 }
 
-function bytesToBase64(bytes) {
-  let output = ''
-
-  for (let index = 0; index < bytes.length; index += 3) {
-    const first = bytes[index]
-    const second = index + 1 < bytes.length ? bytes[index + 1] : 0
-    const third = index + 2 < bytes.length ? bytes[index + 2] : 0
-    const triplet = (first << 16) | (second << 8) | third
-
-    output += BASE64_ALPHABET[(triplet >> 18) & 63]
-    output += BASE64_ALPHABET[(triplet >> 12) & 63]
-    output += index + 1 < bytes.length ? BASE64_ALPHABET[(triplet >> 6) & 63] : '='
-    output += index + 2 < bytes.length ? BASE64_ALPHABET[triplet & 63] : '='
-  }
-
-  return output
-}
-
-function bytesToBase64Url(bytes) {
-  return bytesToBase64(bytes)
-    .replaceAll('+', '-')
-    .replaceAll('/', '_')
-    .replaceAll('=', '')
-}
-
 function randomBytes(length) {
   const bytes = new Uint8Array(length)
   getWebCrypto().getRandomValues(bytes)
   return bytes
 }
 
-async function digestBase64(value) {
-  const encoded = new TextEncoder().encode(value)
-  const digest = await getWebCrypto().subtle.digest('SHA-256', encoded)
-  return bytesToBase64(new Uint8Array(digest))
+async function digestHex(value) {
+  const digest = await getWebCrypto().subtle.digest('SHA-256', stringToBytes(value))
+  return bytesToHex(new Uint8Array(digest))
 }
 
 export function bytesToHex(bytes) {
@@ -104,39 +77,51 @@ export function hexToBytes(value = '') {
   return bytes
 }
 
+export function stringToBytes(value = '') {
+  return new TextEncoder().encode(String(value))
+}
+
+export function concatBytes(...arrays) {
+  const totalLength = arrays.reduce((sum, array) => sum + array.length, 0)
+  const result = new Uint8Array(totalLength)
+  let offset = 0
+
+  arrays.forEach((array) => {
+    result.set(array, offset)
+    offset += array.length
+  })
+
+  return result
+}
+
+async function digestBytes(bytes) {
+  let webCrypto = null
+
+  try {
+    webCrypto = getWebCrypto()
+  } catch {
+    throw new PasswordHashError('HASH_UNAVAILABLE')
+  }
+
+  try {
+    return new Uint8Array(await webCrypto.subtle.digest('SHA-256', bytes))
+  } catch {
+    throw new PasswordHashError('DIGEST_FAILED')
+  }
+}
+
 async function derivePasswordHash(password, saltBytes, iterations = PASSWORD_ITERATIONS) {
-  const webCrypto = getWebCrypto()
-  const encoder = new TextEncoder()
-  let keyMaterial = null
+  const normalizedIterations = Number(iterations || PASSWORD_ITERATIONS)
+  const passwordBytes = stringToBytes(password)
+  let hashBytes = new Uint8Array()
+  let hashInput = concatBytes(passwordBytes, saltBytes)
 
-  try {
-    keyMaterial = await webCrypto.subtle.importKey(
-      'raw',
-      encoder.encode(password),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveBits'],
-    )
-  } catch {
-    throw new PasswordHashError('IMPORT_KEY_FAILED')
+  for (let index = 0; index < normalizedIterations; index += 1) {
+    hashBytes = await digestBytes(hashInput)
+    hashInput = concatBytes(hashBytes, passwordBytes, saltBytes)
   }
 
-  try {
-    const derivedBits = await webCrypto.subtle.deriveBits(
-      {
-        name: 'PBKDF2',
-        salt: saltBytes,
-        iterations,
-        hash: 'SHA-256',
-      },
-      keyMaterial,
-      256,
-    )
-
-    return new Uint8Array(derivedBits)
-  } catch {
-    throw new PasswordHashError('DERIVE_BITS_FAILED')
-  }
+  return hashBytes
 }
 
 export function validatePassword(password = '') {
@@ -158,7 +143,7 @@ export async function createPasswordHash(password) {
   try {
     webCrypto = getWebCrypto()
   } catch {
-    throw new PasswordHashError('CRYPTO_UNAVAILABLE')
+    throw new PasswordHashError('HASH_UNAVAILABLE')
   }
 
   const iterations = PASSWORD_ITERATIONS
@@ -312,7 +297,7 @@ export async function getAdminSession(request, env) {
     }
   }
 
-  const tokenHash = await digestBase64(token)
+  const tokenHash = await digestHex(token)
   let session = null
 
   try {
@@ -421,8 +406,8 @@ export async function requireAdminSession({ request, env }) {
 }
 
 export async function createAdminSession(env, userId, request) {
-  const token = bytesToBase64Url(randomBytes(32))
-  const tokenHash = await digestBase64(token)
+  const token = bytesToHex(randomBytes(32))
+  const tokenHash = await digestHex(token)
   const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000).toISOString()
 
   await env.DB.prepare(`
@@ -447,7 +432,7 @@ export async function createAdminSession(env, userId, request) {
 export async function revokeAdminSession(env, token) {
   if (!token) return
 
-  const tokenHash = await digestBase64(token)
+  const tokenHash = await digestHex(token)
   await env.DB.prepare(`
     UPDATE admin_sessions
     SET revoked_at = CURRENT_TIMESTAMP
