@@ -3174,7 +3174,7 @@ async function renderPublicBlogPage() {
               ? `<img class="blog-hero-image" src="${escapeCmsHtml(post.image_url)}" alt="${escapeCmsHtml(post.title)}" loading="lazy">`
               : ''
           }
-          <p class="eyebrow">Blog ${post.author ? `Â· ${escapeCmsHtml(post.author)}` : ''}</p>
+          <p class="eyebrow">Blog ${post.author ? `&middot; ${escapeCmsHtml(post.author)}` : ''}</p>
           <h1>${escapeCmsHtml(post.title)}</h1>
           <p class="blog-date">${escapeCmsHtml(renderBlogDate(post.created_at))}</p>
           <div class="blog-content">

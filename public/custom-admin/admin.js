@@ -403,7 +403,7 @@ importProductsButton?.addEventListener('click', async () => {
       loadProducts()
     }
   } catch (error) {
-    importExportMessage.textContent = error.message || 'Errore import.'
+    importExportMessage.textContent = 'Import non riuscito. Verifica formato e riprova.'
   }
 })
 
@@ -1306,7 +1306,7 @@ metaobjectDefinitionForm?.addEventListener('submit', async (event) => {
       loadMetaobjects()
     }
   } catch (error) {
-    metaobjectDefinitionMessage.textContent = error.message || 'Errore metaobject.'
+    metaobjectDefinitionMessage.textContent = 'Errore metaobject. Verifica il JSON dei campi e riprova.'
   }
 })
 
@@ -1335,7 +1335,7 @@ metaobjectEntryForm?.addEventListener('submit', async (event) => {
       loadMetaobjects()
     }
   } catch (error) {
-    metaobjectEntryMessage.textContent = error.message || 'Errore entry.'
+    metaobjectEntryMessage.textContent = 'Errore entry. Verifica il JSON dei dati e riprova.'
   }
 })
 
@@ -2271,7 +2271,7 @@ async function loadAnalyticsDashboard() {
               <div class="admin-record-head">
                 <div>
                   <h3>${escapeHtml(event.event_type)}</h3>
-                  <p>${escapeHtml(event.path || '/')} ${event.entity_id ? `Â· ${escapeHtml(event.entity_id)}` : ''}</p>
+                  <p>${escapeHtml(event.path || '/')} ${event.entity_id ? `&middot; ${escapeHtml(event.entity_id)}` : ''}</p>
                 </div>
                 <strong>${escapeHtml(event.created_at || '')}</strong>
               </div>
@@ -2407,7 +2407,7 @@ integrationForm?.addEventListener('submit', async (event) => {
       loadIntegrations()
     }
   } catch (error) {
-    integrationMessage.textContent = error.message || 'Errore integrazione.'
+    integrationMessage.textContent = 'Errore integrazione. Verifica il JSON configurazione e riprova.'
   }
 })
 
