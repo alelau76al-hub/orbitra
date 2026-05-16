@@ -173,7 +173,8 @@ select {
   font-size: 12px;
 }
 
-.market-selector {
+.market-selector,
+.language-selector {
   min-height: 40px;
   padding: 0 12px;
   border: 1px solid var(--border);

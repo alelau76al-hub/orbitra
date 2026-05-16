@@ -1,7 +1,305 @@
 import './style.css'
 
+const STOREFRONT_LANGUAGE_STORAGE_KEY = 'takeoff_storefront_language_v1'
+const STOREFRONT_DEFAULT_LANGUAGE = 'it'
+const STOREFRONT_TRANSLATIONS = {
+  it: {
+    languageLabel: 'Lingua',
+    listAnd: ' e ',
+    cart: 'Carrello',
+    cartTitle: 'Il tuo carrello',
+    cartClose: 'Chiudi',
+    cartEmpty: 'Il carrello e vuoto.',
+    cartTotal: 'Totale',
+    cartCheckout: 'Vai al checkout',
+    cartNote: 'Pagamento manuale o simulato. Nessun pagamento reale viene elaborato.',
+    cartAddFirst: 'Aggiungi almeno un prodotto prima del checkout.',
+    cartProductUnavailable: 'Prodotto non disponibile.',
+    cartStockExceeded: 'Quantita richiesta superiore allo stock disponibile.',
+    cartAdded: '{name} aggiunto al carrello.',
+    cartRemove: 'Rimuovi',
+    cartProductDetailsLoading: 'Dettagli prodotto non ancora caricati.',
+    product: 'Prodotto',
+    products: 'Prodotti',
+    productFallback: 'Prodotto',
+    productNoImage: 'Prodotto senza immagine',
+    productNoDescription: 'Nessuna descrizione disponibile.',
+    productLoading: 'Caricamento prodotto...',
+    productLoadingText: 'Stiamo recuperando i dettagli dal catalogo.',
+    productNotFound: 'Prodotto non trovato',
+    productNotFoundText: 'Questo prodotto non esiste o non e piu disponibile.',
+    productLoadError: 'Errore caricamento prodotto',
+    productLoadErrorText: 'Non e stato possibile recuperare questo prodotto.',
+    backToShop: 'Torna allo shop',
+    addToCart: 'Aggiungi al carrello',
+    unavailable: 'Non disponibile',
+    details: 'Dettagli',
+    soldOut: 'esaurita',
+    variantsAvailable: '{count} varianti disponibili',
+    stock: 'Stock',
+    category: 'Categoria',
+    collection: 'Collezione',
+    noCategory: 'Senza categoria',
+    noCollection: 'Senza collezione',
+    variant: 'Variante',
+    variantUnavailable: 'Questa variante non e disponibile.',
+    variantAvailable: '{count} disponibili per la variante selezionata.',
+    quantity: 'Quantita',
+    view3d: 'Visualizza in 3D',
+    trustCheckout: 'Checkout protetto',
+    trustShipping: 'Spedizione tracciata',
+    trustSupport: 'Assistenza post-acquisto',
+    description: 'Descrizione',
+    shippingReturns: 'Spedizione e resi',
+    shippingReturnsText: 'Costi, tasse e metodi disponibili vengono calcolati al checkout con fallback sicuri.',
+    specs: 'Specifiche',
+    relatedProducts: 'Prodotti correlati',
+    sameCollection: 'Dalla stessa collezione',
+    relatedText: 'Altre scelte coerenti con questo prodotto.',
+    collectionLoading: 'Caricamento collezione...',
+    collectionLoadingText: 'Stiamo recuperando prodotti e contenuti dal CMS.',
+    collectionNotFound: 'Collezione non trovata',
+    collectionNotFoundText: 'Questa collezione non esiste o non e piu attiva.',
+    collectionUnavailable: 'Questa collezione non e disponibile.',
+    collectionLoadError: 'Errore caricamento collezione',
+    collectionLoadErrorText: 'Non e stato possibile caricare questa pagina.',
+    collectionProductsDefault: 'Prodotti selezionati da questa collezione.',
+    collectionEmpty: 'Nessun prodotto disponibile in questa collezione.',
+    noProducts: 'Nessun prodotto disponibile.',
+    noCollections: 'Nessuna collezione disponibile.',
+    productsLoadError: 'Errore caricamento prodotti.',
+    collectionsLoadError: 'Errore caricamento collezioni.',
+    viewCollection: 'Vedi collezione',
+    discoverProduct: 'Scopri il prodotto',
+    checkout: 'Checkout',
+    checkoutLoading: 'Caricamento checkout...',
+    checkoutLoadingText: 'Stiamo preparando riepilogo, spedizione e pagamento.',
+    checkoutComplete: "Completa l'ordine.",
+    checkoutIntro: 'Riepilogo validato lato server, pagamento manuale/test o Stripe test mode se configurato.',
+    checkoutEmptyTitle: 'Il carrello e vuoto',
+    checkoutEmptyText: "Aggiungi almeno un prodotto prima di completare l'ordine.",
+    checkoutUnavailable: 'Checkout non disponibile',
+    checkoutUnavailableText: 'Non e stato possibile preparare il checkout.',
+    checkoutCustomer: 'Dati cliente',
+    checkoutFullName: 'Nome completo',
+    checkoutEmail: 'Email',
+    checkoutPhone: 'Telefono opzionale',
+    checkoutAddress: 'Indirizzo spedizione',
+    checkoutAddressLine: 'Indirizzo',
+    checkoutCity: 'Citta',
+    checkoutPostal: 'CAP',
+    checkoutCountry: 'Paese',
+    checkoutShippingMethod: 'Metodo spedizione',
+    checkoutPayment: 'Pagamento',
+    checkoutPaymentMethod: 'Metodo pagamento',
+    checkoutManual: 'Pagamento manuale / pending',
+    checkoutStripe: 'Stripe test mode',
+    checkoutTestPaid: 'Pagamento simulato riuscito',
+    checkoutTestFailed: 'Pagamento simulato fallito',
+    checkoutSubmit: 'Completa ordine',
+    checkoutSummary: 'Riepilogo',
+    checkoutDiscountCode: 'Codice sconto',
+    checkoutApply: 'Applica',
+    checkoutSubtotal: 'Subtotale',
+    checkoutShipping: 'Spedizione',
+    checkoutStandardShipping: 'Spedizione standard',
+    checkoutStandardShippingText: 'Metodo standard disponibile come fallback.',
+    checkoutFreeOver: 'sopra {amount}',
+    checkoutDiscount: 'Sconto',
+    checkoutTaxIncluded: 'IVA inclusa',
+    checkoutTax: 'IVA',
+    checkoutTotal: 'Totale',
+    checkoutPolicyAccept: 'Accetto {links}.',
+    checkoutEmptyMessage: 'Il carrello e vuoto.',
+    checkoutCreating: 'Creazione ordine in corso...',
+    checkoutError: 'Errore creazione ordine.',
+    checkoutConnectionError: 'Errore di connessione durante il checkout.',
+    checkoutGoToShop: 'Vai allo shop',
+    discountInsert: 'Inserisci un codice sconto.',
+    discountChecking: 'Verifica codice sconto...',
+    discountInvalid: 'Codice sconto non valido.',
+    discountApplied: '{code} applicato: -{amount}',
+    discountUnavailable: 'Sconti non disponibili ora. Puoi completare senza coupon.',
+    orderCreated: 'Ordine creato',
+    thankYou: 'Grazie, ordine #{id} ricevuto.',
+    paymentStatus: 'Stato pagamento',
+    orderStatus: 'Stato ordine',
+    orderTotal: 'Totale ordine',
+    paymentMethod: 'Metodo pagamento',
+    backToSite: 'Torna al sito',
+    stripePreparing: 'Preparazione pagamento Stripe...',
+    stripeUnavailable: 'Ordine #{id} creato, ma Stripe non e disponibile.',
+    paymentCanceled: 'Pagamento Stripe annullato',
+    paymentCanceledText: "L'ordine #{id} resta in attesa. Puoi riprovare o scegliere pagamento manuale.",
+    backToCheckout: 'Torna al checkout',
+  },
+  en: {
+    languageLabel: 'Language',
+    listAnd: ' and ',
+    cart: 'Cart',
+    cartTitle: 'Your cart',
+    cartClose: 'Close',
+    cartEmpty: 'Your cart is empty.',
+    cartTotal: 'Total',
+    cartCheckout: 'Go to checkout',
+    cartNote: 'Manual or simulated payment. No real payment is processed.',
+    cartAddFirst: 'Add at least one product before checkout.',
+    cartProductUnavailable: 'Product unavailable.',
+    cartStockExceeded: 'Requested quantity exceeds available stock.',
+    cartAdded: '{name} added to cart.',
+    cartRemove: 'Remove',
+    cartProductDetailsLoading: 'Product details not loaded yet.',
+    product: 'Product',
+    products: 'Products',
+    productFallback: 'Product',
+    productNoImage: 'Product without image',
+    productNoDescription: 'No description available.',
+    productLoading: 'Loading product...',
+    productLoadingText: 'Retrieving details from the catalog.',
+    productNotFound: 'Product not found',
+    productNotFoundText: 'This product does not exist or is no longer available.',
+    productLoadError: 'Product loading error',
+    productLoadErrorText: 'We could not retrieve this product.',
+    backToShop: 'Back to shop',
+    addToCart: 'Add to cart',
+    unavailable: 'Unavailable',
+    details: 'Details',
+    soldOut: 'sold out',
+    variantsAvailable: '{count} variants available',
+    stock: 'Stock',
+    category: 'Category',
+    collection: 'Collection',
+    noCategory: 'No category',
+    noCollection: 'No collection',
+    variant: 'Variant',
+    variantUnavailable: 'This variant is unavailable.',
+    variantAvailable: '{count} available for the selected variant.',
+    quantity: 'Quantity',
+    view3d: 'View in 3D',
+    trustCheckout: 'Secure checkout',
+    trustShipping: 'Tracked shipping',
+    trustSupport: 'Post-purchase support',
+    description: 'Description',
+    shippingReturns: 'Shipping and returns',
+    shippingReturnsText: 'Costs, taxes and available methods are calculated at checkout with safe fallbacks.',
+    specs: 'Specifications',
+    relatedProducts: 'Related products',
+    sameCollection: 'From the same collection',
+    relatedText: 'Other choices aligned with this product.',
+    collectionLoading: 'Loading collection...',
+    collectionLoadingText: 'Retrieving products and content from the CMS.',
+    collectionNotFound: 'Collection not found',
+    collectionNotFoundText: 'This collection does not exist or is no longer active.',
+    collectionUnavailable: 'This collection is not available.',
+    collectionLoadError: 'Collection loading error',
+    collectionLoadErrorText: 'We could not load this page.',
+    collectionProductsDefault: 'Selected products from this collection.',
+    collectionEmpty: 'No products available in this collection.',
+    noProducts: 'No products available.',
+    noCollections: 'No collections available.',
+    productsLoadError: 'Product loading error.',
+    collectionsLoadError: 'Collection loading error.',
+    viewCollection: 'View collection',
+    discoverProduct: 'Discover product',
+    checkout: 'Checkout',
+    checkoutLoading: 'Loading checkout...',
+    checkoutLoadingText: 'Preparing summary, shipping and payment.',
+    checkoutComplete: 'Complete your order.',
+    checkoutIntro: 'Server-side validated summary, manual/test payment or Stripe test mode when configured.',
+    checkoutEmptyTitle: 'Your cart is empty',
+    checkoutEmptyText: 'Add at least one product before completing the order.',
+    checkoutUnavailable: 'Checkout unavailable',
+    checkoutUnavailableText: 'We could not prepare checkout.',
+    checkoutCustomer: 'Customer details',
+    checkoutFullName: 'Full name',
+    checkoutEmail: 'Email',
+    checkoutPhone: 'Phone optional',
+    checkoutAddress: 'Shipping address',
+    checkoutAddressLine: 'Address',
+    checkoutCity: 'City',
+    checkoutPostal: 'Postal code',
+    checkoutCountry: 'Country',
+    checkoutShippingMethod: 'Shipping method',
+    checkoutPayment: 'Payment',
+    checkoutPaymentMethod: 'Payment method',
+    checkoutManual: 'Manual / pending payment',
+    checkoutStripe: 'Stripe test mode',
+    checkoutTestPaid: 'Simulated successful payment',
+    checkoutTestFailed: 'Simulated failed payment',
+    checkoutSubmit: 'Complete order',
+    checkoutSummary: 'Summary',
+    checkoutDiscountCode: 'Discount code',
+    checkoutApply: 'Apply',
+    checkoutSubtotal: 'Subtotal',
+    checkoutShipping: 'Shipping',
+    checkoutStandardShipping: 'Standard shipping',
+    checkoutStandardShippingText: 'Standard method available as fallback.',
+    checkoutFreeOver: 'over {amount}',
+    checkoutDiscount: 'Discount',
+    checkoutTaxIncluded: 'VAT included',
+    checkoutTax: 'VAT',
+    checkoutTotal: 'Total',
+    checkoutPolicyAccept: 'I accept {links}.',
+    checkoutEmptyMessage: 'Your cart is empty.',
+    checkoutCreating: 'Creating order...',
+    checkoutError: 'Order creation error.',
+    checkoutConnectionError: 'Connection error during checkout.',
+    checkoutGoToShop: 'Go to shop',
+    discountInsert: 'Enter a discount code.',
+    discountChecking: 'Checking discount code...',
+    discountInvalid: 'Invalid discount code.',
+    discountApplied: '{code} applied: -{amount}',
+    discountUnavailable: 'Discounts are not available now. You can complete without coupon.',
+    orderCreated: 'Order created',
+    thankYou: 'Thank you, order #{id} received.',
+    paymentStatus: 'Payment status',
+    orderStatus: 'Order status',
+    orderTotal: 'Order total',
+    paymentMethod: 'Payment method',
+    backToSite: 'Back to site',
+    stripePreparing: 'Preparing Stripe payment...',
+    stripeUnavailable: 'Order #{id} created, but Stripe is unavailable.',
+    paymentCanceled: 'Stripe payment canceled',
+    paymentCanceledText: 'Order #{id} remains pending. You can retry or choose manual payment.',
+    backToCheckout: 'Back to checkout',
+  },
+}
+
+function getStorefrontLanguage() {
+  try {
+    const saved = localStorage.getItem(STOREFRONT_LANGUAGE_STORAGE_KEY)
+    return STOREFRONT_TRANSLATIONS[saved] ? saved : STOREFRONT_DEFAULT_LANGUAGE
+  } catch {
+    return STOREFRONT_DEFAULT_LANGUAGE
+  }
+}
+
+function setStorefrontLanguage(language) {
+  const nextLanguage = STOREFRONT_TRANSLATIONS[language] ? language : STOREFRONT_DEFAULT_LANGUAGE
+  try {
+    localStorage.setItem(STOREFRONT_LANGUAGE_STORAGE_KEY, nextLanguage)
+  } catch {}
+}
+
+function sfT(key, replacements = {}) {
+  const language = getStorefrontLanguage()
+  const template =
+    STOREFRONT_TRANSLATIONS[language]?.[key] ||
+    STOREFRONT_TRANSLATIONS[STOREFRONT_DEFAULT_LANGUAGE]?.[key] ||
+    key
+
+  return Object.entries(replacements).reduce(
+    (text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
+    template,
+  )
+}
+
+function getStorefrontLocale() {
+  return getStorefrontLanguage() === 'en' ? 'en-US' : 'it-IT'
+}
+
 const formatMoney = (value) =>
-  new Intl.NumberFormat('it-IT', {
+  new Intl.NumberFormat(getStorefrontLocale(), {
     style: 'currency',
     currency: 'EUR',
     maximumFractionDigits: 0,
@@ -69,6 +367,10 @@ document.querySelector('#app').innerHTML = `
 
     <a class="nav-cta" href="#booking">Launch Pass</a>
     <select class="market-selector" id="marketSelector" aria-label="Mercato" hidden></select>
+    <select class="language-selector" id="languageSelector" aria-label="Lingua">
+      <option value="it">IT</option>
+      <option value="en">EN</option>
+    </select>
     <button class="cart-toggle" type="button" data-cart-open>
       Carrello <span id="cartCount">0</span>
     </button>
@@ -329,6 +631,55 @@ document.querySelector('#app').innerHTML = `
   </aside>
 `
 
+function applyStorefrontLanguage() {
+  const language = getStorefrontLanguage()
+  document.documentElement.lang = language
+
+  const selector = document.querySelector('#languageSelector')
+  if (selector) {
+    selector.value = language
+    selector.setAttribute('aria-label', sfT('languageLabel'))
+  }
+
+  const cartToggle = document.querySelector('.cart-toggle')
+  const countTarget = document.querySelector('#cartCount')
+  if (cartToggle && countTarget) {
+    cartToggle.innerHTML = `${sfT('cart')} <span id="cartCount">${escapeCmsHtml(countTarget.textContent || '0')}</span>`
+  }
+
+  const cartEyebrow = document.querySelector('.cart-head .eyebrow')
+  if (cartEyebrow) cartEyebrow.textContent = sfT('cart')
+
+  const cartTitle = document.querySelector('.cart-head h2')
+  if (cartTitle) cartTitle.textContent = sfT('cartTitle')
+
+  const cartClose = document.querySelector('.cart-close')
+  if (cartClose) cartClose.textContent = sfT('cartClose')
+
+  const cartSummaryLabel = document.querySelector('.cart-summary span')
+  if (cartSummaryLabel) cartSummaryLabel.textContent = sfT('cartTotal')
+
+  const cartCheckout = document.querySelector('.cart-checkout')
+  if (cartCheckout) cartCheckout.textContent = sfT('cartCheckout')
+
+  const cartNote = document.querySelector('.cart-note')
+  if (cartNote) cartNote.textContent = sfT('cartNote')
+
+  renderCart()
+}
+
+function setupStorefrontLanguageSelector() {
+  const selector = document.querySelector('#languageSelector')
+  if (!selector) return
+
+  selector.value = getStorefrontLanguage()
+  selector.addEventListener('change', () => {
+    setStorefrontLanguage(selector.value)
+    applyStorefrontLanguage()
+    bootPublicRouting()
+  })
+}
+
 function buildMenuItemUrl(item) {
   if (item.link_type === 'url') {
     return item.url || '#'
@@ -356,7 +707,7 @@ const MARKET_STORAGE_KEY = 'orbitra_market_v1'
 const productCache = new Map()
 
 function formatPriceCents(priceCents = 0) {
-  return (Number(priceCents || 0) / 100).toLocaleString('it-IT', {
+  return (Number(priceCents || 0) / 100).toLocaleString(getStorefrontLocale(), {
     style: 'currency',
     currency: 'EUR',
   })
@@ -628,7 +979,7 @@ function addProductToCart(productSlug, variantId = '', quantity = 1) {
   const product = productCache.get(productSlug)
 
   if (!product) {
-    showCartMessage('Prodotto non disponibile.')
+    showCartMessage(sfT('cartProductUnavailable'))
     return
   }
 
@@ -637,7 +988,7 @@ function addProductToCart(productSlug, variantId = '', quantity = 1) {
   const stock = getEffectiveStock(product, variant)
 
   if (stock <= 0) {
-    showCartMessage('Prodotto non disponibile.')
+    showCartMessage(sfT('cartProductUnavailable'))
     openCart()
     return
   }
@@ -648,7 +999,7 @@ function addProductToCart(productSlug, variantId = '', quantity = 1) {
   const nextQuantity = (existing?.quantity || 0) + Number(quantity || 1)
 
   if (nextQuantity > stock) {
-    showCartMessage('Quantità richiesta superiore allo stock disponibile.')
+    showCartMessage(sfT('cartStockExceeded'))
     openCart()
     return
   }
@@ -665,7 +1016,7 @@ function addProductToCart(productSlug, variantId = '', quantity = 1) {
   }
 
   saveCart(cart)
-  showCartMessage(`${product.name} aggiunto al carrello.`)
+  showCartMessage(sfT('cartAdded', { name: product.name }))
   trackAnalyticsEvent('add_to_cart', {
     entity_type: 'product',
     entity_id: product.slug,
@@ -775,6 +1126,8 @@ function renderCart() {
 
   if (cart.length === 0) {
     itemsContainer.innerHTML = '<p class="cart-empty">Il carrello è vuoto.</p>'
+    const emptyMessage = itemsContainer.querySelector('.cart-empty')
+    if (emptyMessage) emptyMessage.textContent = sfT('cartEmpty')
     totalTarget.textContent = formatPriceCents(0)
     if (checkoutButton) checkoutButton.classList.add('disabled')
     return
@@ -791,9 +1144,9 @@ function renderCart() {
           <article class="cart-item">
             <div>
               <h3>${escapeCmsHtml(item.productSlug)}</h3>
-              <p>Dettagli prodotto non ancora caricati.</p>
+              <p>${escapeCmsHtml(sfT('cartProductDetailsLoading'))}</p>
             </div>
-            <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">Rimuovi</button>
+            <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">${escapeCmsHtml(sfT('cartRemove'))}</button>
           </article>
         `
       }
@@ -808,7 +1161,7 @@ function renderCart() {
             ${
               product.image_url
                 ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
-                : '<span>Prodotto</span>'
+                : `<span>${escapeCmsHtml(sfT('productFallback'))}</span>`
             }
           </div>
 
@@ -824,7 +1177,7 @@ function renderCart() {
             <button type="button" data-cart-quantity="${escapeCmsHtml(item.key)}" data-cart-delta="1">+</button>
           </div>
 
-          <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">Rimuovi</button>
+          <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">${escapeCmsHtml(sfT('cartRemove'))}</button>
         </article>
       `
     })
@@ -838,7 +1191,7 @@ function renderAddToCartButton(product, variant = null, extraAttributes = '') {
   const variantId = variant?.id || ''
 
   if (stock <= 0) {
-    return '<button class="btn primary" type="button" disabled>Non disponibile</button>'
+    return `<button class="btn primary" type="button" disabled>${escapeCmsHtml(sfT('unavailable'))}</button>`
   }
 
   return `
@@ -850,7 +1203,7 @@ function renderAddToCartButton(product, variant = null, extraAttributes = '') {
       data-variant-id="${escapeCmsHtml(variantId)}"
       ${extraAttributes}
     >
-      Aggiungi al carrello
+      ${escapeCmsHtml(sfT('addToCart'))}
     </button>
   `
 }
@@ -1164,7 +1517,7 @@ document.addEventListener('click', (event) => {
   const checkoutLink = event.target.closest('.cart-checkout.disabled')
   if (checkoutLink) {
     event.preventDefault()
-    showCartMessage('Aggiungi almeno un prodotto prima del checkout.')
+    showCartMessage(sfT('cartAddFirst'))
     return
   }
 
@@ -2419,7 +2772,7 @@ function renderProductCard(product) {
         ${
           product.image_url
             ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
-            : '<span>Prodotto</span>'
+            : `<span>${escapeCmsHtml(sfT('productFallback'))}</span>`
         }
       </a>
 
@@ -2428,17 +2781,17 @@ function renderProductCard(product) {
 
       <div class="store-meta">
         <strong>${formatPriceCents(priceCents)}</strong>
-        <span>Stock: ${stock}</span>
+        <span>${escapeCmsHtml(sfT('stock'))}: ${stock}</span>
       </div>
 
       ${
         product.variants?.length
-          ? `<p class="variant-summary">${product.variants.length} varianti disponibili</p>`
+          ? `<p class="variant-summary">${escapeCmsHtml(sfT('variantsAvailable', { count: product.variants.length }))}</p>`
           : ''
       }
 
       <div class="store-actions">
-        <a class="btn ghost" href="${productHref}">Dettagli</a>
+        <a class="btn ghost" href="${productHref}">${escapeCmsHtml(sfT('details'))}</a>
         ${renderAddToCartButton(product, defaultVariant)}
       </div>
     </article>
@@ -2458,7 +2811,7 @@ async function hydrateProductGrids() {
 
     if (!data.success || data.products.length === 0) {
       productContainers.forEach((container) => {
-        container.textContent = 'Nessun prodotto disponibile.'
+        container.textContent = sfT('noProducts')
       })
       return
     }
@@ -2491,7 +2844,7 @@ async function hydrateProductGrids() {
       }
 
       if (visibleProducts.length === 0) {
-        grid.textContent = 'Nessun prodotto disponibile.'
+        grid.textContent = sfT('noProducts')
         return
       }
 
@@ -2500,7 +2853,7 @@ async function hydrateProductGrids() {
 
     document.querySelectorAll('[data-featured-product]').forEach((target) => {
       const productSlug = target.dataset.featuredProduct || ''
-      const buttonText = target.dataset.buttonText || 'Scopri il prodotto'
+      const buttonText = target.dataset.buttonText || sfT('discoverProduct')
       const buttonUrl = target.dataset.buttonUrl || '#'
 
       const product = productSlug
@@ -2508,7 +2861,7 @@ async function hydrateProductGrids() {
         : products[0]
 
       if (!product) {
-        target.textContent = 'Prodotto non trovato.'
+        target.textContent = sfT('productNotFound')
         return
       }
 
@@ -2527,11 +2880,8 @@ async function hydrateProductGrids() {
             <p>${escapeCmsHtml(product.description || '')}</p>
 
             <div class="store-meta">
-              <strong>${(product.price_cents / 100).toLocaleString('it-IT', {
-                style: 'currency',
-                currency: 'EUR',
-              })}</strong>
-              <span>Stock: ${product.stock}</span>
+              <strong>${formatPriceCents(product.price_cents)}</strong>
+              <span>${escapeCmsHtml(sfT('stock'))}: ${product.stock}</span>
             </div>
 
             <a class="btn primary" href="${escapeCmsHtml(buttonUrl)}">
@@ -2543,7 +2893,7 @@ async function hydrateProductGrids() {
     })
   } catch {
     productContainers.forEach((container) => {
-      container.textContent = 'Errore caricamento prodotti.'
+      container.textContent = sfT('productsLoadError')
     })
   }
 }
@@ -2558,7 +2908,7 @@ async function hydrateCollectionGrids() {
 
     if (!data.success || data.collections.length === 0) {
       collectionGrids.forEach((grid) => {
-        grid.textContent = 'Nessuna collezione disponibile.'
+        grid.textContent = sfT('noCollections')
       })
       return
     }
@@ -2579,7 +2929,7 @@ async function hydrateCollectionGrids() {
             <p>${escapeCmsHtml(collection.description || '')}</p>
 
             <a class="btn primary" href="/collections/${escapeCmsHtml(collection.slug)}">
-              Vedi collezione
+              ${escapeCmsHtml(sfT('viewCollection'))}
             </a>
           </article>
         `,
@@ -2591,7 +2941,7 @@ async function hydrateCollectionGrids() {
     })
   } catch {
     collectionGrids.forEach((grid) => {
-      grid.textContent = 'Errore caricamento collezioni.'
+      grid.textContent = sfT('collectionsLoadError')
     })
   }
 }
@@ -2668,13 +3018,13 @@ async function renderPublicCollectionPage() {
   main.innerHTML = `
     <section class="section">
       <div class="section-head reveal visible">
-        <p class="eyebrow">Collezione</p>
-        <h2>Caricamento collezione...</h2>
-        <p>Stiamo recuperando prodotti e contenuti dal CMS.</p>
+        <p class="eyebrow">${escapeCmsHtml(sfT('collection'))}</p>
+        <h2>${escapeCmsHtml(sfT('collectionLoading'))}</h2>
+        <p>${escapeCmsHtml(sfT('collectionLoadingText'))}</p>
       </div>
 
       <div id="collectionProducts" class="store-grid">
-        Caricamento prodotti...
+        ${escapeCmsHtml(sfT('collectionLoadingText'))}
       </div>
     </section>
   `
@@ -2697,14 +3047,15 @@ async function renderPublicCollectionPage() {
     )
 
     if (!collection) {
-      title.textContent = 'Collezione non trovata'
-      intro.textContent = 'Questa collezione non esiste o non è più attiva.'
+      title.textContent = sfT('collectionNotFound')
+      intro.textContent = sfT('collectionNotFoundText')
       container.textContent = ''
+      intro.textContent = sfT('collectionNotFoundText')
       applySeoMeta(
         {},
         {
-          title: 'Collezione non trovata | Orbitra',
-          description: 'Questa collezione non e disponibile.',
+          title: `${sfT('collectionNotFound')} | Orbitra`,
+          description: sfT('collectionUnavailable'),
         },
       )
       return
@@ -2718,7 +3069,7 @@ async function renderPublicCollectionPage() {
 
     title.textContent = collection.name
     intro.textContent =
-      collection.description || 'Prodotti selezionati da questa collezione.'
+      collection.description || sfT('collectionProductsDefault')
 
     const products = (productsData.products || []).filter(
       (product) => product.collection_slug === collection.slug,
@@ -2727,15 +3078,16 @@ async function renderPublicCollectionPage() {
     cacheProducts(productsData.products || [])
 
     if (products.length === 0) {
-      container.textContent = 'Nessun prodotto disponibile in questa collezione.'
+      container.textContent = sfT('collectionEmpty')
       return
     }
 
     container.innerHTML = products.map(renderProductCard).join('')
   } catch (error) {
-    title.textContent = 'Errore caricamento collezione'
+    title.textContent = sfT('collectionLoadError')
     intro.textContent = 'Non è stato possibile caricare questa pagina.'
     container.textContent = ''
+    intro.textContent = sfT('collectionLoadErrorText')
   }
 }
 
@@ -2747,7 +3099,7 @@ function renderProductGallery(product = {}) {
   if (!images.length && !modelUrl) {
     return `
       <div class="product-gallery-placeholder">
-        <span>Prodotto senza immagine</span>
+        <span>${escapeCmsHtml(sfT('productNoImage'))}</span>
       </div>
     `
   }
@@ -2762,7 +3114,7 @@ function renderProductGallery(product = {}) {
             ? renderThreeDViewer({
                 modelUrl,
                 posterImageUrl,
-                title: product.name || 'Prodotto 3D',
+                title: product.name || sfT('product'),
                 autoRotate: true,
               })
             : `<img src="${escapeCmsHtml(mainImage)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
@@ -2797,7 +3149,7 @@ function renderProductSpecs(product = {}) {
 
   return `
     <section class="product-info-panel product-specs">
-      <h2>Specifiche</h2>
+      <h2>${escapeCmsHtml(sfT('specs'))}</h2>
       <dl>
         ${metafields
           .map(
@@ -2829,9 +3181,9 @@ function renderRelatedProducts(products = [], product = {}) {
   return `
     <section class="section related-products">
       <div class="section-head reveal visible">
-        <p class="eyebrow">Prodotti correlati</p>
-        <h2>Dalla stessa collezione</h2>
-        <p>Altre scelte coerenti con questo prodotto.</p>
+        <p class="eyebrow">${escapeCmsHtml(sfT('relatedProducts'))}</p>
+        <h2>${escapeCmsHtml(sfT('sameCollection'))}</h2>
+        <p>${escapeCmsHtml(sfT('relatedText'))}</p>
       </div>
       <div class="store-grid">
         ${related.map(renderProductCard).join('')}
@@ -2856,19 +3208,19 @@ function updateProductPageVariant(select) {
   }
 
   if (stockTarget) {
-    stockTarget.textContent = `Stock: ${stock}`
+    stockTarget.textContent = `${sfT('stock')}: ${stock}`
   }
 
   if (variantStockTarget) {
     variantStockTarget.textContent = stock <= 0
-      ? 'Questa variante non e disponibile.'
-      : `${stock} disponibili per la variante selezionata.`
+      ? sfT('variantUnavailable')
+      : sfT('variantAvailable', { count: stock })
   }
 
   if (addButton) {
     addButton.dataset.variantId = variant?.id || ''
     addButton.disabled = stock <= 0
-    addButton.textContent = stock <= 0 ? 'Non disponibile' : 'Aggiungi al carrello'
+    addButton.textContent = stock <= 0 ? sfT('unavailable') : sfT('addToCart')
   }
 }
 
@@ -2887,9 +3239,9 @@ async function renderPublicProductPage() {
   main.innerHTML = `
     <section class="section">
       <div class="section-head reveal visible">
-        <p class="eyebrow">Prodotto</p>
-        <h2>Caricamento prodotto...</h2>
-        <p>Stiamo recuperando i dettagli dal catalogo.</p>
+        <p class="eyebrow">${escapeCmsHtml(sfT('product'))}</p>
+        <h2>${escapeCmsHtml(sfT('productLoading'))}</h2>
+        <p>${escapeCmsHtml(sfT('productLoadingText'))}</p>
       </div>
     </section>
   `
@@ -2916,17 +3268,17 @@ async function renderPublicProductPage() {
       document.querySelector('#productJsonLd')?.remove()
       main.innerHTML = `
         <section class="section product-detail-empty">
-          <p class="eyebrow">Prodotto</p>
-          <h1>Prodotto non trovato</h1>
-          <p>Questo prodotto non esiste o non è più disponibile.</p>
-          <a class="btn primary" href="/#shop">Torna allo shop</a>
+          <p class="eyebrow">${escapeCmsHtml(sfT('product'))}</p>
+          <h1>${escapeCmsHtml(sfT('productNotFound'))}</h1>
+          <p>${escapeCmsHtml(sfT('productNotFoundText'))}</p>
+          <a class="btn primary" href="/#shop">${escapeCmsHtml(sfT('backToShop'))}</a>
         </section>
       `
       applySeoMeta(
         {},
         {
-          title: 'Prodotto non trovato | Orbitra',
-          description: 'Questo prodotto non e disponibile.',
+          title: `${sfT('productNotFound')} | Orbitra`,
+          description: sfT('cartProductUnavailable'),
         },
       )
       return
@@ -2964,21 +3316,21 @@ async function renderPublicProductPage() {
         <div class="product-detail-info">
           <p class="eyebrow">${escapeCmsHtml(product.category || 'Prodotto')}</p>
           <h1>${escapeCmsHtml(product.name)}</h1>
-          <p>${escapeCmsHtml(product.description || 'Nessuna descrizione disponibile.')}</p>
+          <p>${escapeCmsHtml(product.description || sfT('productNoDescription'))}</p>
 
           <div class="product-detail-price" id="productPagePrice">
             ${formatPriceCents(priceCents)}
           </div>
 
           <div class="product-detail-meta">
-            <span id="productPageStock">Stock: ${stock}</span>
-            <span>Categoria: ${escapeCmsHtml(product.category || 'Senza categoria')}</span>
+            <span id="productPageStock">${escapeCmsHtml(sfT('stock'))}: ${stock}</span>
+            <span>${escapeCmsHtml(sfT('category'))}: ${escapeCmsHtml(product.category || sfT('noCategory'))}</span>
             <span>
-              Collezione:
+              ${escapeCmsHtml(sfT('collection'))}:
               ${
                 product.collection_slug
                   ? `<a href="/collections/${escapeCmsHtml(product.collection_slug)}">${escapeCmsHtml(collection?.name || product.collection_slug)}</a>`
-                  : 'Senza collezione'
+                  : escapeCmsHtml(sfT('noCollection'))
               }
             </span>
           </div>
@@ -2987,7 +3339,7 @@ async function renderPublicProductPage() {
             product.variants?.length
               ? `
                 <label class="product-variant-field">
-                  Variante
+                  ${escapeCmsHtml(sfT('variant'))}
                   <select id="productVariantSelect" data-product-slug="${escapeCmsHtml(product.slug)}">
                     ${product.variants
                       .map(
@@ -2998,7 +3350,7 @@ async function renderPublicProductPage() {
                           <option value="${variant.id}" ${defaultVariant?.id === variant.id ? 'selected' : ''} ${variantStock <= 0 ? 'disabled' : ''}>
                             ${escapeCmsHtml(variant.option_name)}: ${escapeCmsHtml(variant.option_value)}
                             ${variant.sku ? ` · ${escapeCmsHtml(variant.sku)}` : ''}
-                            ${variantStock <= 0 ? ' - esaurita' : ''}
+                            ${variantStock <= 0 ? ` - ${escapeCmsHtml(sfT('soldOut'))}` : ''}
                           </option>
                         `
                         },
@@ -3006,7 +3358,7 @@ async function renderPublicProductPage() {
                       .join('')}
                   </select>
                   <span id="productPageVariantStock" class="product-variant-stock">
-                    ${stock <= 0 ? 'Questa variante non e disponibile.' : `${stock} disponibili per la variante selezionata.`}
+                    ${escapeCmsHtml(stock <= 0 ? sfT('variantUnavailable') : sfT('variantAvailable', { count: stock }))}
                   </span>
                 </label>
               `
@@ -3014,7 +3366,7 @@ async function renderPublicProductPage() {
           }
 
           <label class="product-quantity-field">
-            Quantità
+            ${escapeCmsHtml(sfT('quantity'))}
             <input id="productQuantity" type="number" min="1" value="1">
           </label>
 
@@ -3027,25 +3379,25 @@ async function renderPublicProductPage() {
           ${
             modelUrl
               ? `<button class="btn ghost product-3d-trigger" type="button" data-open-3d-modal="#${escapeCmsHtml(product3dModalId)}">
-                  Visualizza in 3D
+                  ${escapeCmsHtml(sfT('view3d'))}
                 </button>`
               : ''
           }
 
           <div class="product-trust-row">
-            <span>Checkout protetto</span>
-            <span>Spedizione tracciata</span>
-            <span>Assistenza post-acquisto</span>
+            <span>${escapeCmsHtml(sfT('trustCheckout'))}</span>
+            <span>${escapeCmsHtml(sfT('trustShipping'))}</span>
+            <span>${escapeCmsHtml(sfT('trustSupport'))}</span>
           </div>
 
           <div class="product-accordion">
             <details open>
-              <summary>Descrizione</summary>
-              <p>${escapeCmsHtml(product.description || 'Nessuna descrizione disponibile.')}</p>
+              <summary>${escapeCmsHtml(sfT('description'))}</summary>
+              <p>${escapeCmsHtml(product.description || sfT('productNoDescription'))}</p>
             </details>
             <details>
-              <summary>Spedizione e resi</summary>
-              <p>Costi, tasse e metodi disponibili vengono calcolati al checkout con fallback sicuri.</p>
+              <summary>${escapeCmsHtml(sfT('shippingReturns'))}</summary>
+              <p>${escapeCmsHtml(sfT('shippingReturnsText'))}</p>
             </details>
           </div>
         </div>
@@ -3065,10 +3417,10 @@ async function renderPublicProductPage() {
     document.querySelector('#productJsonLd')?.remove()
     main.innerHTML = `
       <section class="section product-detail-empty">
-        <p class="eyebrow">Prodotto</p>
-        <h1>Errore caricamento prodotto</h1>
-        <p>Non è stato possibile recuperare questo prodotto.</p>
-        <a class="btn primary" href="/#shop">Torna allo shop</a>
+        <p class="eyebrow">${escapeCmsHtml(sfT('product'))}</p>
+        <h1>${escapeCmsHtml(sfT('productLoadError'))}</h1>
+        <p>${escapeCmsHtml(sfT('productLoadErrorText'))}</p>
+        <a class="btn primary" href="/#shop">${escapeCmsHtml(sfT('backToShop'))}</a>
       </section>
     `
   }
@@ -3125,13 +3477,13 @@ function renderPolicyAcceptance(policies = []) {
         </a>
       `,
     )
-    .join(' e ')
+    .join(sfT('listAnd'))
 
   return `
     <section class="checkout-policy">
       <label class="checkout-policy-check">
         <input name="policy_accepted" type="checkbox" required>
-        <span>Accetto ${links}.</span>
+        <span>${sfT('checkoutPolicyAccept', { links })}</span>
       </label>
     </section>
   `
@@ -3167,8 +3519,8 @@ function renderCheckoutSummary(
   if (discountTarget) discountTarget.textContent = `-${formatPriceCents(discountCents)}`
   if (taxLabel) {
     taxLabel.textContent = taxSummary.prices_include_tax
-      ? `IVA inclusa (${Number(taxSettings.vat_rate || 0)}%)`
-      : `IVA (${Number(taxSettings.vat_rate || 0)}%)`
+      ? `${sfT('checkoutTaxIncluded')} (${Number(taxSettings.vat_rate || 0)}%)`
+      : `${sfT('checkoutTax')} (${Number(taxSettings.vat_rate || 0)}%)`
   }
   if (taxTarget) taxTarget.textContent = formatPriceCents(taxSummary.tax_cents)
   if (totalTarget) totalTarget.textContent = formatPriceCents(taxSummary.total_cents)
@@ -3182,12 +3534,12 @@ async function applyCheckoutDiscount(items, shippingMethods, taxSettings) {
 
   if (!code) {
     activeCheckoutDiscount = null
-    if (message) message.textContent = 'Inserisci un codice sconto.'
+    if (message) message.textContent = sfT('discountInsert')
     renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
     return
   }
 
-  if (message) message.textContent = 'Verifica codice sconto...'
+  if (message) message.textContent = sfT('discountChecking')
 
   try {
     const response = await fetch('/api/discounts', {
@@ -3204,7 +3556,7 @@ async function applyCheckoutDiscount(items, shippingMethods, taxSettings) {
 
     if (!response.ok || !data.success || !data.discount) {
       activeCheckoutDiscount = null
-      if (message) message.textContent = data.message || 'Codice sconto non valido.'
+      if (message) message.textContent = data.message || sfT('discountInvalid')
       renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
       return
     }
@@ -3212,12 +3564,15 @@ async function applyCheckoutDiscount(items, shippingMethods, taxSettings) {
     activeCheckoutDiscount = data.discount
     if (input) input.value = data.discount.code
     if (message) {
-      message.textContent = `${data.discount.code} applicato: -${formatPriceCents(data.discount.discount_cents)}`
+      message.textContent = sfT('discountApplied', {
+        code: data.discount.code,
+        amount: formatPriceCents(data.discount.discount_cents),
+      })
     }
     renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
   } catch {
     activeCheckoutDiscount = null
-    if (message) message.textContent = 'Sconti non disponibili ora. Puoi completare senza coupon.'
+    if (message) message.textContent = sfT('discountUnavailable')
     renderCheckoutSummary(items, shippingMethods, selectedHandle, taxSettings)
   }
 }
@@ -3228,26 +3583,26 @@ function renderOrderConfirmation(order) {
 
   main.innerHTML = `
     <section class="section checkout-confirmation">
-      <p class="eyebrow">Ordine creato</p>
-      <h1>Grazie, ordine #${escapeCmsHtml(order.id)} ricevuto.</h1>
+      <p class="eyebrow">${escapeCmsHtml(sfT('orderCreated'))}</p>
+      <h1>${escapeCmsHtml(sfT('thankYou', { id: order.id }))}</h1>
       <p>
-        Stato pagamento: ${escapeCmsHtml(order.payment_status)}.
-        Stato ordine: ${escapeCmsHtml(order.order_status)}.
+        ${escapeCmsHtml(sfT('paymentStatus'))}: ${escapeCmsHtml(order.payment_status)}.
+        ${escapeCmsHtml(sfT('orderStatus'))}: ${escapeCmsHtml(order.order_status)}.
       </p>
 
       <div class="checkout-confirmation-box">
-        <span>Totale ordine</span>
+        <span>${escapeCmsHtml(sfT('orderTotal'))}</span>
         <strong>${formatPriceCents(order.total_cents)}</strong>
         ${
           order.discount_cents
-            ? `<small>Sconto ${escapeCmsHtml(order.discount_code || '')}: -${formatPriceCents(order.discount_cents)}</small>`
+            ? `<small>${escapeCmsHtml(sfT('checkoutDiscount'))} ${escapeCmsHtml(order.discount_code || '')}: -${formatPriceCents(order.discount_cents)}</small>`
             : ''
         }
-        <small>IVA: ${formatPriceCents(order.tax_cents || 0)}</small>
-        <small>Metodo pagamento: ${escapeCmsHtml(order.payment_method || 'manual')}</small>
+        <small>${escapeCmsHtml(sfT('checkoutTax'))}: ${formatPriceCents(order.tax_cents || 0)}</small>
+        <small>${escapeCmsHtml(sfT('paymentMethod'))}: ${escapeCmsHtml(order.payment_method || 'manual')}</small>
       </div>
 
-      <a class="btn primary" href="/">Torna al sito</a>
+      <a class="btn primary" href="/">${escapeCmsHtml(sfT('backToSite'))}</a>
     </section>
   `
 }
@@ -3263,7 +3618,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
   if (form.dataset.submitting === 'true') return
 
   if (getCart().length === 0) {
-    if (message) message.textContent = 'Il carrello è vuoto.'
+    if (message) message.textContent = sfT('checkoutEmptyMessage')
     return
   }
 
@@ -3297,7 +3652,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
 
   activeCheckoutIdempotencyKey = payload.idempotency_key
 
-  if (message) message.textContent = 'Creazione ordine in corso...'
+  if (message) message.textContent = sfT('checkoutCreating')
 
   try {
     const response = await fetch('/api/checkout', {
@@ -3310,7 +3665,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
     const data = await response.json()
 
     if (!response.ok || !data.success) {
-      if (message) message.textContent = data.message || 'Errore creazione ordine.'
+      if (message) message.textContent = data.message || sfT('checkoutError')
       renderCheckoutSummary(
         detailedItems,
         shippingMethods,
@@ -3321,7 +3676,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
     }
 
     if (data.order?.payment_method === 'stripe' && data.order?.requires_payment_redirect) {
-      if (message) message.textContent = 'Preparazione pagamento Stripe...'
+      if (message) message.textContent = sfT('stripePreparing')
 
       const stripeResponse = await fetch('/api/payments/stripe/create-session', {
         method: 'POST',
@@ -3341,7 +3696,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
         if (message) {
           message.textContent =
             stripeData.message ||
-            `Ordine #${data.order.id} creato, ma Stripe non e disponibile.`
+            sfT('stripeUnavailable', { id: data.order.id })
         }
         return
       }
@@ -3364,7 +3719,7 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
     })
     renderOrderConfirmation(data.order)
   } catch {
-    if (message) message.textContent = 'Errore di connessione durante il checkout.'
+    if (message) message.textContent = sfT('checkoutConnectionError')
   } finally {
     form.dataset.submitting = 'false'
     if (submitButton) submitButton.disabled = false
@@ -3399,10 +3754,10 @@ async function renderPublicCheckoutPage() {
   if (paymentReturn === 'stripe_cancel') {
     main.innerHTML = `
       <section class="section checkout-empty">
-        <p class="eyebrow">Pagamento</p>
-        <h1>Pagamento Stripe annullato</h1>
-        <p>L'ordine #${escapeCmsHtml(returnOrderId || '')} resta in attesa. Puoi riprovare o scegliere pagamento manuale.</p>
-        <a class="btn primary" href="/checkout">Torna al checkout</a>
+        <p class="eyebrow">${escapeCmsHtml(sfT('checkoutPayment'))}</p>
+        <h1>${escapeCmsHtml(sfT('paymentCanceled'))}</h1>
+        <p>${escapeCmsHtml(sfT('paymentCanceledText', { id: returnOrderId || '' }))}</p>
+        <a class="btn primary" href="/checkout">${escapeCmsHtml(sfT('backToCheckout'))}</a>
       </section>
     `
     return
@@ -3411,9 +3766,9 @@ async function renderPublicCheckoutPage() {
   main.innerHTML = `
     <section class="section checkout-page">
       <div class="section-head reveal visible">
-        <p class="eyebrow">Checkout</p>
-        <h2>Caricamento checkout...</h2>
-        <p>Stiamo preparando riepilogo, spedizione e pagamento.</p>
+        <p class="eyebrow">${escapeCmsHtml(sfT('checkout'))}</p>
+        <h2>${escapeCmsHtml(sfT('checkoutLoading'))}</h2>
+        <p>${escapeCmsHtml(sfT('checkoutLoadingText'))}</p>
       </div>
     </section>
   `
@@ -3425,10 +3780,10 @@ async function renderPublicCheckoutPage() {
     if (getCart().length === 0 || detailedItems.length === 0) {
       main.innerHTML = `
         <section class="section checkout-empty">
-          <p class="eyebrow">Checkout</p>
-          <h1>Il carrello è vuoto</h1>
-          <p>Aggiungi almeno un prodotto prima di completare l'ordine.</p>
-          <a class="btn primary" href="/#shop">Vai allo shop</a>
+          <p class="eyebrow">${escapeCmsHtml(sfT('checkout'))}</p>
+          <h1>${escapeCmsHtml(sfT('checkoutEmptyTitle'))}</h1>
+          <p>${escapeCmsHtml(sfT('checkoutEmptyText'))}</p>
+          <a class="btn primary" href="/#shop">${escapeCmsHtml(sfT('checkoutGoToShop'))}</a>
         </section>
       `
       return
@@ -3454,8 +3809,8 @@ async function renderPublicCheckoutPage() {
       : [
           {
             handle: 'standard',
-            name: 'Spedizione standard',
-            description: 'Metodo standard disponibile come fallback.',
+            name: sfT('checkoutStandardShipping'),
+            description: sfT('checkoutStandardShippingText'),
             price_cents: 990,
             free_over_cents: null,
           },
@@ -3466,30 +3821,30 @@ async function renderPublicCheckoutPage() {
     main.innerHTML = `
       <section class="section checkout-page">
         <div class="section-head reveal visible">
-          <p class="eyebrow">Checkout</p>
-          <h2>Completa l'ordine.</h2>
-          <p>Riepilogo validato lato server, pagamento manuale/test o Stripe test mode se configurato.</p>
+          <p class="eyebrow">${escapeCmsHtml(sfT('checkout'))}</p>
+          <h2>${escapeCmsHtml(sfT('checkoutComplete'))}</h2>
+          <p>${escapeCmsHtml(sfT('checkoutIntro'))}</p>
         </div>
 
         <div class="checkout-layout">
           <form id="checkoutForm" class="checkout-form">
             <section>
-              <h3>Dati cliente</h3>
-              <label>Nome completo<input name="name" type="text" required></label>
-              <label>Email<input name="email" type="email" required></label>
-              <label>Telefono opzionale<input name="phone" type="tel"></label>
+              <h3>${escapeCmsHtml(sfT('checkoutCustomer'))}</h3>
+              <label>${escapeCmsHtml(sfT('checkoutFullName'))}<input name="name" type="text" required></label>
+              <label>${escapeCmsHtml(sfT('checkoutEmail'))}<input name="email" type="email" required></label>
+              <label>${escapeCmsHtml(sfT('checkoutPhone'))}<input name="phone" type="tel"></label>
             </section>
 
             <section>
-              <h3>Indirizzo spedizione</h3>
-              <label>Indirizzo<input name="address_line1" type="text" required></label>
-              <label>Città<input name="city" type="text" required></label>
-              <label>CAP<input name="postal_code" type="text" required></label>
-              <label>Paese<input name="country" type="text" value="Italia" required></label>
+              <h3>${escapeCmsHtml(sfT('checkoutAddress'))}</h3>
+              <label>${escapeCmsHtml(sfT('checkoutAddressLine'))}<input name="address_line1" type="text" required></label>
+              <label>${escapeCmsHtml(sfT('checkoutCity'))}<input name="city" type="text" required></label>
+              <label>${escapeCmsHtml(sfT('checkoutPostal'))}<input name="postal_code" type="text" required></label>
+              <label>${escapeCmsHtml(sfT('checkoutCountry'))}<input name="country" type="text" value="Italia" required></label>
             </section>
 
             <section>
-              <h3>Metodo spedizione</h3>
+              <h3>${escapeCmsHtml(sfT('checkoutShippingMethod'))}</h3>
               <div class="checkout-shipping-options">
                 ${methods
                   .map((method) => {
@@ -3508,7 +3863,7 @@ async function renderPublicCheckoutPage() {
                           <strong>${escapeCmsHtml(method.name)}</strong>
                           <small>
                             ${escapeCmsHtml(method.description || '')}
-                            ${method.free_over_cents ? ` · sopra ${formatPriceCents(method.free_over_cents)}` : ''}
+                            ${method.free_over_cents ? ` - ${escapeCmsHtml(sfT('checkoutFreeOver', { amount: formatPriceCents(method.free_over_cents) }))}` : ''}
                           </small>
                         </span>
                         <em>${formatPriceCents(method.price_cents)}</em>
@@ -3520,26 +3875,26 @@ async function renderPublicCheckoutPage() {
             </section>
 
             <section>
-              <h3>Pagamento</h3>
+              <h3>${escapeCmsHtml(sfT('checkoutPayment'))}</h3>
               <label>
-                Metodo pagamento
+                ${escapeCmsHtml(sfT('checkoutPaymentMethod'))}
                 <select name="payment_method">
-                  <option value="manual">Pagamento manuale / pending</option>
-                  <option value="stripe">Stripe test mode</option>
-                  <option value="test_paid">Pagamento simulato riuscito</option>
-                  <option value="test_failed">Pagamento simulato fallito</option>
+                  <option value="manual">${escapeCmsHtml(sfT('checkoutManual'))}</option>
+                  <option value="stripe">${escapeCmsHtml(sfT('checkoutStripe'))}</option>
+                  <option value="test_paid">${escapeCmsHtml(sfT('checkoutTestPaid'))}</option>
+                  <option value="test_failed">${escapeCmsHtml(sfT('checkoutTestFailed'))}</option>
                 </select>
               </label>
             </section>
 
             ${renderPolicyAcceptance(checkoutPolicies)}
 
-            <button class="btn primary" type="submit">Completa ordine</button>
+            <button class="btn primary" type="submit">${escapeCmsHtml(sfT('checkoutSubmit'))}</button>
             <p id="checkoutMessage" class="checkout-message"></p>
           </form>
 
           <aside class="checkout-summary">
-            <h3>Riepilogo</h3>
+            <h3>${escapeCmsHtml(sfT('checkoutSummary'))}</h3>
             <div class="checkout-items">
               ${detailedItems
                 .map(
@@ -3548,7 +3903,7 @@ async function renderPublicCheckoutPage() {
                       <div>
                         <strong>${escapeCmsHtml(item.product.name)}</strong>
                         ${item.variant ? `<span>${escapeCmsHtml(item.variant.option_name)}: ${escapeCmsHtml(item.variant.option_value)}</span>` : ''}
-                        <small>Quantità: ${item.quantity}</small>
+                        <small>${escapeCmsHtml(sfT('quantity'))}: ${item.quantity}</small>
                       </div>
                       <b>${formatPriceCents(item.line_total_cents)}</b>
                     </article>
@@ -3559,19 +3914,19 @@ async function renderPublicCheckoutPage() {
 
             <div class="checkout-discount">
               <label>
-                Codice sconto
+                ${escapeCmsHtml(sfT('checkoutDiscountCode'))}
                 <input id="discountCode" name="discount_code" type="text" placeholder="WELCOME10">
               </label>
-              <button id="applyDiscountButton" class="btn ghost" type="button">Applica</button>
+              <button id="applyDiscountButton" class="btn ghost" type="button">${escapeCmsHtml(sfT('checkoutApply'))}</button>
               <p id="checkoutDiscountMessage" class="checkout-message"></p>
             </div>
 
             <div class="checkout-totals">
-              <span>Subtotale <strong id="checkoutSubtotal">${formatPriceCents(subtotalCents)}</strong></span>
-              <span>Spedizione <strong id="checkoutShipping">€0</strong></span>
-              <span id="checkoutDiscountRow" hidden>Sconto <strong id="checkoutDiscount">-€0</strong></span>
-              <span><span id="checkoutTaxLabel">IVA inclusa</span> <strong id="checkoutTax">€0</strong></span>
-              <span class="grand-total">Totale <strong id="checkoutTotal">€0</strong></span>
+              <span>${escapeCmsHtml(sfT('checkoutSubtotal'))} <strong id="checkoutSubtotal">${formatPriceCents(subtotalCents)}</strong></span>
+              <span>${escapeCmsHtml(sfT('checkoutShipping'))} <strong id="checkoutShipping">${formatPriceCents(0)}</strong></span>
+              <span id="checkoutDiscountRow" hidden>${escapeCmsHtml(sfT('checkoutDiscount'))} <strong id="checkoutDiscount">-${formatPriceCents(0)}</strong></span>
+              <span><span id="checkoutTaxLabel">${escapeCmsHtml(sfT('checkoutTaxIncluded'))}</span> <strong id="checkoutTax">${formatPriceCents(0)}</strong></span>
+              <span class="grand-total">${escapeCmsHtml(sfT('checkoutTotal'))} <strong id="checkoutTotal">${formatPriceCents(0)}</strong></span>
             </div>
           </aside>
         </div>
@@ -3598,10 +3953,10 @@ async function renderPublicCheckoutPage() {
   } catch {
     main.innerHTML = `
       <section class="section checkout-empty">
-        <p class="eyebrow">Checkout</p>
-        <h1>Checkout non disponibile</h1>
-        <p>Non è stato possibile preparare il checkout.</p>
-        <a class="btn primary" href="/">Torna al sito</a>
+        <p class="eyebrow">${escapeCmsHtml(sfT('checkout'))}</p>
+        <h1>${escapeCmsHtml(sfT('checkoutUnavailable'))}</h1>
+        <p>${escapeCmsHtml(sfT('checkoutUnavailableText'))}</p>
+        <a class="btn primary" href="/">${escapeCmsHtml(sfT('backToSite'))}</a>
       </section>
     `
   }
@@ -3611,7 +3966,7 @@ function renderBlogDate(value = '') {
   if (!value) return ''
 
   try {
-    return new Date(value).toLocaleDateString('it-IT', {
+    return new Date(value).toLocaleDateString(getStorefrontLocale(), {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -3944,4 +4299,6 @@ async function bootPublicRouting() {
   await loadCmsSectionsFromD1('home')
 }
 
+setupStorefrontLanguageSelector()
+applyStorefrontLanguage()
 bootPublicRouting()

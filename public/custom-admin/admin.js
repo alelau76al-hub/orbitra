@@ -34,11 +34,303 @@ function setupAdminLogoFallbacks() {
 
 setupAdminLogoFallbacks()
 
+const ADMIN_LANGUAGE_STORAGE_KEY = 'takeoff_admin_language_v1'
+const ADMIN_DEFAULT_LANGUAGE = 'it'
+const ADMIN_TRANSLATIONS = {
+  it: {
+    documentTitle: 'TakeOffMilan CMS',
+    languageLabel: 'Lingua',
+    auditBadge: 'AUDIT MODE - READ ONLY',
+    auditMessage: 'Audit mode: modifiche disabilitate.',
+    authEyebrow: 'TakeOffMilan CMS',
+    authTitle: 'TakeOff Control Panel',
+    authLoginIntro: 'Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni del sito.',
+    authBootstrapIntro: 'Crea il primo owner del TakeOff Control Panel. Dopo questa operazione il bootstrap verra disattivato.',
+    authMigrationIntro: 'Prima di accedere al CMS devi applicare la migration di autenticazione.',
+    authChecking: 'Verifica sessione admin...',
+    authLoginButton: 'Accedi',
+    authBootstrapButton: 'Crea primo owner',
+    authNameOwner: 'Nome owner',
+    authEmailOwner: 'Email owner',
+    authEmail: 'Email',
+    authPassword: 'Password',
+    navEditor: 'Editor sito',
+    navEditorDesc: 'Homepage, sezioni visuali, tema e preview live',
+    navCatalog: 'Catalogo',
+    navCatalogDesc: 'Prodotti, collezioni, varianti e inventario',
+    navOrders: 'Ordini',
+    navOrdersDesc: 'Pagamenti, stato ordine e clienti',
+    navCustomers: 'Clienti',
+    navCustomersDesc: 'Profili, email, storico acquisti',
+    navContent: 'Contenuto',
+    navContentDesc: 'Pagine, menu, media e SEO',
+    navMarketing: 'Marketing',
+    navMarketingDesc: 'Campagne, sconti, coupon e promo',
+    navMarkets: 'Markets',
+    navMarketsDesc: 'Mercati, paesi, lingue, valute e prezzi',
+    navAnalytics: 'Analisi',
+    navAnalyticsDesc: 'Vendite, traffico, conversioni e report',
+    navCheckout: 'Check-out',
+    navCheckoutDesc: 'Checkout, pagamenti, spedizioni, tasse e conferma',
+    navSettings: 'Impostazioni',
+    navSettingsDesc: 'Generali, domini, utenti, privacy e operativita',
+    heroEyebrow: 'TakeOffMilan CMS',
+    heroTitle: 'TakeOff Control Panel',
+    heroText: 'Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.',
+    editorTitle: 'Editor visuale sito',
+    editorDesc: 'Personalizza sezioni, contenuti e impostazioni del sito cliente senza toccare codice.',
+    catalogTitle: 'Catalogo',
+    catalogDesc: 'Gestisci prodotti, collezioni, stock, immagini e struttura commerciale del sito.',
+    productsTitle: 'Prodotti',
+    collectionsTitle: 'Collezioni',
+    ordersTitle: 'Ordini',
+    customersTitle: 'Clienti',
+    contentTitle: 'Contenuto',
+    mediaTitle: 'Media',
+    blogTitle: 'Blog',
+    policyTitle: 'Policy',
+    marketingTitle: 'Marketing',
+    marketsTitle: 'Markets',
+    analyticsTitle: 'Analisi',
+    checkoutTitle: 'Check-out',
+    settingsTitle: 'Impostazioni admin',
+    usersTitle: 'Utenti / permessi',
+    performanceTitle: 'Performance produzione',
+    importExportTitle: 'Import / Export catalogo',
+    statusOperational: 'Operativo',
+    statusArea: 'Area',
+    statusDevelopment: 'In sviluppo',
+    logout: 'Logout',
+  },
+  en: {
+    documentTitle: 'TakeOffMilan CMS',
+    languageLabel: 'Language',
+    auditBadge: 'AUDIT MODE - READ ONLY',
+    auditMessage: 'Audit mode: changes are disabled.',
+    authEyebrow: 'TakeOffMilan CMS',
+    authTitle: 'TakeOff Control Panel',
+    authLoginIntro: 'Sign in to manage site content, catalog and settings.',
+    authBootstrapIntro: 'Create the first owner for the TakeOff Control Panel. Bootstrap will be disabled after this step.',
+    authMigrationIntro: 'Apply the authentication migration before accessing the CMS.',
+    authChecking: 'Checking admin session...',
+    authLoginButton: 'Sign in',
+    authBootstrapButton: 'Create first owner',
+    authNameOwner: 'Owner name',
+    authEmailOwner: 'Owner email',
+    authEmail: 'Email',
+    authPassword: 'Password',
+    navEditor: 'Site editor',
+    navEditorDesc: 'Homepage, visual sections, theme and live preview',
+    navCatalog: 'Catalog',
+    navCatalogDesc: 'Products, collections, variants and inventory',
+    navOrders: 'Orders',
+    navOrdersDesc: 'Payments, order status and customers',
+    navCustomers: 'Customers',
+    navCustomersDesc: 'Profiles, emails and order history',
+    navContent: 'Content',
+    navContentDesc: 'Pages, menus, media and SEO',
+    navMarketing: 'Marketing',
+    navMarketingDesc: 'Campaigns, discounts, coupons and promos',
+    navMarkets: 'Markets',
+    navMarketsDesc: 'Markets, countries, languages, currencies and pricing',
+    navAnalytics: 'Analytics',
+    navAnalyticsDesc: 'Sales, traffic, conversions and reports',
+    navCheckout: 'Checkout',
+    navCheckoutDesc: 'Checkout, payments, shipping, taxes and confirmation',
+    navSettings: 'Settings',
+    navSettingsDesc: 'General, domains, users, privacy and operations',
+    heroEyebrow: 'TakeOffMilan CMS',
+    heroTitle: 'TakeOff Control Panel',
+    heroText: 'Next Generation Website CMS to control content, catalog, checkout and settings from a proprietary panel.',
+    editorTitle: 'Visual site editor',
+    editorDesc: 'Customize sections, content and client site settings without touching code.',
+    catalogTitle: 'Catalog',
+    catalogDesc: 'Manage products, collections, stock, images and commercial structure.',
+    productsTitle: 'Products',
+    collectionsTitle: 'Collections',
+    ordersTitle: 'Orders',
+    customersTitle: 'Customers',
+    contentTitle: 'Content',
+    mediaTitle: 'Media',
+    blogTitle: 'Blog',
+    policyTitle: 'Policies',
+    marketingTitle: 'Marketing',
+    marketsTitle: 'Markets',
+    analyticsTitle: 'Analytics',
+    checkoutTitle: 'Checkout',
+    settingsTitle: 'Admin settings',
+    usersTitle: 'Users / permissions',
+    performanceTitle: 'Production performance',
+    importExportTitle: 'Catalog import / export',
+    statusOperational: 'Operational',
+    statusArea: 'Area',
+    statusDevelopment: 'In development',
+    logout: 'Logout',
+  },
+}
+
+function getAdminLanguage() {
+  try {
+    const saved = localStorage.getItem(ADMIN_LANGUAGE_STORAGE_KEY)
+    return ADMIN_TRANSLATIONS[saved] ? saved : ADMIN_DEFAULT_LANGUAGE
+  } catch {
+    return ADMIN_DEFAULT_LANGUAGE
+  }
+}
+
+function setAdminLanguage(language) {
+  const nextLanguage = ADMIN_TRANSLATIONS[language] ? language : ADMIN_DEFAULT_LANGUAGE
+  try {
+    localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, nextLanguage)
+  } catch {}
+  applyAdminTranslations()
+}
+
+function adminT(key) {
+  const language = getAdminLanguage()
+  return (
+    ADMIN_TRANSLATIONS[language]?.[key] ||
+    ADMIN_TRANSLATIONS[ADMIN_DEFAULT_LANGUAGE]?.[key] ||
+    key
+  )
+}
+
+function setAdminText(selector, key) {
+  document.querySelectorAll(selector).forEach((element) => {
+    element.textContent = adminT(key)
+  })
+}
+
+function applyAdminTranslations() {
+  const language = getAdminLanguage()
+  document.documentElement.lang = language
+  document.title = adminT('documentTitle')
+
+  document.querySelectorAll('[data-admin-language-select]').forEach((select) => {
+    select.value = language
+  })
+
+  setAdminText('.admin-language-control span', 'languageLabel')
+  setAdminText('.auth-eyebrow', 'authEyebrow')
+  setAdminText('.admin-auth-card h1', 'authTitle')
+  setAdminText('#adminLoginForm label:nth-of-type(1)', 'authEmail')
+  setAdminText('#adminLoginForm label:nth-of-type(2)', 'authPassword')
+  setAdminText('#adminBootstrapForm label:nth-of-type(1)', 'authNameOwner')
+  setAdminText('#adminBootstrapForm label:nth-of-type(2)', 'authEmailOwner')
+  setAdminText('#adminBootstrapForm label:nth-of-type(3)', 'authPassword')
+  setAdminText('#adminLoginForm button[type="submit"]', 'authLoginButton')
+  setAdminText('#adminBootstrapForm button[type="submit"]', 'authBootstrapButton')
+  setAdminText('#adminLogoutButton', 'logout')
+  setAdminText('.hero.admin-hero p', 'heroEyebrow')
+  setAdminText('.hero.admin-hero h1', 'heroTitle')
+  setAdminText('.hero.admin-hero span', 'heroText')
+
+  const navTranslations = [
+    ['#editor', 'navEditor', 'navEditorDesc'],
+    ['#catalogo', 'navCatalog', 'navCatalogDesc'],
+    ['#ordini', 'navOrders', 'navOrdersDesc'],
+    ['#clienti', 'navCustomers', 'navCustomersDesc'],
+    ['#contenuto', 'navContent', 'navContentDesc'],
+    ['#marketing', 'navMarketing', 'navMarketingDesc'],
+    ['#markets', 'navMarkets', 'navMarketsDesc'],
+    ['#analisi', 'navAnalytics', 'navAnalyticsDesc'],
+    ['#checkout', 'navCheckout', 'navCheckoutDesc'],
+    ['#impostazioni', 'navSettings', 'navSettingsDesc'],
+  ]
+
+  navTranslations.forEach(([href, titleKey, descKey]) => {
+    setAdminText(`.hub-card[href="${href}"] strong`, titleKey)
+    setAdminText(`.hub-card[href="${href}"] small`, descKey)
+  })
+
+  const viewTranslations = [
+    ['editor', 'editorTitle', 'editorDesc'],
+    ['catalogo', 'catalogTitle', 'catalogDesc'],
+    ['prodotti', 'productsTitle'],
+    ['collezioni', 'collectionsTitle'],
+    ['ordini', 'ordersTitle'],
+    ['clienti', 'customersTitle'],
+    ['contenuto', 'contentTitle'],
+    ['media', 'mediaTitle'],
+    ['blog-admin', 'blogTitle'],
+    ['policy', 'policyTitle'],
+    ['marketing', 'marketingTitle'],
+    ['markets', 'marketsTitle'],
+    ['analisi', 'analyticsTitle'],
+    ['checkout', 'checkoutTitle'],
+    ['impostazioni', 'settingsTitle'],
+    ['utenti', 'usersTitle'],
+    ['performance', 'performanceTitle'],
+    ['import-export', 'importExportTitle'],
+  ]
+
+  viewTranslations.forEach(([view, titleKey, descKey]) => {
+    const viewElement = document.querySelector(`[data-admin-view="${view}"]`)
+    const title = viewElement?.querySelector('.section-title h2, .view-heading h2')
+    const subtitle = viewElement?.querySelector('.section-subtitle')
+
+    if (title) title.textContent = adminT(titleKey)
+    if (subtitle && descKey) subtitle.textContent = adminT(descKey)
+  })
+
+  document.querySelectorAll('.status-badge').forEach((badge) => {
+    const text = badge.textContent.trim().toLowerCase()
+    if (text === 'operativo' || text === 'operational') badge.textContent = adminT('statusOperational')
+    if (text === 'area') badge.textContent = adminT('statusArea')
+    if (text === 'in sviluppo' || text === 'in development') badge.textContent = adminT('statusDevelopment')
+  })
+
+  document.querySelectorAll('.mini-card-status').forEach((badge) => {
+    const text = badge.textContent.trim().toLowerCase()
+    if (text === 'in sviluppo' || text === 'in development') badge.textContent = adminT('statusDevelopment')
+  })
+
+  const auditBadge = document.querySelector('#adminAuditBadge')
+  if (auditBadge) auditBadge.textContent = adminT('auditBadge')
+
+  updateAdminAuthIntro()
+  updateAdminCurrentViewLabel()
+}
+
+function setupAdminLanguageControls() {
+  document.querySelectorAll('[data-admin-language-select]').forEach((select) => {
+    select.value = getAdminLanguage()
+    select.addEventListener('change', () => setAdminLanguage(select.value))
+  })
+}
+
+function getAdminAuditMessage() {
+  return adminT('auditMessage')
+}
+
+function updateAdminAuthIntro() {
+  if (!adminAuthIntro || adminAuthGate?.hidden) return
+  const state = adminAuthGate?.dataset.authState || 'login'
+  if (state === 'migration') {
+    adminAuthIntro.textContent = adminT('authMigrationIntro')
+    return
+  }
+  if (adminBootstrapForm && !adminBootstrapForm.hidden) {
+    adminAuthIntro.textContent = adminT('authBootstrapIntro')
+    return
+  }
+  adminAuthIntro.textContent = adminT('authLoginIntro')
+}
+
+function updateAdminCurrentViewLabel() {
+  if (!adminCurrentView) return
+  const activeView = window.location.hash.replace('#', '') || 'editor'
+  const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+  const heading = target?.querySelector('h2')?.textContent?.trim()
+  if (heading) adminCurrentView.textContent = heading
+}
+
+setupAdminLanguageControls()
+applyAdminTranslations()
+
 let adminCurrentUser = null
 let adminAllowProtectedFetches = false
 let adminAuditObserver = null
-
-const ADMIN_AUDIT_MESSAGE = 'Audit mode: modifiche disabilitate.'
 
 function isProtectedAdminRequest(resource) {
   const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
@@ -75,7 +367,7 @@ function localAdminAuditResponse() {
   return new Response(
     JSON.stringify({
       success: false,
-      message: ADMIN_AUDIT_MESSAGE,
+      message: getAdminAuditMessage(),
     }),
     {
       status: 403,
@@ -140,7 +432,7 @@ function ensureAdminAuditBadge() {
     badge = document.createElement('strong')
     badge.id = 'adminAuditBadge'
     badge.className = 'admin-audit-badge'
-    badge.textContent = 'AUDIT MODE \u2014 READ ONLY'
+    badge.textContent = adminT('auditBadge')
     adminSessionBar.appendChild(badge)
   }
 
@@ -193,7 +485,7 @@ function applyAdminAuditUi() {
     button.disabled = auditMode
     button.classList.toggle('audit-disabled', auditMode)
     if (auditMode) {
-      button.title = ADMIN_AUDIT_MESSAGE
+      button.title = getAdminAuditMessage()
       button.dataset.auditDisabled = 'true'
     } else if (button.dataset.auditDisabled === 'true') {
       button.title = ''
@@ -250,7 +542,7 @@ window.fetch = async (resource, options) => {
   }
 
   if (protectedAdminRequest && isAdminAuditMode() && !isReadMethod(requestMethod)) {
-    showAdminPermissionNotice(ADMIN_AUDIT_MESSAGE)
+    showAdminPermissionNotice(getAdminAuditMessage())
     return localAdminAuditResponse()
   }
 
@@ -282,7 +574,7 @@ document.addEventListener(
 
     event.preventDefault()
     event.stopImmediatePropagation()
-    showAdminPermissionNotice(ADMIN_AUDIT_MESSAGE)
+    showAdminPermissionNotice(getAdminAuditMessage())
   },
   true,
 )
@@ -297,7 +589,7 @@ document.addEventListener(
 
     event.preventDefault()
     event.stopImmediatePropagation()
-    showAdminPermissionNotice(ADMIN_AUDIT_MESSAGE)
+    showAdminPermissionNotice(getAdminAuditMessage())
   },
   true,
 )
@@ -314,15 +606,18 @@ function showAdminAuthGate({ bootstrap = false, migration = false, message = '' 
 
   if (adminApp) adminApp.hidden = true
   if (adminAuthGate) adminAuthGate.hidden = false
+  if (adminAuthGate) {
+    adminAuthGate.dataset.authState = migration ? 'migration' : bootstrap ? 'bootstrap' : 'login'
+  }
   if (adminLoginForm) adminLoginForm.hidden = bootstrap || migration
   if (adminBootstrapForm) adminBootstrapForm.hidden = !bootstrap || migration
 
   if (adminAuthIntro) {
     adminAuthIntro.textContent = migration
-      ? 'Prima di accedere al CMS devi applicare la migration di autenticazione.'
+      ? adminT('authMigrationIntro')
       : bootstrap
-        ? 'Crea il primo owner del TakeOff Control Panel. Dopo questa operazione il bootstrap verra disattivato.'
-        : 'Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni del sito.'
+        ? adminT('authBootstrapIntro')
+        : adminT('authLoginIntro')
   }
 
   setAdminAuthMessage(message, Boolean(migration))
@@ -385,7 +680,7 @@ function refreshAdminDataAfterAuth() {
 }
 
 async function initAdminAuth() {
-  showAdminAuthGate({ message: 'Verifica sessione admin...' })
+  showAdminAuthGate({ message: adminT('authChecking') })
 
   try {
     const response = await nativeFetch('/api/admin/auth/me', {
