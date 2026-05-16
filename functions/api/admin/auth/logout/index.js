@@ -7,7 +7,7 @@ import {
   revokeAdminSession,
 } from '../../../../_shared/admin-auth.js'
 
-export async function onRequestPost({ request, env }) {
+async function handleLogout({ request, env }) {
   const token = getSessionToken(request)
   const session = await getAdminSession(request, env)
 
@@ -36,4 +36,19 @@ export async function onRequestPost({ request, env }) {
       'Set-Cookie': expiredSessionCookie(request),
     },
   )
+}
+
+export async function onRequestPost(context) {
+  try {
+    return await handleLogout(context)
+  } catch {
+    return json(
+      {
+        success: false,
+        authenticated: false,
+        message: 'Logout non riuscito. Riprova tra poco.',
+      },
+      500,
+    )
+  }
 }

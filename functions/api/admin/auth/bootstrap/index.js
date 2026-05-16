@@ -18,7 +18,7 @@ function publicUser(user) {
   }
 }
 
-export async function onRequestPost({ request, env }) {
+async function handleBootstrap({ request, env }) {
   const setup = await getAdminAuthSetupState(env)
 
   if (!setup.schema_ready) {
@@ -111,7 +111,30 @@ export async function onRequestPost({ request, env }) {
       )
       .run()
 
-    userId = inserted.meta.last_row_id
+    userId = inserted?.meta?.last_row_id
+
+    if (!userId) {
+      const created = await env.DB.prepare(`
+        SELECT id
+        FROM admin_users
+        WHERE email = ?
+        LIMIT 1
+      `)
+        .bind(email)
+        .first()
+
+      userId = created?.id
+    }
+  }
+
+  if (!userId) {
+    return json(
+      {
+        success: false,
+        message: 'Owner non creato. Riprova tra poco.',
+      },
+      500,
+    )
   }
 
   await env.DB.prepare(`
@@ -151,4 +174,18 @@ export async function onRequestPost({ request, env }) {
       'Set-Cookie': session.cookie,
     },
   )
+}
+
+export async function onRequestPost(context) {
+  try {
+    return await handleBootstrap(context)
+  } catch {
+    return json(
+      {
+        success: false,
+        message: 'Bootstrap non riuscito. Verifica la configurazione auth e riprova.',
+      },
+      500,
+    )
+  }
 }

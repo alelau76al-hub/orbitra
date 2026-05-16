@@ -1,6 +1,6 @@
 import { getAdminAuthSetupState, getAdminSession, json } from '../../../../_shared/admin-auth.js'
 
-export async function onRequestGet({ request, env }) {
+async function handleMe({ request, env }) {
   const setup = await getAdminAuthSetupState(env)
 
   if (!setup.schema_ready) {
@@ -45,4 +45,19 @@ export async function onRequestGet({ request, env }) {
     authenticated: true,
     user: session.user,
   })
+}
+
+export async function onRequestGet(context) {
+  try {
+    return await handleMe(context)
+  } catch {
+    return json(
+      {
+        success: false,
+        authenticated: false,
+        message: 'Sessione admin non verificabile. Riprova tra poco.',
+      },
+      500,
+    )
+  }
 }

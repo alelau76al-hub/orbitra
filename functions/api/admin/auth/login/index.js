@@ -17,7 +17,7 @@ function publicUser(user) {
   }
 }
 
-export async function onRequestPost({ request, env }) {
+async function handleLogin({ request, env }) {
   const setup = await getAdminAuthSetupState(env)
 
   if (!setup.schema_ready) {
@@ -98,4 +98,18 @@ export async function onRequestPost({ request, env }) {
       'Set-Cookie': session.cookie,
     },
   )
+}
+
+export async function onRequestPost(context) {
+  try {
+    return await handleLogin(context)
+  } catch {
+    return json(
+      {
+        success: false,
+        message: 'Login non riuscito. Riprova tra poco.',
+      },
+      500,
+    )
+  }
 }

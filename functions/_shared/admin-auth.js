@@ -4,6 +4,7 @@ export const ADMIN_ROLES = new Set(['owner', 'admin', 'editor', 'viewer'])
 
 const PASSWORD_ITERATIONS = 150000
 const SESSION_TTL_SECONDS = 60 * 60 * 12
+const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 export function json(data, status = 200, headers = {}) {
   return Response.json(data, {
@@ -28,21 +29,66 @@ export async function readBody(request) {
   }
 }
 
+function getWebCrypto() {
+  if (!globalThis.crypto?.subtle || typeof globalThis.crypto.getRandomValues !== 'function') {
+    throw new Error('Web Crypto unavailable')
+  }
+
+  return globalThis.crypto
+}
+
 function bytesToBase64(bytes) {
-  let binary = ''
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte)
-  })
-  return btoa(binary)
+  let output = ''
+
+  for (let index = 0; index < bytes.length; index += 3) {
+    const first = bytes[index]
+    const second = index + 1 < bytes.length ? bytes[index + 1] : 0
+    const third = index + 2 < bytes.length ? bytes[index + 2] : 0
+    const triplet = (first << 16) | (second << 8) | third
+
+    output += BASE64_ALPHABET[(triplet >> 18) & 63]
+    output += BASE64_ALPHABET[(triplet >> 12) & 63]
+    output += index + 1 < bytes.length ? BASE64_ALPHABET[(triplet >> 6) & 63] : '='
+    output += index + 2 < bytes.length ? BASE64_ALPHABET[triplet & 63] : '='
+  }
+
+  return output
 }
 
 function base64ToBytes(value) {
-  const binary = atob(value)
-  const bytes = new Uint8Array(binary.length)
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index)
+  const normalized = String(value || '')
+    .replaceAll('-', '+')
+    .replaceAll('_', '/')
+    .replace(/[^A-Za-z0-9+/=]/g, '')
+
+  if (!normalized) return new Uint8Array()
+
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+  const bytes = []
+
+  for (let index = 0; index < padded.length; index += 4) {
+    const first = BASE64_ALPHABET.indexOf(padded[index])
+    const second = BASE64_ALPHABET.indexOf(padded[index + 1])
+    const third = padded[index + 2] === '=' ? 0 : BASE64_ALPHABET.indexOf(padded[index + 2])
+    const fourth = padded[index + 3] === '=' ? 0 : BASE64_ALPHABET.indexOf(padded[index + 3])
+
+    if (first < 0 || second < 0 || third < 0 || fourth < 0) {
+      throw new Error('Invalid base64 data')
+    }
+
+    const triplet = (first << 18) | (second << 12) | (third << 6) | fourth
+    bytes.push((triplet >> 16) & 255)
+
+    if (padded[index + 2] !== '=') {
+      bytes.push((triplet >> 8) & 255)
+    }
+
+    if (padded[index + 3] !== '=') {
+      bytes.push(triplet & 255)
+    }
   }
-  return bytes
+
+  return new Uint8Array(bytes)
 }
 
 function bytesToBase64Url(bytes) {
@@ -54,18 +100,18 @@ function bytesToBase64Url(bytes) {
 
 function randomBytes(length) {
   const bytes = new Uint8Array(length)
-  crypto.getRandomValues(bytes)
+  getWebCrypto().getRandomValues(bytes)
   return bytes
 }
 
 async function digestBase64(value) {
   const encoded = new TextEncoder().encode(value)
-  const digest = await crypto.subtle.digest('SHA-256', encoded)
+  const digest = await getWebCrypto().subtle.digest('SHA-256', encoded)
   return bytesToBase64(new Uint8Array(digest))
 }
 
 async function importPasswordKey(password) {
-  return crypto.subtle.importKey(
+  return getWebCrypto().subtle.importKey(
     'raw',
     new TextEncoder().encode(password),
     'PBKDF2',
@@ -76,7 +122,7 @@ async function importPasswordKey(password) {
 
 async function derivePasswordHash(password, saltBase64, iterations = PASSWORD_ITERATIONS) {
   const key = await importPasswordKey(password)
-  const derived = await crypto.subtle.deriveBits(
+  const derived = await getWebCrypto().subtle.deriveBits(
     {
       name: 'PBKDF2',
       hash: 'SHA-256',
@@ -165,6 +211,8 @@ export function expiredSessionCookie(request) {
 
 export async function getAdminAuthSetupState(env) {
   try {
+    await env.DB.prepare('SELECT id FROM admin_sessions LIMIT 1').first()
+
     const row = await env.DB.prepare(`
       SELECT
         COUNT(*) AS active_count,
@@ -191,7 +239,6 @@ export async function getAdminAuthSetupState(env) {
       bootstrap_required: false,
       legacy_users_without_password: false,
       message: 'Schema autenticazione admin non pronto. Applica la migration 0011.',
-      error: error.message,
     }
   }
 }
@@ -253,7 +300,6 @@ export async function getAdminSession(request, env) {
       setup: {
         ...setup,
         message: 'Schema sessioni admin non pronto. Applica la migration 0011.',
-        error: error.message,
       },
     }
   }
