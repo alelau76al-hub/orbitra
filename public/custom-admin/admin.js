@@ -117,7 +117,7 @@ function ensureAdminAuditBadge() {
     badge = document.createElement('strong')
     badge.id = 'adminAuditBadge'
     badge.className = 'admin-audit-badge'
-    badge.textContent = 'AUDIT MODE - READ ONLY'
+    badge.textContent = 'AUDIT MODE \u2014 READ ONLY'
     adminSessionBar.appendChild(badge)
   }
 
@@ -296,10 +296,10 @@ function showAdminAuthGate({ bootstrap = false, migration = false, message = '' 
 
   if (adminAuthIntro) {
     adminAuthIntro.textContent = migration
-      ? 'Prima di proteggere il CMS devi applicare la migration di autenticazione.'
+      ? 'Prima di accedere al CMS devi applicare la migration di autenticazione.'
       : bootstrap
-        ? 'Crea il primo owner con una password scelta da te. Dopo questa operazione il bootstrap verra disattivato.'
-        : 'Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni.'
+        ? 'Crea il primo owner del TakeOff Control Panel. Dopo questa operazione il bootstrap verra disattivato.'
+        : 'Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni del sito.'
   }
 
   setAdminAuthMessage(message, Boolean(migration))
@@ -1907,7 +1907,7 @@ cancelMetaobjectEntryEdit?.addEventListener('click', resetMetaobjectEntryForm)
 loadMetaobjects()
 
 // ===============================
-// TASSE / IVA
+// TASSE
 // ===============================
 
 const taxSettingsForm = document.querySelector('#taxSettingsForm')
@@ -1918,14 +1918,14 @@ const taxSettingsMessage = document.querySelector('#taxSettingsMessage')
 async function loadTaxSettingsAdmin() {
   if (!taxSettingsForm) return
 
-  taxSettingsMessage.textContent = 'Caricamento IVA...'
+  taxSettingsMessage.textContent = 'Caricamento impostazioni fiscali...'
 
   try {
     const response = await fetch('/api/admin/tax')
     const data = await response.json()
 
     if (!data.success) {
-      taxSettingsMessage.textContent = data.message || 'Errore caricamento IVA.'
+      taxSettingsMessage.textContent = data.message || 'Errore caricamento impostazioni fiscali.'
       return
     }
 
@@ -1933,13 +1933,13 @@ async function loadTaxSettingsAdmin() {
     taxPricesIncludeTax.checked = data.settings?.prices_include_tax !== false
     taxSettingsMessage.textContent = ''
   } catch {
-    taxSettingsMessage.textContent = 'Errore di connessione IVA.'
+    taxSettingsMessage.textContent = 'Errore di connessione impostazioni fiscali.'
   }
 }
 
 taxSettingsForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  taxSettingsMessage.textContent = 'Salvataggio IVA...'
+  taxSettingsMessage.textContent = 'Salvataggio impostazioni fiscali...'
 
   try {
     const response = await fetch('/api/admin/tax', {
@@ -1954,9 +1954,9 @@ taxSettingsForm?.addEventListener('submit', async (event) => {
     })
     const data = await response.json()
 
-    taxSettingsMessage.textContent = data.message || (data.success ? 'IVA salvata.' : 'Errore IVA.')
+    taxSettingsMessage.textContent = data.message || (data.success ? 'Impostazioni fiscali salvate.' : 'Errore impostazioni fiscali.')
   } catch {
-    taxSettingsMessage.textContent = 'Errore di connessione IVA.'
+    taxSettingsMessage.textContent = 'Errore di connessione impostazioni fiscali.'
   }
 })
 
@@ -2577,7 +2577,8 @@ mediaUploadForm?.addEventListener('submit', async (event) => {
     mediaUploadForm.reset()
     loadMediaItems()
   } catch {
-    mediaUploadMessage.textContent = 'Upload non riuscito. Usa URL manuale o verifica R2.'
+    mediaUploadMessage.textContent =
+      'Upload non riuscito. Usa URL manuale o verifica la configurazione storage.'
   }
 })
 
@@ -3912,7 +3913,7 @@ async function loadOrders() {
               <span>Valuta: ${escapeHtml(order.currency || 'EUR')}</span>
               <span>Spedizione: ${escapeHtml(order.shipping_method || 'standard')}</span>
               <span>Sconto: ${order.discount_cents ? `-${formatMoney(order.discount_cents)}` : formatMoney(0)}</span>
-              <span>IVA: ${formatMoney(order.tax_cents || 0)}</span>
+              <span>Tasse: ${formatMoney(order.tax_cents || 0)}</span>
               <span>${escapeHtml(order.created_at || '')}</span>
             </div>
 
@@ -3932,9 +3933,9 @@ async function loadOrders() {
                       <div>
                         <span>
                           ${escapeHtml(item.product_name || item.product_slug || `Prodotto ${item.product_id}`)}
-                          ${item.variant_label ? ` · ${escapeHtml(item.variant_label)}` : ''}
+                          ${item.variant_label ? ` - ${escapeHtml(item.variant_label)}` : ''}
                         </span>
-                        <strong>${item.quantity} × ${formatMoney(item.price_cents || 0)}</strong>
+                        <strong>${item.quantity} x ${formatMoney(item.price_cents || 0)}</strong>
                       </div>
                     `,
                   )
@@ -4037,7 +4038,7 @@ async function loadCustomers() {
 
             <div class="meta">
               <span>Telefono: ${escapeHtml(customer.phone || 'N/D')}</span>
-              <span>${escapeHtml(customer.shipping_address_city || 'Città N/D')}</span>
+              <span>${escapeHtml(customer.shipping_address_city || 'Citta N/D')}</span>
               <span>${escapeHtml(customer.shipping_address_country || 'Paese N/D')}</span>
             </div>
 
@@ -4053,7 +4054,7 @@ async function loadCustomers() {
                   .map(
                     (order) => `
                       <div>
-                        <span>Ordine #${order.id} · ${escapeHtml(order.order_status || 'new')}</span>
+                        <span>Ordine #${order.id} - ${escapeHtml(order.order_status || 'new')}</span>
                         <strong>${formatMoney(order.total_cents || 0)}</strong>
                       </div>
                     `,
@@ -4372,7 +4373,7 @@ const themeGroupLabels = {
 }
 
 const themeGroupDescriptions = {
-  brand: 'Logo, nome sito e identità principale.',
+  brand: 'Logo, nome sito e identita principale.',
   theme: 'Colori, tipografie, spaziature e stile generale.',
   header: 'Stile header e call to action principale.',
   footer: 'Testi e layout footer visibili sul sito.',
@@ -5295,9 +5296,9 @@ function renderSectionsList() {
           </button>
 
           <div class="section-tools">
-            <button type="button" data-up="${index}">↑</button>
-            <button type="button" data-down="${index}">↓</button>
-            <button type="button" class="danger" data-delete-section="${section.id}">×</button>
+            <button type="button" data-up="${index}">Su</button>
+            <button type="button" data-down="${index}">Giu</button>
+            <button type="button" class="danger" data-delete-section="${section.id}">x</button>
           </div>
         </div>
       `,

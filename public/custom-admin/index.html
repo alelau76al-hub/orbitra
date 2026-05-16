@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Orbitra Custom Admin</title>
+    <title>TakeOffMilan CMS</title>
     <link rel="stylesheet" href="/custom-admin/admin.css" />
   </head>
 
   <body>
     <section id="adminAuthGate" class="admin-auth-gate">
       <div class="admin-auth-card">
-        <p class="auth-eyebrow">Orbitra Admin</p>
-        <h1>Accesso al CMS</h1>
+        <p class="auth-eyebrow">TakeOffMilan CMS</p>
+        <h1>TakeOff Control Panel</h1>
         <p id="adminAuthIntro">
-          Inserisci le credenziali admin per gestire contenuti, catalogo e impostazioni.
+          Accedi al Website Operating System per gestire contenuti, catalogo e impostazioni del sito.
         </p>
 
         <form id="adminLoginForm" class="admin-auth-form">
@@ -50,10 +50,10 @@
       </section>
 
       <section class="hero admin-hero">
-        <p>Orbitra CMS Custom</p>
-        <h1>Mission Control CMS</h1>
+        <p>TakeOffMilan CMS</p>
+        <h1>TakeOff Control Panel</h1>
         <span>
-          Editor visuale, catalogo, collezioni, pagine, menu, ordini e impostazioni in un unico pannello.
+          Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.
         </span>
       </section>
 
@@ -109,7 +109,7 @@
         <a class="hub-card" href="#checkout">
           <span>09</span>
           <strong>Check-out</strong>
-          <small>Checkout, pagamenti, spedizioni, IVA e conferma</small>
+          <small>Checkout, pagamenti, spedizioni, tasse e conferma</small>
         </a>
 
         <a class="hub-card" href="#impostazioni">
@@ -124,13 +124,13 @@
   <div>
     <h2>Editor visuale sito</h2>
     <p class="section-subtitle">
-      Modifica sezioni, contenuti e impostazioni tema della pagina selezionata.
+      Personalizza sezioni, contenuti e impostazioni del sito cliente senza toccare codice.
     </p>
   </div>
 
   <div class="editor-title-actions">
     <button id="themeSettingsButton" class="icon-button" type="button">
-      <span>⚙️</span>
+      <span aria-hidden="true">&#9881;</span>
       Impostazioni tema
     </button>
 
@@ -153,43 +153,45 @@
             </select>
 
             <div class="section-library-head">
-  <div>
-    <label>Libreria sezioni CMS</label>
-    <p>
-      Scegli una sezione già pronta e personalizzala nella pagina selezionata.
-    </p>
-  </div>
+              <div>
+                <label>Libreria sezioni CMS</label>
+                <p>
+                  Scegli una sezione gia pronta e personalizzala nella pagina selezionata.
+                </p>
+              </div>
 
-  <div id="themeSettingsOverlay" class="theme-settings-overlay" hidden></div>
+              <span>Section Library</span>
+            </div>
 
-<aside id="themeSettingsDrawer" class="theme-settings-drawer" aria-hidden="true">
-  <div class="theme-settings-head">
-    <div>
-      <p>Theme settings</p>
-      <h3>Impostazioni tema</h3>
-      <span>Logo, colori, tipografie, header e footer.</span>
-    </div>
+            <div id="themeSettingsOverlay" class="theme-settings-overlay" hidden></div>
 
-    <button id="closeThemeSettingsButton" type="button">×</button>
-  </div>
+            <aside id="themeSettingsDrawer" class="theme-settings-drawer" aria-hidden="true">
+              <div class="theme-settings-head">
+                <div>
+                  <p>Theme settings</p>
+                  <h3>Impostazioni tema</h3>
+                  <span>Logo, colori, tipografie, header e footer.</span>
+                </div>
 
-  <form id="themeSettingsForm" class="theme-settings-form">
-    <div id="themeSettingsGroups" class="theme-settings-groups">
-      Caricamento impostazioni tema...
-    </div>
+                <button id="closeThemeSettingsButton" type="button" aria-label="Chiudi impostazioni tema">
+                  &times;
+                </button>
+              </div>
 
-    <div class="theme-settings-actions">
-      <button id="saveThemeSettingsButton" type="submit">
-        Salva impostazioni tema
-      </button>
+              <form id="themeSettingsForm" class="theme-settings-form">
+                <div id="themeSettingsGroups" class="theme-settings-groups">
+                  Caricamento impostazioni tema...
+                </div>
 
-      <p id="themeSettingsMessage"></p>
-    </div>
-  </form>
-</aside>
+                <div class="theme-settings-actions">
+                  <button id="saveThemeSettingsButton" type="submit">
+                    Salva impostazioni
+                  </button>
 
-  <span>Premium Library</span>
-</div>
+                  <p id="themeSettingsMessage"></p>
+                </div>
+              </form>
+            </aside>
 
 <div class="section-category-legend">
   <span>Base</span>
@@ -284,7 +286,7 @@
         <div class="mini-grid">
           <a class="mini-card" href="#prodotti">
             <h3>Prodotti</h3>
-            <p>Crea, modifica e organizza i prodotti del catalogo.</p>
+            <p>Gestisci schede prodotto, immagini, prezzi e disponibilita.</p>
           </a>
 
           <a class="mini-card" href="#collezioni">
@@ -299,14 +301,14 @@
           </a>
 
           <a class="mini-card placeholder-card" href="#inventario">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Inventario</h3>
             <p>Vista dedicata a scorte, disponibilita e movimenti futuri.</p>
           </a>
 
           <a class="mini-card" href="#import-export">
             <h3>Import / Export prodotti</h3>
-            <p>Esporta dati e importa prodotti con validazione e dry-run.</p>
+            <p>Export operativo e import prodotti con preview, validazione e dry-run.</p>
           </a>
 
         </div>
@@ -317,15 +319,15 @@
           <div>
             <h2>Inventario</h2>
             <p class="section-subtitle">
-              Vista futura per scorte avanzate, movimenti e disponibilita per variante.
+              Vista in sviluppo per scorte avanzate, movimenti e disponibilita per variante.
             </p>
           </div>
           <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
         </div>
 
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
-          <p>Lo stock base resta gestito nel form prodotto. La vista inventario dedicata arrivera quando serviranno movimenti, filtri e soglie.</p>
+          <span class="status-badge status-badge--future">In sviluppo</span>
+          <p>Lo stock base resta gestito nel form prodotto. La vista inventario dedicata entrera in gioco con movimenti, filtri e soglie.</p>
         </div>
       </section>
 
@@ -336,7 +338,7 @@
             <p>Crea e modifica le collezioni del catalogo.</p>
           </div>
 
-          <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
         </div>
 
         <form id="collectionForm" class="card">
@@ -424,10 +426,10 @@
         <div class="view-heading">
           <div>
             <h2>Prodotti</h2>
-            <p>Crea, modifica, assegna collezioni e gestisci stock dei prodotti.</p>
+            <p>Gestisci prodotti, varianti, prezzo, stock e dati SEO del catalogo cliente.</p>
           </div>
 
-          <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
         </div>
 
         <form id="productForm" class="card">
@@ -436,10 +438,10 @@
           <input id="productId" type="hidden" />
 
           <label>Nome prodotto</label>
-          <input id="name" type="text" placeholder="Kit Energia Astronauta" required />
+          <input id="name" type="text" placeholder="Prodotto premium" required />
 
           <label>Slug URL</label>
-          <input id="slug" type="text" placeholder="kit-energia-astronauta" required />
+          <input id="slug" type="text" placeholder="prodotto-premium" required />
 
           <label>Descrizione</label>
           <textarea id="description" placeholder="Descrizione prodotto..." required></textarea>
@@ -456,7 +458,7 @@
           </select>
 
           <label>Categoria</label>
-          <input id="category" type="text" placeholder="Preparazione" />
+          <input id="category" type="text" placeholder="Categoria" />
 
           <label>Stock</label>
           <input id="stock" type="number" placeholder="120" required />
@@ -521,15 +523,15 @@
       <section id="import-export" class="cms-area card admin-view" data-admin-view="import-export">
         <div class="section-title">
           <div>
-            <h2>Import / Export</h2>
-            <p class="section-subtitle">Export dati e import prodotti con dry-run e validazione base.</p>
+            <h2>Import / Export catalogo</h2>
+            <p class="section-subtitle">Esporta dati operativi e importa prodotti con preview, dry-run e validazione base.</p>
           </div>
-          <a class="back-link" href="#catalogo">← Torna a Catalogo</a>
+          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
         </div>
 
         <div class="content-manager">
           <section class="inner-card">
-            <h3>Export</h3>
+            <h3>Export dati</h3>
             <label>Risorsa</label>
             <select id="exportResource">
               <option value="products">Prodotti</option>
@@ -551,7 +553,7 @@
           </section>
 
           <section class="inner-card">
-            <h3>Import prodotti</h3>
+            <h3>Import prodotti controllato</h3>
             <label>Formato</label>
             <select id="importFormat">
               <option value="json">JSON rows</option>
@@ -572,7 +574,7 @@
           <div>
             <h2>Ordini</h2>
             <p class="section-subtitle">
-              Lista ordini creati dal checkout, stato pagamento e avanzamento ordine.
+              Monitora ordini, stato pagamento, spedizione e avanzamento operativo.
             </p>
           </div>
 
@@ -593,7 +595,7 @@
           <div>
             <h2>Clienti</h2>
             <p class="section-subtitle">
-              Anagrafiche generate dal checkout con indirizzo e storico ordini.
+              Profili cliente generati dal checkout, con indirizzo e storico ordini.
             </p>
           </div>
 
@@ -612,13 +614,13 @@
       <section id="contenuto" class="cms-area card admin-view" data-admin-view="contenuto">
         <div class="section-title">
           <h2>Contenuto</h2>
-          <span class="status-badge">Pagine attive</span>
+          <span class="status-badge">Operativo</span>
         </div>
 
         <div class="mini-grid">
           <a class="mini-card" href="#pagine">
             <h3>Pagine</h3>
-            <p>Crea e modifica pagine come Home, Chi siamo, Contatti, Shop e pagine custom.</p>
+            <p>Crea e modifica pagine istituzionali, landing e contenuti custom.</p>
           </a>
 
           <a class="mini-card" href="#menu">
@@ -628,7 +630,7 @@
 
           <a class="mini-card" href="#media">
             <h3>Media</h3>
-            <p>Gestisci URL media, anteprime, alt text e asset riutilizzabili.</p>
+            <p>Gestisci upload predisposto, URL media, anteprime, alt text e asset riutilizzabili.</p>
           </a>
 
           <a class="mini-card" href="#blog-admin">
@@ -643,11 +645,11 @@
 
           <a class="mini-card" href="#policy">
             <h3>Policy</h3>
-            <p>Privacy, termini, resi, spedizioni e cookie policy pubbliche.</p>
+            <p>Privacy, termini, resi, spedizioni e cookie policy pubblicabili.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#seo">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>SEO</h3>
             <p>Vista centrale futura per metadati, canonical e anteprime social.</p>
           </a>
@@ -666,7 +668,7 @@
         </div>
 
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>I campi SEO esistenti restano nei form di prodotti, collezioni e pagine. Questa vista servira per audit e gestione centralizzata.</p>
         </div>
       </section>
@@ -675,9 +677,9 @@
         <div class="section-title">
           <div>
             <h2>Policy</h2>
-            <p class="section-subtitle">Gestisci policy legali in bozza o pubblicate.</p>
+            <p class="section-subtitle">Gestisci documenti legali pubblici in bozza o pubblicati.</p>
           </div>
-          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
         <div class="content-manager">
@@ -731,7 +733,7 @@
             <p class="section-subtitle">Crea articoli blog con stato bozza/pubblicato e SEO base.</p>
           </div>
 
-          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
         <div class="content-manager">
@@ -755,7 +757,7 @@
             <input id="blogImageUrl" type="text" placeholder="https://..." />
 
             <label>Autore opzionale</label>
-            <input id="blogAuthor" type="text" placeholder="Orbitra Team" />
+            <input id="blogAuthor" type="text" placeholder="Team editoriale" />
 
             <label>Status</label>
             <select id="blogStatus">
@@ -795,10 +797,10 @@
         <div class="section-title">
           <div>
             <h2>Metaobjects</h2>
-            <p class="section-subtitle">Definizioni e entries riutilizzabili, senza references avanzate.</p>
+            <p class="section-subtitle">Definizioni e contenuti riutilizzabili per sezioni e API read-only.</p>
           </div>
 
-          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
         <div class="content-manager">
@@ -851,11 +853,11 @@
           <div>
             <h2>Media</h2>
             <p class="section-subtitle">
-              Libreria media con upload reale se R2 e configurato, piu fallback URL.
+              Libreria media con upload predisposto, fallback URL, anteprime e alt text.
             </p>
           </div>
 
-          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
         <div class="content-manager">
@@ -876,7 +878,7 @@
             <input id="mediaUploadAltText" type="text" placeholder="Descrizione immagine" />
 
             <button id="mediaUploadButton" type="submit">Carica file</button>
-            <p class="field-help">Se R2 non e configurato, usa il form URL manuale qui sotto.</p>
+            <p class="field-help">Se lo storage non e configurato, usa il form URL manuale qui sotto.</p>
             <p id="mediaUploadMessage"></p>
           </form>
 
@@ -931,7 +933,7 @@
             </p>
           </div>
 
-          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
         <div class="content-manager">
@@ -992,7 +994,7 @@
             </p>
           </div>
 
-          <a class="back-link" href="#contenuto">← Torna a Contenuto</a>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
         <div class="content-manager">
@@ -1046,7 +1048,7 @@
           <div>
             <h2>Marketing</h2>
             <p class="section-subtitle">
-              Campagne, sconti, coupon e automazioni future organizzate per area.
+              Campagne, sconti e strumenti promozionali organizzati per stato operativo.
             </p>
           </div>
           <span class="status-badge">Hub</span>
@@ -1055,7 +1057,7 @@
         <div class="mini-grid">
           <a class="mini-card" href="#marketing-campaigns">
             <h3>Campagne</h3>
-            <p>Crea e modifica campagne MVP con date e coupon opzionale.</p>
+            <p>Crea e modifica campagne con date, stato e coupon opzionale.</p>
           </a>
 
           <a class="mini-card" href="#marketing-discounts">
@@ -1064,13 +1066,13 @@
           </a>
 
           <a class="mini-card placeholder-card" href="#marketing-coupons">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Coupon</h3>
-            <p>Area dedicata ai coupon avanzati; oggi i codici vivono in Sconti.</p>
+            <p>Regole coupon avanzate in sviluppo; i codici attivi sono in Sconti.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#marketing-newsletter">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Newsletter / Automazioni</h3>
             <p>Base futura per flussi email, segmenti e automazioni.</p>
           </a>
@@ -1157,7 +1159,7 @@
             <input id="campaignId" type="hidden" />
 
             <label>Titolo campagna</label>
-            <input id="campaignTitle" type="text" placeholder="Promo lancio" required />
+            <input id="campaignTitle" type="text" placeholder="Campagna stagionale" required />
 
             <label>Descrizione</label>
             <textarea id="campaignDescription" placeholder="Descrizione campagna"></textarea>
@@ -1201,7 +1203,7 @@
         </div>
 
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Per ora i coupon semplici sono gestiti come codici sconto nella sezione Sconti.</p>
         </div>
       </section>
@@ -1216,7 +1218,7 @@
         </div>
 
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Nessun invio email reale viene configurato qui finche non esiste un provider sicuro.</p>
         </div>
       </section>
@@ -1226,10 +1228,10 @@
           <div>
             <h2>Markets</h2>
             <p class="section-subtitle">
-              Mercati, paesi, lingue, valute e prezzi localizzati separati in viste operative.
+              Gestione mercati, paesi, lingue, valute e futuri prezzi localizzati.
             </p>
           </div>
-          <span class="status-badge">Hub</span>
+          <span class="status-badge">Mercati</span>
         </div>
 
         <div class="mini-grid">
@@ -1239,27 +1241,27 @@
           </a>
 
           <a class="mini-card placeholder-card" href="#markets-paesi">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Paesi</h3>
-            <p>Zone paese e regole di disponibilita dedicate.</p>
+            <p>Configurazioni paese e disponibilita dedicate, in sviluppo.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#markets-lingue">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Lingue</h3>
             <p>Lingue supportate e fallback contenuti.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#markets-valute">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Valute</h3>
-            <p>Valute, formati e tassi futuri senza cambio prezzi reale.</p>
+            <p>Valute, formati e tassi futuri senza conversione prezzi reale.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#markets-prezzi">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Prezzi localizzati</h3>
-            <p>Listini e prezzi per mercato quando il modello dati sara pronto.</p>
+            <p>Listini e prezzi per mercato quando il modello dati sara esteso.</p>
           </a>
         </div>
       </section>
@@ -1319,7 +1321,7 @@
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Oggi il paese e salvato nel singolo mercato. La vista dedicata arrivera con regole paese piu granulari.</p>
         </div>
       </section>
@@ -1333,7 +1335,7 @@
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>La lingua base e salvata nel mercato. Traduzioni e contenuti localizzati restano fuori da questo cleanup.</p>
         </div>
       </section>
@@ -1347,7 +1349,7 @@
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>La valuta base e salvata nel mercato. Tassi, conversioni e arrotondamenti arriveranno in un blocco dedicato.</p>
         </div>
       </section>
@@ -1361,7 +1363,7 @@
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>I prodotti mantengono il prezzo unico attuale. Questa area servira per listini localizzati quando il database sara esteso.</p>
         </div>
       </section>
@@ -1371,7 +1373,7 @@
           <div>
             <h2>Analisi</h2>
             <p class="section-subtitle">
-              Dashboard analytics, traffico, vendite, prodotti e conversioni separati.
+              Dashboard analytics, traffico, vendite, prodotti e conversioni in viste dedicate.
             </p>
           </div>
           <span class="status-badge">Hub</span>
@@ -1380,29 +1382,29 @@
         <div class="mini-grid">
           <a class="mini-card" href="#analytics-dashboard">
             <h3>Dashboard</h3>
-            <p>Conteggi MVP e ultimi eventi analytics raccolti.</p>
+            <p>Conteggi principali e ultimi eventi raccolti dalla piattaforma.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#analytics-traffic">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Traffico</h3>
             <p>Page view, sorgenti e percorsi utenti futuri.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#analytics-sales">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Vendite</h3>
             <p>Ricavi, ordini e trend vendita dedicati.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#analytics-products">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Prodotti</h3>
             <p>Performance prodotti, visualizzazioni e add to cart.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#analytics-conversions">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Conversioni</h3>
             <p>Funnel carrello, checkout e ordine completato.</p>
           </a>
@@ -1433,7 +1435,7 @@
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Gli eventi page_view sono gia raccolti nella dashboard MVP. La segmentazione traffico resta futura.</p>
         </div>
       </section>
@@ -1447,7 +1449,7 @@
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Gli ordini restano nella sezione Ordini. Qui arrivera il reporting vendite aggregato.</p>
         </div>
       </section>
@@ -1461,7 +1463,7 @@
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Gli eventi product_view e add_to_cart sono raccolti a livello base. L'analisi per prodotto resta da aggregare.</p>
         </div>
       </section>
@@ -1475,7 +1477,7 @@
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>La dashboard MVP mostra eventi recenti; il funnel completo verra costruito con metriche dedicate.</p>
         </div>
       </section>
@@ -1485,37 +1487,37 @@
           <div>
             <h2>Check-out</h2>
             <p class="section-subtitle">
-              Configurazioni checkout organizzate per impostazioni, pagamenti, spedizioni, IVA e conferma ordine.
+              Controllo del checkout: impostazioni, pagamenti, spedizioni, tasse e conferma ordine.
             </p>
           </div>
-          <span class="status-badge">Hub</span>
+          <span class="status-badge">Checkout</span>
         </div>
 
         <div class="mini-grid">
           <a class="mini-card placeholder-card" href="#checkout-settings">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Checkout settings</h3>
-            <p>Campi richiesti, note e opzioni checkout future.</p>
+            <p>Campi richiesti, note operative e opzioni checkout in sviluppo.</p>
           </a>
 
           <a class="mini-card" href="#checkout-payments">
             <h3>Pagamenti</h3>
-            <p>Provider manuale o Stripe test mode con secrets via ambiente.</p>
+            <p>Provider manuale o Stripe test mode con chiavi gestite via ambiente.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#checkout-shipping">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Spedizioni</h3>
             <p>Metodi e soglie spedizione future lato admin.</p>
           </a>
 
           <a class="mini-card" href="#checkout-taxes">
-            <h3>Tasse / IVA</h3>
-            <p>Aliquota IVA base e prezzi inclusi o esclusi.</p>
+            <h3>Tasse</h3>
+            <p>Aliquota base, prezzi inclusi/esclusi e riepilogo fiscale checkout.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#checkout-confirmation">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Conferma ordine</h3>
             <p>Testi, contenuti e notifiche della conferma ordine.</p>
           </a>
@@ -1525,16 +1527,16 @@
       <section id="checkout-taxes" class="cms-area card admin-view" data-admin-view="checkout-taxes">
         <div class="section-title">
           <div>
-            <h2>Tasse / IVA</h2>
+            <h2>Tasse</h2>
             <p class="section-subtitle">
-              Configurazione fiscale MVP usata dal riepilogo checkout.
+              Configurazione fiscale usata dal riepilogo checkout.
             </p>
           </div>
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
 
         <form id="taxSettingsForm" class="inner-card settings-form-compact">
-          <h3>Tasse / IVA</h3>
+          <h3>Impostazioni fiscali</h3>
 
           <label>Aliquota IVA base (%)</label>
           <input id="taxVatRate" type="number" step="0.01" min="0" placeholder="22" />
@@ -1544,7 +1546,7 @@
             I prezzi catalogo includono IVA
           </label>
 
-          <button type="submit">Salva impostazioni IVA</button>
+          <button type="submit">Salva impostazioni fiscali</button>
           <p id="taxSettingsMessage"></p>
         </form>
       </section>
@@ -1558,8 +1560,8 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
-          <p>Il checkout pubblico resta quello esistente. Questa vista raccogliera opzioni admin senza cambiare il flusso live.</p>
+          <span class="status-badge status-badge--future">In sviluppo</span>
+          <p>Il checkout pubblico resta stabile. Questa vista raccogliera opzioni admin senza cambiare il flusso live.</p>
         </div>
       </section>
 
@@ -1613,7 +1615,7 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Il checkout mantiene i fallback spedizione esistenti. La configurazione admin completa resta futura.</p>
         </div>
       </section>
@@ -1627,7 +1629,7 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>La conferma ordine pubblica resta invariata. Qui arriveranno testi e opzioni configurabili.</p>
         </div>
       </section>
@@ -1637,40 +1639,40 @@
           <div>
             <h2>Impostazioni admin</h2>
             <p class="section-subtitle">
-              Configurazioni generali, accessi, domini, privacy e operativita del CMS.
+              Configurazioni generali, accessi, domini, privacy e operativita della piattaforma.
             </p>
           </div>
 
-          <span class="status-badge">Hub</span>
+          <span class="status-badge">Sistema</span>
         </div>
 
         <div class="mini-grid">
           <a class="mini-card placeholder-card" href="#settings-general">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Generali</h3>
-            <p>Nome azienda, dati fiscali, email di sistema e informazioni store.</p>
+            <p>Nome cliente, dati aziendali, email di sistema e informazioni sito.</p>
           </a>
 
           <a class="mini-card" href="#utenti">
             <h3>Utenti e permessi</h3>
-            <p>Base dati utenti admin e ruoli, senza login obbligatorio.</p>
+            <p>Utenti admin, ruoli, stato account e accesso protetto al pannello.</p>
           </a>
 
           <a class="mini-card" href="#domini">
             <h3>Domini</h3>
-            <p>Dominio primario, redirect, preview e note DNS documentali.</p>
+            <p>Dominio primario, redirect, preview e note DNS operative.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#privacy-settings">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Privacy</h3>
-            <p>Consensi, GDPR e raccordo con le policy pubbliche.</p>
+            <p>Consensi, GDPR e raccordo con le policy pubbliche del cliente.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#cookie-settings">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Cookie</h3>
-            <p>Preferenze cookie e banner consenso futuri.</p>
+            <p>Preferenze cookie e banner consenso in sviluppo.</p>
           </a>
 
           <a class="mini-card" href="#metafields">
@@ -1684,9 +1686,9 @@
           </a>
 
           <a class="mini-card placeholder-card" href="#settings-import-export">
-            <span class="mini-card-status">In arrivo</span>
+            <span class="mini-card-status">In sviluppo</span>
             <h3>Import / Export</h3>
-            <p>Area impostazioni futura per backup e trasferimenti globali.</p>
+            <p>Backup e trasferimenti globali in sviluppo. Export operativo nel Catalogo.</p>
           </a>
 
           <a class="mini-card" href="#tenants">
@@ -1696,7 +1698,7 @@
 
           <a class="mini-card" href="#performance">
             <h3>Performance</h3>
-            <p>Checklist produzione, cache e fallback pubblici.</p>
+            <p>Controllo produzione, cache, fallback pubblici e checklist operativa.</p>
           </a>
 
           <a class="mini-card" href="#integrazioni">
@@ -1720,7 +1722,7 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Le impostazioni tema restano nel drawer dell'editor visuale. Qui arriveranno le impostazioni generali di negozio.</p>
         </div>
       </section>
@@ -1734,7 +1736,7 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>Le privacy policy pubbliche sono gestite in Contenuto > Policy. Questa vista servira per consensi e impostazioni privacy.</p>
         </div>
       </section>
@@ -1748,7 +1750,7 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
+          <span class="status-badge status-badge--future">In sviluppo</span>
           <p>La cookie policy e gestita tra le Policy. Il banner consenso non viene aggiunto in questo cleanup.</p>
         </div>
       </section>
@@ -1757,13 +1759,13 @@
         <div class="section-title">
           <div>
             <h2>Import / Export impostazioni</h2>
-            <p class="section-subtitle">Backup e trasferimenti globali futuri per configurazioni CMS.</p>
+            <p class="section-subtitle">Backup e trasferimenti globali in sviluppo per configurazioni CMS.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
-          <p>L'import/export operativo dei prodotti resta in Catalogo. Questa vista separera in futuro configurazioni e backup globali.</p>
+          <span class="status-badge status-badge--future">In sviluppo</span>
+          <p>L'import/export operativo del catalogo resta in Catalogo. Questa vista separera in futuro configurazioni e backup globali.</p>
         </div>
       </section>
 
@@ -1776,7 +1778,7 @@
             </p>
           </div>
 
-          <a class="back-link" href="#impostazioni">← Torna a Impostazioni</a>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
 
         <div class="content-manager">
@@ -1837,7 +1839,7 @@
             <h2>Integrazioni</h2>
             <p class="section-subtitle">Configurazioni non sensibili e webhook URL opzionale.</p>
           </div>
-          <a class="back-link" href="#impostazioni">← Torna a Impostazioni</a>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
 
         <div class="content-manager">
@@ -1872,9 +1874,9 @@
         <div class="section-title">
           <div>
             <h2>Utenti / permessi</h2>
-            <p class="section-subtitle">Base dati ruoli admin. Non abilita login obbligatorio.</p>
+            <p class="section-subtitle">Utenti admin, ruoli e stato account usati dal login protetto.</p>
           </div>
-          <a class="back-link" href="#impostazioni">← Torna a Impostazioni</a>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
 
         <div class="content-manager">
@@ -1928,7 +1930,7 @@
             <h2>Notifiche</h2>
             <p class="section-subtitle">Template e invii mock. Nessuna email reale viene inviata.</p>
           </div>
-          <a class="back-link" href="#impostazioni">← Torna a Impostazioni</a>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
 
         <div class="content-manager">
@@ -1968,9 +1970,9 @@
         <div class="section-title">
           <div>
             <h2>Domini</h2>
-            <p class="section-subtitle">Base CMS per tracciare domini. Nessun DNS reale viene modificato.</p>
+            <p class="section-subtitle">Registro domini per primario, redirect, preview e note DNS. Nessun DNS reale viene modificato.</p>
           </div>
-          <a class="back-link" href="#impostazioni">← Torna a Impostazioni</a>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
 
         <div class="content-manager">
@@ -2015,7 +2017,7 @@
             <h2>Multi-cliente / Store</h2>
             <p class="section-subtitle">Predisposizione tenant: lo store attuale resta sul tenant default.</p>
           </div>
-          <a class="back-link" href="#impostazioni">← Torna a Impostazioni</a>
+          <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
 
         <div class="content-manager">
@@ -2054,7 +2056,7 @@
         <div class="section-title">
           <div>
             <h2>Performance produzione</h2>
-            <p class="section-subtitle">Checklist e impostazioni MVP per produzione, senza refactor radicali.</p>
+            <p class="section-subtitle">Area di controllo produzione per cache, fallback, checklist e stato operativo.</p>
           </div>
           <button id="refreshPerformanceButton" type="button">Aggiorna</button>
         </div>

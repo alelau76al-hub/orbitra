@@ -2,14 +2,27 @@
   box-sizing: border-box;
 }
 
+:root {
+  --admin-bg: #05070d;
+  --admin-surface: rgba(12, 18, 32, 0.82);
+  --admin-surface-soft: rgba(255, 255, 255, 0.055);
+  --admin-border: rgba(184, 214, 255, 0.14);
+  --admin-text: #f7fbff;
+  --admin-muted: #aebbd6;
+  --admin-accent: #65e4ff;
+  --admin-accent-strong: #7c8cff;
+  --admin-success: #54f0a6;
+  --admin-warning: #ffd48a;
+}
+
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(0, 245, 255, 0.18), transparent 35%),
-    radial-gradient(circle at bottom right, rgba(255, 43, 214, 0.16), transparent 35%),
-    #050509;
-  color: white;
-  font-family: Arial, sans-serif;
+    radial-gradient(circle at 18% 0%, rgba(101, 228, 255, 0.16), transparent 32%),
+    radial-gradient(circle at 86% 8%, rgba(124, 140, 255, 0.14), transparent 34%),
+    linear-gradient(135deg, #060a13 0%, #080b16 48%, #05070d 100%);
+  color: var(--admin-text);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 [hidden] {
@@ -26,17 +39,17 @@ body {
 .admin-auth-card {
   width: min(460px, 100%);
   padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 24px;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
-    rgba(0, 0, 0, 0.46);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.025)),
+    rgba(8, 12, 24, 0.78);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
 }
 
 .auth-eyebrow {
   margin: 0 0 10px;
-  color: #00f5ff;
+  color: var(--admin-accent);
   text-transform: uppercase;
   letter-spacing: 3px;
   font-size: 12px;
@@ -50,7 +63,7 @@ body {
 }
 
 .admin-auth-card p {
-  color: #b8b8d8;
+  color: var(--admin-muted);
   line-height: 1.5;
 }
 
@@ -79,9 +92,9 @@ body {
   gap: 16px;
   margin-bottom: 18px;
   padding: 14px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: rgba(9, 14, 28, 0.72);
 }
 
 .admin-session-bar strong {
@@ -89,7 +102,7 @@ body {
 }
 
 .admin-session-bar span {
-  color: #b8b8d8;
+  color: var(--admin-muted);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -99,10 +112,10 @@ body {
   display: inline-flex;
   margin-top: 8px;
   padding: 5px 9px;
-  border: 1px solid rgba(0, 245, 255, 0.18);
+  border: 1px solid rgba(101, 228, 255, 0.24);
   border-radius: 999px;
-  color: #00f5ff;
-  background: rgba(0, 245, 255, 0.08);
+  color: var(--admin-accent);
+  background: rgba(101, 228, 255, 0.08);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -113,14 +126,14 @@ body {
   justify-content: center;
   margin-left: auto;
   padding: 9px 12px;
-  border: 1px solid rgba(255, 207, 117, 0.5);
+  border: 1px solid rgba(101, 228, 255, 0.52);
   border-radius: 999px;
-  color: #ffcf75;
-  background: rgba(255, 207, 117, 0.12);
+  color: #dff9ff;
+  background: linear-gradient(135deg, rgba(101, 228, 255, 0.16), rgba(124, 140, 255, 0.14));
   font-size: 12px;
   letter-spacing: 1.4px;
   text-transform: uppercase;
-  box-shadow: 0 0 28px rgba(255, 207, 117, 0.12);
+  box-shadow: 0 0 28px rgba(101, 228, 255, 0.12);
 }
 
 .admin-session-bar button {
@@ -129,7 +142,7 @@ body {
 
 .admin-permission-notice {
   margin: 0;
-  color: #ffcf75;
+  color: var(--admin-warning);
   font-size: 13px;
   font-weight: 800;
 }
@@ -145,13 +158,13 @@ body[data-admin-audit-mode="true"] .audit-disabled {
 }
 
 body[data-admin-audit-mode="true"] .admin-session-bar {
-  border-color: rgba(255, 207, 117, 0.32);
-  box-shadow: 0 0 36px rgba(255, 207, 117, 0.08);
+  border-color: rgba(101, 228, 255, 0.32);
+  box-shadow: 0 0 36px rgba(101, 228, 255, 0.08);
 }
 
 .field-help {
   margin: -2px 0 12px;
-  color: #b8b8d8;
+  color: var(--admin-muted);
   font-size: 13px;
   line-height: 1.4;
 }
@@ -165,14 +178,16 @@ body[data-admin-audit-mode="true"] .admin-session-bar {
 .hero {
   margin-bottom: 32px;
   padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--admin-border);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(101, 228, 255, 0.08), rgba(124, 140, 255, 0.045)),
+    rgba(10, 15, 30, 0.76);
 }
 
 .hero p {
   margin: 0 0 10px;
-  color: #00f5ff;
+  color: var(--admin-accent);
   text-transform: uppercase;
   letter-spacing: 3px;
   font-weight: bold;
@@ -185,7 +200,7 @@ body[data-admin-audit-mode="true"] .admin-session-bar {
 }
 
 .hero span {
-  color: #b8b8d8;
+  color: var(--admin-muted);
 }
 
 .grid {
@@ -197,10 +212,10 @@ body[data-admin-audit-mode="true"] .admin-session-bar {
 
 .card {
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 50px rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--admin-border);
+  border-radius: 20px;
+  background: var(--admin-surface-soft);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
 }
 
 h2 {
@@ -590,14 +605,13 @@ button.danger {
   position: relative;
   min-height: 620px;
   padding: 72px 54px;
-  border-radius: 34px;
+  border-radius: 24px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 82% 18%, rgba(0, 245, 255, 0.28), transparent 22%),
-    radial-gradient(circle at 75% 58%, rgba(139, 92, 246, 0.25), transparent 28%),
-    radial-gradient(circle at 12% 88%, rgba(255, 43, 214, 0.22), transparent 28%),
-    linear-gradient(135deg, #130b2b 0%, #071322 45%, #021516 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+    radial-gradient(circle at 82% 18%, rgba(101, 228, 255, 0.18), transparent 24%),
+    radial-gradient(circle at 18% 80%, rgba(124, 140, 255, 0.13), transparent 28%),
+    linear-gradient(135deg, #0b1020 0%, #07111e 52%, #05070d 100%);
+  border: 1px solid var(--admin-border);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -608,21 +622,22 @@ button.danger {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.65) 1px, transparent 1.4px),
     linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size: 115px 115px, 52px 52px, 52px 52px;
-  opacity: 0.18;
+  background-size: 52px 52px, 52px 52px;
+  opacity: 0.16;
   pointer-events: none;
 }
 
 .hero-preview::after {
-  content: "🚀";
+  content: "CMS";
   position: absolute;
-  right: 110px;
-  top: 230px;
-  font-size: 44px;
-  filter: drop-shadow(0 0 20px rgba(0,245,255,.7));
+  right: 42px;
+  bottom: 34px;
+  color: rgba(255, 255, 255, 0.08);
+  font-size: 86px;
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
 .hero-preview p,
@@ -647,7 +662,7 @@ button.danger {
   margin: 0 0 28px;
   font-size: clamp(58px, 8vw, 110px);
   line-height: 0.88;
-  letter-spacing: -6px;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -854,10 +869,16 @@ select:focus {
 .status-badge {
   padding: 7px 11px;
   border-radius: 999px;
-  background: rgba(0, 245, 255, 0.1);
-  color: #00f5ff;
+  background: rgba(101, 228, 255, 0.1);
+  color: var(--admin-accent);
   font-size: 13px;
   font-weight: 900;
+}
+
+.status-badge--future {
+  border: 1px solid rgba(124, 140, 255, 0.32);
+  color: #dbe3ff;
+  background: rgba(124, 140, 255, 0.12);
 }
 
 .section-actions {
@@ -1243,6 +1264,12 @@ button:disabled {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.8px;
+}
+
+.mini-card.placeholder-card .mini-card-status {
+  border: 1px solid rgba(124, 140, 255, 0.28);
+  color: #dbe3ff;
+  background: rgba(124, 140, 255, 0.12);
 }
 
 .section-category-legend {
