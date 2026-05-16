@@ -320,7 +320,7 @@
             </p>
           </div>
 
-          <span class="status-badge">Attivo</span>
+          <span class="status-badge">Operativo</span>
         </div>
 
         <div class="mini-grid">
@@ -343,7 +343,7 @@
           <a class="mini-card placeholder-card" href="#inventario">
             <span class="mini-card-status">In sviluppo</span>
             <h3>Inventario</h3>
-            <p>Vista dedicata a scorte, disponibilita e movimenti futuri.</p>
+            <p>Area dedicata a scorte, disponibilita e movimenti in sviluppo.</p>
           </a>
 
           <a class="mini-card" href="#import-export">
@@ -359,7 +359,7 @@
           <div>
             <h2>Inventario</h2>
             <p class="section-subtitle">
-              Vista in sviluppo per scorte avanzate, movimenti e disponibilita per variante.
+              Area in sviluppo per scorte avanzate, movimenti e disponibilita per variante.
             </p>
           </div>
           <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
@@ -367,7 +367,7 @@
 
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Lo stock base resta gestito nel form prodotto. La vista inventario dedicata entrera in gioco con movimenti, filtri e soglie.</p>
+          <p>Lo stock base resta gestito nel form prodotto. Questa vista raccogliera movimenti, filtri e soglie operative.</p>
         </div>
       </section>
 
@@ -390,7 +390,7 @@
           <input
             id="collectionName"
             type="text"
-            placeholder="Viaggi lunari"
+            placeholder="Collezione premium"
             required
           />
 
@@ -398,7 +398,7 @@
           <input
             id="collectionSlug"
             type="text"
-            placeholder="viaggi-lunari"
+            placeholder="collezione-premium"
             required
           />
 
@@ -448,7 +448,7 @@
 
         <section class="card">
           <div class="section-title">
-            <h2>Collezioni nel database</h2>
+            <h2>Archivio collezioni</h2>
             <button id="refreshCollectionsButton" type="button">Aggiorna</button>
           </div>
 
@@ -546,7 +546,7 @@
 
         <section class="card">
           <div class="section-title">
-            <h2>Prodotti nel database</h2>
+            <h2>Archivio prodotti</h2>
             <button id="refreshButton" type="button">Aggiorna</button>
           </div>
 
@@ -564,7 +564,7 @@
         <div class="section-title">
           <div>
             <h2>Import / Export catalogo</h2>
-            <p class="section-subtitle">Esporta dati operativi e importa prodotti con preview, dry-run e validazione base.</p>
+            <p class="section-subtitle">Esporta dati operativi e importa prodotti con anteprima sicura e validazione.</p>
           </div>
           <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
         </div>
@@ -596,12 +596,12 @@
             <h3>Import prodotti controllato</h3>
             <label>Formato</label>
             <select id="importFormat">
-              <option value="json">JSON rows</option>
+              <option value="json">JSON</option>
               <option value="csv">CSV</option>
             </select>
             <label>Dati import</label>
             <textarea id="importContent" placeholder='[{"name":"Prodotto","slug":"prodotto","price_cents":4900,"stock":10}]'></textarea>
-            <label class="inline-check"><input id="importDryRun" type="checkbox" checked /> Dry-run / preview</label>
+            <label class="inline-check"><input id="importDryRun" type="checkbox" checked /> Anteprima senza scrittura</label>
             <button id="importProductsButton" type="button">Valida import</button>
             <p id="importExportMessage"></p>
             <pre id="importPreview" class="admin-pre">Nessuna preview.</pre>
@@ -691,7 +691,7 @@
           <a class="mini-card placeholder-card" href="#seo">
             <span class="mini-card-status">In sviluppo</span>
             <h3>SEO</h3>
-            <p>Vista centrale futura per metadati, canonical e anteprime social.</p>
+            <p>Centro SEO in sviluppo per metadati, canonical e anteprime social.</p>
           </a>
         </div>
       </section>
@@ -709,7 +709,7 @@
 
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>I campi SEO esistenti restano nei form di prodotti, collezioni e pagine. Questa vista servira per audit e gestione centralizzata.</p>
+          <p>I campi SEO sono gia disponibili nei form di prodotti, collezioni e pagine. Questa vista riunira audit e gestione centralizzata.</p>
         </div>
       </section>
 
@@ -717,7 +717,7 @@
         <div class="section-title">
           <div>
             <h2>Policy</h2>
-            <p class="section-subtitle">Gestisci documenti legali pubblici in bozza o pubblicati.</p>
+            <p class="section-subtitle">Gestisci documenti legali pubblici con stato bozza o pubblicato.</p>
           </div>
           <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
@@ -770,7 +770,7 @@
         <div class="section-title">
           <div>
             <h2>Blog</h2>
-            <p class="section-subtitle">Crea articoli blog con stato bozza/pubblicato e SEO base.</p>
+            <p class="section-subtitle">Crea articoli, bozze editoriali e metadati SEO essenziali.</p>
           </div>
 
           <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
@@ -837,7 +837,7 @@
         <div class="section-title">
           <div>
             <h2>Metaobjects</h2>
-            <p class="section-subtitle">Definizioni e contenuti riutilizzabili per sezioni e API read-only.</p>
+            <p class="section-subtitle">Definizioni e contenuti riutilizzabili per sezioni e lettura pubblica.</p>
           </div>
 
           <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
@@ -1091,7 +1091,7 @@
               Campagne, sconti e strumenti promozionali organizzati per stato operativo.
             </p>
           </div>
-          <span class="status-badge">Hub</span>
+          <span class="status-badge">Area</span>
         </div>
 
         <div class="mini-grid">
@@ -1114,7 +1114,7 @@
           <a class="mini-card placeholder-card" href="#marketing-newsletter">
             <span class="mini-card-status">In sviluppo</span>
             <h3>Newsletter / Automazioni</h3>
-            <p>Base futura per flussi email, segmenti e automazioni.</p>
+            <p>Base in sviluppo per flussi email, segmenti e automazioni.</p>
           </a>
         </div>
       </section>
@@ -1124,7 +1124,7 @@
           <div>
             <h2>Sconti</h2>
             <p class="section-subtitle">
-              Gestione MVP di codici sconto percentuali o a importo fisso.
+              Gestisci codici sconto percentuali o a importo fisso.
             </p>
           </div>
 
@@ -1237,7 +1237,7 @@
         <div class="section-title">
           <div>
             <h2>Coupon</h2>
-            <p class="section-subtitle">Area dedicata a coupon avanzati e regole promozionali future.</p>
+            <p class="section-subtitle">Area in sviluppo per coupon avanzati e regole promozionali.</p>
           </div>
           <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
         </div>
@@ -1252,7 +1252,7 @@
         <div class="section-title">
           <div>
             <h2>Newsletter / Automazioni</h2>
-            <p class="section-subtitle">Predisposizione futura per newsletter, segmenti e automazioni.</p>
+            <p class="section-subtitle">Area in sviluppo per newsletter, segmenti e automazioni.</p>
           </div>
           <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
         </div>
@@ -1268,7 +1268,7 @@
           <div>
             <h2>Markets</h2>
             <p class="section-subtitle">
-              Gestione mercati, paesi, lingue, valute e futuri prezzi localizzati.
+              Gestione mercati, paesi, lingue, valute e prezzi localizzati in sviluppo.
             </p>
           </div>
           <span class="status-badge">Mercati</span>
@@ -1295,7 +1295,7 @@
           <a class="mini-card placeholder-card" href="#markets-valute">
             <span class="mini-card-status">In sviluppo</span>
             <h3>Valute</h3>
-            <p>Valute, formati e tassi futuri senza conversione prezzi reale.</p>
+            <p>Valute, formati e tassi in sviluppo per esperienze multi-mercato.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#markets-prezzi">
@@ -1310,7 +1310,7 @@
         <div class="section-title">
           <div>
             <h2>Mercati</h2>
-            <p class="section-subtitle">Mercati MVP: paese, lingua, valuta, default e stato.</p>
+            <p class="section-subtitle">Configura mercati con paese, lingua, valuta, default e stato.</p>
           </div>
           <div class="section-actions">
             <a class="back-link" href="#markets">&larr; Torna a Markets</a>
@@ -1362,7 +1362,7 @@
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Oggi il paese e salvato nel singolo mercato. La vista dedicata arrivera con regole paese piu granulari.</p>
+          <p>Il paese e gestito nel singolo mercato. Questa vista introdurra regole paese piu granulari.</p>
         </div>
       </section>
 
@@ -1370,13 +1370,13 @@
         <div class="section-title">
           <div>
             <h2>Lingue</h2>
-            <p class="section-subtitle">Lingue supportate, fallback e traduzioni future.</p>
+            <p class="section-subtitle">Lingue supportate, fallback e traduzioni in sviluppo.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La lingua base e salvata nel mercato. Traduzioni e contenuti localizzati restano fuori da questo cleanup.</p>
+          <p>La lingua base e salvata nel mercato. Traduzioni e contenuti localizzati saranno gestiti in una vista dedicata.</p>
         </div>
       </section>
 
@@ -1384,13 +1384,13 @@
         <div class="section-title">
           <div>
             <h2>Valute</h2>
-            <p class="section-subtitle">Valute e formati monetari per mercati futuri.</p>
+            <p class="section-subtitle">Valute e formati monetari per mercati internazionali.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La valuta base e salvata nel mercato. Tassi, conversioni e arrotondamenti arriveranno in un blocco dedicato.</p>
+          <p>La valuta base e salvata nel mercato. Tassi, conversioni e arrotondamenti saranno configurabili qui.</p>
         </div>
       </section>
 
@@ -1398,13 +1398,13 @@
         <div class="section-title">
           <div>
             <h2>Prezzi localizzati</h2>
-            <p class="section-subtitle">Listini per mercato e prezzi localizzati futuri.</p>
+            <p class="section-subtitle">Listini per mercato e prezzi localizzati in sviluppo.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>I prodotti mantengono il prezzo unico attuale. Questa area servira per listini localizzati quando il database sara esteso.</p>
+          <p>I prodotti mantengono il prezzo unico attuale. Questa area gestira listini localizzati quando il modello dati sara pronto.</p>
         </div>
       </section>
 
@@ -1416,7 +1416,7 @@
               Dashboard analytics, traffico, vendite, prodotti e conversioni in viste dedicate.
             </p>
           </div>
-          <span class="status-badge">Hub</span>
+          <span class="status-badge">Area</span>
         </div>
 
         <div class="mini-grid">
@@ -1428,7 +1428,7 @@
           <a class="mini-card placeholder-card" href="#analytics-traffic">
             <span class="mini-card-status">In sviluppo</span>
             <h3>Traffico</h3>
-            <p>Page view, sorgenti e percorsi utenti futuri.</p>
+            <p>Page view, sorgenti e percorsi utente in sviluppo.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#analytics-sales">
@@ -1455,7 +1455,7 @@
         <div class="section-title">
           <div>
             <h2>Dashboard analisi</h2>
-            <p class="section-subtitle">Conteggi analytics MVP e ultimi eventi registrati.</p>
+            <p class="section-subtitle">Conteggi analytics principali e ultimi eventi registrati.</p>
           </div>
           <div class="section-actions">
             <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
@@ -1470,13 +1470,13 @@
         <div class="section-title">
           <div>
             <h2>Traffico</h2>
-            <p class="section-subtitle">Vista futura per sorgenti, sessioni e page view aggregate.</p>
+            <p class="section-subtitle">Vista in sviluppo per sorgenti, sessioni e page view aggregate.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Gli eventi page_view sono gia raccolti nella dashboard MVP. La segmentazione traffico resta futura.</p>
+          <p>Gli eventi page_view sono gia raccolti nella dashboard. Qui saranno disponibili segmentazione e percorsi utente.</p>
         </div>
       </section>
 
@@ -1484,13 +1484,13 @@
         <div class="section-title">
           <div>
             <h2>Vendite</h2>
-            <p class="section-subtitle">Vista futura per ricavi, ordini e andamento vendite.</p>
+            <p class="section-subtitle">Vista in sviluppo per ricavi, ordini e andamento vendite.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Gli ordini restano nella sezione Ordini. Qui arrivera il reporting vendite aggregato.</p>
+          <p>Gli ordini sono disponibili nella sezione Ordini. Questa vista aggiungera reporting aggregato.</p>
         </div>
       </section>
 
@@ -1498,13 +1498,13 @@
         <div class="section-title">
           <div>
             <h2>Prodotti</h2>
-            <p class="section-subtitle">Vista futura per prodotti piu visti, aggiunti al carrello e venduti.</p>
+            <p class="section-subtitle">Vista in sviluppo per prodotti piu visti, aggiunti al carrello e venduti.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Gli eventi product_view e add_to_cart sono raccolti a livello base. L'analisi per prodotto resta da aggregare.</p>
+          <p>Gli eventi product_view e add_to_cart sono raccolti. Questa vista li aggrega per prodotto.</p>
         </div>
       </section>
 
@@ -1512,13 +1512,13 @@
         <div class="section-title">
           <div>
             <h2>Conversioni</h2>
-            <p class="section-subtitle">Vista futura per funnel carrello, checkout e ordini creati.</p>
+            <p class="section-subtitle">Vista in sviluppo per funnel carrello, checkout e ordini creati.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La dashboard MVP mostra eventi recenti; il funnel completo verra costruito con metriche dedicate.</p>
+          <p>La dashboard mostra eventi recenti. Il funnel completo usera metriche dedicate.</p>
         </div>
       </section>
 
@@ -1548,7 +1548,7 @@
           <a class="mini-card placeholder-card" href="#checkout-shipping">
             <span class="mini-card-status">In sviluppo</span>
             <h3>Spedizioni</h3>
-            <p>Metodi e soglie spedizione future lato admin.</p>
+            <p>Metodi e soglie spedizione in sviluppo lato admin.</p>
           </a>
 
           <a class="mini-card" href="#checkout-taxes">
@@ -1601,7 +1601,7 @@
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Il checkout pubblico resta stabile. Questa vista raccogliera opzioni admin senza cambiare il flusso live.</p>
+          <p>Il checkout pubblico resta stabile. Questa vista raccogliera opzioni admin in modo controllato.</p>
         </div>
       </section>
 
@@ -1650,13 +1650,13 @@
         <div class="section-title">
           <div>
             <h2>Spedizioni</h2>
-            <p class="section-subtitle">Metodi, soglie e zone spedizione da gestire in una UI dedicata futura.</p>
+            <p class="section-subtitle">Metodi, soglie e zone spedizione in una UI dedicata.</p>
           </div>
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Il checkout mantiene i fallback spedizione esistenti. La configurazione admin completa resta futura.</p>
+          <p>Il checkout mantiene i fallback spedizione esistenti. La configurazione completa verra centralizzata qui.</p>
         </div>
       </section>
 
@@ -1664,13 +1664,13 @@
         <div class="section-title">
           <div>
             <h2>Conferma ordine</h2>
-            <p class="section-subtitle">Messaggi post-ordine, contenuti conferma e azioni future.</p>
+            <p class="section-subtitle">Messaggi post-ordine, contenuti conferma e azioni cliente.</p>
           </div>
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La conferma ordine pubblica resta invariata. Qui arriveranno testi e opzioni configurabili.</p>
+          <p>La conferma ordine pubblica resta invariata. Qui saranno gestiti testi e opzioni configurabili.</p>
         </div>
       </section>
 
@@ -1733,7 +1733,7 @@
 
           <a class="mini-card" href="#tenants">
             <h3>Multi-cliente</h3>
-            <p>Tenant default e predisposizione futura senza migrare dati.</p>
+            <p>Tenant default e predisposizione multi-cliente senza migrare dati.</p>
           </a>
 
           <a class="mini-card" href="#performance">
@@ -1757,13 +1757,13 @@
         <div class="section-title">
           <div>
             <h2>Generali</h2>
-            <p class="section-subtitle">Dati store, azienda, email operative e informazioni fiscali future.</p>
+            <p class="section-subtitle">Dati store, azienda, email operative e informazioni fiscali.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Le impostazioni tema restano nel drawer dell'editor visuale. Qui arriveranno le impostazioni generali di negozio.</p>
+          <p>Le impostazioni tema sono nel drawer dell'editor visuale. Questa vista centralizzera le impostazioni generali del sito.</p>
         </div>
       </section>
 
@@ -1785,13 +1785,13 @@
         <div class="section-title">
           <div>
             <h2>Cookie</h2>
-            <p class="section-subtitle">Banner, preferenze e categorie cookie future.</p>
+            <p class="section-subtitle">Banner, preferenze e categorie cookie in sviluppo.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La cookie policy e gestita tra le Policy. Il banner consenso non viene aggiunto in questo cleanup.</p>
+          <p>La cookie policy e gestita tra le Policy. Il banner consenso sara configurabile da questa area.</p>
         </div>
       </section>
 
@@ -1799,13 +1799,13 @@
         <div class="section-title">
           <div>
             <h2>Import / Export impostazioni</h2>
-            <p class="section-subtitle">Backup e trasferimenti globali in sviluppo per configurazioni CMS.</p>
+            <p class="section-subtitle">Backup e trasferimenti globali per configurazioni CMS.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>L'import/export operativo del catalogo resta in Catalogo. Questa vista separera in futuro configurazioni e backup globali.</p>
+          <p>L'import/export operativo del catalogo resta in Catalogo. Questa vista separera configurazioni e backup globali.</p>
         </div>
       </section>
 
@@ -1814,7 +1814,7 @@
           <div>
             <h2>Metafields</h2>
             <p class="section-subtitle">
-              Definisci campi custom MVP e salva valori per prodotti, collezioni o pagine.
+              Definisci campi custom e salva valori per prodotti, collezioni o pagine.
             </p>
           </div>
 
@@ -1877,7 +1877,7 @@
         <div class="section-title">
           <div>
             <h2>Integrazioni</h2>
-            <p class="section-subtitle">Configurazioni non sensibili e webhook URL opzionale.</p>
+            <p class="section-subtitle">Integrazioni esterne con configurazioni non sensibili e webhook opzionale.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
@@ -1957,7 +1957,7 @@
         <div class="section-title">
           <div>
             <h2>Activity log</h2>
-            <p class="section-subtitle">Ultime azioni registrate dalle nuove aree MVP.</p>
+            <p class="section-subtitle">Ultime azioni registrate nelle aree amministrative.</p>
           </div>
           <button id="refreshActivityButton" type="button">Aggiorna</button>
         </div>
@@ -1968,7 +1968,7 @@
         <div class="section-title">
           <div>
             <h2>Notifiche</h2>
-            <p class="section-subtitle">Template e invii mock. Nessuna email reale viene inviata.</p>
+            <p class="section-subtitle">Template e registrazioni di invio senza provider email reale.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
@@ -2055,7 +2055,7 @@
         <div class="section-title">
           <div>
             <h2>Multi-cliente / Store</h2>
-            <p class="section-subtitle">Predisposizione tenant: lo store attuale resta sul tenant default.</p>
+            <p class="section-subtitle">Predisposizione tenant: lo store attuale usa il tenant default.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
@@ -2075,7 +2075,7 @@
               <option value="disabled">Disabled</option>
             </select>
             <label>Note</label>
-            <textarea id="tenantNotes" placeholder="Note tecniche isolamento futuro"></textarea>
+            <textarea id="tenantNotes" placeholder="Note tecniche isolamento dati"></textarea>
             <label class="inline-check"><input id="tenantDefault" type="checkbox" /> Tenant default</label>
             <button id="tenantSubmitButton" type="submit">Salva tenant</button>
             <button id="cancelTenantEdit" class="secondary" type="button" hidden>Annulla modifica</button>
