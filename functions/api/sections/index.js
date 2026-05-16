@@ -1,8 +1,9 @@
-function json(data, status = 200) {
+function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       'Content-Type': 'application/json',
+      ...headers,
     },
   })
 }
@@ -28,20 +29,25 @@ export async function onRequestGet({ request, env }) {
       .bind(pageSlug)
       .all()
 
-    return json({
-      success: true,
-      page_slug: pageSlug,
-      sections: (result.results || []).map((section) => ({
-        ...section,
-        data: JSON.parse(section.data),
-      })),
-    })
-  } catch (error) {
+    return json(
+      {
+        success: true,
+        page_slug: pageSlug,
+        sections: (result.results || []).map((section) => ({
+          ...section,
+          data: JSON.parse(section.data),
+        })),
+      },
+      200,
+      {
+        'Cache-Control': 'public, max-age=60, stale-while-revalidate=120',
+      },
+    )
+  } catch {
     return json(
       {
         success: false,
         message: 'Errore caricamento sezioni.',
-        error: error.message,
       },
       500,
     )

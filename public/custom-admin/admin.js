@@ -7,6 +7,7 @@ const adminAuthMessage = document.querySelector('#adminAuthMessage')
 const adminSessionBar = document.querySelector('#adminSessionBar')
 const adminSessionName = document.querySelector('#adminSessionName')
 const adminSessionRole = document.querySelector('#adminSessionRole')
+const adminCurrentView = document.querySelector('#adminCurrentView')
 const adminLogoutButton = document.querySelector('#adminLogoutButton')
 const nativeFetch = window.fetch.bind(window)
 
@@ -323,6 +324,7 @@ const submitButton = document.querySelector('#submitButton')
 const cancelEdit = document.querySelector('#cancelEdit')
 const productVariantsList = document.querySelector('#productVariantsList')
 const addVariantButton = document.querySelector('#addVariantButton')
+const productAdminSearch = document.querySelector('#productAdminSearch')
 
 let productVariantsDraft = []
 
@@ -340,6 +342,29 @@ function escapeHtml(value = '') {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;')
+}
+
+function normalizeAdminSearch(value = '') {
+  return String(value || '').trim().toLowerCase()
+}
+
+function adminItemMatchesSearch(item = {}, query = '', fields = []) {
+  if (!query) return true
+
+  return fields.some((field) => {
+    const value = field.split('.').reduce((target, key) => target?.[key], item)
+    return String(value ?? '').toLowerCase().includes(query)
+  })
+}
+
+function renderAdminListState(target, message, state = 'empty') {
+  if (!target) return
+  target.innerHTML = `
+    <div class="admin-list-state ${state}">
+      <strong>${escapeHtml(message)}</strong>
+      <span>${state === 'loading' ? 'Attendi qualche secondo.' : 'Puoi aggiornare o modificare la ricerca.'}</span>
+    </div>
+  `
 }
 
 function setInputValue(selector, value = '') {
@@ -525,23 +550,39 @@ function readVariantRows() {
 }
 
 async function loadProducts() {
-  productsList.textContent = 'Caricamento prodotti...'
+  renderAdminListState(productsList, 'Caricamento prodotti...', 'loading')
 
   try {
     const response = await fetch('/api/products')
     const data = await response.json()
 
     if (!data.success) {
-      productsList.textContent = 'Errore nel caricamento prodotti.'
+      renderAdminListState(productsList, 'Errore nel caricamento prodotti.', 'error')
       return
     }
 
     if (data.products.length === 0) {
-      productsList.textContent = 'Nessun prodotto trovato.'
+      renderAdminListState(productsList, 'Nessun prodotto trovato.')
       return
     }
 
-    productsList.innerHTML = data.products
+    const search = normalizeAdminSearch(productAdminSearch?.value)
+    const visibleProducts = data.products.filter((product) =>
+      adminItemMatchesSearch(product, search, [
+        'name',
+        'slug',
+        'description',
+        'category',
+        'collection_slug',
+      ]),
+    )
+
+    if (!visibleProducts.length) {
+      renderAdminListState(productsList, 'Nessun prodotto corrisponde alla ricerca.')
+      return
+    }
+
+    productsList.innerHTML = visibleProducts
       .map(
         (product) => `
           <article class="product-item">
@@ -598,7 +639,7 @@ async function loadProducts() {
       })
     })
   } catch (error) {
-    productsList.textContent = 'Errore di connessione alla API.'
+    renderAdminListState(productsList, 'Errore di connessione alla API.', 'error')
   }
 }
 
@@ -639,6 +680,7 @@ productForm.addEventListener('submit', async (event) => {
 
 cancelEdit.addEventListener('click', resetForm)
 refreshButton.addEventListener('click', loadProducts)
+productAdminSearch?.addEventListener('input', loadProducts)
 addVariantButton?.addEventListener('click', () => {
   productVariantsDraft = readVariantRows()
   productVariantsDraft.push({
@@ -666,7 +708,12 @@ const importExportMessage = document.querySelector('#importExportMessage')
 
 exportDataButton?.addEventListener('click', async () => {
   const resource = document.querySelector('#exportResource').value
-  const format = document.querySelector('#exportFormat').value
+  const formatSelect = document.querySelector('#exportFormat')
+  const format = resource === 'backup' ? 'json' : formatSelect.value
+
+  if (resource === 'backup' && formatSelect) {
+    formatSelect.value = 'json'
+  }
 
   exportPreview.textContent = 'Preparazione export...'
 
@@ -681,6 +728,11 @@ exportDataButton?.addEventListener('click', async () => {
     }
 
     const data = await response.json()
+    if (!response.ok || !data.success) {
+      exportPreview.textContent = data.message || 'Export non disponibile.'
+      return
+    }
+
     exportPreview.textContent = JSON.stringify(data, null, 2)
   } catch {
     exportPreview.textContent = 'Errore export.'
@@ -735,6 +787,7 @@ const collectionFormTitle = document.querySelector('#collectionFormTitle')
 const collectionSubmitButton = document.querySelector('#collectionSubmitButton')
 const cancelCollectionEdit = document.querySelector('#cancelCollectionEdit')
 const productCollectionSelect = document.querySelector('#collection_slug')
+const collectionAdminSearch = document.querySelector('#collectionAdminSearch')
 
 let collectionsCache = []
 
@@ -790,14 +843,14 @@ function getFormCollection() {
 }
 
 async function loadCollections() {
-  collectionsList.textContent = 'Caricamento collezioni...'
+  renderAdminListState(collectionsList, 'Caricamento collezioni...', 'loading')
 
   try {
     const response = await fetch('/api/admin/collections')
     const data = await response.json()
 
     if (!data.success) {
-      collectionsList.textContent = 'Errore nel caricamento collezioni.'
+      renderAdminListState(collectionsList, 'Errore nel caricamento collezioni.', 'error')
       return
     }
 
@@ -805,11 +858,21 @@ async function loadCollections() {
     renderProductCollectionOptions(document.querySelector('#collection_slug').value)
 
     if (data.collections.length === 0) {
-      collectionsList.textContent = 'Nessuna collezione trovata.'
+      renderAdminListState(collectionsList, 'Nessuna collezione trovata.')
       return
     }
 
-    collectionsList.innerHTML = data.collections
+    const search = normalizeAdminSearch(collectionAdminSearch?.value)
+    const visibleCollections = data.collections.filter((collection) =>
+      adminItemMatchesSearch(collection, search, ['name', 'slug', 'description']),
+    )
+
+    if (!visibleCollections.length) {
+      renderAdminListState(collectionsList, 'Nessuna collezione corrisponde alla ricerca.')
+      return
+    }
+
+    collectionsList.innerHTML = visibleCollections
       .map(
         (collection) => `
           <article class="product-item">
@@ -867,7 +930,7 @@ async function loadCollections() {
       })
     })
   } catch (error) {
-    collectionsList.textContent = 'Errore di connessione alla API collezioni.'
+    renderAdminListState(collectionsList, 'Errore di connessione alla API collezioni.', 'error')
   }
 }
 
@@ -909,6 +972,7 @@ collectionForm.addEventListener('submit', async (event) => {
 
 cancelCollectionEdit.addEventListener('click', resetCollectionForm)
 refreshCollectionsButton.addEventListener('click', loadCollections)
+collectionAdminSearch?.addEventListener('input', loadCollections)
 
 loadCollections()
 
@@ -1106,6 +1170,17 @@ function setupAdminViews() {
   const views = document.querySelectorAll('[data-admin-view]')
   const hubLinks = document.querySelectorAll('.hub-card')
 
+  function updateCurrentViewLabel(activeView) {
+    if (!adminCurrentView) return
+
+    const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+    const heading =
+      target?.querySelector('.view-heading h2, .section-title h2, h2')?.textContent?.trim() ||
+      'Editor sito'
+
+    adminCurrentView.textContent = heading
+  }
+
   function openViewFromHash() {
     const hash = window.location.hash.replace('#', '') || 'editor'
     const viewExists = document.querySelector(`[data-admin-view="${hash}"]`)
@@ -1180,6 +1255,7 @@ function setupAdminViews() {
     })
 
     const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+    updateCurrentViewLabel(activeView)
     target?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
@@ -1348,6 +1424,7 @@ const refreshBlogButton = document.querySelector('#refreshBlogButton')
 const blogPostFormTitle = document.querySelector('#blogPostFormTitle')
 const blogSubmitButton = document.querySelector('#blogSubmitButton')
 const cancelBlogEdit = document.querySelector('#cancelBlogEdit')
+const blogAdminSearch = document.querySelector('#blogAdminSearch')
 
 function resetBlogForm() {
   if (!blogPostForm) return
@@ -1394,23 +1471,33 @@ function readBlogPayload() {
 
 async function loadBlogPosts() {
   if (!blogPostsList) return
-  blogPostsList.textContent = 'Caricamento articoli...'
+  renderAdminListState(blogPostsList, 'Caricamento articoli...', 'loading')
 
   try {
     const response = await fetch('/api/admin/blog')
     const data = await response.json()
 
     if (!data.success) {
-      blogPostsList.textContent = data.message || 'Errore caricamento blog.'
+      renderAdminListState(blogPostsList, data.message || 'Errore caricamento blog.', 'error')
       return
     }
 
     if (!data.posts.length) {
-      blogPostsList.textContent = 'Nessun articolo creato.'
+      renderAdminListState(blogPostsList, 'Nessun articolo creato.')
       return
     }
 
-    blogPostsList.innerHTML = data.posts
+    const search = normalizeAdminSearch(blogAdminSearch?.value)
+    const visiblePosts = data.posts.filter((post) =>
+      adminItemMatchesSearch(post, search, ['title', 'slug', 'excerpt', 'author', 'status']),
+    )
+
+    if (!visiblePosts.length) {
+      renderAdminListState(blogPostsList, 'Nessun articolo corrisponde alla ricerca.')
+      return
+    }
+
+    blogPostsList.innerHTML = visiblePosts
       .map(
         (post) => `
           <article class="product-item">
@@ -1452,7 +1539,7 @@ async function loadBlogPosts() {
       })
     })
   } catch {
-    blogPostsList.textContent = 'Errore di connessione blog.'
+    renderAdminListState(blogPostsList, 'Errore di connessione blog.', 'error')
   }
 }
 
@@ -1481,6 +1568,7 @@ blogPostForm?.addEventListener('submit', async (event) => {
 
 cancelBlogEdit?.addEventListener('click', resetBlogForm)
 refreshBlogButton?.addEventListener('click', loadBlogPosts)
+blogAdminSearch?.addEventListener('input', loadBlogPosts)
 loadBlogPosts()
 
 // ===============================
@@ -2121,6 +2209,7 @@ const mediaMessage = document.querySelector('#mediaMessage')
 const mediaFormTitle = document.querySelector('#mediaFormTitle')
 const mediaSubmitButton = document.querySelector('#mediaSubmitButton')
 const cancelMediaEdit = document.querySelector('#cancelMediaEdit')
+const mediaAdminSearch = document.querySelector('#mediaAdminSearch')
 
 function resetMediaForm() {
   if (!mediaForm) return
@@ -2156,23 +2245,33 @@ function getMediaPayload() {
 async function loadMediaItems() {
   if (!mediaList) return
 
-  mediaList.textContent = 'Caricamento media...'
+  renderAdminListState(mediaList, 'Caricamento media...', 'loading')
 
   try {
     const response = await fetch('/api/admin/media')
     const data = await response.json()
 
     if (!data.success) {
-      mediaList.textContent = data.message || 'Errore caricamento media.'
+      renderAdminListState(mediaList, data.message || 'Errore caricamento media.', 'error')
       return
     }
 
     if (!data.media.length) {
-      mediaList.textContent = 'Nessun media salvato.'
+      renderAdminListState(mediaList, 'Nessun media salvato.')
       return
     }
 
-    mediaList.innerHTML = data.media
+    const search = normalizeAdminSearch(mediaAdminSearch?.value)
+    const visibleMedia = data.media.filter((media) =>
+      adminItemMatchesSearch(media, search, ['name', 'url', 'type', 'alt_text', 'mime_type']),
+    )
+
+    if (!visibleMedia.length) {
+      renderAdminListState(mediaList, 'Nessun media corrisponde alla ricerca.')
+      return
+    }
+
+    mediaList.innerHTML = visibleMedia
       .map(
         (media) => `
           <article class="product-item media-item">
@@ -2244,7 +2343,7 @@ async function loadMediaItems() {
       })
     })
   } catch {
-    mediaList.textContent = 'Errore di connessione media.'
+    renderAdminListState(mediaList, 'Errore di connessione media.', 'error')
   }
 }
 
@@ -2324,6 +2423,7 @@ mediaUploadForm?.addEventListener('submit', async (event) => {
 
 cancelMediaEdit?.addEventListener('click', resetMediaForm)
 refreshMediaButton?.addEventListener('click', loadMediaItems)
+mediaAdminSearch?.addEventListener('input', loadMediaItems)
 loadMediaItems()
 
 // ===============================
@@ -3566,6 +3666,7 @@ loadPerformanceAdmin()
 
 const ordersList = document.querySelector('#ordersList')
 const refreshOrdersButton = document.querySelector('#refreshOrdersButton')
+const orderAdminSearch = document.querySelector('#orderAdminSearch')
 
 function renderOrderStatusSelect(order) {
   const statuses = [
@@ -3595,23 +3696,43 @@ function renderOrderStatusSelect(order) {
 async function loadOrders() {
   if (!ordersList) return
 
-  ordersList.textContent = 'Caricamento ordini...'
+  renderAdminListState(ordersList, 'Caricamento ordini...', 'loading')
 
   try {
     const response = await fetch('/api/admin/orders')
     const data = await response.json()
 
     if (!data.success) {
-      ordersList.textContent = data.message || 'Errore caricamento ordini.'
+      renderAdminListState(ordersList, data.message || 'Errore caricamento ordini.', 'error')
       return
     }
 
     if (!data.orders.length) {
-      ordersList.textContent = 'Nessun ordine trovato.'
+      renderAdminListState(ordersList, 'Nessun ordine trovato.')
       return
     }
 
-    ordersList.innerHTML = data.orders
+    const search = normalizeAdminSearch(orderAdminSearch?.value)
+    const visibleOrders = data.orders.filter((order) =>
+      adminItemMatchesSearch(order, search, [
+        'id',
+        'customer_name',
+        'email',
+        'payment_status',
+        'payment_method',
+        'payment_provider',
+        'order_status',
+        'shipping_address_city',
+        'shipping_address_country',
+      ]),
+    )
+
+    if (!visibleOrders.length) {
+      renderAdminListState(ordersList, 'Nessun ordine corrisponde alla ricerca.')
+      return
+    }
+
+    ordersList.innerHTML = visibleOrders
       .map(
         (order) => `
           <article class="admin-record">
@@ -3691,11 +3812,12 @@ async function loadOrders() {
       })
     })
   } catch {
-    ordersList.textContent = 'Errore di connessione agli ordini.'
+    renderAdminListState(ordersList, 'Errore di connessione agli ordini.', 'error')
   }
 }
 
 refreshOrdersButton?.addEventListener('click', loadOrders)
+orderAdminSearch?.addEventListener('input', loadOrders)
 loadOrders()
 
 // ===============================
@@ -3704,27 +3826,44 @@ loadOrders()
 
 const customersList = document.querySelector('#customersList')
 const refreshCustomersButton = document.querySelector('#refreshCustomersButton')
+const customerAdminSearch = document.querySelector('#customerAdminSearch')
 
 async function loadCustomers() {
   if (!customersList) return
 
-  customersList.textContent = 'Caricamento clienti...'
+  renderAdminListState(customersList, 'Caricamento clienti...', 'loading')
 
   try {
     const response = await fetch('/api/admin/customers')
     const data = await response.json()
 
     if (!data.success) {
-      customersList.textContent = data.message || 'Errore caricamento clienti.'
+      renderAdminListState(customersList, data.message || 'Errore caricamento clienti.', 'error')
       return
     }
 
     if (!data.customers.length) {
-      customersList.textContent = 'Nessun cliente trovato.'
+      renderAdminListState(customersList, 'Nessun cliente trovato.')
       return
     }
 
-    customersList.innerHTML = data.customers
+    const search = normalizeAdminSearch(customerAdminSearch?.value)
+    const visibleCustomers = data.customers.filter((customer) =>
+      adminItemMatchesSearch(customer, search, [
+        'name',
+        'email',
+        'phone',
+        'shipping_address_city',
+        'shipping_address_country',
+      ]),
+    )
+
+    if (!visibleCustomers.length) {
+      renderAdminListState(customersList, 'Nessun cliente corrisponde alla ricerca.')
+      return
+    }
+
+    customersList.innerHTML = visibleCustomers
       .map(
         (customer) => `
           <article class="admin-record">
@@ -3767,11 +3906,12 @@ async function loadCustomers() {
       )
       .join('')
   } catch {
-    customersList.textContent = 'Errore di connessione ai clienti.'
+    renderAdminListState(customersList, 'Errore di connessione ai clienti.', 'error')
   }
 }
 
 refreshCustomersButton?.addEventListener('click', loadCustomers)
+customerAdminSearch?.addEventListener('input', loadCustomers)
 loadCustomers()
 
 // ===============================
@@ -4419,6 +4559,7 @@ const sectionLabels = {
   featured_product: 'Featured Product',
   product_spotlight: 'Product Spotlight',
   product_carousel: 'Product Carousel',
+  product_3d_viewer: 'Product 3D Viewer',
   best_sellers: 'Best Sellers',
   new_arrivals: 'New Arrivals',
 
@@ -4576,6 +4717,17 @@ const fieldsByType = {
     'title',
     'subtitle',
     'collection_slug',
+  ],
+
+  product_3d_viewer: [
+    'eyebrow',
+    'title',
+    'text',
+    'model_url',
+    'poster_image_url',
+    'button_text',
+    'auto_rotate',
+    'show_modal',
   ],
 
   best_sellers: [
@@ -4770,6 +4922,10 @@ const fieldLabels = {
   target_date: 'Data fine countdown',
   video_url: 'URL video',
   poster_url: 'URL immagine anteprima video',
+  model_url: 'URL modello 3D (.glb/.gltf)',
+  poster_image_url: 'URL immagine fallback/poster',
+  auto_rotate: 'Rotazione automatica',
+  show_modal: 'Mostra bottone modal 3D',
   caption: 'Caption',
 
   step_1_year: 'Step 1 - Anno',
@@ -4881,6 +5037,8 @@ const fieldLabels = {
   answer: 'Risposta',
 }
 
+const booleanSectionFields = new Set(['auto_rotate', 'show_modal'])
+
 function selectedSection() {
   return pageSections.find((section) => section.id === selectedSectionId)
 }
@@ -4901,6 +5059,22 @@ function renderSelectedSection() {
   sectionFields.innerHTML = fields
     .map((field) => {
       const value = section.data?.[field] || ''
+      const isBoolean = booleanSectionFields.has(field)
+
+      if (isBoolean) {
+        const checked = value === true || value === 'true' || value === '1'
+
+        return `
+          <label class="section-checkbox-field">
+            <input
+              type="checkbox"
+              data-section-field="${field}"
+              ${checked ? 'checked' : ''}
+            />
+            ${fieldLabels[field] || field}
+          </label>
+        `
+      }
 
       return `
         <label>
@@ -4912,12 +5086,12 @@ function renderSelectedSection() {
     .join('')
 
   document.querySelectorAll('[data-section-field]').forEach((input) => {
-    input.addEventListener('input', () => {
+    input.addEventListener(input.type === 'checkbox' ? 'change' : 'input', () => {
       const field = input.dataset.sectionField
 
       section.data = {
         ...(section.data || {}),
-        [field]: input.value,
+        [field]: input.type === 'checkbox' ? input.checked : input.value,
       }
 
       updateSitePreview()

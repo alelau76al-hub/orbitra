@@ -141,6 +141,17 @@ const defaultDataByType = {
     collection_slug: '',
   },
 
+  product_3d_viewer: {
+    eyebrow: 'Next Generation',
+    title: 'Esplora il prodotto in 3D.',
+    text: 'Aggiungi un modello .glb o .gltf per offrire una vista interattiva, con fallback immagine se il viewer non e disponibile.',
+    model_url: '',
+    poster_image_url: '',
+    button_text: 'Apri vista 3D',
+    auto_rotate: true,
+    show_modal: true,
+  },
+
   best_sellers: {
     eyebrow: 'Best sellers',
     title: 'I più scelti dai clienti.',

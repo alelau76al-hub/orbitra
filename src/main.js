@@ -1125,6 +1125,22 @@ async function loadPublicMarkets() {
 loadPublicMarkets()
 
 document.addEventListener('click', (event) => {
+  const openThreeDButton = event.target.closest('[data-open-3d-modal]')
+  if (openThreeDButton) {
+    const modal = document.querySelector(openThreeDButton.dataset.open3dModal || '')
+    if (modal) {
+      modal.hidden = false
+      hydrateThreeDViewers()
+    }
+    return
+  }
+
+  if (event.target.closest('[data-close-3d-modal]')) {
+    const modal = event.target.closest('.viewer-3d-modal')
+    if (modal) modal.hidden = true
+    return
+  }
+
   const addButton = event.target.closest('[data-add-to-cart]')
   if (addButton) {
     const quantityInputSelector = addButton.dataset.cartQuantityInput
@@ -1483,6 +1499,182 @@ function getCmsContainer() {
   return container
 }
 
+const MODEL_VIEWER_SCRIPT_URL = 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js'
+let modelViewerScriptPromise = null
+
+function splitListValue(value) {
+  if (Array.isArray(value)) return value
+  return String(value || '')
+    .split(/[\n,|]+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function getMetafields(product = {}) {
+  return product.metafields && typeof product.metafields === 'object'
+    ? product.metafields
+    : {}
+}
+
+function getProductModelUrl(product = {}) {
+  const metafields = getMetafields(product)
+  return (
+    product.model_3d_url ||
+    metafields.model_3d_url ||
+    metafields.model_url ||
+    metafields.three_d_model_url ||
+    ''
+  )
+}
+
+function getProductPosterImage(product = {}) {
+  const metafields = getMetafields(product)
+  return (
+    product.poster_image_url ||
+    metafields.poster_image_url ||
+    metafields.model_poster_url ||
+    product.image_url ||
+    ''
+  )
+}
+
+function getProductGalleryImages(product = {}) {
+  const metafields = getMetafields(product)
+  const images = [
+    product.image_url,
+    ...splitListValue(metafields.gallery_images || metafields.gallery || metafields.image_gallery),
+  ]
+
+  return [...new Set(images.filter(Boolean))]
+}
+
+function formatMetafieldLabel(key = '') {
+  const label = String(key).replace(/[_-]+/g, ' ').trim()
+  return label ? label.charAt(0).toUpperCase() + label.slice(1) : 'Dettaglio'
+}
+
+function getDisplayableProductMetafields(product = {}) {
+  const hiddenKeys = new Set([
+    'gallery',
+    'gallery_images',
+    'image_gallery',
+    'model_3d_url',
+    'model_url',
+    'three_d_model_url',
+    'poster_image_url',
+    'model_poster_url',
+  ])
+
+  return Object.entries(getMetafields(product))
+    .filter(([key, value]) => !hiddenKeys.has(key) && value !== null && value !== undefined && value !== '')
+    .slice(0, 12)
+}
+
+function renderThreeDViewer({ modelUrl = '', posterImageUrl = '', title = '', autoRotate = true } = {}) {
+  if (modelUrl) {
+    return `
+      <model-viewer
+        class="orbitra-model-viewer"
+        src="${escapeCmsHtml(modelUrl)}"
+        ${posterImageUrl ? `poster="${escapeCmsHtml(posterImageUrl)}"` : ''}
+        alt="${escapeCmsHtml(title || 'Vista 3D prodotto')}"
+        camera-controls
+        loading="lazy"
+        reveal="interaction"
+        ${autoRotate ? 'auto-rotate' : ''}
+      >
+        <div slot="poster" class="model-viewer-poster">
+          ${
+            posterImageUrl
+              ? `<img src="${escapeCmsHtml(posterImageUrl)}" alt="${escapeCmsHtml(title)}" loading="lazy">`
+              : '<span>Vista 3D</span>'
+          }
+        </div>
+      </model-viewer>
+    `
+  }
+
+  if (posterImageUrl) {
+    return `<img src="${escapeCmsHtml(posterImageUrl)}" alt="${escapeCmsHtml(title)}" loading="lazy">`
+  }
+
+  return '<span>Vista 3D non configurata</span>'
+}
+
+function renderThreeDModal({ id, modelUrl = '', posterImageUrl = '', title = '', autoRotate = true } = {}) {
+  if (!id || !modelUrl) return ''
+
+  return `
+    <div class="viewer-3d-modal" id="${escapeCmsHtml(id)}" hidden>
+      <div class="viewer-3d-backdrop" data-close-3d-modal></div>
+      <div class="viewer-3d-dialog" role="dialog" aria-modal="true" aria-label="${escapeCmsHtml(title || 'Vista 3D')}">
+        <button type="button" class="viewer-3d-close" data-close-3d-modal>Chiudi</button>
+        ${renderThreeDViewer({ modelUrl, posterImageUrl, title, autoRotate })}
+      </div>
+    </div>
+  `
+}
+
+function ensureModelViewerScript() {
+  if (!document.querySelector('model-viewer')) return Promise.resolve()
+  if (window.customElements?.get('model-viewer')) return Promise.resolve()
+  if (modelViewerScriptPromise) return modelViewerScriptPromise
+
+  modelViewerScriptPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${MODEL_VIEWER_SCRIPT_URL}"]`)
+    if (existing) {
+      existing.addEventListener('load', resolve, { once: true })
+      existing.addEventListener('error', reject, { once: true })
+      return
+    }
+
+    const script = document.createElement('script')
+    script.type = 'module'
+    script.src = MODEL_VIEWER_SCRIPT_URL
+    script.onload = resolve
+    script.onerror = reject
+    document.head.appendChild(script)
+  }).catch(() => {
+    modelViewerScriptPromise = null
+  })
+
+  return modelViewerScriptPromise
+}
+
+function hydrateThreeDViewers() {
+  ensureModelViewerScript()
+}
+
+function setProductJsonLd(product, variant, collection) {
+  document.querySelector('#productJsonLd')?.remove()
+  if (!product) return
+
+  const image = getProductGalleryImages(product)[0] || product.image_url || ''
+  const stock = getEffectiveStock(product, variant)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description || '',
+    sku: variant?.sku || product.slug,
+    image: image ? [image] : undefined,
+    category: product.category || collection?.name || undefined,
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'EUR',
+      price: (getEffectivePriceCents(product, variant) / 100).toFixed(2),
+      availability: stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: window.location.href,
+    },
+  }
+
+  const script = document.createElement('script')
+  script.id = 'productJsonLd'
+  script.type = 'application/ld+json'
+  script.textContent = JSON.stringify(jsonLd).replace(/</g, '\\u003c')
+  document.head.appendChild(script)
+}
+
 function renderCmsSection(section) {
   const data = section.data || {}
 
@@ -1800,6 +1992,50 @@ function renderCmsSection(section) {
           Caricamento prodotti...
         </div>
       </section>
+    `
+  }
+
+  if (section.type === 'product_3d_viewer') {
+    const modalId = `cms-3d-viewer-${section.id}`
+    const hasModel = Boolean(data.model_url)
+    const showModal = data.show_modal === true || data.show_modal === 'true' || data.show_modal === '1'
+    const autoRotate = data.auto_rotate !== false && data.auto_rotate !== 'false'
+
+    return `
+      <section class="section cms-product-3d-viewer">
+        <div class="cms-product-3d-grid">
+          <div>
+            <p class="eyebrow">${escapeCmsHtml(data.eyebrow || 'Next Generation')}</p>
+            <h2>${escapeCmsHtml(data.title || 'Esplora il prodotto in 3D')}</h2>
+            <p>${escapeCmsHtml(data.text || 'Aggiungi un modello 3D dal CMS per creare una vista interattiva.')}</p>
+            ${
+              hasModel && showModal
+                ? `<button class="btn primary" type="button" data-open-3d-modal="#${escapeCmsHtml(modalId)}">
+                    ${escapeCmsHtml(data.button_text || 'Apri vista 3D')}
+                  </button>`
+                : ''
+            }
+          </div>
+
+          <div class="cms-product-3d-stage">
+            ${renderThreeDViewer({
+              modelUrl: data.model_url || '',
+              posterImageUrl: data.poster_image_url || '',
+              title: data.title || 'Vista 3D',
+              autoRotate,
+            })}
+          </div>
+        </div>
+      </section>
+      ${showModal
+        ? renderThreeDModal({
+            id: modalId,
+            modelUrl: data.model_url || '',
+            posterImageUrl: data.poster_image_url || '',
+            title: data.title || 'Vista 3D',
+            autoRotate,
+          })
+        : ''}
     `
   }
 
@@ -2388,8 +2624,9 @@ function renderCmsSections(sections) {
     .map(renderCmsSection)
     .join('')
 
-    hydrateProductGrids()
+  hydrateProductGrids()
   hydrateCollectionGrids()
+  hydrateThreeDViewers()
 }
 
 async function loadCmsSectionsFromD1(pageSlug = getCurrentPublicPageSlug()) {
@@ -2502,6 +2739,107 @@ async function renderPublicCollectionPage() {
   }
 }
 
+function renderProductGallery(product = {}) {
+  const images = getProductGalleryImages(product)
+  const modelUrl = getProductModelUrl(product)
+  const posterImageUrl = getProductPosterImage(product)
+
+  if (!images.length && !modelUrl) {
+    return `
+      <div class="product-gallery-placeholder">
+        <span>Prodotto senza immagine</span>
+      </div>
+    `
+  }
+
+  const mainImage = images[0] || posterImageUrl
+
+  return `
+    <div class="product-gallery">
+      <div class="product-gallery-main">
+        ${
+          modelUrl
+            ? renderThreeDViewer({
+                modelUrl,
+                posterImageUrl,
+                title: product.name || 'Prodotto 3D',
+                autoRotate: true,
+              })
+            : `<img src="${escapeCmsHtml(mainImage)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
+        }
+      </div>
+
+      ${
+        images.length > 1
+          ? `
+            <div class="product-gallery-thumbs">
+              ${images
+                .slice(0, 6)
+                .map(
+                  (image, index) => `
+                    <a href="${escapeCmsHtml(image)}" target="_blank" rel="noreferrer" aria-label="Apri immagine ${index + 1}">
+                      <img src="${escapeCmsHtml(image)}" alt="${escapeCmsHtml(product.name)} ${index + 1}" loading="lazy">
+                    </a>
+                  `,
+                )
+                .join('')}
+            </div>
+          `
+          : ''
+      }
+    </div>
+  `
+}
+
+function renderProductSpecs(product = {}) {
+  const metafields = getDisplayableProductMetafields(product)
+  if (!metafields.length) return ''
+
+  return `
+    <section class="product-info-panel product-specs">
+      <h2>Specifiche</h2>
+      <dl>
+        ${metafields
+          .map(
+            ([key, value]) => `
+              <div>
+                <dt>${escapeCmsHtml(formatMetafieldLabel(key))}</dt>
+                <dd>${escapeCmsHtml(String(value))}</dd>
+              </div>
+            `,
+          )
+          .join('')}
+      </dl>
+    </section>
+  `
+}
+
+function renderRelatedProducts(products = [], product = {}) {
+  const related = products
+    .filter(
+      (item) =>
+        item.slug !== product.slug &&
+        product.collection_slug &&
+        item.collection_slug === product.collection_slug,
+    )
+    .slice(0, 3)
+
+  if (!related.length) return ''
+
+  return `
+    <section class="section related-products">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">Prodotti correlati</p>
+        <h2>Dalla stessa collezione</h2>
+        <p>Altre scelte coerenti con questo prodotto.</p>
+      </div>
+      <div class="store-grid">
+        ${related.map(renderProductCard).join('')}
+      </div>
+    </section>
+  `
+}
+
 function updateProductPageVariant(select) {
   const product = productCache.get(select.dataset.productSlug)
   if (!product) return
@@ -2509,6 +2847,7 @@ function updateProductPageVariant(select) {
   const variant = getProductVariant(product, select.value)
   const priceTarget = document.querySelector('#productPagePrice')
   const stockTarget = document.querySelector('#productPageStock')
+  const variantStockTarget = document.querySelector('#productPageVariantStock')
   const addButton = document.querySelector('#productAddToCartButton')
   const stock = getEffectiveStock(product, variant)
 
@@ -2518,6 +2857,12 @@ function updateProductPageVariant(select) {
 
   if (stockTarget) {
     stockTarget.textContent = `Stock: ${stock}`
+  }
+
+  if (variantStockTarget) {
+    variantStockTarget.textContent = stock <= 0
+      ? 'Questa variante non e disponibile.'
+      : `${stock} disponibili per la variante selezionata.`
   }
 
   if (addButton) {
@@ -2568,6 +2913,7 @@ async function renderPublicProductPage() {
     const product = products.find((item) => item.slug === productSlug)
 
     if (!product) {
+      document.querySelector('#productJsonLd')?.remove()
       main.innerHTML = `
         <section class="section product-detail-empty">
           <p class="eyebrow">Prodotto</p>
@@ -2602,15 +2948,17 @@ async function renderPublicProductPage() {
     const defaultVariant = getDefaultVariant(product)
     const priceCents = getEffectivePriceCents(product, defaultVariant)
     const stock = getEffectiveStock(product, defaultVariant)
+    const modelUrl = getProductModelUrl(product)
+    const posterImageUrl = getProductPosterImage(product)
+    const product3dModalId = `product-3d-viewer-${product.id}`
+    const productSpecsHtml = renderProductSpecs(product)
+    const relatedProductsHtml = renderRelatedProducts(products, product)
+    setProductJsonLd(product, defaultVariant, collection)
 
     main.innerHTML = `
-      <section class="section product-detail">
+      <section class="section product-detail product-detail-premium">
         <div class="product-detail-media">
-          ${
-            product.image_url
-              ? `<img src="${escapeCmsHtml(product.image_url)}" alt="${escapeCmsHtml(product.name)}" loading="lazy">`
-              : '<span>Prodotto senza immagine</span>'
-          }
+          ${renderProductGallery(product)}
         </div>
 
         <div class="product-detail-info">
@@ -2643,15 +2991,23 @@ async function renderPublicProductPage() {
                   <select id="productVariantSelect" data-product-slug="${escapeCmsHtml(product.slug)}">
                     ${product.variants
                       .map(
-                        (variant) => `
-                          <option value="${variant.id}" ${defaultVariant?.id === variant.id ? 'selected' : ''}>
+                        (variant) => {
+                          const variantStock = getEffectiveStock(product, variant)
+
+                          return `
+                          <option value="${variant.id}" ${defaultVariant?.id === variant.id ? 'selected' : ''} ${variantStock <= 0 ? 'disabled' : ''}>
                             ${escapeCmsHtml(variant.option_name)}: ${escapeCmsHtml(variant.option_value)}
                             ${variant.sku ? ` · ${escapeCmsHtml(variant.sku)}` : ''}
+                            ${variantStock <= 0 ? ' - esaurita' : ''}
                           </option>
-                        `,
+                        `
+                        },
                       )
                       .join('')}
                   </select>
+                  <span id="productPageVariantStock" class="product-variant-stock">
+                    ${stock <= 0 ? 'Questa variante non e disponibile.' : `${stock} disponibili per la variante selezionata.`}
+                  </span>
                 </label>
               `
               : ''
@@ -2667,10 +3023,46 @@ async function renderPublicProductPage() {
             defaultVariant,
             'id="productAddToCartButton" data-cart-quantity-input="#productQuantity"',
           )}
+
+          ${
+            modelUrl
+              ? `<button class="btn ghost product-3d-trigger" type="button" data-open-3d-modal="#${escapeCmsHtml(product3dModalId)}">
+                  Visualizza in 3D
+                </button>`
+              : ''
+          }
+
+          <div class="product-trust-row">
+            <span>Checkout protetto</span>
+            <span>Spedizione tracciata</span>
+            <span>Assistenza post-acquisto</span>
+          </div>
+
+          <div class="product-accordion">
+            <details open>
+              <summary>Descrizione</summary>
+              <p>${escapeCmsHtml(product.description || 'Nessuna descrizione disponibile.')}</p>
+            </details>
+            <details>
+              <summary>Spedizione e resi</summary>
+              <p>Costi, tasse e metodi disponibili vengono calcolati al checkout con fallback sicuri.</p>
+            </details>
+          </div>
         </div>
       </section>
+      ${productSpecsHtml}
+      ${relatedProductsHtml}
+      ${renderThreeDModal({
+        id: product3dModalId,
+        modelUrl,
+        posterImageUrl,
+        title: product.name,
+        autoRotate: true,
+      })}
     `
+    hydrateThreeDViewers()
   } catch (error) {
+    document.querySelector('#productJsonLd')?.remove()
     main.innerHTML = `
       <section class="section product-detail-empty">
         <p class="eyebrow">Prodotto</p>

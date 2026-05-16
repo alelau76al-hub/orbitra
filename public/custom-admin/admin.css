@@ -95,6 +95,18 @@ body {
   letter-spacing: 1px;
 }
 
+.admin-session-bar .admin-current-view {
+  display: inline-flex;
+  margin-top: 8px;
+  padding: 5px 9px;
+  border: 1px solid rgba(0, 245, 255, 0.18);
+  border-radius: 999px;
+  color: #00f5ff;
+  background: rgba(0, 245, 255, 0.08);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .admin-session-bar button {
   margin-top: 0;
 }
@@ -223,6 +235,47 @@ button {
 .products-list {
   display: grid;
   gap: 14px;
+}
+
+.admin-list-tools {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.admin-list-tools input {
+  min-height: 44px;
+  margin: 0;
+}
+
+.admin-list-state {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  color: #d8d8f0;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.admin-list-state strong {
+  color: white;
+}
+
+.admin-list-state span {
+  color: #b8b8d8;
+  font-size: 13px;
+}
+
+.admin-list-state.loading {
+  border-style: solid;
+  border-color: rgba(0, 245, 255, 0.18);
+}
+
+.admin-list-state.error {
+  border-style: solid;
+  border-color: rgba(255, 122, 144, 0.45);
 }
 
 .product-item {
@@ -437,6 +490,17 @@ button {
   border-radius: 14px;
   color: #b8b8d8;
   background: rgba(0, 0, 0, 0.16);
+}
+
+.section-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.section-checkbox-field input {
+  width: auto;
 }
 
 @media (max-width: 1280px) {

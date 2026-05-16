@@ -44,6 +44,7 @@
         <div>
           <strong id="adminSessionName">Admin</strong>
           <span id="adminSessionRole">viewer</span>
+          <span id="adminCurrentView" class="admin-current-view">Editor sito</span>
         </div>
         <button id="adminLogoutButton" class="secondary" type="button">Logout</button>
       </section>
@@ -225,6 +226,7 @@
     <option value="featured_product">Featured Product</option>
     <option value="product_spotlight">Product Spotlight</option>
     <option value="product_carousel">Product Carousel</option>
+    <option value="product_3d_viewer">Product 3D Viewer</option>
     <option value="best_sellers">Best Sellers</option>
     <option value="new_arrivals">New Arrivals</option>
   </optgroup>
@@ -408,6 +410,10 @@
             <button id="refreshCollectionsButton" type="button">Aggiorna</button>
           </div>
 
+          <div class="admin-list-tools">
+            <input id="collectionAdminSearch" type="search" placeholder="Cerca collezioni..." />
+          </div>
+
           <div id="collectionsList" class="products-list">
             Caricamento collezioni...
           </div>
@@ -502,6 +508,10 @@
             <button id="refreshButton" type="button">Aggiorna</button>
           </div>
 
+          <div class="admin-list-tools">
+            <input id="productAdminSearch" type="search" placeholder="Cerca prodotti..." />
+          </div>
+
           <div id="productsList" class="products-list">
             Caricamento prodotti...
           </div>
@@ -524,8 +534,12 @@
             <select id="exportResource">
               <option value="products">Prodotti</option>
               <option value="collections">Collezioni</option>
+              <option value="pages">Pagine</option>
+              <option value="menus">Menu</option>
+              <option value="settings">Settings</option>
               <option value="customers">Clienti</option>
               <option value="orders">Ordini</option>
+              <option value="backup">Backup JSON principale</option>
             </select>
             <label>Formato</label>
             <select id="exportFormat">
@@ -565,6 +579,10 @@
           <button id="refreshOrdersButton" type="button">Aggiorna</button>
         </div>
 
+        <div class="admin-list-tools">
+          <input id="orderAdminSearch" type="search" placeholder="Cerca ordini..." />
+        </div>
+
         <div id="ordersList" class="admin-records-list">
           Caricamento ordini...
         </div>
@@ -580,6 +598,10 @@
           </div>
 
           <button id="refreshCustomersButton" type="button">Aggiorna</button>
+        </div>
+
+        <div class="admin-list-tools">
+          <input id="customerAdminSearch" type="search" placeholder="Cerca clienti..." />
         </div>
 
         <div id="customersList" class="admin-records-list">
@@ -761,6 +783,9 @@
               <h3>Articoli</h3>
               <button id="refreshBlogButton" type="button">Aggiorna</button>
             </div>
+            <div class="admin-list-tools">
+              <input id="blogAdminSearch" type="search" placeholder="Cerca articoli..." />
+            </div>
             <div id="blogPostsList" class="products-list">Caricamento articoli...</div>
           </section>
         </div>
@@ -886,6 +911,10 @@
             <div class="section-title">
               <h3>Media salvati</h3>
               <button id="refreshMediaButton" type="button">Aggiorna</button>
+            </div>
+
+            <div class="admin-list-tools">
+              <input id="mediaAdminSearch" type="search" placeholder="Cerca media..." />
             </div>
 
             <div id="mediaList" class="products-list">Caricamento media...</div>

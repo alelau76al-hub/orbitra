@@ -49,12 +49,16 @@ export async function onRequestGet({ env }) {
         'Cache headers API pubbliche read-only',
         'Lazy loading immagini pubbliche',
         'Fallback fetch pubbliche',
+        'Export backup JSON principale disponibile',
+        'Product page con dati strutturati JSON-LD',
+        '3D viewer caricato solo quando serve',
+        'Smoke test manuale home/prodotto/carrello/checkout',
         'Build produzione verificata',
         'Nessun secret nel repository',
       ],
     })
-  } catch (error) {
-    return json({ success: false, message: 'Errore caricamento performance. Verifica la migration 0010.', error: error.message }, 500)
+  } catch {
+    return json({ success: false, message: 'Errore caricamento performance. Verifica la migration 0010.' }, 500)
   }
 }
 
@@ -75,7 +79,7 @@ export async function onRequestPut({ request, env }) {
     }
 
     return json({ success: true, message: 'Impostazioni performance salvate.' })
-  } catch (error) {
-    return json({ success: false, message: 'Errore salvataggio performance.', error: error.message }, 500)
+  } catch {
+    return json({ success: false, message: 'Errore salvataggio performance.' }, 500)
   }
 }

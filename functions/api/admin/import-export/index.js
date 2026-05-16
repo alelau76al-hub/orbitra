@@ -101,6 +101,44 @@ async function logActivity(env, action, description) {
 }
 
 async function loadExportRows(env, resource) {
+  if (resource === 'pages') {
+    const { results } = await env.DB.prepare(`
+      SELECT id, slug, title, created_at, updated_at
+      FROM pages
+      ORDER BY id ASC
+    `).all()
+    return results || []
+  }
+
+  if (resource === 'menus') {
+    const { results } = await env.DB.prepare(`
+      SELECT
+        menus.id AS menu_id,
+        menus.handle,
+        menus.name,
+        menu_items.id AS item_id,
+        menu_items.label,
+        menu_items.url,
+        menu_items.link_type,
+        menu_items.target_slug,
+        menu_items.sort_order,
+        menu_items.active
+      FROM menus
+      LEFT JOIN menu_items ON menu_items.menu_id = menus.id
+      ORDER BY menus.id ASC, menu_items.sort_order ASC, menu_items.id ASC
+    `).all()
+    return results || []
+  }
+
+  if (resource === 'settings') {
+    const { results } = await env.DB.prepare(`
+      SELECT key, value, type, label, updated_at
+      FROM site_settings
+      ORDER BY key ASC
+    `).all()
+    return results || []
+  }
+
   if (resource === 'collections') {
     const { results } = await env.DB.prepare(`
       SELECT id, slug, name, description, image_url, active, created_at
@@ -147,15 +185,60 @@ async function loadExportRows(env, resource) {
   return results || []
 }
 
+async function loadBackupData(env) {
+  const [products, collections, pages, menus, settings] = await Promise.all([
+    loadExportRows(env, 'products'),
+    loadExportRows(env, 'collections'),
+    loadExportRows(env, 'pages'),
+    loadExportRows(env, 'menus'),
+    loadExportRows(env, 'settings'),
+  ])
+
+  return {
+    generated_at: new Date().toISOString(),
+    resources: {
+      products,
+      collections,
+      pages,
+      menus,
+      settings,
+    },
+  }
+}
+
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url)
     const resource = String(url.searchParams.get('resource') || 'products').trim()
     const format = String(url.searchParams.get('format') || 'json').trim()
-    const allowed = new Set(['products', 'collections', 'customers', 'orders'])
+    const allowed = new Set([
+      'products',
+      'collections',
+      'pages',
+      'menus',
+      'settings',
+      'customers',
+      'orders',
+      'backup',
+    ])
 
     if (!allowed.has(resource)) {
       return json({ success: false, message: 'Risorsa export non valida.' }, 400)
+    }
+
+    if (resource === 'backup') {
+      if (format === 'csv') {
+        return json({ success: false, message: 'Il backup completo e disponibile solo in JSON.' }, 400)
+      }
+
+      const backup = await loadBackupData(env)
+      await logActivity(env, 'export', 'Export backup JSON principale.')
+
+      return json({
+        success: true,
+        resource,
+        backup,
+      })
     }
 
     const rows = await loadExportRows(env, resource)
@@ -176,8 +259,8 @@ export async function onRequestGet({ request, env }) {
       count: rows.length,
       rows,
     })
-  } catch (error) {
-    return json({ success: false, message: 'Errore export dati.', error: error.message }, 500)
+  } catch {
+    return json({ success: false, message: 'Errore export dati.' }, 500)
   }
 }
 
@@ -280,7 +363,7 @@ export async function onRequestPost({ request, env }) {
       message: 'Import prodotti completato.',
       count: normalized.length,
     })
-  } catch (error) {
-    return json({ success: false, message: 'Errore import prodotti.', error: error.message }, 500)
+  } catch {
+    return json({ success: false, message: 'Errore import prodotti.' }, 500)
   }
 }

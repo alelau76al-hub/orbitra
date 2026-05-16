@@ -130,21 +130,27 @@ export async function onRequestGet({ env }) {
     const seoByProductId = await loadSeoByEntityId(env, 'product', productIds)
     const metafieldsByProductId = await loadMetafieldsByEntityId(env, 'product', productIds)
 
-    return Response.json({
-      success: true,
-      products: products.map((product) => ({
-        ...product,
-        variants: variantsByProductId[product.id] || [],
-        seo: seoByProductId[product.id] || {},
-        metafields: metafieldsByProductId[product.id] || {},
-      })),
-    })
-  } catch (error) {
+    return Response.json(
+      {
+        success: true,
+        products: products.map((product) => ({
+          ...product,
+          variants: variantsByProductId[product.id] || [],
+          seo: seoByProductId[product.id] || {},
+          metafields: metafieldsByProductId[product.id] || {},
+        })),
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=120',
+        },
+      },
+    )
+  } catch {
     return Response.json(
       {
         success: false,
         message: 'Errore nel caricamento prodotti',
-        error: error.message,
       },
       { status: 500 },
     )
