@@ -368,6 +368,7 @@ const DEFAULT_TAX_SETTINGS = {
 }
 
 let activeCheckoutDiscount = null
+let activeCheckoutIdempotencyKey = ''
 let primaryCanonicalOrigin = ''
 
 async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 8000) {
@@ -2696,6 +2697,54 @@ async function loadShippingMethods() {
   }
 }
 
+async function loadCheckoutPolicies() {
+  try {
+    const response = await fetch('/api/policies')
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !Array.isArray(data.policies)) {
+      return []
+    }
+
+    return data.policies.filter((policy) =>
+      ['privacy_policy', 'terms_conditions'].includes(policy.type),
+    )
+  } catch {
+    return []
+  }
+}
+
+function createCheckoutIdempotencyKey() {
+  if (window.crypto?.randomUUID) {
+    return `checkout:${window.crypto.randomUUID()}`
+  }
+
+  return `checkout:${Date.now()}:${Math.random().toString(16).slice(2)}`
+}
+
+function renderPolicyAcceptance(policies = []) {
+  if (!policies.length) return ''
+
+  const links = policies
+    .map(
+      (policy) => `
+        <a href="/policies/${escapeCmsHtml(policy.slug)}" target="_blank" rel="noreferrer">
+          ${escapeCmsHtml(policy.title)}
+        </a>
+      `,
+    )
+    .join(' e ')
+
+  return `
+    <section class="checkout-policy">
+      <label class="checkout-policy-check">
+        <input name="policy_accepted" type="checkbox" required>
+        <span>Accetto ${links}.</span>
+      </label>
+    </section>
+  `
+}
+
 function renderCheckoutSummary(
   items,
   shippingMethods,
@@ -2816,16 +2865,22 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
 
   const form = event.currentTarget
   const message = document.querySelector('#checkoutMessage')
+  const submitButton = form.querySelector('[type="submit"]')
 
   if (!form.reportValidity()) return
+  if (form.dataset.submitting === 'true') return
 
   if (getCart().length === 0) {
     if (message) message.textContent = 'Il carrello è vuoto.'
     return
   }
 
+  form.dataset.submitting = 'true'
+  if (submitButton) submitButton.disabled = true
+
   const formData = new FormData(form)
   const payload = {
+    idempotency_key: activeCheckoutIdempotencyKey || createCheckoutIdempotencyKey(),
     customer: {
       name: formData.get('name'),
       email: formData.get('email'),
@@ -2840,12 +2895,15 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
     shipping_method: formData.get('shipping_method'),
     payment_method: formData.get('payment_method'),
     discount_code: activeCheckoutDiscount?.code || document.querySelector('#discountCode')?.value.trim() || '',
+    policy_accepted: Boolean(formData.get('policy_accepted')),
     items: getCart().map((item) => ({
       productSlug: item.productSlug,
       variantId: item.variantId,
       quantity: item.quantity,
     })),
   }
+
+  activeCheckoutIdempotencyKey = payload.idempotency_key
 
   if (message) message.textContent = 'Creazione ordine in corso...'
 
@@ -2870,6 +2928,38 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
       return
     }
 
+    if (data.order?.payment_method === 'stripe' && data.order?.requires_payment_redirect) {
+      if (message) message.textContent = 'Preparazione pagamento Stripe...'
+
+      const stripeResponse = await fetch('/api/payments/stripe/create-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_id: data.order.id,
+          email: payload.customer.email,
+          success_url: `${window.location.origin}/checkout?payment=stripe_success&order_id=${data.order.id}&total_cents=${data.order.total_cents || 0}`,
+          cancel_url: `${window.location.origin}/checkout?payment=stripe_cancel&order_id=${data.order.id}`,
+        }),
+      })
+      const stripeData = await stripeResponse.json()
+
+      if (!stripeResponse.ok || !stripeData.success || !stripeData.checkout_url) {
+        if (message) {
+          message.textContent =
+            stripeData.message ||
+            `Ordine #${data.order.id} creato, ma Stripe non e disponibile.`
+        }
+        return
+      }
+
+      clearCart()
+      closeCart()
+      window.location.href = stripeData.checkout_url
+      return
+    }
+
     clearCart()
     closeCart()
     trackAnalyticsEvent('order_created', {
@@ -2883,6 +2973,9 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
     renderOrderConfirmation(data.order)
   } catch {
     if (message) message.textContent = 'Errore di connessione durante il checkout.'
+  } finally {
+    form.dataset.submitting = 'false'
+    if (submitButton) submitButton.disabled = false
   }
 }
 
@@ -2892,6 +2985,36 @@ async function renderPublicCheckoutPage() {
 
   const main = document.querySelector('main')
   if (!main) return
+
+  const checkoutParams = new URLSearchParams(window.location.search)
+  const paymentReturn = checkoutParams.get('payment')
+  const returnOrderId = checkoutParams.get('order_id')
+  const returnTotalCents = Math.max(0, Number(checkoutParams.get('total_cents') || 0))
+
+  if (paymentReturn === 'stripe_success') {
+    clearCart()
+    renderOrderConfirmation({
+      id: returnOrderId || 'Stripe',
+      total_cents: returnTotalCents,
+      tax_cents: 0,
+      payment_status: 'paid',
+      payment_method: 'stripe',
+      order_status: 'paid',
+    })
+    return
+  }
+
+  if (paymentReturn === 'stripe_cancel') {
+    main.innerHTML = `
+      <section class="section checkout-empty">
+        <p class="eyebrow">Pagamento</p>
+        <h1>Pagamento Stripe annullato</h1>
+        <p>L'ordine #${escapeCmsHtml(returnOrderId || '')} resta in attesa. Puoi riprovare o scegliere pagamento manuale.</p>
+        <a class="btn primary" href="/checkout">Torna al checkout</a>
+      </section>
+    `
+    return
+  }
 
   main.innerHTML = `
     <section class="section checkout-page">
@@ -2920,9 +3043,11 @@ async function renderPublicCheckoutPage() {
     }
 
     activeCheckoutDiscount = null
-    const [shippingMethods, taxSettings] = await Promise.all([
+    activeCheckoutIdempotencyKey = createCheckoutIdempotencyKey()
+    const [shippingMethods, taxSettings, checkoutPolicies] = await Promise.all([
       loadShippingMethods(),
       loadTaxSettings(),
+      loadCheckoutPolicies(),
     ])
     const subtotalCents = calculateCartSubtotal(detailedItems)
     trackAnalyticsEvent('checkout_start', {
@@ -2951,7 +3076,7 @@ async function renderPublicCheckoutPage() {
         <div class="section-head reveal visible">
           <p class="eyebrow">Checkout</p>
           <h2>Completa l'ordine.</h2>
-          <p>Pagamento manuale o simulato. Nessuna transazione reale viene eseguita.</p>
+          <p>Riepilogo validato lato server, pagamento manuale/test o Stripe test mode se configurato.</p>
         </div>
 
         <div class="checkout-layout">
@@ -3008,13 +3133,16 @@ async function renderPublicCheckoutPage() {
                 Metodo pagamento
                 <select name="payment_method">
                   <option value="manual">Pagamento manuale / pending</option>
+                  <option value="stripe">Stripe test mode</option>
                   <option value="test_paid">Pagamento simulato riuscito</option>
                   <option value="test_failed">Pagamento simulato fallito</option>
                 </select>
               </label>
             </section>
 
-            <button class="btn primary" type="submit">Crea ordine</button>
+            ${renderPolicyAcceptance(checkoutPolicies)}
+
+            <button class="btn primary" type="submit">Completa ordine</button>
             <p id="checkoutMessage" class="checkout-message"></p>
           </form>
 

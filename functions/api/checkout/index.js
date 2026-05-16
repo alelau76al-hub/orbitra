@@ -2,6 +2,14 @@ function json(data, status = 200) {
   return Response.json(data, { status })
 }
 
+async function readJson(request) {
+  try {
+    return await request.json()
+  } catch {
+    return {}
+  }
+}
+
 function normalizeEmail(value = '') {
   return String(value).trim().toLowerCase()
 }
@@ -12,6 +20,21 @@ function readText(value = '') {
 
 function normalizeCode(value = '') {
   return String(value || '').trim().toUpperCase()
+}
+
+function normalizeCurrency(value = 'EUR') {
+  const currency = String(value || 'EUR').trim().toUpperCase()
+  return /^[A-Z]{3}$/.test(currency) ? currency : 'EUR'
+}
+
+function isValidEmail(value = '') {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim())
+}
+
+function sanitizeIdempotencyKey(value = '') {
+  const key = String(value || '').trim()
+  if (!key || key.length > 120) return ''
+  return /^[a-zA-Z0-9:_-]+$/.test(key) ? key : ''
 }
 
 function fallbackShippingMethods() {
@@ -70,10 +93,88 @@ function resolveShipping(methods, selectedHandle, subtotalCents) {
   }
 }
 
-function resolvePaymentStatus(paymentMethod) {
-  if (paymentMethod === 'test_paid') return 'paid'
-  if (paymentMethod === 'test_failed') return 'failed'
-  return 'pending'
+async function loadPaymentSettings(env) {
+  const fallback = {
+    payment_provider: 'manual',
+    stripe_enabled: false,
+    stripe_mode: 'test',
+    stripe_public_key: '',
+    stripe_secret_configured: Boolean(env.STRIPE_SECRET_KEY),
+  }
+
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT key, value
+      FROM site_settings
+      WHERE key IN ('payment_provider', 'stripe_enabled', 'stripe_mode', 'stripe_public_key')
+    `).all()
+
+    const map = (results || []).reduce((settings, row) => {
+      settings[row.key] = row.value
+      return settings
+    }, {})
+
+    return {
+      payment_provider: ['manual', 'stripe'].includes(map.payment_provider)
+        ? map.payment_provider
+        : fallback.payment_provider,
+      stripe_enabled: String(map.stripe_enabled || '0') === '1',
+      stripe_mode: map.stripe_mode === 'live' ? 'live' : 'test',
+      stripe_public_key: readText(map.stripe_public_key),
+      stripe_secret_configured: fallback.stripe_secret_configured,
+    }
+  } catch {
+    return fallback
+  }
+}
+
+function resolvePayment(paymentMethod, settings) {
+  const method = readText(paymentMethod || 'manual')
+
+  if (method === 'stripe') {
+    const stripeReady =
+      settings.payment_provider === 'stripe' &&
+      settings.stripe_enabled &&
+      settings.stripe_secret_configured
+
+    if (!stripeReady) {
+      return {
+        error: 'Stripe non e configurato. Scegli pagamento manuale o test.',
+      }
+    }
+
+    return {
+      payment_method: 'stripe',
+      payment_provider: 'stripe',
+      payment_status: 'pending',
+      requires_payment_redirect: true,
+    }
+  }
+
+  if (method === 'test_paid') {
+    return {
+      payment_method: 'test_paid',
+      payment_provider: 'manual',
+      payment_status: 'paid',
+      requires_payment_redirect: false,
+    }
+  }
+
+  if (method === 'test_failed') {
+    return {
+      payment_method: 'test_failed',
+      payment_provider: 'manual',
+      payment_status: 'failed',
+      requires_payment_redirect: false,
+    }
+  }
+
+  return {
+    payment_method: 'manual',
+    payment_provider: 'manual',
+    payment_status: 'pending',
+    requires_payment_redirect: false,
+  }
 }
 
 async function loadTaxSettings(env) {
@@ -335,9 +436,221 @@ async function upsertCustomer(env, customer, address) {
   return inserted.meta.last_row_id
 }
 
+async function hasOrderHardeningColumns(env) {
+  try {
+    await env.DB.prepare('SELECT idempotency_key, payment_provider FROM orders LIMIT 1').first()
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function publishedPolicyAcceptanceRequired(env) {
+  try {
+    const row = await env.DB.prepare(`
+      SELECT COUNT(*) AS total
+      FROM policies
+      WHERE status = 'published'
+        AND type IN ('privacy_policy', 'terms_conditions')
+    `).first()
+
+    return Number(row?.total || 0) > 0
+  } catch {
+    return false
+  }
+}
+
+async function findOrderByIdempotency(env, idempotencyKey, hasHardeningColumns) {
+  if (!hasHardeningColumns || !idempotencyKey) return null
+
+  return env.DB.prepare(`
+    SELECT
+      id,
+      customer_id,
+      subtotal_cents,
+      shipping_cents,
+      discount_code,
+      discount_cents,
+      tax_cents,
+      tax_rate,
+      prices_include_tax,
+      total_cents,
+      payment_status,
+      payment_method,
+      payment_provider,
+      provider_reference,
+      stripe_session_id,
+      payment_intent_id,
+      order_status,
+      shipping_method,
+      currency,
+      idempotency_key
+    FROM orders
+    WHERE idempotency_key = ?
+    LIMIT 1
+  `)
+    .bind(idempotencyKey)
+    .first()
+}
+
+function publicOrderResponse(order) {
+  return {
+    id: order.id,
+    customer_id: order.customer_id,
+    subtotal_cents: Number(order.subtotal_cents || 0),
+    shipping_cents: Number(order.shipping_cents || 0),
+    discount_code: order.discount_code || '',
+    discount_cents: Number(order.discount_cents || 0),
+    taxable_base_cents: Number(order.taxable_base_cents || 0),
+    tax_cents: Number(order.tax_cents || 0),
+    tax_rate: Number(order.tax_rate || 0),
+    prices_include_tax: order.prices_include_tax !== false && Number(order.prices_include_tax) !== 0,
+    total_cents: Number(order.total_cents || 0),
+    payment_status: order.payment_status || 'pending',
+    payment_method: order.payment_method || 'manual',
+    payment_provider: order.payment_provider || (order.payment_method === 'stripe' ? 'stripe' : 'manual'),
+    provider_reference: order.provider_reference || order.stripe_session_id || '',
+    stripe_session_id: order.stripe_session_id || '',
+    payment_intent_id: order.payment_intent_id || '',
+    requires_payment_redirect: Boolean(order.requires_payment_redirect),
+    order_status: order.order_status || order.status || 'new',
+    shipping_method: order.shipping_method || 'standard',
+    currency: normalizeCurrency(order.currency || 'EUR'),
+    idempotency_key: order.idempotency_key || '',
+  }
+}
+
+async function insertOrder(env, data, hasHardeningColumns) {
+  if (hasHardeningColumns) {
+    const insertedOrder = await env.DB.prepare(`
+      INSERT INTO orders (
+        email,
+        total_cents,
+        status,
+        customer_id,
+        customer_name,
+        phone,
+        subtotal_cents,
+        shipping_cents,
+        payment_status,
+        payment_method,
+        payment_provider,
+        provider_reference,
+        payment_intent_id,
+        checkout_id,
+        idempotency_key,
+        currency,
+        order_status,
+        shipping_method,
+        shipping_address_line1,
+        shipping_address_city,
+        shipping_address_postal_code,
+        shipping_address_country,
+        discount_code,
+        discount_cents,
+        tax_cents,
+        tax_rate,
+        prices_include_tax,
+        terms_accepted_at,
+        privacy_accepted_at,
+        updated_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `)
+      .bind(
+        data.customer.email,
+        data.total_cents,
+        data.order_status,
+        data.customer_id,
+        data.customer.name,
+        data.customer.phone,
+        data.subtotal_cents,
+        data.shipping_cents,
+        data.payment_status,
+        data.payment_method,
+        data.payment_provider,
+        data.provider_reference,
+        data.payment_intent_id,
+        data.checkout_id,
+        data.idempotency_key,
+        data.currency,
+        data.order_status,
+        data.shipping_method,
+        data.address.line1,
+        data.address.city,
+        data.address.postal_code,
+        data.address.country,
+        data.discount_code,
+        data.discount_cents,
+        data.tax_cents,
+        data.tax_rate,
+        data.prices_include_tax ? 1 : 0,
+        data.policy_accepted_at,
+        data.policy_accepted_at,
+      )
+      .run()
+
+    return insertedOrder.meta.last_row_id
+  }
+
+  const insertedOrder = await env.DB.prepare(`
+    INSERT INTO orders (
+      email,
+      total_cents,
+      status,
+      customer_id,
+      customer_name,
+      phone,
+      subtotal_cents,
+      shipping_cents,
+      payment_status,
+      payment_method,
+      order_status,
+      shipping_method,
+      shipping_address_line1,
+      shipping_address_city,
+      shipping_address_postal_code,
+      shipping_address_country,
+      discount_code,
+      discount_cents,
+      tax_cents,
+      tax_rate,
+      prices_include_tax,
+      updated_at
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `)
+    .bind(
+      data.customer.email,
+      data.total_cents,
+      data.order_status,
+      data.customer_id,
+      data.customer.name,
+      data.customer.phone,
+      data.subtotal_cents,
+      data.shipping_cents,
+      data.payment_status,
+      data.payment_method,
+      data.order_status,
+      data.shipping_method,
+      data.address.line1,
+      data.address.city,
+      data.address.postal_code,
+      data.address.country,
+      data.discount_code,
+      data.discount_cents,
+      data.tax_cents,
+      data.tax_rate,
+      data.prices_include_tax ? 1 : 0,
+    )
+    .run()
+
+  return insertedOrder.meta.last_row_id
+}
+
 export async function onRequestPost({ request, env }) {
   try {
-    const body = await request.json()
+    const body = await readJson(request)
     const customer = {
       name: readText(body.customer?.name),
       email: normalizeEmail(body.customer?.email),
@@ -350,10 +663,13 @@ export async function onRequestPost({ request, env }) {
       country: readText(body.shipping_address?.country || 'Italia'),
     }
     const items = Array.isArray(body.items) ? body.items : []
-    const paymentMethod = readText(body.payment_method || 'manual')
     const requestedDiscountCode = normalizeCode(body.discount_code)
+    const idempotencyKey = sanitizeIdempotencyKey(body.idempotency_key || body.checkout_id)
+    const checkoutId = idempotencyKey || sanitizeIdempotencyKey(body.checkout_id)
+    const currency = normalizeCurrency(body.currency || 'EUR')
+    const hasHardeningColumns = await hasOrderHardeningColumns(env)
 
-    if (!customer.name || !customer.email || !customer.email.includes('@')) {
+    if (!customer.name || !isValidEmail(customer.email)) {
       return json({ success: false, message: 'Nome ed email valida sono obbligatori.' }, 400)
     }
 
@@ -362,7 +678,29 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (items.length === 0) {
-      return json({ success: false, message: 'Il carrello è vuoto.' }, 400)
+      return json({ success: false, message: 'Il carrello e vuoto.' }, 400)
+    }
+
+    if (await publishedPolicyAcceptanceRequired(env)) {
+      const acceptedPolicy = body.policy_accepted === true || String(body.policy_accepted) === '1'
+      if (!acceptedPolicy) {
+        return json({ success: false, message: 'Accetta termini e privacy per completare l ordine.' }, 400)
+      }
+    }
+
+    const idempotentOrder = await findOrderByIdempotency(env, idempotencyKey, hasHardeningColumns)
+    if (idempotentOrder) {
+      return json({
+        success: true,
+        idempotent_replay: true,
+        order: publicOrderResponse(idempotentOrder),
+      })
+    }
+
+    const paymentSettings = await loadPaymentSettings(env)
+    const payment = resolvePayment(body.payment_method, paymentSettings)
+    if (payment.error) {
+      return json({ success: false, message: payment.error }, 400)
     }
 
     const orderItems = []
@@ -370,7 +708,7 @@ export async function onRequestPost({ request, env }) {
 
     for (const item of items) {
       const productSlug = readText(item.productSlug)
-      const quantity = Math.max(1, Number(item.quantity || 1))
+      const quantity = Math.max(1, Math.min(99, Number(item.quantity || 1)))
       const product = await loadProduct(env, productSlug)
 
       if (!product) {
@@ -394,6 +732,10 @@ export async function onRequestPost({ request, env }) {
         variant && variant.stock !== null && variant.stock !== undefined
           ? Number(variant.stock)
           : Number(product.stock)
+
+      if (!Number.isFinite(priceCents) || priceCents < 0) {
+        return json({ success: false, message: `Prezzo non valido per ${product.name}.` }, 400)
+      }
 
       if (stock < quantity) {
         return json(
@@ -431,63 +773,38 @@ export async function onRequestPost({ request, env }) {
       taxSettings,
     )
     const totalCents = taxSummary.total_cents
-    const paymentStatus = resolvePaymentStatus(paymentMethod)
-    const orderStatus = paymentStatus === 'paid' ? 'paid' : 'new'
+    const orderStatus = payment.payment_status === 'paid' ? 'paid' : 'new'
     const customerId = await upsertCustomer(env, customer, address)
+    const policyAcceptedAt = body.policy_accepted ? new Date().toISOString() : null
 
-    const insertedOrder = await env.DB.prepare(`
-      INSERT INTO orders (
-        email,
-        total_cents,
-        status,
-        customer_id,
-        customer_name,
-        phone,
-        subtotal_cents,
-        shipping_cents,
-        payment_status,
-        payment_method,
-        order_status,
-        shipping_method,
-        shipping_address_line1,
-        shipping_address_city,
-        shipping_address_postal_code,
-        shipping_address_country,
-        discount_code,
-        discount_cents,
-        tax_cents,
-        tax_rate,
-        prices_include_tax,
-        updated_at
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-    `)
-      .bind(
-        customer.email,
-        totalCents,
-        orderStatus,
-        customerId,
-        customer.name,
-        customer.phone,
-        subtotalCents,
-        shipping.price_cents,
-        paymentStatus,
-        paymentMethod,
-        orderStatus,
-        shipping.handle,
-        address.line1,
-        address.city,
-        address.postal_code,
-        address.country,
-        discount.code || '',
-        discount.discount_cents,
-        taxSummary.tax_cents,
-        taxSummary.tax_rate,
-        taxSummary.prices_include_tax ? 1 : 0,
-      )
-      .run()
-
-    const orderId = insertedOrder.meta.last_row_id
+    const orderId = await insertOrder(
+      env,
+      {
+        customer,
+        customer_id: customerId,
+        address,
+        subtotal_cents: subtotalCents,
+        shipping_cents: shipping.price_cents,
+        total_cents: totalCents,
+        discount_code: discount.code || '',
+        discount_cents: discount.discount_cents,
+        tax_cents: taxSummary.tax_cents,
+        tax_rate: taxSummary.tax_rate,
+        prices_include_tax: taxSummary.prices_include_tax,
+        payment_status: payment.payment_status,
+        payment_method: payment.payment_method,
+        payment_provider: payment.payment_provider,
+        provider_reference: '',
+        payment_intent_id: '',
+        checkout_id: checkoutId,
+        idempotency_key: idempotencyKey,
+        currency,
+        order_status: orderStatus,
+        shipping_method: shipping.handle,
+        policy_accepted_at: policyAcceptedAt,
+      },
+      hasHardeningColumns,
+    )
 
     for (const item of orderItems) {
       const variantLabel = item.variant
@@ -525,12 +842,12 @@ export async function onRequestPost({ request, env }) {
     await recordMockNotification(env, 'order_created', {
       order_id: orderId,
       total_cents: totalCents,
-      payment_status: paymentStatus,
+      payment_status: payment.payment_status,
     })
 
     return json({
       success: true,
-      order: {
+      order: publicOrderResponse({
         id: orderId,
         customer_id: customerId,
         subtotal_cents: subtotalCents,
@@ -542,18 +859,21 @@ export async function onRequestPost({ request, env }) {
         tax_rate: taxSummary.tax_rate,
         prices_include_tax: taxSummary.prices_include_tax,
         total_cents: totalCents,
-        payment_status: paymentStatus,
-        payment_method: paymentMethod,
+        payment_status: payment.payment_status,
+        payment_method: payment.payment_method,
+        payment_provider: payment.payment_provider,
+        requires_payment_redirect: payment.requires_payment_redirect,
         order_status: orderStatus,
         shipping_method: shipping.handle,
-      },
+        currency,
+        idempotency_key: idempotencyKey,
+      }),
     })
-  } catch (error) {
+  } catch {
     return json(
       {
         success: false,
-        message: 'Errore durante la creazione ordine. Verifica che la migration checkout sia applicata.',
-        error: error.message,
+        message: 'Errore durante la creazione ordine. Verifica la configurazione checkout e riprova.',
       },
       500,
     )

@@ -171,6 +171,7 @@ function refreshAdminDataAfterAuth() {
     loadBlogPosts,
     loadMetaobjects,
     loadTaxSettingsAdmin,
+    loadPaymentSettingsAdmin,
     loadDiscounts,
     loadCampaigns,
     loadMediaItems,
@@ -1714,6 +1715,90 @@ taxSettingsForm?.addEventListener('submit', async (event) => {
 loadTaxSettingsAdmin()
 
 // ===============================
+// PAGAMENTI
+// ===============================
+
+const paymentSettingsForm = document.querySelector('#paymentSettingsForm')
+const paymentProvider = document.querySelector('#paymentProvider')
+const stripeEnabled = document.querySelector('#stripeEnabled')
+const stripeMode = document.querySelector('#stripeMode')
+const stripePublicKey = document.querySelector('#stripePublicKey')
+const paymentProviderStatus = document.querySelector('#paymentProviderStatus')
+const paymentSettingsMessage = document.querySelector('#paymentSettingsMessage')
+
+function renderPaymentProviderStatus(settings = {}, message = '') {
+  if (!paymentProviderStatus) return
+
+  const stripeReady = settings.stripe_enabled && settings.stripe_secret_configured
+  const webhookReady = settings.stripe_webhook_configured
+
+  paymentProviderStatus.innerHTML = `
+    <span class="status-badge">${stripeReady ? 'Stripe pronto' : 'Manual fallback'}</span>
+    <p>${escapeHtml(message || 'Configura Stripe solo tramite variabili ambiente, mai nel repository.')}</p>
+    <div class="meta">
+      <span>Secret: ${settings.stripe_secret_configured ? 'configurata' : 'mancante'}</span>
+      <span>Webhook: ${webhookReady ? 'configurato' : 'mancante/opzionale'}</span>
+      <span>Modalita: ${escapeHtml(settings.stripe_mode || 'test')}</span>
+    </div>
+  `
+}
+
+async function loadPaymentSettingsAdmin() {
+  if (!paymentSettingsForm) return
+
+  paymentSettingsMessage.textContent = 'Caricamento pagamenti...'
+
+  try {
+    const response = await fetch('/api/admin/payments')
+    const data = await response.json()
+
+    if (!data.success) {
+      paymentSettingsMessage.textContent = data.message || 'Errore caricamento pagamenti.'
+      return
+    }
+
+    const settings = data.settings || {}
+    paymentProvider.value = settings.payment_provider || 'manual'
+    stripeEnabled.checked = Boolean(settings.stripe_enabled)
+    stripeMode.value = settings.stripe_mode || 'test'
+    stripePublicKey.value = settings.stripe_public_key || ''
+    renderPaymentProviderStatus(settings, data.message)
+    paymentSettingsMessage.textContent = ''
+  } catch {
+    paymentSettingsMessage.textContent = 'Errore di connessione pagamenti.'
+  }
+}
+
+paymentSettingsForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  paymentSettingsMessage.textContent = 'Salvataggio pagamenti...'
+
+  try {
+    const response = await fetch('/api/admin/payments', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        payment_provider: paymentProvider.value,
+        stripe_enabled: stripeEnabled.checked,
+        stripe_mode: stripeMode.value,
+        stripe_public_key: stripePublicKey.value.trim(),
+      }),
+    })
+    const data = await response.json()
+
+    paymentSettingsMessage.textContent = data.message || 'Impostazioni pagamento salvate.'
+
+    if (data.success) {
+      renderPaymentProviderStatus(data.settings || {}, data.message)
+    }
+  } catch {
+    paymentSettingsMessage.textContent = 'Errore salvataggio pagamenti.'
+  }
+})
+
+loadPaymentSettingsAdmin()
+
+// ===============================
 // SCONTI
 // ===============================
 
@@ -2025,6 +2110,11 @@ loadCampaigns()
 // ===============================
 
 const mediaForm = document.querySelector('#mediaForm')
+const mediaUploadForm = document.querySelector('#mediaUploadForm')
+const mediaUploadFile = document.querySelector('#mediaUploadFile')
+const mediaUploadName = document.querySelector('#mediaUploadName')
+const mediaUploadAltText = document.querySelector('#mediaUploadAltText')
+const mediaUploadMessage = document.querySelector('#mediaUploadMessage')
 const mediaList = document.querySelector('#mediaList')
 const refreshMediaButton = document.querySelector('#refreshMediaButton')
 const mediaMessage = document.querySelector('#mediaMessage')
@@ -2096,6 +2186,9 @@ async function loadMediaItems() {
             <div class="meta">
               <span>${escapeHtml(media.type)}</span>
               <span>${escapeHtml(media.alt_text || 'Alt text vuoto')}</span>
+              <span>${escapeHtml(media.mime_type || 'mime N/D')}</span>
+              <span>${media.size ? `${Math.round(Number(media.size) / 1024)} KB` : 'size N/D'}</span>
+              <span>${escapeHtml(media.storage_provider || 'url')}</span>
             </div>
             <div class="product-actions">
               <button type="button" data-edit-media="${media.id}">Modifica</button>
@@ -2182,6 +2275,50 @@ mediaForm?.addEventListener('submit', async (event) => {
     loadMediaItems()
   } catch {
     mediaMessage.textContent = 'Errore di connessione media.'
+  }
+})
+
+mediaUploadForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+
+  if (!mediaUploadFile?.files?.[0]) {
+    mediaUploadMessage.textContent = 'Seleziona un file da caricare.'
+    return
+  }
+
+  mediaUploadMessage.textContent = 'Upload in corso...'
+
+  const formData = new FormData()
+  formData.append('file', mediaUploadFile.files[0])
+  formData.append('name', mediaUploadName?.value.trim() || mediaUploadFile.files[0].name)
+  formData.append('alt_text', mediaUploadAltText?.value.trim() || '')
+
+  try {
+    const response = await fetch('/api/admin/media/upload', {
+      method: 'POST',
+      body: formData,
+    })
+    const data = await response.json()
+
+    if (!data.success) {
+      mediaUploadMessage.textContent =
+        data.message || 'Upload non disponibile. Usa URL manuale.'
+      return
+    }
+
+    mediaUploadMessage.textContent = data.message || 'Media caricato.'
+
+    if (data.media?.url) {
+      document.querySelector('#mediaName').value = data.media.name || ''
+      document.querySelector('#mediaUrl').value = data.media.url
+      document.querySelector('#mediaType').value = data.media.type || 'image'
+      document.querySelector('#mediaAltText').value = data.media.alt_text || ''
+    }
+
+    mediaUploadForm.reset()
+    loadMediaItems()
+  } catch {
+    mediaUploadMessage.textContent = 'Upload non riuscito. Usa URL manuale o verifica R2.'
   }
 })
 
@@ -3489,6 +3626,9 @@ async function loadOrders() {
             <div class="meta">
               <span>Pagamento: ${escapeHtml(order.payment_status || 'pending')}</span>
               <span>Metodo: ${escapeHtml(order.payment_method || 'manual')}</span>
+              <span>Provider: ${escapeHtml(order.payment_provider || 'manual')}</span>
+              <span>Ref: ${escapeHtml(order.provider_reference || 'N/D')}</span>
+              <span>Valuta: ${escapeHtml(order.currency || 'EUR')}</span>
               <span>Spedizione: ${escapeHtml(order.shipping_method || 'standard')}</span>
               <span>Sconto: ${order.discount_cents ? `-${formatMoney(order.discount_cents)}` : formatMoney(0)}</span>
               <span>IVA: ${formatMoney(order.tax_cents || 0)}</span>

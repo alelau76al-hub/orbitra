@@ -13,18 +13,20 @@ import {
 
 const sensitiveReadPaths = new Set([
   '/api/admin/activity',
+  '/api/admin/payments',
   '/api/admin/settings',
   '/api/admin/users',
 ])
 
 const usersPaths = new Set(['/api/admin/users'])
-const settingsPaths = new Set(['/api/admin/settings'])
+const settingsPaths = new Set(['/api/admin/settings', '/api/admin/payments'])
 const orderPaths = new Set(['/api/admin/orders'])
 const commercePaths = new Set([
   '/api/admin/products',
   '/api/admin/collections',
 ])
 const contentPaths = new Set([
+  '/api/admin/media',
   '/api/admin/pages',
   '/api/admin/section',
   '/api/admin/menus',

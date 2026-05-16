@@ -112,13 +112,12 @@ export async function onRequestPost({ request, env }) {
       success: result.valid,
       ...result,
     }, result.valid ? 200 : 400)
-  } catch (error) {
+  } catch {
     return json(
       {
         success: false,
         valid: false,
         message: 'Sconti non disponibili. Verifica che la migration sconti sia applicata.',
-        error: error.message,
       },
       500,
     )

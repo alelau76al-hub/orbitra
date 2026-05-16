@@ -999,6 +999,18 @@ button:disabled {
   font-weight: 900;
 }
 
+.compact-panel {
+  margin: 16px 0;
+  padding: 14px;
+}
+
+.compact-panel .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 .metafield-values-fields {
   display: grid;
   gap: 14px;
@@ -1013,6 +1025,8 @@ button:disabled {
 #discountMessage,
 #campaignMessage,
 #mediaMessage,
+#mediaUploadMessage,
+#paymentSettingsMessage,
 #taxSettingsMessage,
 #policyMessage,
 #domainMessage,

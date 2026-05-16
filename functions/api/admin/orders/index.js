@@ -25,44 +25,97 @@ async function loadOrderItems(env, orderId) {
   return results || []
 }
 
+async function hasPaymentColumns(env) {
+  try {
+    await env.DB.prepare('SELECT payment_provider, provider_reference, payment_intent_id, currency FROM orders LIMIT 1').first()
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function onRequestGet({ env }) {
   try {
-    const { results } = await env.DB.prepare(`
-      SELECT
-        id,
-        email,
-        total_cents,
-        status,
-        customer_id,
-        customer_name,
-        phone,
-        subtotal_cents,
-        shipping_cents,
-        discount_code,
-        discount_cents,
-        tax_cents,
-        tax_rate,
-        prices_include_tax,
-        payment_status,
-        payment_method,
-        order_status,
-        shipping_method,
-        shipping_address_line1,
-        shipping_address_city,
-        shipping_address_postal_code,
-        shipping_address_country,
-        created_at,
-        updated_at
-      FROM orders
-      ORDER BY created_at DESC, id DESC
-      LIMIT 100
-    `).all()
+    const hasExtendedPayments = await hasPaymentColumns(env)
+    const query = hasExtendedPayments
+      ? `
+        SELECT
+          id,
+          email,
+          total_cents,
+          status,
+          customer_id,
+          customer_name,
+          phone,
+          subtotal_cents,
+          shipping_cents,
+          discount_code,
+          discount_cents,
+          tax_cents,
+          tax_rate,
+          prices_include_tax,
+          payment_status,
+          payment_method,
+          payment_provider,
+          provider_reference,
+          stripe_session_id,
+          payment_intent_id,
+          currency,
+          idempotency_key,
+          order_status,
+          shipping_method,
+          shipping_address_line1,
+          shipping_address_city,
+          shipping_address_postal_code,
+          shipping_address_country,
+          created_at,
+          updated_at
+        FROM orders
+        ORDER BY created_at DESC, id DESC
+        LIMIT 100
+      `
+      : `
+        SELECT
+          id,
+          email,
+          total_cents,
+          status,
+          customer_id,
+          customer_name,
+          phone,
+          subtotal_cents,
+          shipping_cents,
+          discount_code,
+          discount_cents,
+          tax_cents,
+          tax_rate,
+          prices_include_tax,
+          payment_status,
+          payment_method,
+          order_status,
+          shipping_method,
+          shipping_address_line1,
+          shipping_address_city,
+          shipping_address_postal_code,
+          shipping_address_country,
+          created_at,
+          updated_at
+        FROM orders
+        ORDER BY created_at DESC, id DESC
+        LIMIT 100
+      `
+    const { results } = await env.DB.prepare(query).all()
 
     const orders = []
 
     for (const order of results || []) {
       orders.push({
         ...order,
+        payment_provider: order.payment_provider || (order.payment_method === 'stripe' ? 'stripe' : 'manual'),
+        provider_reference: order.provider_reference || order.stripe_session_id || '',
+        payment_intent_id: order.payment_intent_id || '',
+        currency: order.currency || 'EUR',
+        idempotency_key: order.idempotency_key || '',
         items: await loadOrderItems(env, order.id),
       })
     }

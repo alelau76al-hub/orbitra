@@ -826,7 +826,7 @@
           <div>
             <h2>Media</h2>
             <p class="section-subtitle">
-              Libreria media MVP basata su URL, senza upload file reale.
+              Libreria media con upload reale se R2 e configurato, piu fallback URL.
             </p>
           </div>
 
@@ -834,6 +834,27 @@
         </div>
 
         <div class="content-manager">
+          <form id="mediaUploadForm" class="inner-card">
+            <h3>Upload media</h3>
+
+            <label>File</label>
+            <input
+              id="mediaUploadFile"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,application/pdf"
+            />
+
+            <label>Nome media opzionale</label>
+            <input id="mediaUploadName" type="text" placeholder="Hero prodotto" />
+
+            <label>Alt text</label>
+            <input id="mediaUploadAltText" type="text" placeholder="Descrizione immagine" />
+
+            <button id="mediaUploadButton" type="submit">Carica file</button>
+            <p class="field-help">Se R2 non e configurato, usa il form URL manuale qui sotto.</p>
+            <p id="mediaUploadMessage"></p>
+          </form>
+
           <form id="mediaForm" class="inner-card">
             <h3 id="mediaFormTitle">Aggiungi media</h3>
             <input id="mediaId" type="hidden" />
@@ -1448,10 +1469,9 @@
             <p>Campi richiesti, note e opzioni checkout future.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#checkout-payments">
-            <span class="mini-card-status">In arrivo</span>
+          <a class="mini-card" href="#checkout-payments">
             <h3>Pagamenti</h3>
-            <p>Modalita manuale/test oggi, provider reali in futuro.</p>
+            <p>Provider manuale o Stripe test mode con secrets via ambiente.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#checkout-shipping">
@@ -1514,18 +1534,45 @@
         </div>
       </section>
 
-      <section id="checkout-payments" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-payments">
+      <section id="checkout-payments" class="cms-area card admin-view" data-admin-view="checkout-payments">
         <div class="section-title">
           <div>
             <h2>Pagamenti</h2>
-            <p class="section-subtitle">Provider pagamento, modalita test/manuale e stato integrazioni future.</p>
+            <p class="section-subtitle">Provider pagamento, modalita manuale e Stripe test mode.</p>
           </div>
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge">In arrivo</span>
-          <p>La modalita manual/test payment continua a funzionare. Nessuna chiave o provider reale viene configurato in questo cleanup.</p>
-        </div>
+
+        <form id="paymentSettingsForm" class="inner-card settings-form-compact">
+          <h3>Impostazioni pagamento</h3>
+
+          <label>Provider principale</label>
+          <select id="paymentProvider">
+            <option value="manual">Manuale / test</option>
+            <option value="stripe">Stripe</option>
+          </select>
+
+          <label class="inline-check">
+            <input id="stripeEnabled" type="checkbox" />
+            Abilita Stripe nel checkout pubblico
+          </label>
+
+          <label>Modalita Stripe</label>
+          <select id="stripeMode">
+            <option value="test">Test</option>
+            <option value="live">Live</option>
+          </select>
+
+          <label>Stripe publishable key opzionale</label>
+          <input id="stripePublicKey" type="text" placeholder="pk_test_..." />
+
+          <div id="paymentProviderStatus" class="placeholder-panel compact-panel">
+            Caricamento stato Stripe...
+          </div>
+
+          <button type="submit">Salva pagamenti</button>
+          <p id="paymentSettingsMessage"></p>
+        </form>
       </section>
 
       <section id="checkout-shipping" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-shipping">
