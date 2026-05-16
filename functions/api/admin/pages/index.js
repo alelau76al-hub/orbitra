@@ -136,7 +136,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento pagine.',
-        error: error.message,
       },
       500,
     )
@@ -193,7 +192,6 @@ export async function onRequestPost({ request, env }) {
       {
         success: false,
         message: 'Errore creazione pagina.',
-        error: error.message,
       },
       500,
     )
@@ -252,7 +250,6 @@ export async function onRequestPut({ request, env }) {
       {
         success: false,
         message: 'Errore aggiornamento pagina.',
-        error: error.message,
       },
       500,
     )
@@ -322,7 +319,6 @@ export async function onRequestDelete({ request, env }) {
       {
         success: false,
         message: 'Errore eliminazione pagina.',
-        error: error.message,
       },
       500,
     )

@@ -4,6 +4,7 @@ const adminLoginForm = document.querySelector('#adminLoginForm')
 const adminBootstrapForm = document.querySelector('#adminBootstrapForm')
 const adminAuthIntro = document.querySelector('#adminAuthIntro')
 const adminAuthMessage = document.querySelector('#adminAuthMessage')
+const adminSessionBar = document.querySelector('#adminSessionBar')
 const adminSessionName = document.querySelector('#adminSessionName')
 const adminSessionRole = document.querySelector('#adminSessionRole')
 const adminLogoutButton = document.querySelector('#adminLogoutButton')
@@ -43,6 +44,54 @@ function localAdminAuthResponse(message = 'Login admin richiesto.', status = 401
   )
 }
 
+function getAdminRole() {
+  return adminCurrentUser?.role || 'viewer'
+}
+
+function adminHasRole(roles = []) {
+  return roles.includes(getAdminRole())
+}
+
+function canAdminManageUsers() {
+  return adminHasRole(['owner'])
+}
+
+function canAdminViewSensitiveSettings() {
+  return adminHasRole(['owner'])
+}
+
+function showAdminPermissionNotice(message = 'Permessi insufficienti.') {
+  if (!adminSessionBar) return
+
+  let notice = document.querySelector('#adminPermissionNotice')
+
+  if (!notice) {
+    notice = document.createElement('p')
+    notice.id = 'adminPermissionNotice'
+    notice.className = 'admin-permission-notice'
+    adminSessionBar.appendChild(notice)
+  }
+
+  notice.textContent = message
+}
+
+function applyAdminPermissionUi() {
+  document.body.dataset.adminRole = getAdminRole()
+
+  const canManageUsers = canAdminManageUsers()
+  const canViewSettings = canAdminViewSensitiveSettings()
+
+  if (adminUserForm) adminUserForm.hidden = !canManageUsers
+  if (refreshAdminUsersButton) refreshAdminUsersButton.disabled = !canManageUsers
+
+  if (themeSettingsButton) {
+    themeSettingsButton.disabled = !canViewSettings
+    themeSettingsButton.title = canViewSettings
+      ? ''
+      : 'Permessi insufficienti per modificare impostazioni sensibili.'
+  }
+}
+
 window.fetch = async (resource, options) => {
   const protectedAdminRequest = isProtectedAdminRequest(resource)
 
@@ -54,6 +103,18 @@ window.fetch = async (resource, options) => {
 
   if (protectedAdminRequest && response.status === 401) {
     showAdminLogin('Sessione scaduta. Effettua di nuovo il login.')
+  }
+
+  if (protectedAdminRequest && response.status === 403) {
+    response
+      .clone()
+      .json()
+      .then((data) => {
+        showAdminPermissionNotice(data.message || 'Permessi insufficienti.')
+      })
+      .catch(() => {
+        showAdminPermissionNotice()
+      })
   }
 
   return response
@@ -97,6 +158,8 @@ function showAdminApp(user) {
   if (adminApp) adminApp.hidden = false
   if (adminSessionName) adminSessionName.textContent = user?.name || user?.email || 'Admin'
   if (adminSessionRole) adminSessionRole.textContent = user?.role || 'viewer'
+
+  applyAdminPermissionUi()
 }
 
 function refreshAdminDataAfterAuth() {
@@ -2714,6 +2777,14 @@ function fillAdminUserForm(user) {
 
 async function loadAdminUsers() {
   if (!adminUsersList) return
+
+  if (!canAdminManageUsers()) {
+    adminUsersList.textContent = 'Permessi insufficienti per gestire gli utenti admin.'
+    if (adminUserForm) adminUserForm.hidden = true
+    return
+  }
+
+  if (adminUserForm) adminUserForm.hidden = false
   adminUsersList.textContent = 'Caricamento utenti...'
 
   try {
@@ -2772,6 +2843,12 @@ async function loadAdminUsers() {
 
 adminUserForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
+
+  if (!canAdminManageUsers()) {
+    adminUserMessage.textContent = 'Permessi insufficienti.'
+    return
+  }
+
   adminUserMessage.textContent = 'Salvataggio utente...'
   const id = document.querySelector('#adminUserId').value
 
@@ -2812,6 +2889,12 @@ const refreshActivityButton = document.querySelector('#refreshActivityButton')
 
 async function loadActivityLog() {
   if (!activityLogList) return
+
+  if (!canAdminViewSensitiveSettings()) {
+    activityLogList.textContent = 'Permessi insufficienti per leggere l\'activity log.'
+    return
+  }
+
   activityLogList.textContent = 'Caricamento activity log...'
 
   try {
@@ -3917,6 +4000,11 @@ const settingOptions = {
 }
 
 function openThemeSettingsDrawer() {
+  if (!canAdminViewSensitiveSettings()) {
+    showAdminPermissionNotice('Permessi insufficienti per modificare impostazioni sensibili.')
+    return
+  }
+
   themeSettingsDrawer?.classList.add('open')
 
   if (themeSettingsOverlay) {
@@ -4043,6 +4131,11 @@ function renderThemeSettings(settings = []) {
 async function loadThemeSettings() {
   if (!themeSettingsGroups) return
 
+  if (!canAdminViewSensitiveSettings()) {
+    themeSettingsGroups.textContent = 'Permessi insufficienti per leggere impostazioni sensibili.'
+    return
+  }
+
   themeSettingsGroups.textContent = 'Caricamento impostazioni tema...'
 
   try {
@@ -4064,6 +4157,11 @@ async function loadThemeSettings() {
 
 async function saveThemeSettings(event) {
   event.preventDefault()
+
+  if (!canAdminViewSensitiveSettings()) {
+    themeSettingsMessage.textContent = 'Permessi insufficienti.'
+    return
+  }
 
   themeSettingsMessage.textContent = 'Salvataggio impostazioni tema...'
 

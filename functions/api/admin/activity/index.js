@@ -12,7 +12,7 @@ export async function onRequestGet({ env }) {
     `).all()
 
     return json({ success: true, logs: results || [] })
-  } catch (error) {
-    return json({ success: false, message: 'Errore caricamento activity log. Verifica la migration 0009.', error: error.message }, 500)
+  } catch {
+    return json({ success: false, message: 'Errore caricamento activity log. Verifica la configurazione admin.' }, 500)
   }
 }

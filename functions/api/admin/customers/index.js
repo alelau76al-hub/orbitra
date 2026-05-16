@@ -52,7 +52,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento clienti. Verifica che la migration checkout sia applicata.',
-        error: error.message,
       },
       500,
     )

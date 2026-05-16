@@ -76,7 +76,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento ordini. Verifica che la migration checkout sia applicata.',
-        error: error.message,
       },
       500,
     )
@@ -114,7 +113,6 @@ export async function onRequestPut({ request, env }) {
       {
         success: false,
         message: 'Errore aggiornamento ordine.',
-        error: error.message,
       },
       500,
     )

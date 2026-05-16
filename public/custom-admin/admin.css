@@ -99,6 +99,18 @@ body {
   margin-top: 0;
 }
 
+.admin-permission-notice {
+  margin: 0;
+  color: #ffcf75;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .field-help {
   margin: -2px 0 12px;
   color: #b8b8d8;

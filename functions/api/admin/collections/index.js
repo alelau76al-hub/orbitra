@@ -139,7 +139,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento collezioni.',
-        error: error.message,
       },
       500,
     )
@@ -201,7 +200,6 @@ export async function onRequestPost({ request, env }) {
       {
         success: false,
         message: 'Errore creazione collezione.',
-        error: error.message,
       },
       500,
     )
@@ -263,7 +261,6 @@ export async function onRequestPut({ request, env }) {
       {
         success: false,
         message: 'Errore aggiornamento collezione.',
-        error: error.message,
       },
       500,
     )
@@ -304,7 +301,6 @@ export async function onRequestDelete({ request, env }) {
       {
         success: false,
         message: 'Errore eliminazione collezione.',
-        error: error.message,
       },
       500,
     )

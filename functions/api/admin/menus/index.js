@@ -73,7 +73,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento menu.',
-        error: error.message,
       },
       500,
     )
@@ -219,7 +218,6 @@ export async function onRequestPost({ request, env }) {
       {
         success: false,
         message: 'Errore creazione menu.',
-        error: error.message,
       },
       500,
     )
@@ -329,7 +327,6 @@ export async function onRequestPut({ request, env }) {
       {
         success: false,
         message: 'Errore aggiornamento menu.',
-        error: error.message,
       },
       500,
     )
@@ -426,7 +423,6 @@ export async function onRequestDelete({ request, env }) {
       {
         success: false,
         message: 'Errore eliminazione menu.',
-        error: error.message,
       },
       500,
     )

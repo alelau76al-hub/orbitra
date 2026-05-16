@@ -28,6 +28,51 @@ export function normalizeRole(value = 'viewer') {
   return ADMIN_ROLES.has(value) ? value : 'viewer'
 }
 
+export function isReadMethod(method = 'GET') {
+  return ['GET', 'HEAD', 'OPTIONS'].includes(String(method).toUpperCase())
+}
+
+export function requireRole(user, allowedRoles = []) {
+  if (!user || Number(user.active) === 0) return false
+  const role = normalizeRole(user.role)
+  return allowedRoles.includes(role)
+}
+
+export function canManageUsers(user) {
+  return requireRole(user, ['owner'])
+}
+
+export function canWriteContent(user) {
+  return requireRole(user, ['owner', 'admin', 'editor'])
+}
+
+export function canWriteCommerce(user) {
+  return requireRole(user, ['owner', 'admin', 'editor'])
+}
+
+export function canManageOrders(user) {
+  return requireRole(user, ['owner', 'admin'])
+}
+
+export function canViewSensitiveSettings(user) {
+  return requireRole(user, ['owner'])
+}
+
+export function canWriteAdminArea(user) {
+  return requireRole(user, ['owner', 'admin'])
+}
+
+export function permissionDeniedResponse(message = 'Permessi insufficienti.') {
+  return json(
+    {
+      success: false,
+      authenticated: true,
+      message,
+    },
+    403,
+  )
+}
+
 export async function readBody(request) {
   try {
     return await request.json()

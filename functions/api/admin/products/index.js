@@ -272,7 +272,6 @@ export async function onRequestPost({ request, env }) {
       {
         success: false,
         message: 'Errore durante la creazione del prodotto.',
-        error: error.message,
       },
       { status: 500 },
     )
@@ -380,7 +379,6 @@ export async function onRequestPut({ request, env }) {
       {
         success: false,
         message: 'Errore durante l’aggiornamento del prodotto.',
-        error: error.message,
       },
       { status: 500 },
     )
@@ -419,7 +417,6 @@ export async function onRequestDelete({ request, env }) {
       {
         success: false,
         message: 'Errore durante la disattivazione del prodotto.',
-        error: error.message,
       },
       { status: 500 },
     )

@@ -68,7 +68,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento impostazioni.',
-        error: error.message,
       },
       500,
     )
@@ -125,7 +124,6 @@ export async function onRequestPut({ request, env }) {
       {
         success: false,
         message: 'Errore salvataggio impostazioni.',
-        error: error.message,
       },
       500,
     )
