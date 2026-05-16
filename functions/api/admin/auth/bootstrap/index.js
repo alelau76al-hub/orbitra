@@ -5,6 +5,7 @@ import {
   json,
   logAdminActivity,
   normalizeEmail,
+  PasswordHashError,
   readBody,
   validatePassword,
 } from '../../../../_shared/admin-auth.js'
@@ -78,11 +79,12 @@ async function handleBootstrap({ request, env }) {
 
   try {
     passwordData = await createPasswordHash(password)
-  } catch {
+  } catch (error) {
     return json(
       {
         success: false,
         debug_code: 'BOOTSTRAP_HASH_FAILED',
+        debug_step: error instanceof PasswordHashError ? error.debug_step : 'HASH_RESULT_INVALID',
         message: 'Non e stato possibile preparare la password. Riprova tra poco.',
       },
       500,
@@ -100,6 +102,7 @@ async function handleBootstrap({ request, env }) {
       {
         success: false,
         debug_code: 'BOOTSTRAP_HASH_FAILED',
+        debug_step: 'HASH_RESULT_INVALID',
         message: 'Hash password non valido. Riprova tra poco.',
       },
       500,

@@ -6,6 +6,14 @@ const PASSWORD_ITERATIONS = 150000
 const SESSION_TTL_SECONDS = 60 * 60 * 12
 const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
+export class PasswordHashError extends Error {
+  constructor(debugStep) {
+    super('Password hash failed')
+    this.name = 'PasswordHashError'
+    this.debug_step = debugStep
+  }
+}
+
 export function json(data, status = 200, headers = {}) {
   return Response.json(data, {
     status,
@@ -55,42 +63,6 @@ function bytesToBase64(bytes) {
   return output
 }
 
-function base64ToBytes(value) {
-  const normalized = String(value || '')
-    .replaceAll('-', '+')
-    .replaceAll('_', '/')
-    .replace(/[^A-Za-z0-9+/=]/g, '')
-
-  if (!normalized) return new Uint8Array()
-
-  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
-  const bytes = []
-
-  for (let index = 0; index < padded.length; index += 4) {
-    const first = BASE64_ALPHABET.indexOf(padded[index])
-    const second = BASE64_ALPHABET.indexOf(padded[index + 1])
-    const third = padded[index + 2] === '=' ? 0 : BASE64_ALPHABET.indexOf(padded[index + 2])
-    const fourth = padded[index + 3] === '=' ? 0 : BASE64_ALPHABET.indexOf(padded[index + 3])
-
-    if (first < 0 || second < 0 || third < 0 || fourth < 0) {
-      throw new Error('Invalid base64 data')
-    }
-
-    const triplet = (first << 18) | (second << 12) | (third << 6) | fourth
-    bytes.push((triplet >> 16) & 255)
-
-    if (padded[index + 2] !== '=') {
-      bytes.push((triplet >> 8) & 255)
-    }
-
-    if (padded[index + 3] !== '=') {
-      bytes.push(triplet & 255)
-    }
-  }
-
-  return new Uint8Array(bytes)
-}
-
 function bytesToBase64Url(bytes) {
   return bytesToBase64(bytes)
     .replaceAll('+', '-')
@@ -110,18 +82,8 @@ async function digestBase64(value) {
   return bytesToBase64(new Uint8Array(digest))
 }
 
-async function importPasswordKey(password) {
-  return getWebCrypto().subtle.importKey(
-    'raw',
-    new TextEncoder().encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits'],
-  )
-}
-
 export function bytesToHex(bytes) {
-  return [...bytes]
+  return Array.from(bytes)
     .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('')
 }
@@ -142,29 +104,39 @@ export function hexToBytes(value = '') {
   return bytes
 }
 
-async function derivePasswordBits(password, saltBytes, iterations = PASSWORD_ITERATIONS) {
-  const key = await importPasswordKey(password)
-  return getWebCrypto().subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      hash: 'SHA-256',
-      salt: saltBytes,
-      iterations: Number(iterations || PASSWORD_ITERATIONS),
-    },
-    key,
-    256,
-  )
-}
+async function derivePasswordHash(password, saltBytes, iterations = PASSWORD_ITERATIONS) {
+  const webCrypto = getWebCrypto()
+  const encoder = new TextEncoder()
+  let keyMaterial = null
 
-function safeEqual(left = '', right = '') {
-  if (left.length !== right.length) return false
-
-  let difference = 0
-  for (let index = 0; index < left.length; index += 1) {
-    difference |= left.charCodeAt(index) ^ right.charCodeAt(index)
+  try {
+    keyMaterial = await webCrypto.subtle.importKey(
+      'raw',
+      encoder.encode(password),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveBits'],
+    )
+  } catch {
+    throw new PasswordHashError('IMPORT_KEY_FAILED')
   }
 
-  return difference === 0
+  try {
+    const derivedBits = await webCrypto.subtle.deriveBits(
+      {
+        name: 'PBKDF2',
+        salt: saltBytes,
+        iterations,
+        hash: 'SHA-256',
+      },
+      keyMaterial,
+      256,
+    )
+
+    return new Uint8Array(derivedBits)
+  } catch {
+    throw new PasswordHashError('DERIVE_BITS_FAILED')
+  }
 }
 
 export function validatePassword(password = '') {
@@ -181,13 +153,28 @@ export function validatePassword(password = '') {
 }
 
 export async function createPasswordHash(password) {
-  const saltBytes = randomBytes(16)
-  const hashBytes = new Uint8Array(await derivePasswordBits(password, saltBytes, PASSWORD_ITERATIONS))
+  let webCrypto = null
+
+  try {
+    webCrypto = getWebCrypto()
+  } catch {
+    throw new PasswordHashError('CRYPTO_UNAVAILABLE')
+  }
+
+  const iterations = PASSWORD_ITERATIONS
+  const saltBytes = webCrypto.getRandomValues(new Uint8Array(16))
+  const hashBytes = await derivePasswordHash(password, saltBytes, iterations)
+  const passwordHash = bytesToHex(hashBytes)
+  const passwordSalt = bytesToHex(saltBytes)
+
+  if (passwordHash.length !== 64 || passwordSalt.length !== 32) {
+    throw new PasswordHashError('HASH_RESULT_INVALID')
+  }
 
   return {
-    password_hash: bytesToHex(hashBytes),
-    password_salt: bytesToHex(saltBytes),
-    password_iterations: PASSWORD_ITERATIONS,
+    password_hash: passwordHash,
+    password_salt: passwordSalt,
+    password_iterations: iterations,
   }
 }
 
@@ -213,10 +200,21 @@ export async function verifyPassword(password, saltHexOrUser, hashHex, iteration
 
   try {
     const saltBytes = hexToBytes(saltHex)
-    const hashBytes = new Uint8Array(
-      await derivePasswordBits(password, saltBytes, Number(passwordIterations || PASSWORD_ITERATIONS)),
+    const expectedHashBytes = hexToBytes(expectedHashHex)
+    const actualHashBytes = await derivePasswordHash(
+      password,
+      saltBytes,
+      Number(passwordIterations || PASSWORD_ITERATIONS),
     )
-    return safeEqual(bytesToHex(hashBytes), String(expectedHashHex).trim().toLowerCase())
+
+    if (actualHashBytes.length !== expectedHashBytes.length) return false
+
+    let difference = 0
+    for (let index = 0; index < actualHashBytes.length; index += 1) {
+      difference |= actualHashBytes[index] ^ expectedHashBytes[index]
+    }
+
+    return difference === 0
   } catch {
     return false
   }
