@@ -171,6 +171,12 @@
           <strong>Impostazioni</strong>
           <small>Generali, domini, utenti, privacy e operativita</small>
         </a>
+
+        <a class="hub-card" href="#apps">
+          <span>11</span>
+          <strong>Apps</strong>
+          <small>App native TakeOff e moduli interni del CMS</small>
+        </a>
       </nav>
       </aside>
 
@@ -362,10 +368,86 @@
           </a>
 
           <a class="mini-card" href="#import-export">
-            <h3>Import / Export prodotti</h3>
-            <p>Export operativo e import prodotti con preview, validazione e dry-run.</p>
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Import Export</h3>
+            <p>Apri l'app nativa per export, import controllati e workflow traduzioni.</p>
           </a>
 
+        </div>
+      </section>
+
+      <section id="apps" class="cms-area card admin-view" data-admin-view="apps">
+        <div class="section-title">
+          <div>
+            <h2>App Hub</h2>
+            <p class="section-subtitle">
+              Moduli nativi TakeOff integrati nel CMS, senza marketplace esterno o abbonamenti aggiuntivi.
+            </p>
+          </div>
+
+          <span class="status-badge">Native apps</span>
+        </div>
+
+        <div class="app-hub-panel">
+          <div>
+            <span class="app-kicker">Website Operating System</span>
+            <h3>App native per gestire operativita, contenuti e crescita del sito.</h3>
+            <p>
+              Ogni modulo resta interno al TakeOffMilan CMS: stessa sicurezza admin, stessi permessi,
+              stesso flusso di lavoro.
+            </p>
+          </div>
+        </div>
+
+        <div id="appsList" class="app-grid">
+          <a class="mini-card app-card" href="#import-export">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Import Export</h3>
+            <p>Importa, esporta e aggiorna in massa dati del sito senza app esterne.</p>
+            <strong>Attiva</strong>
+          </a>
+
+          <a class="mini-card app-card" href="#traduzioni">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Translate</h3>
+            <p>Gestione traduzioni contenuti pubblici con fallback alla lingua originale.</p>
+            <strong>Configurabile</strong>
+          </a>
+
+          <a class="mini-card app-card placeholder-card" href="#seo">
+            <span class="mini-card-status">In sviluppo</span>
+            <h3>TakeOff SEO</h3>
+            <p>Centro SEO nativo per audit, metadati e contenuti ottimizzati.</p>
+            <strong>In sviluppo</strong>
+          </a>
+
+          <a class="mini-card app-card" href="#analisi">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Analytics</h3>
+            <p>Metriche base, eventi e dati operativi integrati nel CMS.</p>
+            <strong>Configurabile</strong>
+          </a>
+
+          <a class="mini-card app-card placeholder-card" href="#editor">
+            <span class="mini-card-status">In sviluppo</span>
+            <h3>TakeOff 3D Viewer</h3>
+            <p>Viewer prodotto 3D nativo per esperienze premium e interattive.</p>
+            <strong>In sviluppo</strong>
+          </a>
+
+          <a class="mini-card app-card" href="#marketing">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Marketing</h3>
+            <p>Campagne, sconti e strumenti promozionali collegati al catalogo.</p>
+            <strong>Configurabile</strong>
+          </a>
+
+          <a class="mini-card app-card" href="#integrazioni">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Integrations</h3>
+            <p>Webhook e integrazioni non sensibili gestiti da pannello.</p>
+            <strong>Configurabile</strong>
+          </a>
         </div>
       </section>
 
@@ -578,22 +660,56 @@
       <section id="import-export" class="cms-area card admin-view" data-admin-view="import-export">
         <div class="section-title">
           <div>
-            <h2>Import / Export catalogo</h2>
-            <p class="section-subtitle">Esporta dati operativi e importa prodotti con anteprima sicura e validazione.</p>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Import Export</h2>
+            <p class="section-subtitle">
+              Importa, esporta e aggiorna in massa dati del sito senza app esterne.
+            </p>
           </div>
-          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
         </div>
 
-        <div class="content-manager">
+        <div class="app-hero-panel">
+          <div>
+            <h3>Operativita centralizzata per dati, contenuti e traduzioni.</h3>
+            <p>
+              Gestisci prodotti, collezioni, contenuti, menu e traduzioni in modo centralizzato.
+              Nessun abbonamento mensile ad app esterne.
+            </p>
+          </div>
+          <span class="status-badge">Attiva</span>
+        </div>
+
+        <div class="app-tabs">
+          <span>Export</span>
+          <span>Import</span>
+          <span>Templates</span>
+          <span>Translation package</span>
+          <span>Site package</span>
+          <span>History</span>
+        </div>
+
+        <div class="content-manager import-export-workspace">
           <section class="inner-card">
-            <h3>Export dati</h3>
+            <div class="section-title compact-title">
+              <div>
+                <h3>Export dati</h3>
+                <p class="section-subtitle">Scarica risorse singole in JSON o CSV senza modificare il database.</p>
+              </div>
+            </div>
             <label>Risorsa</label>
             <select id="exportResource">
               <option value="products">Prodotti</option>
               <option value="collections">Collezioni</option>
-              <option value="pages">Pagine</option>
               <option value="menus">Menu</option>
-              <option value="settings">Settings</option>
+              <option value="pages">Pagine</option>
+              <option value="blog">Blog</option>
+              <option value="policies">Policy</option>
+              <option value="metafields">Metafields</option>
+              <option value="translations">Traduzioni</option>
+              <option value="settings">Settings / Theme content</option>
+              <option value="sections">Sezioni</option>
+              <option value="seo">SEO metadata</option>
               <option value="customers">Clienti</option>
               <option value="orders">Ordini</option>
               <option value="backup">Backup JSON principale</option>
@@ -608,7 +724,18 @@
           </section>
 
           <section class="inner-card">
-            <h3>Import prodotti controllato</h3>
+            <div class="section-title compact-title">
+              <div>
+                <h3>Import controllato</h3>
+                <p class="section-subtitle">Crea o aggiorna record. Non elimina dati esistenti.</p>
+              </div>
+            </div>
+            <label>Risorsa import</label>
+            <select id="importResource">
+              <option value="products">Prodotti</option>
+              <option value="collections">Collezioni</option>
+              <option value="translations">Traduzioni</option>
+            </select>
             <label>Formato</label>
             <select id="importFormat">
               <option value="json">JSON</option>
@@ -616,10 +743,92 @@
             </select>
             <label>Dati import</label>
             <textarea id="importContent" placeholder='[{"name":"Prodotto","slug":"prodotto","price_cents":4900,"stock":10}]'></textarea>
-            <label class="inline-check"><input id="importDryRun" type="checkbox" checked /> Anteprima senza scrittura</label>
-            <button id="importProductsButton" type="button">Valida import</button>
+            <label class="inline-check"><input id="importDryRun" type="checkbox" checked /> Dry-run: anteprima senza scrittura</label>
+            <button id="importProductsButton" type="button">Valida / importa</button>
             <p id="importExportMessage"></p>
             <pre id="importPreview" class="admin-pre">Nessuna preview.</pre>
+          </section>
+
+          <section class="inner-card">
+            <div class="section-title compact-title">
+              <div>
+                <h3>Template scaricabili</h3>
+                <p class="section-subtitle">Parti da un formato pulito per import prodotti, collezioni e traduzioni.</p>
+              </div>
+            </div>
+            <label>Template</label>
+            <select id="templateResource">
+              <option value="products">Prodotti</option>
+              <option value="collections">Collezioni</option>
+              <option value="translations">Traduzioni</option>
+            </select>
+            <label>Formato</label>
+            <select id="templateFormat">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+            <button id="downloadTemplateButton" type="button">Scarica template</button>
+            <pre id="templatePreview" class="admin-pre">Nessun template preparato.</pre>
+          </section>
+
+          <section class="inner-card">
+            <div class="section-title compact-title">
+              <div>
+                <h3>Translation package</h3>
+                <p class="section-subtitle">
+                  Agency workflow: esporta testi traducibili, traduci esternamente e reimporta solo translated_value.
+                </p>
+              </div>
+            </div>
+            <label>Lingua target</label>
+            <select id="translationPackageLocale">
+              <option value="en">Inglese</option>
+              <option value="it">Italiano</option>
+              <option value="fr">Francese</option>
+              <option value="es">Spagnolo</option>
+              <option value="de">Tedesco</option>
+            </select>
+            <label>Formato export</label>
+            <select id="translationPackageFormat">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+            <button id="exportTranslationPackageButton" type="button">Esporta package</button>
+            <label>Import package tradotto</label>
+            <textarea id="translationPackageContent" placeholder='[{"locale":"en","entity_type":"product","entity_id":1,"field_key":"name","source_value":"Prodotto","translated_value":"Product","status":"active"}]'></textarea>
+            <label class="inline-check"><input id="translationPackageDryRun" type="checkbox" checked /> Dry-run package</label>
+            <button id="importTranslationPackageButton" type="button">Importa translation package</button>
+            <pre id="translationPackagePreview" class="admin-pre">Nessun package preparato.</pre>
+          </section>
+
+          <section class="inner-card">
+            <div class="section-title compact-title">
+              <div>
+                <h3>Site package</h3>
+                <p class="section-subtitle">
+                  Export sicuro dei contenuti configurabili del sito. Non include codice JS/CSS o file eseguibili.
+                </p>
+              </div>
+            </div>
+            <button id="exportSitePackageButton" type="button">Esporta site package</button>
+            <div class="placeholder-panel compact-panel">
+              <span class="status-badge status-badge--future">In sviluppo</span>
+              <p>Import site package completo non attivo: per sicurezza ora e disponibile solo export.</p>
+            </div>
+            <pre id="sitePackagePreview" class="admin-pre">Nessun site package esportato.</pre>
+          </section>
+
+          <section class="inner-card">
+            <div class="section-title compact-title">
+              <div>
+                <h3>History</h3>
+                <p class="section-subtitle">I job import/export avanzati saranno consolidati qui.</p>
+              </div>
+            </div>
+            <div class="placeholder-panel compact-panel">
+              <span class="status-badge status-badge--future">In sviluppo</span>
+              <p>Lo storico avanzato resta in sviluppo. Le azioni principali vengono gia registrate nell'Activity log.</p>
+            </div>
           </section>
         </div>
       </section>
@@ -1820,10 +2029,10 @@
             <p>Template e invii mock senza provider email reale.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#settings-import-export">
-            <span class="mini-card-status">In sviluppo</span>
-            <h3>Import / Export</h3>
-            <p>Backup e trasferimenti globali in sviluppo. Export operativo nel Catalogo.</p>
+          <a class="mini-card" href="#apps">
+            <span class="mini-card-status">Native apps</span>
+            <h3>App Hub</h3>
+            <p>Moduli TakeOff integrati, inclusa l'app Import Export per dati e traduzioni.</p>
           </a>
 
           <a class="mini-card" href="#tenants">
@@ -1894,13 +2103,13 @@
         <div class="section-title">
           <div>
             <h2>Import / Export impostazioni</h2>
-            <p class="section-subtitle">Backup e trasferimenti globali per configurazioni CMS.</p>
+            <p class="section-subtitle">Area legacy per configurazioni globali. L'operativita ora vive in App Hub.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
           <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>L'import/export operativo del catalogo resta in Catalogo. Questa vista separera configurazioni e backup globali.</p>
+          <p>Apri TakeOff Import Export da App Hub per export, import controllati, template e pacchetti traduzione.</p>
         </div>
       </section>
 

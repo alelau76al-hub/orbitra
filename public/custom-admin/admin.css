@@ -2447,6 +2447,114 @@ textarea {
   letter-spacing: 0.08em;
 }
 
+.app-hub-panel,
+.app-hero-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin: 18px 0;
+  padding: 20px;
+  border: 1px solid rgba(255, 106, 77, 0.18);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 106, 77, 0.14), rgba(255, 154, 60, 0.04)),
+    rgba(255, 255, 255, 0.035);
+}
+
+.app-hub-panel h3,
+.app-hero-panel h3 {
+  margin: 8px 0;
+  color: var(--admin-text);
+}
+
+.app-hub-panel p,
+.app-hero-panel p {
+  max-width: 860px;
+  margin: 0;
+  color: var(--admin-muted);
+  line-height: 1.65;
+}
+
+.app-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 106, 77, 0.22);
+  border-radius: 999px;
+  color: #ffd7cd;
+  background: rgba(255, 106, 77, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.app-card {
+  min-height: 210px;
+}
+
+.app-card strong {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 16px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  color: #0f1018;
+  background: linear-gradient(135deg, #ff6a4d, #ffb15f);
+  font-size: 12px;
+}
+
+.app-card .meta {
+  margin-top: 14px;
+}
+
+.app-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.app-tabs span {
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: var(--admin-muted);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+}
+
+.app-tabs span:first-child {
+  color: #fff3ee;
+  border-color: rgba(255, 106, 77, 0.28);
+  background: rgba(255, 106, 77, 0.11);
+}
+
+.import-export-workspace {
+  align-items: stretch;
+}
+
+.import-export-workspace .inner-card {
+  min-width: 0;
+}
+
+.compact-title {
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.compact-title .section-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
 .admin-pre {
   max-height: 280px;
   overflow: auto;
@@ -2498,6 +2606,11 @@ body[data-admin-audit-mode="true"] button.audit-disabled::after {
   .section-actions {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .app-hub-panel,
+  .app-hero-panel {
+    grid-template-columns: 1fr;
   }
 }
 

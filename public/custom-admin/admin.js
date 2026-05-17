@@ -74,6 +74,8 @@ const ADMIN_TRANSLATIONS = {
     navCheckoutDesc: 'Checkout, pagamenti, spedizioni, tasse e conferma',
     navSettings: 'Impostazioni',
     navSettingsDesc: 'Generali, domini, utenti, privacy e operativita',
+    navApps: 'Apps',
+    navAppsDesc: 'App native TakeOff e moduli interni del CMS',
     heroEyebrow: 'TakeOffMilan CMS',
     heroTitle: 'TakeOff Control Panel',
     heroText: 'Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.',
@@ -97,7 +99,10 @@ const ADMIN_TRANSLATIONS = {
     settingsTitle: 'Impostazioni admin',
     usersTitle: 'Utenti / permessi',
     performanceTitle: 'Performance produzione',
-    importExportTitle: 'Import / Export catalogo',
+    appsTitle: 'App Hub',
+    appsDesc: 'Moduli nativi TakeOff integrati nel CMS, senza marketplace esterno o abbonamenti aggiuntivi.',
+    importExportTitle: 'TakeOff Import Export',
+    importExportDesc: 'Importa, esporta e aggiorna in massa dati del sito senza app esterne.',
     statusOperational: 'Operativo',
     statusArea: 'Area',
     statusDevelopment: 'In sviluppo',
@@ -140,6 +145,8 @@ const ADMIN_TRANSLATIONS = {
     navCheckoutDesc: 'Checkout, payments, shipping, taxes and confirmation',
     navSettings: 'Settings',
     navSettingsDesc: 'General, domains, users, privacy and operations',
+    navApps: 'Apps',
+    navAppsDesc: 'TakeOff native apps and internal CMS modules',
     heroEyebrow: 'TakeOffMilan CMS',
     heroTitle: 'TakeOff Control Panel',
     heroText: 'Next Generation Website CMS to control content, catalog, checkout and settings from a proprietary panel.',
@@ -163,7 +170,10 @@ const ADMIN_TRANSLATIONS = {
     settingsTitle: 'Admin settings',
     usersTitle: 'Users / permissions',
     performanceTitle: 'Production performance',
-    importExportTitle: 'Catalog import / export',
+    appsTitle: 'App Hub',
+    appsDesc: 'TakeOff native modules integrated into the CMS without an external marketplace or extra subscriptions.',
+    importExportTitle: 'TakeOff Import Export',
+    importExportDesc: 'Import, export and bulk update site data without external apps.',
     statusOperational: 'Operational',
     statusArea: 'Area',
     statusDevelopment: 'In development',
@@ -238,6 +248,7 @@ function applyAdminTranslations() {
     ['#analisi', 'navAnalytics', 'navAnalyticsDesc'],
     ['#checkout', 'navCheckout', 'navCheckoutDesc'],
     ['#impostazioni', 'navSettings', 'navSettingsDesc'],
+    ['#apps', 'navApps', 'navAppsDesc'],
   ]
 
   navTranslations.forEach(([href, titleKey, descKey]) => {
@@ -264,7 +275,8 @@ function applyAdminTranslations() {
     ['impostazioni', 'settingsTitle'],
     ['utenti', 'usersTitle'],
     ['performance', 'performanceTitle'],
-    ['import-export', 'importExportTitle'],
+    ['apps', 'appsTitle', 'appsDesc'],
+    ['import-export', 'importExportTitle', 'importExportDesc'],
   ]
 
   viewTranslations.forEach(([view, titleKey, descKey]) => {
@@ -667,6 +679,7 @@ function refreshAdminDataAfterAuth() {
     loadDomainsAdmin,
     loadTenantsAdmin,
     loadPerformanceAdmin,
+    loadNativeApps,
     loadOrders,
     loadCustomers,
     loadMenuResources,
@@ -1187,6 +1200,148 @@ const exportPreview = document.querySelector('#exportPreview')
 const importProductsButton = document.querySelector('#importProductsButton')
 const importPreview = document.querySelector('#importPreview')
 const importExportMessage = document.querySelector('#importExportMessage')
+const appsList = document.querySelector('#appsList')
+const downloadTemplateButton = document.querySelector('#downloadTemplateButton')
+const templatePreview = document.querySelector('#templatePreview')
+const exportTranslationPackageButton = document.querySelector('#exportTranslationPackageButton')
+const importTranslationPackageButton = document.querySelector('#importTranslationPackageButton')
+const translationPackagePreview = document.querySelector('#translationPackagePreview')
+const exportSitePackageButton = document.querySelector('#exportSitePackageButton')
+const sitePackagePreview = document.querySelector('#sitePackagePreview')
+
+function stringifyPreview(data) {
+  return typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+}
+
+function downloadTextFile(filename, content, type = 'application/json') {
+  try {
+    const blob = new Blob([content], { type })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  } catch {}
+}
+
+function parseImportRows(format, content) {
+  if (format !== 'json' || !content) return []
+  const parsed = JSON.parse(content)
+  if (Array.isArray(parsed)) return parsed
+  if (Array.isArray(parsed.rows)) return parsed.rows
+  if (Array.isArray(parsed.translations)) return parsed.translations
+  if (Array.isArray(parsed.resources?.translations)) return parsed.resources.translations
+  return []
+}
+
+function renderNativeApps(apps = []) {
+  if (!appsList || !apps.length) return
+
+  appsList.innerHTML = apps
+    .map((app) => {
+      const development = app.status === 'in_development'
+      return `
+        <a class="mini-card app-card ${development ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
+          <span class="mini-card-status">${escapeHtml(development ? 'In sviluppo' : app.badge || 'Native app')}</span>
+          <h3>${escapeHtml(app.name)}</h3>
+          <p>${escapeHtml(app.description)}</p>
+          <div class="meta">
+            <span>${escapeHtml(app.category || 'Module')}</span>
+            <span>${escapeHtml(app.status_label || app.status || 'Attiva')}</span>
+          </div>
+          <strong>Apri</strong>
+        </a>
+      `
+    })
+    .join('')
+}
+
+async function loadNativeApps() {
+  if (!appsList) return
+
+  try {
+    const response = await fetch('/api/admin/apps')
+    const data = await response.json()
+
+    if (response.ok && data.success && Array.isArray(data.apps)) {
+      renderNativeApps(data.apps)
+    }
+  } catch {
+    // Il markup statico resta come fallback se l'endpoint app hub non risponde.
+  }
+}
+
+async function prepareExport(resource, format, previewElement, filenameBase, extraParams = {}) {
+  if (!previewElement) return
+
+  previewElement.textContent = 'Preparazione export...'
+
+  try {
+    const params = new URLSearchParams({
+      resource,
+      format,
+      ...extraParams,
+    })
+    const response = await fetch(`/api/admin/import-export?${params.toString()}`)
+
+    if (format === 'csv' && response.ok) {
+      const text = await response.text()
+      previewElement.textContent = text || 'Export vuoto.'
+      downloadTextFile(`${filenameBase}.csv`, text, 'text/csv;charset=utf-8')
+      return
+    }
+
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      previewElement.textContent = data.message || 'Export non disponibile.'
+      return
+    }
+
+    const text = JSON.stringify(data, null, 2)
+    previewElement.textContent = text
+    downloadTextFile(`${filenameBase}.json`, text)
+  } catch {
+    previewElement.textContent = 'Export non riuscito. Riprova.'
+  }
+}
+
+async function runImport({ resource, format, content, dryRun, previewElement, messageElement }) {
+  if (messageElement) messageElement.textContent = dryRun ? 'Validazione import...' : 'Import in corso...'
+  if (previewElement) previewElement.textContent = ''
+
+  try {
+    const rows = parseImportRows(format, content)
+    const response = await fetch('/api/admin/import-export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resource,
+        format,
+        content,
+        rows,
+        dry_run: dryRun,
+      }),
+    })
+    const data = await response.json()
+
+    if (messageElement) {
+      messageElement.textContent = data.message || (data.success ? 'Import completato.' : 'Import non disponibile.')
+    }
+    if (previewElement) previewElement.textContent = stringifyPreview(data)
+
+    if (data.success && !data.dry_run) {
+      if (resource === 'products') loadProducts()
+      if (resource === 'collections') loadCollections()
+      if (resource === 'translations' || resource === 'translation_package') loadTranslationManager()
+    }
+  } catch {
+    if (messageElement) messageElement.textContent = 'Import non riuscito. Verifica formato e riprova.'
+    if (previewElement) previewElement.textContent = 'Il contenuto deve essere JSON valido o CSV coerente con il template.'
+  }
+}
 
 exportDataButton?.addEventListener('click', async () => {
   const resource = document.querySelector('#exportResource').value
@@ -1197,64 +1352,45 @@ exportDataButton?.addEventListener('click', async () => {
     formatSelect.value = 'json'
   }
 
-  exportPreview.textContent = 'Preparazione export...'
-
-  try {
-    const response = await fetch(
-      `/api/admin/import-export?resource=${encodeURIComponent(resource)}&format=${encodeURIComponent(format)}`,
-    )
-
-    if (format === 'csv') {
-      exportPreview.textContent = await response.text()
-      return
-    }
-
-    const data = await response.json()
-    if (!response.ok || !data.success) {
-      exportPreview.textContent = data.message || 'Export non disponibile.'
-      return
-    }
-
-    exportPreview.textContent = JSON.stringify(data, null, 2)
-  } catch {
-    exportPreview.textContent = 'Errore export.'
-  }
+  prepareExport(resource, format, exportPreview, resource)
 })
 
 importProductsButton?.addEventListener('click', async () => {
-  importExportMessage.textContent = 'Validazione import...'
-  importPreview.textContent = ''
+  runImport({
+    resource: document.querySelector('#importResource')?.value || 'products',
+    format: document.querySelector('#importFormat')?.value || 'json',
+    content: document.querySelector('#importContent')?.value.trim() || '',
+    dryRun: document.querySelector('#importDryRun')?.checked !== false,
+    previewElement: importPreview,
+    messageElement: importExportMessage,
+  })
+})
 
-  try {
-    const format = document.querySelector('#importFormat').value
-    const content = document.querySelector('#importContent').value.trim()
-    let rows = []
+downloadTemplateButton?.addEventListener('click', () => {
+  const target = document.querySelector('#templateResource')?.value || 'products'
+  const format = document.querySelector('#templateFormat')?.value || 'json'
+  prepareExport('template', format, templatePreview, `${target}-template`, { target })
+})
 
-    if (format === 'json' && content) {
-      rows = JSON.parse(content)
-    }
+exportTranslationPackageButton?.addEventListener('click', () => {
+  const locale = document.querySelector('#translationPackageLocale')?.value || 'en'
+  const format = document.querySelector('#translationPackageFormat')?.value || 'json'
+  prepareExport('translation_package', format, translationPackagePreview, `translation-package-${locale}`, { locale })
+})
 
-    const response = await fetch('/api/admin/import-export', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        format,
-        content,
-        rows,
-        dry_run: document.querySelector('#importDryRun').checked,
-      }),
-    })
-    const data = await response.json()
+importTranslationPackageButton?.addEventListener('click', () => {
+  runImport({
+    resource: 'translation_package',
+    format: document.querySelector('#translationPackageFormat')?.value || 'json',
+    content: document.querySelector('#translationPackageContent')?.value.trim() || '',
+    dryRun: document.querySelector('#translationPackageDryRun')?.checked !== false,
+    previewElement: translationPackagePreview,
+    messageElement: null,
+  })
+})
 
-    importExportMessage.textContent = data.message || (data.success ? 'Import validato.' : 'Errore import.')
-    importPreview.textContent = JSON.stringify(data, null, 2)
-
-    if (data.success && !data.dry_run) {
-      loadProducts()
-    }
-  } catch (error) {
-    importExportMessage.textContent = 'Import non riuscito. Verifica formato e riprova.'
-  }
+exportSitePackageButton?.addEventListener('click', () => {
+  prepareExport('site_package', 'json', sitePackagePreview, 'site-package')
 })
 
 // ===============================
@@ -1672,7 +1808,8 @@ function setupAdminViews() {
       view.hidden = view.dataset.adminView !== activeView
     })
 
-    const catalogoViews = ['prodotti', 'collezioni', 'inventario', 'import-export']
+    const catalogoViews = ['prodotti', 'collezioni', 'inventario']
+    const appsViews = ['import-export']
     const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy', 'traduzioni']
     const marketingViews = [
       'marketing-campaigns',
@@ -1720,17 +1857,19 @@ function setupAdminViews() {
       ? '#contenuto'
       : catalogoViews.includes(activeView)
         ? '#catalogo'
-        : marketingViews.includes(activeView)
-          ? '#marketing'
-          : marketsViews.includes(activeView)
-            ? '#markets'
-            : analyticsViews.includes(activeView)
-              ? '#analisi'
-              : checkoutViews.includes(activeView)
-                ? '#checkout'
-                : impostazioniViews.includes(activeView)
-                  ? '#impostazioni'
-                  : `#${activeView}`
+        : appsViews.includes(activeView)
+          ? '#apps'
+          : marketingViews.includes(activeView)
+            ? '#marketing'
+            : marketsViews.includes(activeView)
+              ? '#markets'
+              : analyticsViews.includes(activeView)
+                ? '#analisi'
+                : checkoutViews.includes(activeView)
+                  ? '#checkout'
+                  : impostazioniViews.includes(activeView)
+                    ? '#impostazioni'
+                    : `#${activeView}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
