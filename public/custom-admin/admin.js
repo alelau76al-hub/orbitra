@@ -12,6 +12,8 @@ const adminLogoutButton = document.querySelector('#adminLogoutButton')
 const adminThemeToggle = document.querySelector('#adminThemeToggle')
 const adminEntryScreen = document.querySelector('#adminEntryScreen')
 const adminEntryEnterButton = document.querySelector('#adminEntryEnterButton')
+const adminEntryCountdownLabel = document.querySelector('#adminEntryCountdownLabel')
+const adminEntryCountdownNumber = document.querySelector('#adminEntryCountdownNumber')
 const adminDashboardCounters = {
   products: document.querySelector('#dashboardProductsCount'),
   collections: document.querySelector('#dashboardCollectionsCount'),
@@ -48,6 +50,7 @@ const ADMIN_DEFAULT_LANGUAGE = 'it'
 const ADMIN_THEME_STORAGE_KEY = 'takeoff_admin_theme_v1'
 const ADMIN_DEFAULT_THEME = 'dark'
 const ADMIN_ENTRY_STORAGE_KEY = 'takeoff_admin_entry_seen_v1'
+const ADMIN_ENTRY_DURATION_SECONDS = 5
 const ADMIN_TRANSLATIONS = {
   it: {
     documentTitle: 'TakeOffMilan CMS',
@@ -69,6 +72,7 @@ const ADMIN_TRANSLATIONS = {
     entryTitle: 'TakeOffMilan CMS',
     entrySubtitle: 'Il futuro dei siti web',
     entryClaim: 'Powerful. Flexible. Custom.',
+    entryCountdown: 'Il tuo CMS si aprirà tra',
     entryButton: 'Enter CMS',
     themeLight: 'Light mode',
     themeDark: 'Dark mode',
@@ -113,6 +117,9 @@ const ADMIN_TRANSLATIONS = {
     heroText: 'Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.',
     editorTitle: 'Editor visuale sito',
     editorDesc: 'Personalizza sezioni, contenuti e impostazioni del sito cliente senza toccare codice.',
+    previewDesktop: 'Desktop preview',
+    previewTablet: 'Tablet preview',
+    previewMobile: 'Mobile preview',
     catalogTitle: 'Catalogo',
     catalogDesc: 'Gestisci prodotti, collezioni, stock, immagini e struttura commerciale del sito.',
     productsTitle: 'Prodotti',
@@ -179,6 +186,7 @@ const ADMIN_TRANSLATIONS = {
     entryTitle: 'TakeOffMilan CMS',
     entrySubtitle: 'The future of websites',
     entryClaim: 'Powerful. Flexible. Custom.',
+    entryCountdown: 'Your CMS opens in',
     entryButton: 'Enter CMS',
     themeLight: 'Light mode',
     themeDark: 'Dark mode',
@@ -223,6 +231,9 @@ const ADMIN_TRANSLATIONS = {
     heroText: 'Next Generation Website CMS to control content, catalog, checkout and settings from a proprietary panel.',
     editorTitle: 'Visual site editor',
     editorDesc: 'Customize sections, content and client site settings without touching code.',
+    previewDesktop: 'Desktop preview',
+    previewTablet: 'Tablet preview',
+    previewMobile: 'Mobile preview',
     catalogTitle: 'Catalog',
     catalogDesc: 'Manage products, collections, stock, images and commercial structure.',
     productsTitle: 'Products',
@@ -362,6 +373,7 @@ function applyAdminTranslations() {
   setAdminText('.admin-entry-kicker', 'entryClaim')
   setAdminText('.admin-entry-content h1', 'entryTitle')
   setAdminText('.admin-entry-content h2', 'entrySubtitle')
+  setAdminText('#adminEntryCountdownLabel', 'entryCountdown')
   setAdminText('#adminEntryEnterButton', 'entryButton')
   setAdminText('.hero.admin-hero p', 'heroEyebrow')
   setAdminText('.hero.admin-hero h1', 'heroTitle')
@@ -507,6 +519,8 @@ applyAdminTranslations()
 let adminCurrentUser = null
 let adminAllowProtectedFetches = false
 let adminAuditObserver = null
+let adminEntryCountdownTimer = null
+let adminEntryCountdownInterval = null
 
 function isProtectedAdminRequest(resource) {
   const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
@@ -808,6 +822,10 @@ function showAdminLogin(message = '') {
 
 function hideAdminEntryScreen() {
   if (!adminEntryScreen) return
+  if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
+  if (adminEntryCountdownInterval) window.clearInterval(adminEntryCountdownInterval)
+  adminEntryCountdownTimer = null
+  adminEntryCountdownInterval = null
   adminEntryScreen.hidden = true
   adminEntryScreen.classList.remove('is-visible')
   try {
@@ -826,14 +844,26 @@ function shouldShowAdminEntryScreen() {
 function showAdminEntryScreen() {
   if (!adminEntryScreen || !shouldShowAdminEntryScreen()) return
 
+  if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
+  if (adminEntryCountdownInterval) window.clearInterval(adminEntryCountdownInterval)
+
+  let secondsLeft = ADMIN_ENTRY_DURATION_SECONDS
+  if (adminEntryCountdownNumber) adminEntryCountdownNumber.textContent = String(secondsLeft)
+  if (adminEntryCountdownLabel) adminEntryCountdownLabel.textContent = adminT('entryCountdown')
+
   adminEntryScreen.hidden = false
   window.requestAnimationFrame(() => {
     adminEntryScreen.classList.add('is-visible')
   })
 
-  window.setTimeout(() => {
+  adminEntryCountdownInterval = window.setInterval(() => {
+    secondsLeft = Math.max(1, secondsLeft - 1)
+    if (adminEntryCountdownNumber) adminEntryCountdownNumber.textContent = String(secondsLeft)
+  }, 1000)
+
+  adminEntryCountdownTimer = window.setTimeout(() => {
     if (!adminEntryScreen.hidden) hideAdminEntryScreen()
-  }, 3200)
+  }, ADMIN_ENTRY_DURATION_SECONDS * 1000)
 }
 
 function showAdminApp(user) {
@@ -6459,6 +6489,9 @@ if (themeSettingsForm) {
 // ===============================
 
 const sitePreview = document.querySelector('#sitePreview')
+const previewShell = document.querySelector('.editor-preview-shell')
+const previewDeviceLabel = document.querySelector('#previewDeviceLabel')
+const previewDeviceButtons = document.querySelectorAll('[data-preview-device]')
 const editorPageSelect = document.querySelector('#editorPageSelect')
 const sectionsList = document.querySelector('#sectionsList')
 const sectionFields = document.querySelector('#sectionFields')
@@ -6471,6 +6504,32 @@ const sectionMessage = document.querySelector('#sectionMessage')
 let pageSections = []
 let selectedSectionId = null
 let currentEditorPageSlug = 'home'
+
+function setPreviewDevice(device = 'desktop') {
+  const nextDevice = ['desktop', 'tablet', 'mobile'].includes(device) ? device : 'desktop'
+  if (previewShell) previewShell.dataset.previewDevice = nextDevice
+
+  previewDeviceButtons.forEach((button) => {
+    const isActive = button.dataset.previewDevice === nextDevice
+    button.classList.toggle('active', isActive)
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
+  })
+
+  if (previewDeviceLabel) {
+    const labelKey = {
+      desktop: 'previewDesktop',
+      tablet: 'previewTablet',
+      mobile: 'previewMobile',
+    }[nextDevice]
+    previewDeviceLabel.textContent = adminT(labelKey)
+  }
+}
+
+previewDeviceButtons.forEach((button) => {
+  button.addEventListener('click', () => setPreviewDevice(button.dataset.previewDevice))
+})
+
+setPreviewDevice('desktop')
 
 function getEditorPreviewUrl(pageSlug) {
   if (pageSlug === 'home') {

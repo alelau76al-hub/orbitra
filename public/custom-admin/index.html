@@ -80,6 +80,10 @@
         <p class="admin-entry-kicker">Powerful. Flexible. Custom.</p>
         <h1>TakeOffMilan CMS</h1>
         <h2>Il futuro dei siti web</h2>
+        <div class="admin-entry-countdown" aria-live="polite">
+          <span id="adminEntryCountdownLabel">Il tuo CMS si aprirà tra</span>
+          <strong id="adminEntryCountdownNumber">5</strong>
+        </div>
         <button id="adminEntryEnterButton" type="button">Enter CMS</button>
       </div>
     </section>
@@ -313,13 +317,20 @@
       <section id="editor" class="visual-editor card admin-view" data-admin-view="editor">
         <div class="section-title editor-title-bar">
   <div>
-    <h2>Editor visuale sito</h2>
+    <p class="editor-kicker">Main feature</p>
+    <h2>Visual Editor</h2>
     <p class="section-subtitle">
-      Personalizza sezioni, contenuti e impostazioni del sito cliente senza toccare codice.
+      Il cuore del CMS: costruisci, controlla e verifica il sito in tempo reale su desktop, tablet e mobile.
     </p>
   </div>
 
   <div class="editor-title-actions">
+    <div class="preview-device-toggle" role="group" aria-label="Formato preview">
+      <button type="button" class="active" data-preview-device="desktop">Desktop</button>
+      <button type="button" data-preview-device="tablet">Tablet</button>
+      <button type="button" data-preview-device="mobile">Mobile</button>
+    </div>
+
     <button id="themeSettingsButton" class="icon-button" type="button">
       <span aria-hidden="true">&#9881;</span>
       Impostazioni tema
@@ -330,12 +341,23 @@
 </div>
 
         <div class="editor-layout">
-          <iframe
-            id="sitePreview"
-            class="site-preview"
-            src="/?preview=admin"
-            title="Anteprima sito"
-          ></iframe>
+          <section class="editor-preview-shell" data-preview-device="desktop">
+            <div class="editor-preview-head">
+              <div>
+                <span class="preview-status-dot"></span>
+                <strong id="previewDeviceLabel">Desktop preview</strong>
+              </div>
+              <small>Live canvas</small>
+            </div>
+            <div class="site-preview-frame">
+              <iframe
+                id="sitePreview"
+                class="site-preview"
+                src="/?preview=admin"
+                title="Anteprima sito"
+              ></iframe>
+            </div>
+          </section>
 
           <div class="editor-panel">
             <label>Pagina da modificare</label>
