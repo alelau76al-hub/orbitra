@@ -671,6 +671,7 @@ function refreshAdminDataAfterAuth() {
     loadMediaItems,
     loadMetafieldResources,
     loadMarketsAdmin,
+    loadLocalizedPricingAdmin,
     loadAnalyticsDashboard,
     loadIntegrations,
     loadAdminUsers,
@@ -3627,6 +3628,32 @@ const refreshMarketsButton = document.querySelector('#refreshMarketsButton')
 const marketFormTitle = document.querySelector('#marketFormTitle')
 const marketSubmitButton = document.querySelector('#marketSubmitButton')
 const cancelMarketEdit = document.querySelector('#cancelMarketEdit')
+const marketCountriesList = document.querySelector('#marketCountriesList')
+const marketLanguagesList = document.querySelector('#marketLanguagesList')
+const marketCurrenciesList = document.querySelector('#marketCurrenciesList')
+const localizedPriceForm = document.querySelector('#localizedPriceForm')
+const localizedPriceProduct = document.querySelector('#localizedPriceProduct')
+const localizedPriceVariant = document.querySelector('#localizedPriceVariant')
+const localizedPriceMarket = document.querySelector('#localizedPriceMarket')
+const localizedPriceCurrency = document.querySelector('#localizedPriceCurrency')
+const localizedPriceAmount = document.querySelector('#localizedPriceAmount')
+const localizedPriceActive = document.querySelector('#localizedPriceActive')
+const localizedPriceMessage = document.querySelector('#localizedPriceMessage')
+const localizedPricesList = document.querySelector('#localizedPricesList')
+const refreshLocalizedPricesButton = document.querySelector('#refreshLocalizedPricesButton')
+
+let adminMarketsData = {
+  markets: [],
+  languages: [],
+  currencies: [],
+  countries: [],
+}
+let localizedPricingData = {
+  products: [],
+  variants: [],
+  markets: [],
+  prices: [],
+}
 
 function resetMarketForm() {
   if (!marketForm) return
@@ -3647,6 +3674,9 @@ function fillMarketForm(market) {
   document.querySelector('#marketCountryCode').value = market.country_code || 'IT'
   document.querySelector('#marketLanguageCode').value = market.language_code || 'it'
   document.querySelector('#marketCurrencyCode').value = market.currency_code || 'EUR'
+  document.querySelector('#marketDomain').value = market.domain || ''
+  document.querySelector('#marketPathPrefix').value = market.path_prefix || ''
+  document.querySelector('#marketNotes').value = market.notes || ''
   document.querySelector('#marketActive').checked = Number(market.active) !== 0
   document.querySelector('#marketDefault').checked = Number(market.is_default) === 1
   marketFormTitle.textContent = 'Modifica mercato'
@@ -3662,9 +3692,65 @@ function readMarketPayload() {
     country_code: document.querySelector('#marketCountryCode').value.trim(),
     language_code: document.querySelector('#marketLanguageCode').value.trim(),
     currency_code: document.querySelector('#marketCurrencyCode').value.trim(),
+    domain: document.querySelector('#marketDomain').value.trim(),
+    path_prefix: document.querySelector('#marketPathPrefix').value.trim(),
+    notes: document.querySelector('#marketNotes').value.trim(),
     active: document.querySelector('#marketActive').checked,
     is_default: document.querySelector('#marketDefault').checked,
   }
+}
+
+function renderMarketConfigList(target, items, config) {
+  if (!target) return
+
+  if (!items.length) {
+    target.innerHTML = '<p class="admin-empty">Nessun dato configurato. Applica la migration Markets 2.0 per abilitare questa lista.</p>'
+    return
+  }
+
+  target.innerHTML = items
+    .map(
+      (item) => `
+        <article class="market-config-item">
+          <div>
+            <strong>${escapeHtml(config.title(item))}</strong>
+            <span>${escapeHtml(config.subtitle(item))}</span>
+          </div>
+          <div class="meta">
+            ${config.meta(item)
+              .map((value) => `<span>${escapeHtml(value)}</span>`)
+              .join('')}
+          </div>
+        </article>
+      `,
+    )
+    .join('')
+}
+
+function renderMarketsMetadata(data = adminMarketsData) {
+  renderMarketConfigList(marketCountriesList, data.countries || [], {
+    title: (item) => `${item.country_code} - ${item.name}`,
+    subtitle: (item) => item.market_handle ? `Mercato: ${item.market_handle}` : 'Nessun mercato dedicato',
+    meta: (item) => [Number(item.active) === 0 ? 'Disattivo' : 'Attivo'],
+  })
+
+  renderMarketConfigList(marketLanguagesList, data.languages || [], {
+    title: (item) => `${item.locale?.toUpperCase()} - ${item.name}`,
+    subtitle: (item) => item.native_name || item.name,
+    meta: (item) => [
+      Number(item.is_default) === 1 ? 'Default' : 'Fallback disponibile',
+      Number(item.active) === 0 ? 'Disattiva' : 'Attiva',
+    ],
+  })
+
+  renderMarketConfigList(marketCurrenciesList, data.currencies || [], {
+    title: (item) => `${item.code} - ${item.name}`,
+    subtitle: (item) => item.symbol || item.code,
+    meta: (item) => [
+      Number(item.is_default) === 1 ? 'Default' : `Rate manuale: ${item.manual_rate || 1}`,
+      Number(item.active) === 0 ? 'Disattiva' : 'Attiva',
+    ],
+  })
 }
 
 async function loadMarketsAdmin() {
@@ -3680,12 +3766,22 @@ async function loadMarketsAdmin() {
       return
     }
 
-    if (!data.markets.length) {
+    adminMarketsData = {
+      markets: data.markets || [],
+      languages: data.languages || [],
+      currencies: data.currencies || [],
+      countries: data.countries || [],
+    }
+    renderMarketsMetadata(adminMarketsData)
+
+    const markets = data.markets || []
+
+    if (!markets.length) {
       marketsList.textContent = 'Nessun mercato.'
       return
     }
 
-    marketsList.innerHTML = data.markets
+    marketsList.innerHTML = markets
       .map(
         (market) => `
           <article class="product-item">
@@ -3694,9 +3790,12 @@ async function loadMarketsAdmin() {
               <span>${escapeHtml(market.handle)}</span>
               <span>${escapeHtml(market.country_code)} / ${escapeHtml(market.language_code)}</span>
               <span>${escapeHtml(market.currency_code)}</span>
+              ${market.path_prefix ? `<span>Path: ${escapeHtml(market.path_prefix)}</span>` : ''}
+              ${market.domain ? `<span>Dominio: ${escapeHtml(market.domain)}</span>` : ''}
               <span>${market.is_default ? 'Default' : 'Non default'}</span>
               <span>${market.active ? 'Attivo' : 'Disattivo'}</span>
             </div>
+            ${market.notes ? `<p>${escapeHtml(market.notes)}</p>` : ''}
             <div class="product-actions">
               <button type="button" data-edit-market="${market.id}">Modifica</button>
               <button type="button" class="danger" data-disable-market="${market.id}">Disattiva</button>
@@ -3708,7 +3807,7 @@ async function loadMarketsAdmin() {
 
     document.querySelectorAll('[data-edit-market]').forEach((button) => {
       button.addEventListener('click', () => {
-        const market = data.markets.find((item) => item.id === Number(button.dataset.editMarket))
+        const market = markets.find((item) => item.id === Number(button.dataset.editMarket))
         fillMarketForm(market)
       })
     })
@@ -3724,6 +3823,8 @@ async function loadMarketsAdmin() {
         loadMarketsAdmin()
       })
     })
+
+    loadLocalizedPricingAdmin()
   } catch {
     marketsList.textContent = 'Errore di connessione markets.'
   }
@@ -3746,6 +3847,7 @@ marketForm?.addEventListener('submit', async (event) => {
     if (data.success) {
       resetMarketForm()
       loadMarketsAdmin()
+      loadLocalizedPricingAdmin()
     }
   } catch {
     marketMessage.textContent = 'Errore di connessione markets.'
@@ -3755,6 +3857,221 @@ marketForm?.addEventListener('submit', async (event) => {
 cancelMarketEdit?.addEventListener('click', resetMarketForm)
 refreshMarketsButton?.addEventListener('click', loadMarketsAdmin)
 loadMarketsAdmin()
+
+function resetLocalizedPriceForm() {
+  localizedPriceForm?.reset()
+  const idField = document.querySelector('#localizedPriceId')
+  if (idField) idField.value = ''
+  if (localizedPriceActive) localizedPriceActive.checked = true
+  if (localizedPriceMessage) localizedPriceMessage.textContent = ''
+  updateLocalizedVariantOptions()
+}
+
+function centsToAdminPrice(priceCents = 0) {
+  return Number(priceCents || 0) / 100
+}
+
+function localizedPriceLabel(price) {
+  return new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: price.currency_code || 'EUR',
+  }).format(Number(price.price_cents || 0) / 100)
+}
+
+function updateLocalizedVariantOptions() {
+  if (!localizedPriceProduct || !localizedPriceVariant) return
+
+  const productId = Number(localizedPriceProduct.value || 0)
+  const variants = localizedPricingData.variants.filter((variant) => Number(variant.product_id) === productId)
+
+  localizedPriceVariant.innerHTML = [
+    '<option value="0">Prezzo prodotto base</option>',
+    ...variants.map(
+      (variant) => `
+        <option value="${variant.id}">
+          ${escapeHtml(variant.option_name)}: ${escapeHtml(variant.option_value)}
+        </option>
+      `,
+    ),
+  ].join('')
+}
+
+function renderLocalizedPriceOptions() {
+  if (!localizedPriceProduct || !localizedPriceMarket || !localizedPriceCurrency) return
+
+  localizedPriceProduct.innerHTML = localizedPricingData.products.length
+    ? localizedPricingData.products
+        .map(
+          (product) => `
+            <option value="${product.id}">
+              ${escapeHtml(product.name)} - ${formatMoney(product.price_cents || 0)}
+            </option>
+          `,
+        )
+        .join('')
+    : '<option value="">Nessun prodotto disponibile</option>'
+
+  localizedPriceMarket.innerHTML = localizedPricingData.markets.length
+    ? localizedPricingData.markets
+        .map(
+          (market) => `
+            <option value="${escapeHtml(market.handle)}" data-currency="${escapeHtml(market.currency_code || 'EUR')}">
+              ${escapeHtml(market.name)} (${escapeHtml(market.currency_code || 'EUR')})
+            </option>
+          `,
+        )
+        .join('')
+    : '<option value="it-eur" data-currency="EUR">Italia / EUR</option>'
+
+  localizedPriceCurrency.innerHTML = (adminMarketsData.currencies.length
+    ? adminMarketsData.currencies
+    : [{ code: 'EUR', name: 'Euro' }]
+  )
+    .map(
+      (currency) => `
+        <option value="${escapeHtml(currency.code)}">
+          ${escapeHtml(currency.code)} - ${escapeHtml(currency.name || currency.code)}
+        </option>
+      `,
+    )
+    .join('')
+
+  const selectedMarketOption = localizedPriceMarket.selectedOptions?.[0]
+  if (selectedMarketOption?.dataset.currency) {
+    localizedPriceCurrency.value = selectedMarketOption.dataset.currency
+  }
+
+  updateLocalizedVariantOptions()
+}
+
+function renderLocalizedPricesList() {
+  if (!localizedPricesList) return
+
+  if (!localizedPricingData.prices.length) {
+    localizedPricesList.innerHTML = '<p class="admin-empty">Nessun prezzo localizzato configurato. Lo storefront usera il prezzo base.</p>'
+    return
+  }
+
+  localizedPricesList.innerHTML = localizedPricingData.prices
+    .map((price) => {
+      const variantLabel = price.variant_id
+        ? `${price.variant_option_name || 'Variante'}: ${price.variant_option_value || price.variant_id}`
+        : 'Prodotto base'
+
+      return `
+        <article class="product-item">
+          <h3>${escapeHtml(price.product_name || `Prodotto ${price.product_id}`)}</h3>
+          <p>${escapeHtml(variantLabel)}</p>
+          <div class="meta">
+            <span>${escapeHtml(price.market_handle || 'market')}</span>
+            <span>${escapeHtml(price.currency_code || 'EUR')}</span>
+            <span>${escapeHtml(localizedPriceLabel(price))}</span>
+            <span>${Number(price.active) === 0 ? 'Disattivo' : 'Attivo'}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-localized-price="${price.id}">Modifica</button>
+            <button type="button" class="danger" data-disable-localized-price="${price.id}">Disattiva</button>
+          </div>
+        </article>
+      `
+    })
+    .join('')
+
+  document.querySelectorAll('[data-edit-localized-price]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const price = localizedPricingData.prices.find((item) => item.id === Number(button.dataset.editLocalizedPrice))
+      if (!price) return
+
+      document.querySelector('#localizedPriceId').value = price.id
+      localizedPriceProduct.value = price.product_id
+      updateLocalizedVariantOptions()
+      localizedPriceVariant.value = String(price.variant_id || 0)
+      localizedPriceMarket.value = price.market_handle || ''
+      localizedPriceCurrency.value = price.currency_code || 'EUR'
+      localizedPriceAmount.value = centsToAdminPrice(price.price_cents)
+      localizedPriceActive.checked = Number(price.active) !== 0
+      localizedPriceMessage.textContent = 'Prezzo caricato nel form.'
+    })
+  })
+
+  document.querySelectorAll('[data-disable-localized-price]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await fetch('/api/admin/localized-pricing', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Number(button.dataset.disableLocalizedPrice) }),
+      })
+      loadLocalizedPricingAdmin()
+    })
+  })
+}
+
+async function loadLocalizedPricingAdmin() {
+  if (!localizedPricesList && !localizedPriceForm) return
+  if (localizedPricesList) localizedPricesList.textContent = 'Caricamento prezzi localizzati...'
+
+  try {
+    const response = await fetch('/api/admin/localized-pricing')
+    const data = await response.json()
+
+    if (!data.success) {
+      if (localizedPricesList) localizedPricesList.textContent = data.message || 'Prezzi localizzati non disponibili.'
+      return
+    }
+
+    localizedPricingData = {
+      products: data.products || [],
+      variants: data.variants || [],
+      markets: data.markets || adminMarketsData.markets || [],
+      prices: data.prices || [],
+    }
+    renderLocalizedPriceOptions()
+    renderLocalizedPricesList()
+  } catch {
+    if (localizedPricesList) localizedPricesList.textContent = 'Errore di connessione prezzi localizzati.'
+  }
+}
+
+localizedPriceProduct?.addEventListener('change', updateLocalizedVariantOptions)
+localizedPriceMarket?.addEventListener('change', () => {
+  const option = localizedPriceMarket.selectedOptions?.[0]
+  if (option?.dataset.currency && localizedPriceCurrency) localizedPriceCurrency.value = option.dataset.currency
+})
+
+localizedPriceForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  localizedPriceMessage.textContent = 'Salvataggio prezzo localizzato...'
+
+  const payload = {
+    id: document.querySelector('#localizedPriceId').value,
+    product_id: Number(localizedPriceProduct.value || 0),
+    variant_id: Number(localizedPriceVariant.value || 0),
+    market_handle: localizedPriceMarket.value,
+    currency_code: localizedPriceCurrency.value,
+    price: localizedPriceAmount.value,
+    active: localizedPriceActive.checked,
+  }
+
+  try {
+    const response = await fetch('/api/admin/localized-pricing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    localizedPriceMessage.textContent = data.message || 'Prezzo localizzato salvato.'
+
+    if (data.success) {
+      resetLocalizedPriceForm()
+      loadLocalizedPricingAdmin()
+    }
+  } catch {
+    localizedPriceMessage.textContent = 'Errore di connessione prezzi localizzati.'
+  }
+})
+
+refreshLocalizedPricesButton?.addEventListener('click', loadLocalizedPricingAdmin)
+loadLocalizedPricingAdmin()
 
 // ===============================
 // ANALYTICS

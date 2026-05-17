@@ -285,6 +285,65 @@ async function loadExportRows(env, resource) {
     )
   }
 
+  if (resource === 'markets') {
+    return safeAll(
+      env,
+      `
+      SELECT id, handle, name, country_code, language_code, currency_code, active, is_default, domain, path_prefix, notes, created_at, updated_at
+      FROM markets
+      ORDER BY is_default DESC, active DESC, name ASC
+      `,
+    )
+  }
+
+  if (resource === 'market_languages') {
+    return safeAll(
+      env,
+      `
+      SELECT locale, name, native_name, active, is_default, created_at, updated_at
+      FROM market_languages
+      ORDER BY is_default DESC, locale ASC
+      `,
+    )
+  }
+
+  if (resource === 'market_currencies') {
+    return safeAll(
+      env,
+      `
+      SELECT code, name, symbol, active, is_default, manual_rate, created_at, updated_at
+      FROM market_currencies
+      ORDER BY is_default DESC, code ASC
+      `,
+    )
+  }
+
+  if (resource === 'localized_prices') {
+    return safeAll(
+      env,
+      `
+      SELECT
+        localized_prices.id,
+        localized_prices.product_id,
+        products.slug AS product_slug,
+        products.name AS product_name,
+        localized_prices.variant_id,
+        product_variants.option_name AS variant_option_name,
+        product_variants.option_value AS variant_option_value,
+        localized_prices.market_handle,
+        localized_prices.currency_code,
+        localized_prices.price_cents,
+        localized_prices.active,
+        localized_prices.created_at,
+        localized_prices.updated_at
+      FROM localized_prices
+      LEFT JOIN products ON products.id = localized_prices.product_id
+      LEFT JOIN product_variants ON product_variants.id = localized_prices.variant_id
+      ORDER BY products.name ASC, localized_prices.market_handle ASC
+      `,
+    )
+  }
+
   if (resource === 'blog') {
     return safeAll(
       env,
@@ -531,7 +590,7 @@ async function loadBackupData(env) {
 }
 
 async function loadSitePackage(env) {
-  const [pages, sections, menus, settings, policies, blog, translations, seo] = await Promise.all([
+  const [pages, sections, menus, settings, policies, blog, translations, seo, markets, localizedPrices] = await Promise.all([
     loadExportRows(env, 'pages'),
     loadExportRows(env, 'sections'),
     loadExportRows(env, 'menus'),
@@ -540,6 +599,8 @@ async function loadSitePackage(env) {
     loadExportRows(env, 'blog'),
     loadExportRows(env, 'translations'),
     loadExportRows(env, 'seo'),
+    loadExportRows(env, 'markets'),
+    loadExportRows(env, 'localized_prices'),
   ])
 
   return {
@@ -554,6 +615,8 @@ async function loadSitePackage(env) {
       blog,
       translations,
       seo,
+      markets,
+      localized_prices: localizedPrices,
     },
   }
 }
@@ -796,6 +859,10 @@ export async function onRequestGet({ request, env }) {
       'policies',
       'metafields',
       'translations',
+      'markets',
+      'market_languages',
+      'market_currencies',
+      'localized_prices',
       'sections',
       'seo',
       'backup',

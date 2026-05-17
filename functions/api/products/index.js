@@ -71,6 +71,57 @@ async function loadMetafieldsByEntityId(env, entityType, ids) {
   }
 }
 
+async function loadLocalizedPricesByProductId(env, ids) {
+  if (!ids.length) return {}
+
+  try {
+    const placeholders = ids.map(() => '?').join(', ')
+    const { results } = await env.DB.prepare(`
+      SELECT
+        product_id,
+        variant_id,
+        market_handle,
+        currency_code,
+        price_cents,
+        active
+      FROM localized_prices
+      WHERE active = 1
+        AND product_id IN (${placeholders})
+      ORDER BY product_id ASC, variant_id ASC, market_handle ASC
+    `)
+      .bind(...ids)
+      .all()
+
+    return (results || []).reduce((map, row) => {
+      const productId = row.product_id
+      const variantId = Number(row.variant_id || 0)
+      if (!map[productId]) {
+        map[productId] = {
+          product: [],
+          variants: {},
+        }
+      }
+
+      const price = {
+        market_handle: row.market_handle || '',
+        currency_code: row.currency_code || 'EUR',
+        price_cents: Number(row.price_cents || 0),
+      }
+
+      if (variantId > 0) {
+        if (!map[productId].variants[variantId]) map[productId].variants[variantId] = []
+        map[productId].variants[variantId].push(price)
+      } else {
+        map[productId].product.push(price)
+      }
+
+      return map
+    }, {})
+  } catch {
+    return {}
+  }
+}
+
 export async function onRequestGet({ env }) {
   try {
     const { results } = await env.DB.prepare(`
@@ -129,13 +180,18 @@ export async function onRequestGet({ env }) {
     const productIds = products.map((product) => product.id)
     const seoByProductId = await loadSeoByEntityId(env, 'product', productIds)
     const metafieldsByProductId = await loadMetafieldsByEntityId(env, 'product', productIds)
+    const localizedPricesByProductId = await loadLocalizedPricesByProductId(env, productIds)
 
     return Response.json(
       {
         success: true,
         products: products.map((product) => ({
           ...product,
-          variants: variantsByProductId[product.id] || [],
+          localized_prices: localizedPricesByProductId[product.id]?.product || [],
+          variants: (variantsByProductId[product.id] || []).map((variant) => ({
+            ...variant,
+            localized_prices: localizedPricesByProductId[product.id]?.variants?.[variant.id] || [],
+          })),
           seo: seoByProductId[product.id] || {},
           metafields: metafieldsByProductId[product.id] || {},
         })),

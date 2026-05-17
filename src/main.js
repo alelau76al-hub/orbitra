@@ -813,6 +813,27 @@ function setupStorefrontLanguageSelector() {
   })
 }
 
+function updateStorefrontLanguageOptions(languages = []) {
+  const selector = document.querySelector('#languageSelector')
+  if (!selector || !languages.length) return
+
+  const currentLanguage = getStorefrontLanguage()
+  selector.innerHTML = languages
+    .filter((language) => Number(language.active) !== 0)
+    .map(
+      (language) => `
+        <option value="${escapeCmsHtml(language.locale)}" ${language.locale === currentLanguage ? 'selected' : ''}>
+          ${escapeCmsHtml(language.locale?.toUpperCase() || language.name)}
+        </option>
+      `,
+    )
+    .join('')
+
+  selector.value = languages.some((language) => language.locale === currentLanguage)
+    ? currentLanguage
+    : languages[0]?.locale || 'it'
+}
+
 function buildMenuItemUrl(item) {
   if (item.link_type === 'url') {
     return item.url || '#'
@@ -839,10 +860,16 @@ const ANALYTICS_SESSION_KEY = 'orbitra_analytics_session_v1'
 const MARKET_STORAGE_KEY = 'orbitra_market_v1'
 const productCache = new Map()
 
-function formatPriceCents(priceCents = 0) {
+function getSelectedCurrencyCode() {
+  const market = getSelectedMarket()
+  const currency = String(market?.currency_code || 'EUR').trim().toUpperCase()
+  return /^[A-Z]{3}$/.test(currency) ? currency : 'EUR'
+}
+
+function formatPriceCents(priceCents = 0, currencyCode = getSelectedCurrencyCode()) {
   return (Number(priceCents || 0) / 100).toLocaleString(getStorefrontLocale(), {
     style: 'currency',
-    currency: 'EUR',
+    currency: currencyCode,
   })
 }
 
@@ -1058,11 +1085,39 @@ function getDefaultVariant(product) {
 }
 
 function getEffectivePriceCents(product, variant = null) {
+  const localizedPriceCents = getLocalizedPriceCents(product, variant)
+  if (localizedPriceCents !== null) return localizedPriceCents
+
   if (variant && variant.price_cents !== null && variant.price_cents !== undefined) {
     return Number(variant.price_cents)
   }
 
   return Number(product?.price_cents || 0)
+}
+
+function findLocalizedPrice(prices = [], market = getSelectedMarket()) {
+  if (!Array.isArray(prices) || !prices.length) return null
+
+  const marketHandle = market?.handle || ''
+  const currencyCode = market?.currency_code || getSelectedCurrencyCode()
+  const match =
+    prices.find((price) => price.market_handle === marketHandle && price.currency_code === currencyCode) ||
+    prices.find((price) => price.currency_code === currencyCode) ||
+    prices.find((price) => price.market_handle === marketHandle)
+
+  const priceCents = Number(match?.price_cents)
+  return Number.isFinite(priceCents) && priceCents > 0 ? priceCents : null
+}
+
+function getLocalizedPriceCents(product, variant = null) {
+  if (!product) return null
+
+  if (variant?.localized_prices?.length) {
+    const variantPrice = findLocalizedPrice(variant.localized_prices)
+    if (variantPrice !== null) return variantPrice
+  }
+
+  return findLocalizedPrice(product.localized_prices || [])
 }
 
 function getEffectiveStock(product, variant = null) {
@@ -1581,8 +1636,10 @@ async function loadPublicMarkets() {
     const response = await fetch('/api/markets')
     const data = await response.json()
     const markets = data.success && Array.isArray(data.markets) ? data.markets : []
+    const languages = data.success && Array.isArray(data.languages) ? data.languages : []
 
     if (!markets.length) return
+    updateStorefrontLanguageOptions(languages)
 
     const selectedMarket = getSelectedMarket()
     const fallbackMarket = data.default_market || markets[0]
@@ -1604,13 +1661,15 @@ async function loadPublicMarkets() {
     selector.addEventListener('change', () => {
       const market = markets.find((item) => item.handle === selector.value) || fallbackMarket
       saveSelectedMarket(market)
+      renderCart()
+      window.location.reload()
     })
   } catch {
     selector.hidden = true
   }
 }
 
-loadPublicMarkets()
+const publicMarketsReady = loadPublicMarkets()
 
 document.addEventListener('click', (event) => {
   const openThreeDButton = event.target.closest('[data-open-3d-modal]')
@@ -1878,6 +1937,7 @@ async function loadStoreCollections() {
 loadStoreCollections()
 async function loadStoreProducts() {
   const main = document.querySelector('main')
+  await publicMarketsReady
 
   const section = document.createElement('section')
   section.className = 'section'
@@ -3014,7 +3074,7 @@ async function hydrateProductGrids() {
             <p>${escapeCmsHtml(product.description || '')}</p>
 
             <div class="store-meta">
-              <strong>${formatPriceCents(product.price_cents)}</strong>
+              <strong>${formatPriceCents(getEffectivePriceCents(product, getDefaultVariant(product)))}</strong>
               <span>${escapeCmsHtml(sfT('stock'))}: ${product.stock}</span>
             </div>
 
@@ -3763,8 +3823,11 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
   if (submitButton) submitButton.disabled = true
 
   const formData = new FormData(form)
+  const selectedMarket = getSelectedMarket()
   const payload = {
     idempotency_key: activeCheckoutIdempotencyKey || createCheckoutIdempotencyKey(),
+    market_handle: selectedMarket?.handle || '',
+    currency: selectedMarket?.currency_code || getSelectedCurrencyCode(),
     customer: {
       name: formData.get('name'),
       email: formData.get('email'),
@@ -4401,6 +4464,7 @@ async function applyHomeSeoMeta() {
 
 async function bootPublicRouting() {
   const path = window.location.pathname
+  await publicMarketsReady
   await loadPrimaryCanonicalDomain()
   await loadPublicTranslations()
   trackAnalyticsEvent('page_view')

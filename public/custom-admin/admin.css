@@ -1150,12 +1150,41 @@ button:disabled {
 #metaobjectDefinitionMessage,
 #metaobjectEntryMessage,
 #marketMessage,
+#localizedPriceMessage,
 #integrationMessage,
 #adminUserMessage,
 #notificationMessage {
   min-height: 24px;
   color: #52ff9f;
   font-weight: bold;
+}
+
+.market-config-list {
+  display: grid;
+  gap: 12px;
+}
+
+.market-config-item {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.market-config-item strong {
+  display: block;
+  color: var(--admin-text);
+}
+
+.market-config-item span {
+  color: var(--admin-muted);
+  font-size: 13px;
+}
+
+.market-config-item .meta {
+  margin-top: 0;
 }
 
 .admin-pre {

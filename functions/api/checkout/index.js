@@ -376,6 +376,47 @@ async function loadVariant(env, productId, variantId) {
   }
 }
 
+async function loadLocalizedPrice(env, productId, variantId, marketHandle, currencyCode) {
+  const handle = readText(marketHandle)
+  const currency = normalizeCurrency(currencyCode)
+
+  if (!productId || (!handle && !currency)) return null
+
+  try {
+    const exact = await env.DB.prepare(`
+      SELECT price_cents
+      FROM localized_prices
+      WHERE product_id = ?
+        AND variant_id = ?
+        AND active = 1
+        AND market_handle = ?
+        AND currency_code = ?
+      LIMIT 1
+    `)
+      .bind(productId, Number(variantId || 0), handle, currency)
+      .first()
+
+    if (exact) return Number(exact.price_cents)
+
+    const productFallback = await env.DB.prepare(`
+      SELECT price_cents
+      FROM localized_prices
+      WHERE product_id = ?
+        AND variant_id = 0
+        AND active = 1
+        AND market_handle = ?
+        AND currency_code = ?
+      LIMIT 1
+    `)
+      .bind(productId, handle, currency)
+      .first()
+
+    return productFallback ? Number(productFallback.price_cents) : null
+  } catch {
+    return null
+  }
+}
+
 async function upsertCustomer(env, customer, address) {
   const existing = await env.DB.prepare(
     'SELECT id FROM customers WHERE email = ?',
@@ -667,6 +708,7 @@ export async function onRequestPost({ request, env }) {
     const idempotencyKey = sanitizeIdempotencyKey(body.idempotency_key || body.checkout_id)
     const checkoutId = idempotencyKey || sanitizeIdempotencyKey(body.checkout_id)
     const currency = normalizeCurrency(body.currency || 'EUR')
+    const marketHandle = readText(body.market_handle || body.market?.handle || '')
     const hasHardeningColumns = await hasOrderHardeningColumns(env)
 
     if (!customer.name || !isValidEmail(customer.email)) {
@@ -724,10 +766,20 @@ export async function onRequestPost({ request, env }) {
         )
       }
 
-      const priceCents =
+      const basePriceCents =
         variant && variant.price_cents !== null && variant.price_cents !== undefined
           ? Number(variant.price_cents)
           : Number(product.price_cents)
+      const localizedPriceCents = await loadLocalizedPrice(
+        env,
+        product.id,
+        variant?.id || 0,
+        marketHandle,
+        currency,
+      )
+      const priceCents = Number.isFinite(localizedPriceCents) && localizedPriceCents > 0
+        ? localizedPriceCents
+        : basePriceCents
       const stock =
         variant && variant.stock !== null && variant.stock !== undefined
           ? Number(variant.stock)

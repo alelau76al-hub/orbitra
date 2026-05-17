@@ -707,6 +707,10 @@
               <option value="policies">Policy</option>
               <option value="metafields">Metafields</option>
               <option value="translations">Traduzioni</option>
+              <option value="markets">Markets</option>
+              <option value="market_languages">Lingue market</option>
+              <option value="market_currencies">Valute market</option>
+              <option value="localized_prices">Prezzi localizzati</option>
               <option value="settings">Settings / Theme content</option>
               <option value="sections">Sezioni</option>
               <option value="seo">SEO metadata</option>
@@ -1572,7 +1576,7 @@
           <div>
             <h2>Markets</h2>
             <p class="section-subtitle">
-              Gestione mercati, paesi, lingue, valute e prezzi localizzati in sviluppo.
+              Gestione mercati, paesi, lingue, valute, path e prezzi localizzati.
             </p>
           </div>
           <span class="status-badge">Mercati</span>
@@ -1581,31 +1585,33 @@
         <div class="mini-grid">
           <a class="mini-card" href="#markets-mercati">
             <h3>Mercati</h3>
-            <p>Gestisci mercato default, paese, lingua, valuta e stato.</p>
+            <p>Gestisci mercato default, paese, lingua, valuta, dominio/path e stato.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#markets-paesi">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#markets-paesi">
             <h3>Paesi</h3>
-            <p>Configurazioni paese e disponibilita dedicate, in sviluppo.</p>
+            <p>Paesi abilitati e collegamento al mercato di riferimento.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#markets-lingue">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#markets-lingue">
             <h3>Lingue</h3>
-            <p>Lingue supportate e fallback contenuti.</p>
+            <p>Lingue abilitate per storefront e Translation Manager.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#markets-valute">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#markets-valute">
             <h3>Valute</h3>
-            <p>Valute, formati e tassi in sviluppo per esperienze multi-mercato.</p>
+            <p>Valute abilitate e fallback monetario senza cambio live esterno.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#markets-prezzi">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#markets-prezzi">
             <h3>Prezzi localizzati</h3>
-            <p>Listini e prezzi per mercato quando il modello dati sara esteso.</p>
+            <p>Prezzi prodotto o variante per mercato e valuta.</p>
+          </a>
+
+          <a class="mini-card" href="#domini">
+            <span class="mini-card-status">Documentale</span>
+            <h3>Domini per mercato</h3>
+            <p>Collega note dominio, preview e DNS con i mercati configurati.</p>
           </a>
         </div>
       </section>
@@ -1642,6 +1648,15 @@
             <label>Valuta</label>
             <input id="marketCurrencyCode" type="text" maxlength="3" placeholder="EUR" />
 
+            <label>Dominio opzionale</label>
+            <input id="marketDomain" type="text" placeholder="shop.example.com" />
+
+            <label>Path opzionale</label>
+            <input id="marketPathPrefix" type="text" placeholder="/en" />
+
+            <label>Note configurazione</label>
+            <textarea id="marketNotes" placeholder="Note su DNS, pubblico target, fallback lingua o pricing..."></textarea>
+
             <label class="inline-check"><input id="marketActive" type="checkbox" checked /> Attivo</label>
             <label class="inline-check"><input id="marketDefault" type="checkbox" /> Default</label>
 
@@ -1656,7 +1671,7 @@
         </div>
       </section>
 
-      <section id="markets-paesi" class="cms-area card placeholder-area admin-view" data-admin-view="markets-paesi">
+      <section id="markets-paesi" class="cms-area card admin-view" data-admin-view="markets-paesi">
         <div class="section-title">
           <div>
             <h2>Paesi</h2>
@@ -1664,27 +1679,33 @@
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Il paese e gestito nel singolo mercato. Questa vista introdurra regole paese piu granulari.</p>
+        <div class="content-manager">
+          <section class="inner-card">
+            <h3>Paesi abilitati</h3>
+            <p class="section-subtitle">Lista base collegabile ai mercati. Le regole avanzate per zone restano fuori da questo blocco.</p>
+            <div id="marketCountriesList" class="market-config-list">Caricamento paesi...</div>
+          </section>
         </div>
       </section>
 
-      <section id="markets-lingue" class="cms-area card placeholder-area admin-view" data-admin-view="markets-lingue">
+      <section id="markets-lingue" class="cms-area card admin-view" data-admin-view="markets-lingue">
         <div class="section-title">
           <div>
             <h2>Lingue</h2>
-            <p class="section-subtitle">Lingue supportate, fallback e traduzioni in sviluppo.</p>
+            <p class="section-subtitle">Lingue abilitate, fallback e compatibilita Translation Manager.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La lingua base e salvata nel mercato. Traduzioni e contenuti localizzati saranno gestiti in una vista dedicata.</p>
+        <div class="content-manager">
+          <section class="inner-card">
+            <h3>Lingue storefront</h3>
+            <p class="section-subtitle">La lingua selezionata continua a guidare le traduzioni pubbliche con fallback al contenuto originale.</p>
+            <div id="marketLanguagesList" class="market-config-list">Caricamento lingue...</div>
+          </section>
         </div>
       </section>
 
-      <section id="markets-valute" class="cms-area card placeholder-area admin-view" data-admin-view="markets-valute">
+      <section id="markets-valute" class="cms-area card admin-view" data-admin-view="markets-valute">
         <div class="section-title">
           <div>
             <h2>Valute</h2>
@@ -1692,23 +1713,60 @@
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La valuta base e salvata nel mercato. Tassi, conversioni e arrotondamenti saranno configurabili qui.</p>
+        <div class="content-manager">
+          <section class="inner-card">
+            <h3>Valute abilitate</h3>
+            <p class="section-subtitle">Nessun cambio live esterno: se manca un prezzo localizzato, il sito usa il prezzo base.</p>
+            <div id="marketCurrenciesList" class="market-config-list">Caricamento valute...</div>
+          </section>
         </div>
       </section>
 
-      <section id="markets-prezzi" class="cms-area card placeholder-area admin-view" data-admin-view="markets-prezzi">
+      <section id="markets-prezzi" class="cms-area card admin-view" data-admin-view="markets-prezzi">
         <div class="section-title">
           <div>
             <h2>Prezzi localizzati</h2>
-            <p class="section-subtitle">Listini per mercato e prezzi localizzati in sviluppo.</p>
+            <p class="section-subtitle">Listini prodotto per mercato e valuta, con fallback al prezzo base.</p>
           </div>
-          <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+          <div class="section-actions">
+            <a class="back-link" href="#markets">&larr; Torna a Markets</a>
+            <button id="refreshLocalizedPricesButton" type="button">Aggiorna</button>
+          </div>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>I prodotti mantengono il prezzo unico attuale. Questa area gestira listini localizzati quando il modello dati sara pronto.</p>
+
+        <div class="content-manager">
+          <form id="localizedPriceForm" class="inner-card">
+            <h3>Prezzo localizzato</h3>
+            <input id="localizedPriceId" type="hidden" />
+
+            <label>Prodotto</label>
+            <select id="localizedPriceProduct" required></select>
+
+            <label>Variante opzionale</label>
+            <select id="localizedPriceVariant">
+              <option value="0">Prezzo prodotto base</option>
+            </select>
+
+            <label>Mercato</label>
+            <select id="localizedPriceMarket" required></select>
+
+            <label>Valuta</label>
+            <select id="localizedPriceCurrency" required></select>
+
+            <label>Prezzo localizzato</label>
+            <input id="localizedPriceAmount" type="number" min="0" step="0.01" placeholder="59.00" required />
+
+            <label class="inline-check"><input id="localizedPriceActive" type="checkbox" checked /> Attivo</label>
+
+            <button id="localizedPriceSubmitButton" type="submit">Salva prezzo localizzato</button>
+            <p id="localizedPriceMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <h3>Listino localizzato</h3>
+            <p class="section-subtitle">I prezzi disattivati restano visibili per audit, ma non vengono usati nello storefront.</p>
+            <div id="localizedPricesList" class="products-list">Caricamento prezzi localizzati...</div>
+          </section>
         </div>
       </section>
 
