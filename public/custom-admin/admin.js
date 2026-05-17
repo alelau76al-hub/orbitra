@@ -3628,6 +3628,7 @@ const refreshMarketsButton = document.querySelector('#refreshMarketsButton')
 const marketFormTitle = document.querySelector('#marketFormTitle')
 const marketSubmitButton = document.querySelector('#marketSubmitButton')
 const cancelMarketEdit = document.querySelector('#cancelMarketEdit')
+const marketPresetList = document.querySelector('#marketPresetList')
 const marketCountriesList = document.querySelector('#marketCountriesList')
 const marketLanguagesList = document.querySelector('#marketLanguagesList')
 const marketCurrenciesList = document.querySelector('#marketCurrenciesList')
@@ -3655,6 +3656,100 @@ let localizedPricingData = {
   prices: [],
 }
 
+const MARKET_PRESETS = [
+  {
+    name: 'Italy / Italia',
+    handle: 'it',
+    country_code: 'IT',
+    language_code: 'it',
+    currency_code: 'EUR',
+    path_prefix: '/it',
+    notes: 'Mercato consigliato per Italia con lingua italiana e valuta Euro.',
+    is_default: true,
+  },
+  {
+    name: 'Europe / Europa',
+    handle: 'eu',
+    country_code: 'EU',
+    language_code: 'en',
+    currency_code: 'EUR',
+    path_prefix: '/eu',
+    notes: 'Mercato europeo generico con lingua inglese e valuta Euro.',
+  },
+  {
+    name: 'United States',
+    handle: 'us',
+    country_code: 'US',
+    language_code: 'en',
+    currency_code: 'USD',
+    path_prefix: '/us',
+    notes: 'Mercato Stati Uniti con valuta USD.',
+  },
+  {
+    name: 'United Kingdom',
+    handle: 'uk',
+    country_code: 'GB',
+    language_code: 'en',
+    currency_code: 'GBP',
+    path_prefix: '/uk',
+    notes: 'Mercato Regno Unito con valuta GBP.',
+  },
+  {
+    name: 'Switzerland',
+    handle: 'ch',
+    country_code: 'CH',
+    language_code: 'de',
+    currency_code: 'CHF',
+    path_prefix: '/ch',
+    notes: 'Mercato Svizzera con lingua tedesca e valuta CHF.',
+  },
+  {
+    name: 'France',
+    handle: 'fr',
+    country_code: 'FR',
+    language_code: 'fr',
+    currency_code: 'EUR',
+    path_prefix: '/fr',
+    notes: 'Mercato Francia con lingua francese e valuta Euro.',
+  },
+  {
+    name: 'Germany',
+    handle: 'de',
+    country_code: 'DE',
+    language_code: 'de',
+    currency_code: 'EUR',
+    path_prefix: '/de',
+    notes: 'Mercato Germania con lingua tedesca e valuta Euro.',
+  },
+  {
+    name: 'Spain',
+    handle: 'es',
+    country_code: 'ES',
+    language_code: 'es',
+    currency_code: 'EUR',
+    path_prefix: '/es',
+    notes: 'Mercato Spagna con lingua spagnola e valuta Euro.',
+  },
+  {
+    name: 'Sweden',
+    handle: 'se',
+    country_code: 'SE',
+    language_code: 'en',
+    currency_code: 'SEK',
+    path_prefix: '/se',
+    notes: 'Mercato Svezia con fallback inglese e valuta SEK.',
+  },
+  {
+    name: 'Global',
+    handle: 'global',
+    country_code: 'GLOBAL',
+    language_code: 'en',
+    currency_code: 'EUR',
+    path_prefix: '/',
+    notes: 'Mercato globale di fallback per clienti internazionali.',
+  },
+]
+
 function resetMarketForm() {
   if (!marketForm) return
   marketForm.reset()
@@ -3668,7 +3763,7 @@ function resetMarketForm() {
 }
 
 function fillMarketForm(market) {
-  document.querySelector('#marketId').value = market.id
+  document.querySelector('#marketId').value = market.id || ''
   document.querySelector('#marketName').value = market.name || ''
   document.querySelector('#marketHandle').value = market.handle || ''
   document.querySelector('#marketCountryCode').value = market.country_code || 'IT'
@@ -3679,9 +3774,9 @@ function fillMarketForm(market) {
   document.querySelector('#marketNotes').value = market.notes || ''
   document.querySelector('#marketActive').checked = Number(market.active) !== 0
   document.querySelector('#marketDefault').checked = Number(market.is_default) === 1
-  marketFormTitle.textContent = 'Modifica mercato'
-  marketSubmitButton.textContent = 'Aggiorna mercato'
-  cancelMarketEdit.hidden = false
+  marketFormTitle.textContent = market.id ? 'Modifica mercato' : 'Aggiungi mercato da preset'
+  marketSubmitButton.textContent = market.id ? 'Aggiorna mercato' : 'Salva mercato'
+  cancelMarketEdit.hidden = !market.id
 }
 
 function readMarketPayload() {
@@ -3731,7 +3826,10 @@ function renderMarketsMetadata(data = adminMarketsData) {
   renderMarketConfigList(marketCountriesList, data.countries || [], {
     title: (item) => `${item.country_code} - ${item.name}`,
     subtitle: (item) => item.market_handle ? `Mercato: ${item.market_handle}` : 'Nessun mercato dedicato',
-    meta: (item) => [Number(item.active) === 0 ? 'Disattivo' : 'Attivo'],
+    meta: (item) => [
+      Number(item.active) === 0 ? 'Disattivo' : 'Attivo',
+      item.recommended ? 'Fallback consigliato' : 'Configurato',
+    ],
   })
 
   renderMarketConfigList(marketLanguagesList, data.languages || [], {
@@ -3740,6 +3838,7 @@ function renderMarketsMetadata(data = adminMarketsData) {
     meta: (item) => [
       Number(item.is_default) === 1 ? 'Default' : 'Fallback disponibile',
       Number(item.active) === 0 ? 'Disattiva' : 'Attiva',
+      item.recommended ? 'Fallback consigliato' : 'Configurata',
     ],
   })
 
@@ -3749,13 +3848,62 @@ function renderMarketsMetadata(data = adminMarketsData) {
     meta: (item) => [
       Number(item.is_default) === 1 ? 'Default' : `Rate manuale: ${item.manual_rate || 1}`,
       Number(item.active) === 0 ? 'Disattiva' : 'Attiva',
+      item.recommended ? 'Fallback consigliato' : 'Configurata',
     ],
   })
+}
+
+function renderMarketPresets(markets = []) {
+  if (!marketPresetList) return
+
+  const existingHandles = new Set(markets.map((market) => String(market.handle || '').toLowerCase()))
+
+  marketPresetList.innerHTML = MARKET_PRESETS.map((preset) => {
+    const exists = existingHandles.has(preset.handle)
+
+    return `
+      <article class="market-preset-card ${exists ? 'is-added' : ''}">
+        <div>
+          <span class="mini-card-status">${exists ? 'Gia presente' : 'Preset consigliato'}</span>
+          <h4>${escapeHtml(preset.name)}</h4>
+          <p>${escapeHtml(preset.country_code)} / ${escapeHtml(preset.language_code)} / ${escapeHtml(preset.currency_code)}</p>
+          <p class="market-preset-path">${escapeHtml(preset.path_prefix || '/')}</p>
+        </div>
+        <button type="button" data-market-preset="${escapeHtml(preset.handle)}" ${exists ? 'disabled' : ''}>
+          Aggiungi mercato
+        </button>
+      </article>
+    `
+  }).join('')
+
+  document.querySelectorAll('[data-market-preset]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const preset = MARKET_PRESETS.find((item) => item.handle === button.dataset.marketPreset)
+      if (!preset) return
+
+      if (existingHandles.has(preset.handle)) {
+        marketMessage.textContent = 'Questo mercato e gia configurato.'
+        return
+      }
+
+      fillMarketForm({
+        ...preset,
+        active: 1,
+        is_default: preset.is_default && !markets.some((market) => Number(market.is_default) === 1) ? 1 : 0,
+        domain: '',
+      })
+      marketMessage.textContent = 'Preset caricato nel form. Controlla i dati e salva il mercato.'
+      marketForm?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  })
+
+  applyAdminAuditUi()
 }
 
 async function loadMarketsAdmin() {
   if (!marketsList) return
   marketsList.textContent = 'Caricamento markets...'
+  renderMarketPresets(adminMarketsData.markets || [])
 
   try {
     const response = await fetch('/api/admin/markets')
@@ -3763,6 +3911,7 @@ async function loadMarketsAdmin() {
 
     if (!data.success) {
       marketsList.textContent = data.message || 'Errore markets.'
+      renderMarketPresets([])
       return
     }
 
@@ -3775,9 +3924,15 @@ async function loadMarketsAdmin() {
     renderMarketsMetadata(adminMarketsData)
 
     const markets = data.markets || []
+    renderMarketPresets(markets)
 
     if (!markets.length) {
-      marketsList.textContent = 'Nessun mercato.'
+      marketsList.innerHTML = `
+        <div class="admin-empty market-empty-state">
+          <strong>Nessun mercato configurato.</strong>
+          <span>Compila il form manualmente oppure usa un preset consigliato per iniziare.</span>
+        </div>
+      `
       return
     }
 
@@ -3827,6 +3982,7 @@ async function loadMarketsAdmin() {
     loadLocalizedPricingAdmin()
   } catch {
     marketsList.textContent = 'Errore di connessione markets.'
+    renderMarketPresets([])
   }
 }
 

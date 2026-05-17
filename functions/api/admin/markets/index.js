@@ -40,7 +40,7 @@ function normalizeMarket(body = {}) {
     id: body.id ? Number(body.id) : null,
     handle: slugify(body.handle || name),
     name,
-    country_code: String(body.country_code || 'IT').trim().toUpperCase().slice(0, 2),
+    country_code: String(body.country_code || 'IT').trim().toUpperCase().slice(0, 12),
     language_code: String(body.language_code || 'it').trim().toLowerCase().slice(0, 5),
     currency_code: String(body.currency_code || 'EUR').trim().toUpperCase().slice(0, 3),
     active: body.active === false || String(body.active) === '0' ? 0 : 1,
@@ -82,6 +82,52 @@ function fallbackCountries() {
     { country_code: 'ES', name: 'Spagna', market_handle: '', active: 1 },
     { country_code: 'DE', name: 'Germania', market_handle: '', active: 1 },
   ]
+}
+
+function recommendedLanguages() {
+  return [
+    { locale: 'it', name: 'Italiano', native_name: 'Italiano', active: 1, is_default: 1 },
+    { locale: 'en', name: 'Inglese', native_name: 'English', active: 1, is_default: 0 },
+    { locale: 'fr', name: 'Francese', native_name: 'Francais', active: 1, is_default: 0 },
+    { locale: 'es', name: 'Spagnolo', native_name: 'Espanol', active: 1, is_default: 0 },
+    { locale: 'de', name: 'Tedesco', native_name: 'Deutsch', active: 1, is_default: 0 },
+  ]
+}
+
+function recommendedCurrencies() {
+  return [
+    { code: 'EUR', name: 'Euro', symbol: 'EUR', active: 1, is_default: 1, manual_rate: 1 },
+    { code: 'USD', name: 'US Dollar', symbol: '$', active: 1, is_default: 0, manual_rate: 1 },
+    { code: 'GBP', name: 'British Pound', symbol: 'GBP', active: 1, is_default: 0, manual_rate: 1 },
+    { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF', active: 1, is_default: 0, manual_rate: 1 },
+    { code: 'SEK', name: 'Swedish Krona', symbol: 'kr', active: 1, is_default: 0, manual_rate: 1 },
+  ]
+}
+
+function recommendedCountries() {
+  return [
+    { country_code: 'IT', name: 'Italia', market_handle: 'it', active: 1 },
+    { country_code: 'EU', name: 'Europa', market_handle: 'eu', active: 1 },
+    { country_code: 'US', name: 'Stati Uniti', market_handle: 'us', active: 1 },
+    { country_code: 'GB', name: 'Regno Unito', market_handle: 'uk', active: 1 },
+    { country_code: 'CH', name: 'Svizzera', market_handle: 'ch', active: 1 },
+    { country_code: 'FR', name: 'Francia', market_handle: 'fr', active: 1 },
+    { country_code: 'DE', name: 'Germania', market_handle: 'de', active: 1 },
+    { country_code: 'ES', name: 'Spagna', market_handle: 'es', active: 1 },
+    { country_code: 'SE', name: 'Svezia', market_handle: 'se', active: 1 },
+    { country_code: 'GLOBAL', name: 'Global', market_handle: 'global', active: 1 },
+  ]
+}
+
+function mergeRecommendedRows(rows, recommendedRows, key) {
+  if (!rows.length) return recommendedRows
+
+  const existing = new Set(rows.map((item) => String(item[key] || '').toUpperCase()))
+  const missingRecommendations = recommendedRows
+    .filter((item) => !existing.has(String(item[key] || '').toUpperCase()))
+    .map((item) => ({ ...item, recommended: true }))
+
+  return [...rows, ...missingRecommendations]
 }
 
 async function safeAll(env, sql) {
@@ -141,7 +187,7 @@ async function loadLanguages(env) {
     `,
   )
 
-  return rows.length ? rows : fallbackLanguages()
+  return mergeRecommendedRows(rows, recommendedLanguages(), 'locale')
 }
 
 async function loadCurrencies(env) {
@@ -154,7 +200,7 @@ async function loadCurrencies(env) {
     `,
   )
 
-  return rows.length ? rows : fallbackCurrencies()
+  return mergeRecommendedRows(rows, recommendedCurrencies(), 'code')
 }
 
 async function loadCountries(env) {
@@ -167,7 +213,19 @@ async function loadCountries(env) {
     `,
   )
 
-  return rows.length ? rows : fallbackCountries()
+  return mergeRecommendedRows(rows, recommendedCountries(), 'country_code')
+}
+
+async function findMarketByHandle(env, handle, excludedId = null) {
+  try {
+    const statement = excludedId
+      ? env.DB.prepare('SELECT id FROM markets WHERE handle = ? AND id != ? LIMIT 1').bind(handle, excludedId)
+      : env.DB.prepare('SELECT id FROM markets WHERE handle = ? LIMIT 1').bind(handle)
+
+    return await statement.first()
+  } catch {
+    return null
+  }
 }
 
 async function logActivity(env, action, entityId, description) {
@@ -333,6 +391,11 @@ export async function onRequestPost({ request, env }) {
       return json({ success: false, message: 'Nome e handle mercato sono obbligatori.' }, 400)
     }
 
+    const existing = await findMarketByHandle(env, market.handle)
+    if (existing) {
+      return json({ success: false, message: 'Esiste gia un mercato con questo handle.' }, 409)
+    }
+
     const inserted = await insertMarket(env, market)
 
     if (market.is_default) await ensureSingleDefault(env, inserted.meta.last_row_id)
@@ -350,6 +413,11 @@ export async function onRequestPut({ request, env }) {
 
     if (!market.id || !market.name || !market.handle) {
       return json({ success: false, message: 'Dati mercato non validi.' }, 400)
+    }
+
+    const existing = await findMarketByHandle(env, market.handle, market.id)
+    if (existing) {
+      return json({ success: false, message: 'Esiste gia un altro mercato con questo handle.' }, 409)
     }
 
     await updateMarket(env, market)

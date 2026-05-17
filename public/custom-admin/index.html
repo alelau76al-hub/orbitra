@@ -1576,7 +1576,7 @@
           <div>
             <h2>Markets</h2>
             <p class="section-subtitle">
-              Gestione mercati, paesi, lingue, valute, path e prezzi localizzati.
+              Configura lingua, valuta, paese, path/dominio e prezzi localizzati per ogni mercato.
             </p>
           </div>
           <span class="status-badge">Mercati</span>
@@ -1620,7 +1620,7 @@
         <div class="section-title">
           <div>
             <h2>Mercati</h2>
-            <p class="section-subtitle">Configura mercati con paese, lingua, valuta, default e stato.</p>
+            <p class="section-subtitle">Crea mercati manualmente o parti da preset consigliati pronti per lingua, valuta e path.</p>
           </div>
           <div class="section-actions">
             <a class="back-link" href="#markets">&larr; Torna a Markets</a>
@@ -1628,9 +1628,10 @@
           </div>
         </div>
 
-        <div class="content-manager">
+        <div class="content-manager markets-workspace">
           <form id="marketForm" class="inner-card">
             <h3 id="marketFormTitle">Aggiungi mercato</h3>
+            <p class="field-help">Markets controlla esperienza pubblica, valuta, lingua, paese, path/dominio e listini localizzati.</p>
             <input id="marketId" type="hidden" />
 
             <label>Nome</label>
@@ -1640,7 +1641,7 @@
             <input id="marketHandle" type="text" placeholder="it-eur" required />
 
             <label>Paese</label>
-            <input id="marketCountryCode" type="text" maxlength="2" placeholder="IT" />
+            <input id="marketCountryCode" type="text" maxlength="12" placeholder="IT, EU, GLOBAL" />
 
             <label>Lingua</label>
             <input id="marketLanguageCode" type="text" placeholder="it" />
@@ -1665,9 +1666,19 @@
             <p id="marketMessage"></p>
           </form>
 
-          <section class="inner-card">
-            <div id="marketsList" class="products-list">Caricamento markets...</div>
-          </section>
+          <div class="markets-side-panel">
+            <section class="inner-card">
+              <h3>Mercati esistenti</h3>
+              <p class="section-subtitle">Lista dei mercati configurati nel CMS.</p>
+              <div id="marketsList" class="products-list">Caricamento markets...</div>
+            </section>
+
+            <section class="inner-card">
+              <h3>Mercati consigliati</h3>
+              <p class="section-subtitle">Preset TakeOff per iniziare rapidamente senza duplicare handle gia presenti.</p>
+              <div id="marketPresetList" class="market-preset-list">Caricamento preset...</div>
+            </section>
+          </div>
         </div>
       </section>
 
@@ -1675,14 +1686,14 @@
         <div class="section-title">
           <div>
             <h2>Paesi</h2>
-            <p class="section-subtitle">Configurazione paese e zone di disponibilita per mercato.</p>
+            <p class="section-subtitle">Configurazione base dei paesi collegabili ai mercati.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
         <div class="content-manager">
           <section class="inner-card">
             <h3>Paesi abilitati</h3>
-            <p class="section-subtitle">Lista base collegabile ai mercati. Le regole avanzate per zone restano fuori da questo blocco.</p>
+            <p class="section-subtitle">Lista consigliata con fallback se il database non contiene ancora configurazioni dedicate.</p>
             <div id="marketCountriesList" class="market-config-list">Caricamento paesi...</div>
           </section>
         </div>
@@ -1692,7 +1703,7 @@
         <div class="section-title">
           <div>
             <h2>Lingue</h2>
-            <p class="section-subtitle">Lingue abilitate, fallback e compatibilita Translation Manager.</p>
+            <p class="section-subtitle">Lingue abilitate, fallback e compatibilita con Translation Manager.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
@@ -1709,7 +1720,7 @@
         <div class="section-title">
           <div>
             <h2>Valute</h2>
-            <p class="section-subtitle">Valute e formati monetari per mercati internazionali.</p>
+            <p class="section-subtitle">Configurazione base delle valute usate da mercati e prezzi localizzati.</p>
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
