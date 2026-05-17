@@ -58,9 +58,35 @@
       </div>
     </section>
 
+    <section id="adminEntryScreen" class="admin-entry-screen" hidden>
+      <div class="admin-entry-orbit" aria-hidden="true">
+        <div class="admin-entry-core"></div>
+        <div class="admin-entry-ring admin-entry-ring--one"></div>
+        <div class="admin-entry-ring admin-entry-ring--two"></div>
+        <div class="admin-entry-ring admin-entry-ring--three"></div>
+      </div>
+
+      <div class="admin-entry-content">
+        <div class="admin-logo-lockup admin-logo-lockup--entry">
+          <img
+            class="admin-entry-logo"
+            src="/custom-admin/takeoffmilan-logo.png"
+            data-fallback-src="/custom-admin/takeoff%20logo.png"
+            alt="TakeOffMilan CMS"
+            data-admin-logo
+          />
+          <span class="admin-logo-fallback" hidden>TakeOffMilan CMS</span>
+        </div>
+        <p class="admin-entry-kicker">Powerful. Flexible. Custom.</p>
+        <h1>TakeOffMilan CMS</h1>
+        <h2>Il futuro dei siti web</h2>
+        <button id="adminEntryEnterButton" type="button">Enter CMS</button>
+      </div>
+    </section>
+
     <main id="adminApp" class="admin" hidden>
       <section id="adminSessionBar" class="admin-session-bar">
-        <a class="admin-topbar-brand admin-logo-lockup" href="#editor" aria-label="TakeOffMilan CMS">
+        <a class="admin-topbar-brand admin-logo-lockup" href="#dashboard" aria-label="TakeOffMilan CMS">
           <img
             class="admin-logo-image"
             src="/custom-admin/takeoffmilan-logo.png"
@@ -74,7 +100,7 @@
         <div class="admin-session-user">
           <strong id="adminSessionName">Admin</strong>
           <span id="adminSessionRole">viewer</span>
-          <span id="adminCurrentView" class="admin-current-view">Editor sito</span>
+          <span id="adminCurrentView" class="admin-current-view">Dashboard</span>
         </div>
         <label class="admin-language-control">
           <span>Lingua</span>
@@ -83,6 +109,9 @@
             <option value="en">EN</option>
           </select>
         </label>
+        <button id="adminThemeToggle" class="secondary admin-theme-toggle" type="button" aria-label="Cambia tema">
+          Light mode
+        </button>
         <button id="adminLogoutButton" class="secondary" type="button">Logout</button>
       </section>
 
@@ -95,7 +124,7 @@
       </section>
 
       <aside class="admin-sidebar" aria-label="Navigazione TakeOffMilan CMS">
-        <a class="admin-sidebar-brand admin-logo-lockup" href="#editor" aria-label="TakeOffMilan CMS">
+        <a class="admin-sidebar-brand admin-logo-lockup" href="#dashboard" aria-label="TakeOffMilan CMS">
           <img
             class="admin-logo-image"
             src="/custom-admin/takeoffmilan-logo.png"
@@ -111,74 +140,175 @@
           <span>Next Generation Website CMS</span>
         </div>
 
-      <nav class="admin-hub">
-        <a class="hub-card active" href="#editor">
-          <span>01</span>
-          <strong>Editor sito</strong>
-          <small>Homepage, sezioni visuali, tema e preview live</small>
-        </a>
+      <nav class="admin-hub" aria-label="Aree CMS">
+        <section class="admin-nav-group">
+          <h3>Workspace</h3>
+          <a class="hub-card active" href="#dashboard">
+            <span>01</span>
+            <strong>Dashboard</strong>
+            <small>Panoramica e azioni rapide</small>
+          </a>
+          <a class="hub-card" href="#editor">
+            <span>02</span>
+            <strong>Editor sito</strong>
+            <small>Homepage, sezioni, tema</small>
+          </a>
+          <a class="hub-card" href="#catalogo">
+            <span>03</span>
+            <strong>Catalogo</strong>
+            <small>Prodotti e collezioni</small>
+          </a>
+          <a class="hub-card" href="#contenuto">
+            <span>04</span>
+            <strong>Contenuti</strong>
+            <small>Pagine, menu, blog, policy</small>
+          </a>
+        </section>
 
-        <a class="hub-card" href="#catalogo">
-          <span>02</span>
-          <strong>Catalogo</strong>
-          <small>Prodotti, collezioni, varianti e inventario</small>
-        </a>
+        <section class="admin-nav-group">
+          <h3>Commerce</h3>
+          <a class="hub-card" href="#ordini">
+            <span>05</span>
+            <strong>Ordini</strong>
+            <small>Stati e pagamenti</small>
+          </a>
+          <a class="hub-card" href="#clienti">
+            <span>06</span>
+            <strong>Clienti</strong>
+            <small>Profili e storico</small>
+          </a>
+          <a class="hub-card" href="#checkout">
+            <span>07</span>
+            <strong>Checkout</strong>
+            <small>Pagamenti, spedizioni, IVA</small>
+          </a>
+          <a class="hub-card" href="#markets">
+            <span>08</span>
+            <strong>Markets</strong>
+            <small>Lingue, valute, prezzi</small>
+          </a>
+        </section>
 
-        <a class="hub-card" href="#ordini">
-          <span>03</span>
-          <strong>Ordini</strong>
-          <small>Pagamenti, stato ordine e clienti</small>
-        </a>
+        <section class="admin-nav-group">
+          <h3>Growth</h3>
+          <a class="hub-card" href="#marketing">
+            <span>09</span>
+            <strong>Marketing</strong>
+            <small>Campagne e sconti</small>
+          </a>
+          <a class="hub-card" href="#analisi">
+            <span>10</span>
+            <strong>Analytics</strong>
+            <small>Traffico e vendite</small>
+          </a>
+          <a class="hub-card" href="#google-suite">
+            <span>11</span>
+            <strong>Google Suite</strong>
+            <small>GA4, Ads, GTM, Search</small>
+          </a>
+        </section>
 
-        <a class="hub-card" href="#clienti">
-          <span>04</span>
-          <strong>Clienti</strong>
-          <small>Profili, email, storico acquisti</small>
-        </a>
+        <section class="admin-nav-group">
+          <h3>Assets</h3>
+          <a class="hub-card" href="#media">
+            <span>12</span>
+            <strong>Media Library</strong>
+            <small>Upload, URL, alt text</small>
+          </a>
+          <a class="hub-card" href="#import-export">
+            <span>13</span>
+            <strong>Import Export</strong>
+            <small>DataFlow e package</small>
+          </a>
+          <a class="hub-card" href="#traduzioni">
+            <span>14</span>
+            <strong>Traduzioni</strong>
+            <small>Contenuti multilingua</small>
+          </a>
+        </section>
 
-        <a class="hub-card" href="#contenuto">
-          <span>05</span>
-          <strong>Contenuto</strong>
-          <small>Pagine, menu, media e SEO</small>
-        </a>
-
-        <a class="hub-card" href="#marketing">
-          <span>06</span>
-          <strong>Marketing</strong>
-          <small>Campagne, sconti, coupon e promo</small>
-        </a>
-
-        <a class="hub-card" href="#markets">
-          <span>07</span>
-          <strong>Markets</strong>
-          <small>Mercati, paesi, lingue, valute e prezzi</small>
-        </a>
-
-        <a class="hub-card" href="#analisi">
-          <span>08</span>
-          <strong>Analisi</strong>
-          <small>Vendite, traffico, conversioni e report</small>
-        </a>
-
-        <a class="hub-card" href="#checkout">
-          <span>09</span>
-          <strong>Check-out</strong>
-          <small>Checkout, pagamenti, spedizioni, tasse e conferma</small>
-        </a>
-
-        <a class="hub-card" href="#impostazioni">
-          <span>10</span>
-          <strong>Impostazioni</strong>
-          <small>Generali, domini, utenti, privacy e operativita</small>
-        </a>
-
-        <a class="hub-card" href="#apps">
-          <span>11</span>
-          <strong>Apps</strong>
-          <small>App native TakeOff e moduli interni del CMS</small>
-        </a>
+        <section class="admin-nav-group">
+          <h3>System</h3>
+          <a class="hub-card" href="#apps">
+            <span>15</span>
+            <strong>App Hub</strong>
+            <small>Moduli nativi TakeOff</small>
+          </a>
+          <a class="hub-card" href="#impostazioni">
+            <span>16</span>
+            <strong>Impostazioni</strong>
+            <small>Generali e operativita</small>
+          </a>
+          <a class="hub-card" href="#utenti">
+            <span>17</span>
+            <strong>Utenti e permessi</strong>
+            <small>Accessi e ruoli</small>
+          </a>
+          <a class="hub-card" href="#performance">
+            <span>18</span>
+            <strong>Performance</strong>
+            <small>Produzione e checklist</small>
+          </a>
+        </section>
       </nav>
       </aside>
+
+      <section id="dashboard" class="cms-area card admin-view admin-dashboard-view" data-admin-view="dashboard">
+        <div class="dashboard-hero">
+          <div>
+            <p>TakeOff Control Panel</p>
+            <h2>Benvenuto nel CMS</h2>
+            <span>Gestisci sito, contenuti, catalogo e crescita da una regia semplice e ordinata.</span>
+          </div>
+          <strong>Website Operating System</strong>
+        </div>
+
+        <div class="dashboard-quick-actions">
+          <a class="mini-card" href="#editor">
+            <span class="mini-card-status">Quick action</span>
+            <h3>Modifica il sito</h3>
+            <p>Apri editor visuale, sezioni e tema.</p>
+          </a>
+          <a class="mini-card" href="#prodotti">
+            <span class="mini-card-status">Quick action</span>
+            <h3>Gestisci prodotti</h3>
+            <p>Catalogo, varianti, immagini e stock.</p>
+          </a>
+          <a class="mini-card" href="#media">
+            <span class="mini-card-status">Quick action</span>
+            <h3>Carica media</h3>
+            <p>Libreria visuale, upload e URL.</p>
+          </a>
+          <a class="mini-card" href="#markets">
+            <span class="mini-card-status">Quick action</span>
+            <h3>Configura markets</h3>
+            <p>Lingue, valute e prezzi localizzati.</p>
+          </a>
+        </div>
+
+        <div class="dashboard-summary-grid">
+          <article class="dashboard-summary-card">
+            <span>Prodotti</span>
+            <strong id="dashboardProductsCount">-</strong>
+            <p>Catalogo attivo e varianti.</p>
+          </article>
+          <article class="dashboard-summary-card">
+            <span>Collezioni</span>
+            <strong id="dashboardCollectionsCount">-</strong>
+            <p>Struttura catalogo.</p>
+          </article>
+          <article class="dashboard-summary-card">
+            <span>Ordini</span>
+            <strong id="dashboardOrdersCount">-</strong>
+            <p>Stato operativo commerce.</p>
+          </article>
+          <article class="dashboard-summary-card">
+            <span>Media</span>
+            <strong id="dashboardMediaCount">-</strong>
+            <p>Asset disponibili nel CMS.</p>
+          </article>
+        </div>
+      </section>
 
       <section id="editor" class="visual-editor card admin-view" data-admin-view="editor">
         <div class="section-title editor-title-bar">

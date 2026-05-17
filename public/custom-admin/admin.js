@@ -9,6 +9,15 @@ const adminSessionName = document.querySelector('#adminSessionName')
 const adminSessionRole = document.querySelector('#adminSessionRole')
 const adminCurrentView = document.querySelector('#adminCurrentView')
 const adminLogoutButton = document.querySelector('#adminLogoutButton')
+const adminThemeToggle = document.querySelector('#adminThemeToggle')
+const adminEntryScreen = document.querySelector('#adminEntryScreen')
+const adminEntryEnterButton = document.querySelector('#adminEntryEnterButton')
+const adminDashboardCounters = {
+  products: document.querySelector('#dashboardProductsCount'),
+  collections: document.querySelector('#dashboardCollectionsCount'),
+  orders: document.querySelector('#dashboardOrdersCount'),
+  media: document.querySelector('#dashboardMediaCount'),
+}
 const nativeFetch = window.fetch.bind(window)
 
 function setupAdminLogoFallbacks() {
@@ -36,6 +45,9 @@ setupAdminLogoFallbacks()
 
 const ADMIN_LANGUAGE_STORAGE_KEY = 'takeoff_admin_language_v1'
 const ADMIN_DEFAULT_LANGUAGE = 'it'
+const ADMIN_THEME_STORAGE_KEY = 'takeoff_admin_theme_v1'
+const ADMIN_DEFAULT_THEME = 'dark'
+const ADMIN_ENTRY_STORAGE_KEY = 'takeoff_admin_entry_seen_v1'
 const ADMIN_TRANSLATIONS = {
   it: {
     documentTitle: 'TakeOffMilan CMS',
@@ -54,6 +66,14 @@ const ADMIN_TRANSLATIONS = {
     authEmailOwner: 'Email owner',
     authEmail: 'Email',
     authPassword: 'Password',
+    entryTitle: 'TakeOffMilan CMS',
+    entrySubtitle: 'Il futuro dei siti web',
+    entryClaim: 'Powerful. Flexible. Custom.',
+    entryButton: 'Enter CMS',
+    themeLight: 'Light mode',
+    themeDark: 'Dark mode',
+    navDashboard: 'Dashboard',
+    navDashboardDesc: 'Panoramica e azioni rapide',
     navEditor: 'Editor sito',
     navEditorDesc: 'Homepage, sezioni visuali, tema e preview live',
     navCatalog: 'Catalogo',
@@ -76,6 +96,18 @@ const ADMIN_TRANSLATIONS = {
     navSettingsDesc: 'Generali, domini, utenti, privacy e operativita',
     navApps: 'Apps',
     navAppsDesc: 'App native TakeOff e moduli interni del CMS',
+    navGoogleSuite: 'Google Suite',
+    navGoogleSuiteDesc: 'GA4, Ads, GTM, Search',
+    navMediaLibrary: 'Media Library',
+    navMediaLibraryDesc: 'Upload, URL, alt text',
+    navImportExport: 'Import Export',
+    navImportExportDesc: 'DataFlow e package',
+    navTranslations: 'Traduzioni',
+    navTranslationsDesc: 'Contenuti multilingua',
+    navUsers: 'Utenti e permessi',
+    navUsersDesc: 'Accessi e ruoli',
+    navPerformance: 'Performance',
+    navPerformanceDesc: 'Produzione e checklist',
     heroEyebrow: 'TakeOffMilan CMS',
     heroTitle: 'TakeOff Control Panel',
     heroText: 'Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.',
@@ -144,6 +176,14 @@ const ADMIN_TRANSLATIONS = {
     authEmailOwner: 'Owner email',
     authEmail: 'Email',
     authPassword: 'Password',
+    entryTitle: 'TakeOffMilan CMS',
+    entrySubtitle: 'The future of websites',
+    entryClaim: 'Powerful. Flexible. Custom.',
+    entryButton: 'Enter CMS',
+    themeLight: 'Light mode',
+    themeDark: 'Dark mode',
+    navDashboard: 'Dashboard',
+    navDashboardDesc: 'Overview and quick actions',
     navEditor: 'Site editor',
     navEditorDesc: 'Homepage, visual sections, theme and live preview',
     navCatalog: 'Catalog',
@@ -166,6 +206,18 @@ const ADMIN_TRANSLATIONS = {
     navSettingsDesc: 'General, domains, users, privacy and operations',
     navApps: 'Apps',
     navAppsDesc: 'TakeOff native apps and internal CMS modules',
+    navGoogleSuite: 'Google Suite',
+    navGoogleSuiteDesc: 'GA4, Ads, GTM, Search',
+    navMediaLibrary: 'Media Library',
+    navMediaLibraryDesc: 'Upload, URLs, alt text',
+    navImportExport: 'Import Export',
+    navImportExportDesc: 'DataFlow and packages',
+    navTranslations: 'Translations',
+    navTranslationsDesc: 'Multilingual content',
+    navUsers: 'Users and permissions',
+    navUsersDesc: 'Access and roles',
+    navPerformance: 'Performance',
+    navPerformanceDesc: 'Production and checklist',
     heroEyebrow: 'TakeOffMilan CMS',
     heroTitle: 'TakeOff Control Panel',
     heroText: 'Next Generation Website CMS to control content, catalog, checkout and settings from a proprietary panel.',
@@ -236,6 +288,36 @@ function setAdminLanguage(language) {
   applyAdminTranslations()
 }
 
+function getAdminTheme() {
+  try {
+    const saved = localStorage.getItem(ADMIN_THEME_STORAGE_KEY)
+    return ['dark', 'light'].includes(saved) ? saved : ADMIN_DEFAULT_THEME
+  } catch {
+    return ADMIN_DEFAULT_THEME
+  }
+}
+
+function applyAdminTheme(theme = getAdminTheme()) {
+  const nextTheme = ['dark', 'light'].includes(theme) ? theme : ADMIN_DEFAULT_THEME
+  document.body.dataset.adminTheme = nextTheme
+
+  if (adminThemeToggle) {
+    adminThemeToggle.textContent = nextTheme === 'light' ? adminT('themeDark') : adminT('themeLight')
+    adminThemeToggle.setAttribute(
+      'aria-label',
+      nextTheme === 'light' ? adminT('themeDark') : adminT('themeLight'),
+    )
+  }
+}
+
+function setAdminTheme(theme) {
+  const nextTheme = ['dark', 'light'].includes(theme) ? theme : ADMIN_DEFAULT_THEME
+  try {
+    localStorage.setItem(ADMIN_THEME_STORAGE_KEY, nextTheme)
+  } catch {}
+  applyAdminTheme(nextTheme)
+}
+
 function adminT(key) {
   const language = getAdminLanguage()
   return (
@@ -277,6 +359,10 @@ function applyAdminTranslations() {
   setAdminText('#adminLoginForm button[type="submit"]', 'authLoginButton')
   setAdminText('#adminBootstrapForm button[type="submit"]', 'authBootstrapButton')
   setAdminText('#adminLogoutButton', 'logout')
+  setAdminText('.admin-entry-kicker', 'entryClaim')
+  setAdminText('.admin-entry-content h1', 'entryTitle')
+  setAdminText('.admin-entry-content h2', 'entrySubtitle')
+  setAdminText('#adminEntryEnterButton', 'entryButton')
   setAdminText('.hero.admin-hero p', 'heroEyebrow')
   setAdminText('.hero.admin-hero h1', 'heroTitle')
   setAdminText('.hero.admin-hero span', 'heroText')
@@ -294,6 +380,7 @@ function applyAdminTranslations() {
   setAdminPlaceholder('#mediaPickerSearch', 'mediaPickerSearch')
 
   const navTranslations = [
+    ['#dashboard', 'navDashboard', 'navDashboardDesc'],
     ['#editor', 'navEditor', 'navEditorDesc'],
     ['#catalogo', 'navCatalog', 'navCatalogDesc'],
     ['#ordini', 'navOrders', 'navOrdersDesc'],
@@ -305,6 +392,12 @@ function applyAdminTranslations() {
     ['#checkout', 'navCheckout', 'navCheckoutDesc'],
     ['#impostazioni', 'navSettings', 'navSettingsDesc'],
     ['#apps', 'navApps', 'navAppsDesc'],
+    ['#google-suite', 'navGoogleSuite', 'navGoogleSuiteDesc'],
+    ['#media', 'navMediaLibrary', 'navMediaLibraryDesc'],
+    ['#import-export', 'navImportExport', 'navImportExportDesc'],
+    ['#traduzioni', 'navTranslations', 'navTranslationsDesc'],
+    ['#utenti', 'navUsers', 'navUsersDesc'],
+    ['#performance', 'navPerformance', 'navPerformanceDesc'],
   ]
 
   navTranslations.forEach(([href, titleKey, descKey]) => {
@@ -362,6 +455,7 @@ function applyAdminTranslations() {
   const auditBadge = document.querySelector('#adminAuditBadge')
   if (auditBadge) auditBadge.textContent = adminT('auditBadge')
 
+  applyAdminTheme()
   updateAdminAuthIntro()
   updateAdminCurrentViewLabel()
 }
@@ -370,6 +464,13 @@ function setupAdminLanguageControls() {
   document.querySelectorAll('[data-admin-language-select]').forEach((select) => {
     select.value = getAdminLanguage()
     select.addEventListener('change', () => setAdminLanguage(select.value))
+  })
+}
+
+function setupAdminThemeControls() {
+  applyAdminTheme()
+  adminThemeToggle?.addEventListener('click', () => {
+    setAdminTheme(getAdminTheme() === 'light' ? 'dark' : 'light')
   })
 }
 
@@ -393,13 +494,14 @@ function updateAdminAuthIntro() {
 
 function updateAdminCurrentViewLabel() {
   if (!adminCurrentView) return
-  const activeView = window.location.hash.replace('#', '') || 'editor'
+  const activeView = window.location.hash.replace('#', '') || 'dashboard'
   const target = document.querySelector(`[data-admin-view="${activeView}"]`)
   const heading = target?.querySelector('h2')?.textContent?.trim()
   if (heading) adminCurrentView.textContent = heading
 }
 
 setupAdminLanguageControls()
+setupAdminThemeControls()
 applyAdminTranslations()
 
 let adminCurrentUser = null
@@ -668,6 +770,8 @@ document.addEventListener(
   true,
 )
 
+adminEntryEnterButton?.addEventListener('click', hideAdminEntryScreen)
+
 function setAdminAuthMessage(message = '', isError = false) {
   if (!adminAuthMessage) return
   adminAuthMessage.textContent = message
@@ -678,6 +782,7 @@ function showAdminAuthGate({ bootstrap = false, migration = false, message = '' 
   adminAllowProtectedFetches = false
   adminCurrentUser = null
 
+  if (adminEntryScreen) adminEntryScreen.hidden = true
   if (adminApp) adminApp.hidden = true
   if (adminAuthGate) adminAuthGate.hidden = false
   if (adminAuthGate) {
@@ -701,6 +806,36 @@ function showAdminLogin(message = '') {
   showAdminAuthGate({ message })
 }
 
+function hideAdminEntryScreen() {
+  if (!adminEntryScreen) return
+  adminEntryScreen.hidden = true
+  adminEntryScreen.classList.remove('is-visible')
+  try {
+    sessionStorage.setItem(ADMIN_ENTRY_STORAGE_KEY, '1')
+  } catch {}
+}
+
+function shouldShowAdminEntryScreen() {
+  try {
+    return sessionStorage.getItem(ADMIN_ENTRY_STORAGE_KEY) !== '1'
+  } catch {
+    return true
+  }
+}
+
+function showAdminEntryScreen() {
+  if (!adminEntryScreen || !shouldShowAdminEntryScreen()) return
+
+  adminEntryScreen.hidden = false
+  window.requestAnimationFrame(() => {
+    adminEntryScreen.classList.add('is-visible')
+  })
+
+  window.setTimeout(() => {
+    if (!adminEntryScreen.hidden) hideAdminEntryScreen()
+  }, 3200)
+}
+
 function showAdminApp(user) {
   adminCurrentUser = user
   adminAllowProtectedFetches = true
@@ -713,6 +848,7 @@ function showAdminApp(user) {
   applyAdminPermissionUi()
   startAdminAuditObserver()
   applyAdminAuditUi()
+  showAdminEntryScreen()
 }
 
 function refreshAdminDataAfterAuth() {
@@ -923,6 +1059,12 @@ function renderAdminListState(target, message, state = 'empty') {
   `
 }
 
+function setAdminDashboardCount(key, value) {
+  const target = adminDashboardCounters[key]
+  if (!target) return
+  target.textContent = Number.isFinite(Number(value)) ? String(value) : '-'
+}
+
 function setInputValue(selector, value = '') {
   const input = document.querySelector(selector)
   if (input) input.value = value || ''
@@ -1116,6 +1258,8 @@ async function loadProducts() {
       renderAdminListState(productsList, 'Errore nel caricamento prodotti.', 'error')
       return
     }
+
+    setAdminDashboardCount('products', data.products?.length || 0)
 
     if (data.products.length === 0) {
       renderAdminListState(productsList, 'Nessun prodotto trovato.')
@@ -1664,6 +1808,7 @@ async function loadCollections() {
     }
 
     collectionsCache = data.collections || []
+    setAdminDashboardCount('collections', collectionsCache.length)
     renderProductCollectionOptions(document.querySelector('#collection_slug').value)
 
     if (data.collections.length === 0) {
@@ -1985,23 +2130,22 @@ function setupAdminViews() {
     const target = document.querySelector(`[data-admin-view="${activeView}"]`)
     const heading =
       target?.querySelector('.view-heading h2, .section-title h2, h2')?.textContent?.trim() ||
-      'Editor sito'
+      'Dashboard'
 
     adminCurrentView.textContent = heading
   }
 
   function openViewFromHash() {
-    const hash = window.location.hash.replace('#', '') || 'editor'
+    const hash = window.location.hash.replace('#', '') || 'dashboard'
     const viewExists = document.querySelector(`[data-admin-view="${hash}"]`)
-    const activeView = viewExists ? hash : 'editor'
+    const activeView = viewExists ? hash : 'dashboard'
 
     views.forEach((view) => {
       view.hidden = view.dataset.adminView !== activeView
     })
 
     const catalogoViews = ['prodotti', 'collezioni', 'inventario']
-    const appsViews = ['import-export', 'google-suite']
-    const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy', 'traduzioni']
+    const contenutoViews = ['pagine', 'menu', 'seo', 'blog-admin', 'metaobjects', 'policy']
     const marketingViews = [
       'marketing-campaigns',
       'marketing-discounts',
@@ -2044,23 +2188,24 @@ function setupAdminViews() {
       'performance',
     ]
 
-    const activeHubHash = contenutoViews.includes(activeView)
+    const directHubViews = ['dashboard', 'media', 'traduzioni', 'import-export', 'google-suite', 'utenti', 'performance']
+    const activeHubHash = directHubViews.includes(activeView)
+      ? `#${activeView}`
+      : contenutoViews.includes(activeView)
       ? '#contenuto'
       : catalogoViews.includes(activeView)
         ? '#catalogo'
-        : appsViews.includes(activeView)
-          ? '#apps'
-          : marketingViews.includes(activeView)
-            ? '#marketing'
-            : marketsViews.includes(activeView)
-              ? '#markets'
-              : analyticsViews.includes(activeView)
-                ? '#analisi'
-                : checkoutViews.includes(activeView)
-                  ? '#checkout'
-                  : impostazioniViews.includes(activeView)
-                    ? '#impostazioni'
-                    : `#${activeView}`
+        : marketingViews.includes(activeView)
+          ? '#marketing'
+          : marketsViews.includes(activeView)
+            ? '#markets'
+            : analyticsViews.includes(activeView)
+              ? '#analisi'
+              : checkoutViews.includes(activeView)
+                ? '#checkout'
+                : impostazioniViews.includes(activeView)
+                  ? '#impostazioni'
+                  : `#${activeView}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
@@ -3686,6 +3831,7 @@ async function loadMediaItems() {
     }
 
     mediaItemsCache = data.media || []
+    setAdminDashboardCount('media', mediaItemsCache.length)
     renderMediaItems(mediaItemsCache)
   } catch {
     renderAdminListState(mediaList, 'Errore di connessione media.', 'error')
@@ -5527,6 +5673,8 @@ async function loadOrders() {
       renderAdminListState(ordersList, data.message || 'Errore caricamento ordini.', 'error')
       return
     }
+
+    setAdminDashboardCount('orders', data.orders?.length || 0)
 
     if (!data.orders.length) {
       renderAdminListState(ordersList, 'Nessun ordine trovato.')
