@@ -101,6 +101,8 @@ const ADMIN_TRANSLATIONS = {
     performanceTitle: 'Performance produzione',
     appsTitle: 'App Hub',
     appsDesc: 'Moduli nativi TakeOff integrati nel CMS, senza marketplace esterno o abbonamenti aggiuntivi.',
+    googleSuiteTitle: 'TakeOff Google Suite',
+    googleSuiteDesc: 'Configura GA4, Google Ads, Search Console e Tag Manager senza salvare secrets.',
     importExportTitle: 'TakeOff Import Export',
     importExportDesc: 'Importa, esporta e aggiorna in massa dati del sito senza app esterne.',
     statusOperational: 'Operativo',
@@ -172,6 +174,8 @@ const ADMIN_TRANSLATIONS = {
     performanceTitle: 'Production performance',
     appsTitle: 'App Hub',
     appsDesc: 'TakeOff native modules integrated into the CMS without an external marketplace or extra subscriptions.',
+    googleSuiteTitle: 'TakeOff Google Suite',
+    googleSuiteDesc: 'Configure GA4, Google Ads, Search Console and Tag Manager without storing secrets.',
     importExportTitle: 'TakeOff Import Export',
     importExportDesc: 'Import, export and bulk update site data without external apps.',
     statusOperational: 'Operational',
@@ -276,6 +280,7 @@ function applyAdminTranslations() {
     ['utenti', 'usersTitle'],
     ['performance', 'performanceTitle'],
     ['apps', 'appsTitle', 'appsDesc'],
+    ['google-suite', 'googleSuiteTitle', 'googleSuiteDesc'],
     ['import-export', 'importExportTitle', 'importExportDesc'],
   ]
 
@@ -688,6 +693,7 @@ function refreshAdminDataAfterAuth() {
     loadEditorPages,
     loadSections,
     loadTranslationManager,
+    loadGoogleSuiteSettings,
   ]
 
   loaders.forEach((loader) => {
@@ -1209,6 +1215,23 @@ const importTranslationPackageButton = document.querySelector('#importTranslatio
 const translationPackagePreview = document.querySelector('#translationPackagePreview')
 const exportSitePackageButton = document.querySelector('#exportSitePackageButton')
 const sitePackagePreview = document.querySelector('#sitePackagePreview')
+const refreshImportExportHistoryButton = document.querySelector('#refreshImportExportHistoryButton')
+const importExportHistoryPreview = document.querySelector('#importExportHistoryPreview')
+const googleSuiteForm = document.querySelector('#googleSuiteForm')
+const googleSuiteMessage = document.querySelector('#googleSuiteMessage')
+
+const googleFields = {
+  google_ga4_measurement_id: document.querySelector('#googleGa4MeasurementId'),
+  google_ga4_active: document.querySelector('#googleGa4Active'),
+  google_ads_conversion_id: document.querySelector('#googleAdsConversionId'),
+  google_ads_purchase_label: document.querySelector('#googleAdsPurchaseLabel'),
+  google_ads_active: document.querySelector('#googleAdsActive'),
+  google_search_console_verification: document.querySelector('#googleSearchConsoleVerification'),
+  google_gtm_container_id: document.querySelector('#googleGtmContainerId'),
+  google_gtm_active: document.querySelector('#googleGtmActive'),
+  google_tag_id: document.querySelector('#googleTagId'),
+  google_tag_active: document.querySelector('#googleTagActive'),
+}
 
 function stringifyPreview(data) {
   return typeof data === 'string' ? data : JSON.stringify(data, null, 2)
@@ -1260,6 +1283,67 @@ function renderNativeApps(apps = []) {
     .join('')
 }
 
+function fillGoogleSuiteForm(settings = {}) {
+  Object.entries(googleFields).forEach(([key, input]) => {
+    if (!input) return
+
+    if (input.type === 'checkbox') {
+      input.checked = settings[key] === '1' || settings[key] === true
+      return
+    }
+
+    input.value = settings[key] || ''
+  })
+}
+
+function readGoogleSuitePayload() {
+  return Object.entries(googleFields).reduce((payload, [key, input]) => {
+    if (!input) return payload
+    payload[key] = input.type === 'checkbox' ? input.checked : input.value.trim()
+    return payload
+  }, {})
+}
+
+async function loadGoogleSuiteSettings() {
+  if (!googleSuiteForm) return
+
+  try {
+    const response = await fetch('/api/admin/google')
+    const data = await response.json()
+
+    if (!response.ok || !data.success) {
+      if (googleSuiteMessage) googleSuiteMessage.textContent = data.message || 'Google Suite non disponibile.'
+      return
+    }
+
+    fillGoogleSuiteForm(data.settings || {})
+  } catch {
+    if (googleSuiteMessage) googleSuiteMessage.textContent = 'Errore caricamento Google Suite.'
+  }
+}
+
+googleSuiteForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (googleSuiteMessage) googleSuiteMessage.textContent = 'Salvataggio Google Suite...'
+
+  try {
+    const response = await fetch('/api/admin/google', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ settings: readGoogleSuitePayload() }),
+    })
+    const data = await response.json()
+
+    if (googleSuiteMessage) {
+      googleSuiteMessage.textContent = data.message || (data.success ? 'Google Suite salvata.' : 'Errore Google Suite.')
+    }
+
+    if (data.success) fillGoogleSuiteForm(data.settings || readGoogleSuitePayload())
+  } catch {
+    if (googleSuiteMessage) googleSuiteMessage.textContent = 'Salvataggio Google Suite non riuscito.'
+  }
+})
+
 async function loadNativeApps() {
   if (!appsList) return
 
@@ -1306,6 +1390,23 @@ async function prepareExport(resource, format, previewElement, filenameBase, ext
     downloadTextFile(`${filenameBase}.json`, text)
   } catch {
     previewElement.textContent = 'Export non riuscito. Riprova.'
+  }
+}
+
+async function loadImportExportHistory() {
+  if (!importExportHistoryPreview) return
+
+  importExportHistoryPreview.textContent = 'Caricamento history...'
+
+  try {
+    const response = await fetch('/api/admin/import-export?resource=history&format=json')
+    const data = await response.json()
+
+    importExportHistoryPreview.textContent = response.ok && data.success
+      ? stringifyPreview(data)
+      : data.message || 'History non disponibile.'
+  } catch {
+    importExportHistoryPreview.textContent = 'History non disponibile.'
   }
 }
 
@@ -1393,6 +1494,9 @@ importTranslationPackageButton?.addEventListener('click', () => {
 exportSitePackageButton?.addEventListener('click', () => {
   prepareExport('site_package', 'json', sitePackagePreview, 'site-package')
 })
+
+refreshImportExportHistoryButton?.addEventListener('click', loadImportExportHistory)
+loadGoogleSuiteSettings()
 
 // ===============================
 // COLLEZIONI
@@ -1810,7 +1914,7 @@ function setupAdminViews() {
     })
 
     const catalogoViews = ['prodotti', 'collezioni', 'inventario']
-    const appsViews = ['import-export']
+    const appsViews = ['import-export', 'google-suite']
     const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy', 'traduzioni']
     const marketingViews = [
       'marketing-campaigns',
@@ -3184,6 +3288,9 @@ const mediaFormTitle = document.querySelector('#mediaFormTitle')
 const mediaSubmitButton = document.querySelector('#mediaSubmitButton')
 const cancelMediaEdit = document.querySelector('#cancelMediaEdit')
 const mediaAdminSearch = document.querySelector('#mediaAdminSearch')
+const mediaTypeFilter = document.querySelector('#mediaTypeFilter')
+const mediaProviderFilter = document.querySelector('#mediaProviderFilter')
+let mediaItemsCache = []
 
 function resetMediaForm() {
   if (!mediaForm) return
@@ -3196,6 +3303,7 @@ function resetMediaForm() {
 }
 
 function fillMediaForm(media) {
+  if (!media) return
   document.querySelector('#mediaId').value = media.id
   document.querySelector('#mediaName').value = media.name || ''
   document.querySelector('#mediaUrl').value = media.url || ''
@@ -3216,67 +3324,71 @@ function getMediaPayload() {
   }
 }
 
-async function loadMediaItems() {
+function providerFilterValue(provider = '') {
+  const value = String(provider || 'url').toLowerCase()
+  if (value === 'url' || value === 'r2') return value
+  return 'other'
+}
+
+function renderMediaItems(mediaItems = mediaItemsCache) {
   if (!mediaList) return
 
-  renderAdminListState(mediaList, 'Caricamento media...', 'loading')
+  if (!mediaItems.length) {
+    renderAdminListState(mediaList, 'Nessun media salvato. Usa upload o URL manuale per popolare la libreria.')
+    return
+  }
 
-  try {
-    const response = await fetch('/api/admin/media')
-    const data = await response.json()
+  const search = normalizeAdminSearch(mediaAdminSearch?.value)
+  const typeFilter = mediaTypeFilter?.value || ''
+  const providerFilter = mediaProviderFilter?.value || ''
+  const visibleMedia = mediaItems.filter((media) => {
+    const matchesSearch = adminItemMatchesSearch(media, search, ['name', 'url', 'type', 'alt_text', 'mime_type', 'storage_provider'])
+    const matchesType = !typeFilter || media.type === typeFilter
+    const matchesProvider = !providerFilter || providerFilterValue(media.storage_provider) === providerFilter
 
-    if (!data.success) {
-      renderAdminListState(mediaList, data.message || 'Errore caricamento media.', 'error')
-      return
-    }
+    return matchesSearch && matchesType && matchesProvider
+  })
 
-    if (!data.media.length) {
-      renderAdminListState(mediaList, 'Nessun media salvato.')
-      return
-    }
+  if (!visibleMedia.length) {
+    renderAdminListState(mediaList, 'Nessun media corrisponde a ricerca o filtri.')
+    return
+  }
 
-    const search = normalizeAdminSearch(mediaAdminSearch?.value)
-    const visibleMedia = data.media.filter((media) =>
-      adminItemMatchesSearch(media, search, ['name', 'url', 'type', 'alt_text', 'mime_type']),
-    )
-
-    if (!visibleMedia.length) {
-      renderAdminListState(mediaList, 'Nessun media corrisponde alla ricerca.')
-      return
-    }
-
-    mediaList.innerHTML = visibleMedia
-      .map(
-        (media) => `
-          <article class="product-item media-item">
+  mediaList.innerHTML = visibleMedia
+    .map(
+      (media) => `
+        <article class="product-item media-item">
+          <div class="media-preview-frame">
             ${
               media.type === 'image'
-                ? `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.alt_text || media.name)}">`
-                : '<div class="media-file-preview">File</div>'
+                ? `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.alt_text || media.name)}" loading="lazy">`
+                : `<div class="media-file-preview">${escapeHtml(media.type || 'File')}</div>`
             }
-            <h3>${escapeHtml(media.name)}</h3>
-            <p>${escapeHtml(media.url)}</p>
-            <div class="meta">
-              <span>${escapeHtml(media.type)}</span>
-              <span>${escapeHtml(media.alt_text || 'Alt text vuoto')}</span>
-              <span>${escapeHtml(media.mime_type || 'mime N/D')}</span>
-              <span>${media.size ? `${Math.round(Number(media.size) / 1024)} KB` : 'size N/D'}</span>
-              <span>${escapeHtml(media.storage_provider || 'url')}</span>
-            </div>
-            <div class="product-actions">
-              <button type="button" data-edit-media="${media.id}">Modifica</button>
-              <a class="button-link" href="${escapeHtml(media.url)}" target="_blank" rel="noreferrer">Apri</a>
-              <button type="button" data-copy-media="${escapeHtml(media.url)}">Copia URL</button>
-              <button type="button" class="danger" data-delete-media="${media.id}">Elimina</button>
-            </div>
-          </article>
-        `,
-      )
-      .join('')
+          </div>
+          <h3>${escapeHtml(media.name)}</h3>
+          <p title="${escapeHtml(media.url)}">${escapeHtml(media.url)}</p>
+          <div class="meta">
+            <span>${escapeHtml(media.type)}</span>
+            <span>${escapeHtml(media.alt_text || 'Alt text vuoto')}</span>
+            <span>${escapeHtml(media.mime_type || 'mime N/D')}</span>
+            <span>${media.size ? `${Math.round(Number(media.size) / 1024)} KB` : 'size N/D'}</span>
+            <span>${escapeHtml(media.storage_provider || 'url')}</span>
+            ${media.created_at ? `<span>${escapeHtml(media.created_at)}</span>` : ''}
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-media="${media.id}">Modifica</button>
+            <a class="button-link" href="${escapeHtml(media.url)}" target="_blank" rel="noreferrer">Apri</a>
+            <button type="button" data-copy-media="${escapeHtml(media.url)}">Copia URL</button>
+            <button type="button" class="danger" data-delete-media="${media.id}">Elimina</button>
+          </div>
+        </article>
+      `,
+    )
+    .join('')
 
     document.querySelectorAll('[data-edit-media]').forEach((button) => {
       button.addEventListener('click', () => {
-        const media = data.media.find((item) => item.id === Number(button.dataset.editMedia))
+        const media = mediaItemsCache.find((item) => item.id === Number(button.dataset.editMedia))
         fillMediaForm(media)
       })
     })
@@ -3316,6 +3428,25 @@ async function loadMediaItems() {
         loadMediaItems()
       })
     })
+  applyAdminAuditUi()
+}
+
+async function loadMediaItems() {
+  if (!mediaList) return
+
+  renderAdminListState(mediaList, 'Caricamento media...', 'loading')
+
+  try {
+    const response = await fetch('/api/admin/media')
+    const data = await response.json()
+
+    if (!data.success) {
+      renderAdminListState(mediaList, data.message || 'Errore caricamento media.', 'error')
+      return
+    }
+
+    mediaItemsCache = data.media || []
+    renderMediaItems(mediaItemsCache)
   } catch {
     renderAdminListState(mediaList, 'Errore di connessione media.', 'error')
   }
@@ -3398,7 +3529,9 @@ mediaUploadForm?.addEventListener('submit', async (event) => {
 
 cancelMediaEdit?.addEventListener('click', resetMediaForm)
 refreshMediaButton?.addEventListener('click', loadMediaItems)
-mediaAdminSearch?.addEventListener('input', loadMediaItems)
+mediaAdminSearch?.addEventListener('input', () => renderMediaItems())
+mediaTypeFilter?.addEventListener('change', () => renderMediaItems())
+mediaProviderFilter?.addEventListener('change', () => renderMediaItems())
 loadMediaItems()
 
 // ===============================

@@ -218,6 +218,17 @@ async function logActivity(env, action, description) {
   } catch {}
 }
 
+async function logImportExportJob(env, type, status, summary) {
+  try {
+    await env.DB.prepare(`
+      INSERT INTO import_export_jobs (type, status, summary)
+      VALUES (?, ?, ?)
+    `)
+      .bind(type, status, summary)
+      .run()
+  } catch {}
+}
+
 async function loadExportRows(env, resource) {
   if (resource === 'pages') {
     return safeAll(
@@ -430,6 +441,18 @@ async function loadExportRows(env, resource) {
     )
   }
 
+  if (resource === 'history') {
+    return safeAll(
+      env,
+      `
+      SELECT id, type, status, summary, created_at
+      FROM import_export_jobs
+      ORDER BY created_at DESC, id DESC
+      LIMIT 30
+      `,
+    )
+  }
+
   return safeAll(
     env,
     `
@@ -622,6 +645,20 @@ async function loadSitePackage(env) {
 }
 
 function loadTemplateRows(target) {
+  if (target === 'localized_prices') {
+    return [
+      {
+        product_slug: 'prodotto-demo',
+        product_id: 1,
+        variant_id: 0,
+        market_handle: 'us',
+        currency_code: 'USD',
+        price_cents: 5900,
+        active: 1,
+      },
+    ]
+  }
+
   if (target === 'collections') {
     return [
       {
@@ -868,6 +905,7 @@ export async function onRequestGet({ request, env }) {
       'backup',
       'translation_package',
       'site_package',
+      'history',
       'template',
     ])
 
@@ -882,6 +920,7 @@ export async function onRequestGet({ request, env }) {
 
       const backup = await loadBackupData(env)
       await logActivity(env, 'export', 'Export backup JSON principale.')
+      await logImportExportJob(env, 'export:backup', 'completed', 'Export backup JSON principale completato.')
 
       return json({
         success: true,
@@ -893,6 +932,7 @@ export async function onRequestGet({ request, env }) {
     if (resource === 'translation_package') {
       const rows = await loadTranslationPackage(env, locale)
       await logActivity(env, 'export', `Export translation package ${locale}.`)
+      await logImportExportJob(env, 'export:translation_package', 'completed', `Translation package ${locale}: ${rows.length} righe.`)
 
       if (format === 'csv') {
         return new Response(toCsv(rows), {
@@ -920,6 +960,7 @@ export async function onRequestGet({ request, env }) {
 
       const sitePackage = await loadSitePackage(env)
       await logActivity(env, 'export', 'Export site package JSON.')
+      await logImportExportJob(env, 'export:site_package', 'completed', 'Site package JSON esportato.')
 
       return json({
         success: true,
@@ -951,6 +992,7 @@ export async function onRequestGet({ request, env }) {
 
     const rows = await loadExportRows(env, resource)
     await logActivity(env, 'export', `Export ${resource} in formato ${format}.`)
+    await logImportExportJob(env, `export:${resource}`, 'completed', `Export ${resource} ${format}: ${rows.length} record.`)
 
     if (format === 'csv') {
       return new Response(toCsv(rows), {
@@ -1017,6 +1059,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (dryRun) {
+      await logImportExportJob(env, `dry_run:${resource}`, 'completed', `Dry-run ${resource}: ${normalized.length} righe valide.`)
       return json({
         success: true,
         dry_run: true,
@@ -1050,6 +1093,12 @@ export async function onRequestPost({ request, env }) {
     }
 
     await logActivity(env, 'import', `Import ${resource} completato: ${normalized.length} righe.`)
+    await logImportExportJob(
+      env,
+      `import:${resource}`,
+      'completed',
+      `Creati: ${report.created}. Aggiornati: ${report.updated}. Saltati: ${report.skipped}. Errori: ${report.errors.length}.`,
+    )
 
     return json({
       success: true,

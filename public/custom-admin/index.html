@@ -428,6 +428,20 @@
             <strong>Configurabile</strong>
           </a>
 
+          <a class="mini-card app-card" href="#google-suite">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Google Suite</h3>
+            <p>Configura GA4, Google Ads, Search Console e Tag Manager.</p>
+            <strong>Configurabile</strong>
+          </a>
+
+          <a class="mini-card app-card" href="#media">
+            <span class="mini-card-status">Native app</span>
+            <h3>TakeOff Media Library</h3>
+            <p>Libreria visuale per upload, URL fallback, anteprime e alt text.</p>
+            <strong>Attiva</strong>
+          </a>
+
           <a class="mini-card app-card placeholder-card" href="#editor">
             <span class="mini-card-status">In sviluppo</span>
             <h3>TakeOff 3D Viewer</h3>
@@ -449,6 +463,77 @@
             <strong>Configurabile</strong>
           </a>
         </div>
+      </section>
+
+      <section id="google-suite" class="cms-area card admin-view" data-admin-view="google-suite">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Google Suite</h2>
+            <p class="section-subtitle">
+              Collega strumenti Google per analytics, advertising, verifica SEO e tag management senza salvare secrets.
+            </p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+
+        <div class="app-hero-panel">
+          <div>
+            <h3>Google stack configurabile dal CMS.</h3>
+            <p>
+              Salva solo ID pubblici e codici di verifica. OAuth, API private e credenziali restano fuori dal repository.
+            </p>
+          </div>
+          <span class="status-badge">Configurabile</span>
+        </div>
+
+        <form id="googleSuiteForm" class="google-suite-grid">
+          <section class="inner-card">
+            <h3>Google Analytics / GA4</h3>
+            <p class="field-help">Inserisci un Measurement ID tipo G-XXXXXXXXXX. Se attivo, il sito carica gtag.js.</p>
+            <label>GA4 Measurement ID</label>
+            <input id="googleGa4MeasurementId" type="text" placeholder="G-XXXXXXXXXX" />
+            <label class="inline-check"><input id="googleGa4Active" type="checkbox" /> GA4 attivo</label>
+          </section>
+
+          <section class="inner-card">
+            <h3>Google Ads</h3>
+            <p class="field-help">Conversion ID e label purchase/order. Nessuna chiave privata viene salvata.</p>
+            <label>Conversion ID</label>
+            <input id="googleAdsConversionId" type="text" placeholder="AW-XXXXXXXX" />
+            <label>Conversion label purchase/order</label>
+            <input id="googleAdsPurchaseLabel" type="text" placeholder="abcDEF123" />
+            <label class="inline-check"><input id="googleAdsActive" type="checkbox" /> Google Ads attivo</label>
+          </section>
+
+          <section class="inner-card">
+            <h3>Google Search Console</h3>
+            <p class="field-help">Copia il valore del meta tag di verifica da Search Console e salvalo qui.</p>
+            <label>Verification content o meta tag completo</label>
+            <input id="googleSearchConsoleVerification" type="text" placeholder="google-site-verification=..." />
+          </section>
+
+          <section class="inner-card">
+            <h3>Google Tag Manager / Google Tag</h3>
+            <p class="field-help">GTM usa un Container ID tipo GTM-XXXXXXX. Google Tag puo usare G- oppure AW-.</p>
+            <label>GTM Container ID</label>
+            <input id="googleGtmContainerId" type="text" placeholder="GTM-XXXXXXX" />
+            <label class="inline-check"><input id="googleGtmActive" type="checkbox" /> GTM attivo</label>
+            <label>Google Tag ID opzionale</label>
+            <input id="googleTagId" type="text" placeholder="G-XXXXXXXXXX oppure AW-XXXXXXXX" />
+            <label class="inline-check"><input id="googleTagActive" type="checkbox" /> Google Tag attivo</label>
+          </section>
+
+          <section class="inner-card google-suite-summary">
+            <h3>Privacy e stato</h3>
+            <p>
+              Gli eventi ecommerce base sono predisposti: view_item, add_to_cart, begin_checkout e purchase.
+              Il consenso cookie non e ancora collegato automaticamente.
+            </p>
+            <button id="googleSuiteSubmitButton" type="submit">Salva Google Suite</button>
+            <p id="googleSuiteMessage"></p>
+          </section>
+        </form>
       </section>
 
       <section id="inventario" class="cms-area card placeholder-area admin-view" data-admin-view="inventario">
@@ -707,6 +792,7 @@
               <option value="policies">Policy</option>
               <option value="metafields">Metafields</option>
               <option value="translations">Traduzioni</option>
+              <option value="translation_package">Translation package</option>
               <option value="markets">Markets</option>
               <option value="market_languages">Lingue market</option>
               <option value="market_currencies">Valute market</option>
@@ -717,6 +803,7 @@
               <option value="customers">Clienti</option>
               <option value="orders">Ordini</option>
               <option value="backup">Backup JSON principale</option>
+              <option value="history">History import/export</option>
             </select>
             <label>Formato</label>
             <select id="exportFormat">
@@ -739,6 +826,7 @@
               <option value="products">Prodotti</option>
               <option value="collections">Collezioni</option>
               <option value="translations">Traduzioni</option>
+              <option value="translation_package">Translation package</option>
             </select>
             <label>Formato</label>
             <select id="importFormat">
@@ -765,6 +853,7 @@
               <option value="products">Prodotti</option>
               <option value="collections">Collezioni</option>
               <option value="translations">Traduzioni</option>
+              <option value="localized_prices">Prezzi localizzati</option>
             </select>
             <label>Formato</label>
             <select id="templateFormat">
@@ -833,6 +922,8 @@
               <span class="status-badge status-badge--future">In sviluppo</span>
               <p>Lo storico avanzato resta in sviluppo. Le azioni principali vengono gia registrate nell'Activity log.</p>
             </div>
+            <button id="refreshImportExportHistoryButton" type="button">Aggiorna history</button>
+            <pre id="importExportHistoryPreview" class="admin-pre">Nessun job caricato.</pre>
           </section>
         </div>
       </section>
@@ -1201,7 +1292,7 @@
           <div>
             <h2>Media</h2>
             <p class="section-subtitle">
-              Libreria media con upload predisposto, fallback URL, anteprime e alt text.
+              Libreria media visuale con upload, fallback URL, anteprime, filtri e gestione alt text.
             </p>
           </div>
 
@@ -1263,11 +1354,23 @@
               <button id="refreshMediaButton" type="button">Aggiorna</button>
             </div>
 
-            <div class="admin-list-tools">
+            <div class="admin-list-tools media-filter-tools">
               <input id="mediaAdminSearch" type="search" placeholder="Cerca media..." />
+              <select id="mediaTypeFilter">
+                <option value="">Tutti i tipi</option>
+                <option value="image">Immagini</option>
+                <option value="video">Video</option>
+                <option value="file">File</option>
+              </select>
+              <select id="mediaProviderFilter">
+                <option value="">Tutti i provider</option>
+                <option value="url">URL</option>
+                <option value="r2">R2</option>
+                <option value="other">Other</option>
+              </select>
             </div>
 
-            <div id="mediaList" class="products-list">Caricamento media...</div>
+            <div id="mediaList" class="products-list media-library-grid">Caricamento media...</div>
           </section>
         </div>
       </section>
@@ -1690,7 +1793,7 @@
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
-        <div class="content-manager">
+        <div class="content-manager media-library-workspace">
           <section class="inner-card">
             <h3>Paesi abilitati</h3>
             <p class="section-subtitle">Lista consigliata con fallback se il database non contiene ancora configurazioni dedicate.</p>

@@ -60,7 +60,6 @@ export async function onRequestGet({ env }) {
       {
         success: false,
         message: 'Errore caricamento impostazioni.',
-        error: error.message,
       },
       500,
     )

@@ -1151,6 +1151,7 @@ button:disabled {
 #metaobjectEntryMessage,
 #marketMessage,
 #localizedPriceMessage,
+#googleSuiteMessage,
 #integrationMessage,
 #adminUserMessage,
 #notificationMessage {
@@ -2633,6 +2634,61 @@ textarea {
   background: rgba(255, 106, 77, 0.11);
 }
 
+.google-suite-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.google-suite-summary {
+  border-color: rgba(255, 106, 77, 0.22);
+  background:
+    linear-gradient(135deg, rgba(255, 106, 77, 0.11), rgba(255, 177, 95, 0.045)),
+    rgba(255, 255, 255, 0.035);
+}
+
+.media-library-workspace {
+  grid-template-columns: minmax(280px, 360px) minmax(280px, 360px) minmax(0, 1fr);
+}
+
+.media-filter-tools {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(140px, auto) minmax(140px, auto);
+  gap: 10px;
+}
+
+.media-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.media-library-grid .media-item {
+  display: grid;
+  align-content: start;
+  min-height: 100%;
+}
+
+.media-preview-frame {
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.media-preview-frame img,
+.media-preview-frame .media-file-preview {
+  margin-bottom: 0;
+}
+
+.media-item p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
 .import-export-workspace {
   align-items: stretch;
 }
@@ -2706,6 +2762,11 @@ body[data-admin-audit-mode="true"] button.audit-disabled::after {
 
   .app-hub-panel,
   .app-hero-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .media-filter-tools,
+  .media-library-workspace {
     grid-template-columns: 1fr;
   }
 }

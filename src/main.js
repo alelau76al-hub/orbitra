@@ -881,6 +881,14 @@ const DEFAULT_TAX_SETTINGS = {
 let activeCheckoutDiscount = null
 let activeCheckoutIdempotencyKey = ''
 let primaryCanonicalOrigin = ''
+let publicGoogleSettings = {}
+const configuredGoogleTags = new Set()
+const GOOGLE_EVENT_MAP = {
+  product_view: 'view_item',
+  add_to_cart: 'add_to_cart',
+  checkout_start: 'begin_checkout',
+  order_created: 'purchase',
+}
 
 async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 8000) {
   const controller = new AbortController()
@@ -999,6 +1007,127 @@ function calculateTaxSummary(subtotalCents, shippingCents, discountCents, taxSet
   }
 }
 
+function settingEnabled(value) {
+  return value === true || value === '1' || value === 1 || value === 'true'
+}
+
+function validGoogleTagId(value = '', pattern) {
+  const tag = String(value || '').trim().toUpperCase()
+  return pattern.test(tag) ? tag : ''
+}
+
+function ensureGoogleDataLayer() {
+  window.dataLayer = window.dataLayer || []
+
+  if (typeof window.gtag !== 'function') {
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments)
+    }
+  }
+}
+
+function appendExternalScript(id, src) {
+  if (!id || !src || document.getElementById(id)) return
+
+  const script = document.createElement('script')
+  script.id = id
+  script.async = true
+  script.src = src
+  document.head.appendChild(script)
+}
+
+function configureGoogleTag(tagId) {
+  if (!tagId || configuredGoogleTags.has(tagId)) return
+
+  ensureGoogleDataLayer()
+  appendExternalScript(
+    `google-tag-${tagId.replace(/[^a-z0-9_-]/gi, '-')}`,
+    `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(tagId)}`,
+  )
+
+  window.gtag('js', new Date())
+  window.gtag('config', tagId)
+  configuredGoogleTags.add(tagId)
+}
+
+function configureGoogleTagManager(containerId) {
+  if (!containerId || document.getElementById('google-tag-manager')) return
+
+  window.dataLayer = window.dataLayer || []
+  window.dataLayer.push({
+    'gtm.start': new Date().getTime(),
+    event: 'gtm.js',
+  })
+  appendExternalScript(
+    'google-tag-manager',
+    `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`,
+  )
+}
+
+function applyGoogleSuiteSettings(settings = {}) {
+  publicGoogleSettings = settings
+
+  const ga4Id = validGoogleTagId(settings.google_ga4_measurement_id, /^G-[A-Z0-9-]+$/)
+  const googleTagId = validGoogleTagId(settings.google_tag_id, /^(G|AW)-[A-Z0-9-]+$/)
+  const adsId = validGoogleTagId(settings.google_ads_conversion_id, /^AW-[A-Z0-9-]+$/)
+  const gtmId = validGoogleTagId(settings.google_gtm_container_id, /^GTM-[A-Z0-9-]+$/)
+  const searchConsoleVerification = String(settings.google_search_console_verification || '').trim()
+
+  if (searchConsoleVerification) {
+    setMetaTag('meta[name="google-site-verification"]', {
+      name: 'google-site-verification',
+      content: searchConsoleVerification,
+    })
+  }
+
+  if (settingEnabled(settings.google_ga4_active) && ga4Id) configureGoogleTag(ga4Id)
+  if (settingEnabled(settings.google_tag_active) && googleTagId) configureGoogleTag(googleTagId)
+  if (settingEnabled(settings.google_ads_active) && adsId) configureGoogleTag(adsId)
+  if (settingEnabled(settings.google_gtm_active) && gtmId) configureGoogleTagManager(gtmId)
+}
+
+function trackGoogleEvent(eventType, details = {}) {
+  const googleEventName = GOOGLE_EVENT_MAP[eventType]
+  if (!googleEventName) return
+
+  const metadata = details.metadata || {}
+  const currency = metadata.currency || getSelectedCurrencyCode()
+  const value = Number(metadata.total_cents || metadata.price_cents || 0) / 100
+  const payload = {
+    currency,
+    value: Number.isFinite(value) ? value : 0,
+    items: metadata.items || [],
+    item_id: details.entity_id || '',
+    item_name: metadata.item_name || details.entity_id || '',
+  }
+
+  try {
+    if (window.dataLayer && settingEnabled(publicGoogleSettings.google_gtm_active)) {
+      window.dataLayer.push({
+        event: googleEventName,
+        ecommerce: payload,
+      })
+    }
+
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', googleEventName, payload)
+
+      const adsId = validGoogleTagId(publicGoogleSettings.google_ads_conversion_id, /^AW-[A-Z0-9-]+$/)
+      const label = String(publicGoogleSettings.google_ads_purchase_label || '').trim()
+      if (googleEventName === 'purchase' && settingEnabled(publicGoogleSettings.google_ads_active) && adsId && label) {
+        window.gtag('event', 'conversion', {
+          send_to: `${adsId}/${label}`,
+          value: payload.value,
+          currency,
+          transaction_id: String(details.entity_id || ''),
+        })
+      }
+    }
+  } catch {
+    // Google tracking non deve mai bloccare navigazione o checkout.
+  }
+}
+
 function getAnalyticsSessionId() {
   try {
     let sessionId = localStorage.getItem(ANALYTICS_SESSION_KEY)
@@ -1015,6 +1144,8 @@ function getAnalyticsSessionId() {
 }
 
 function trackAnalyticsEvent(eventType, details = {}) {
+  trackGoogleEvent(eventType, details)
+
   try {
     fetch('/api/analytics', {
       method: 'POST',
@@ -1209,12 +1340,16 @@ function addProductToCart(productSlug, variantId = '', quantity = 1) {
 
   saveCart(cart)
   showCartMessage(sfT('cartAdded', { name: product.name }))
+  const selectedVariant = getProductVariant(product, selectedVariantId)
   trackAnalyticsEvent('add_to_cart', {
     entity_type: 'product',
     entity_id: product.slug,
     metadata: {
       variant_id: selectedVariantId,
       quantity: Number(quantity || 1),
+      item_name: product.name,
+      price_cents: getEffectivePriceCents(product, selectedVariant),
+      currency: getSelectedCurrencyCode(),
     },
   })
   openCart()
@@ -1526,6 +1661,7 @@ function applyPublicThemeSettings(settings) {
   applyPublicHeaderCta(settings)
   applyPublicFooter(settings)
   applyPublicSocialLinks(settings)
+  applyGoogleSuiteSettings(settings)
 }
 
 async function loadPublicThemeSettings() {
@@ -3488,6 +3624,11 @@ async function renderPublicProductPage() {
     trackAnalyticsEvent('product_view', {
       entity_type: 'product',
       entity_id: product.slug,
+      metadata: {
+        item_name: product.name,
+        price_cents: getEffectivePriceCents(product, getDefaultVariant(product)),
+        currency: getSelectedCurrencyCode(),
+      },
     })
 
     const collections = translateCollections(collectionsData.collections || [])
@@ -3915,6 +4056,13 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
       metadata: {
         total_cents: data.order?.total_cents || 0,
         payment_status: data.order?.payment_status || 'pending',
+        currency: payload.currency || getSelectedCurrencyCode(),
+        items: detailedItems.map((item) => ({
+          item_id: item.product.slug,
+          item_name: item.product.name,
+          quantity: item.quantity,
+          price: getEffectivePriceCents(item.product, item.variant) / 100,
+        })),
       },
     })
     renderOrderConfirmation(data.order)
@@ -4001,7 +4149,15 @@ async function renderPublicCheckoutPage() {
       entity_type: 'checkout',
       metadata: {
         subtotal_cents: subtotalCents,
+        total_cents: subtotalCents,
         items_count: detailedItems.length,
+        currency: getSelectedCurrencyCode(),
+        items: detailedItems.map((item) => ({
+          item_id: item.product.slug,
+          item_name: item.product.name,
+          quantity: item.quantity,
+          price: item.price_cents / 100,
+        })),
       },
     })
     const methods = shippingMethods.length
