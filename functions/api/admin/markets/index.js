@@ -379,7 +379,23 @@ export async function onRequestGet({ env }) {
       default_currency: currencies.find((currency) => currency.is_default) || currencies[0] || null,
     })
   } catch {
-    return json({ success: false, message: 'Errore caricamento Markets.' }, 500)
+    const markets = []
+    const languages = recommendedLanguages()
+    const currencies = recommendedCurrencies()
+    const countries = recommendedCountries()
+
+    return json({
+      success: true,
+      markets,
+      languages,
+      currencies,
+      countries,
+      default_market: null,
+      default_language: languages[0],
+      default_currency: currencies[0],
+      fallback: true,
+      message: 'Markets caricati in modalita fallback.',
+    })
   }
 }
 

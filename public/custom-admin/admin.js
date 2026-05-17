@@ -163,7 +163,7 @@ const ADMIN_TRANSLATIONS = {
     statusOperational: 'Operativo',
     statusArea: 'Area',
     statusBaseConfig: 'Configurazione base',
-    statusDevelopment: 'In sviluppo',
+    statusDevelopment: 'Advanced tools in progress',
     logout: 'Logout',
   },
   en: {
@@ -277,7 +277,7 @@ const ADMIN_TRANSLATIONS = {
     statusOperational: 'Operational',
     statusArea: 'Area',
     statusBaseConfig: 'Base configuration',
-    statusDevelopment: 'In development',
+    statusDevelopment: 'Advanced tools in progress',
     logout: 'Logout',
   },
 }
@@ -891,6 +891,7 @@ function refreshAdminDataAfterAuth() {
     loadMetaobjects,
     loadTaxSettingsAdmin,
     loadPaymentSettingsAdmin,
+    loadShippingMethodsAdmin,
     loadDiscounts,
     loadCampaigns,
     loadMediaItems,
@@ -898,6 +899,7 @@ function refreshAdminDataAfterAuth() {
     loadMarketsAdmin,
     loadLocalizedPricingAdmin,
     loadAnalyticsDashboard,
+    loadSeoDashboard,
     loadIntegrations,
     loadAdminUsers,
     loadActivityLog,
@@ -914,6 +916,7 @@ function refreshAdminDataAfterAuth() {
     loadSections,
     loadTranslationManager,
     loadGoogleSuiteSettings,
+    loadCookiePrivacySettings,
   ]
 
   loaders.forEach((loader) => {
@@ -1047,8 +1050,15 @@ const cancelEdit = document.querySelector('#cancelEdit')
 const productVariantsList = document.querySelector('#productVariantsList')
 const addVariantButton = document.querySelector('#addVariantButton')
 const productAdminSearch = document.querySelector('#productAdminSearch')
+const inventorySearch = document.querySelector('#inventorySearch')
+const inventoryFilter = document.querySelector('#inventoryFilter')
+const inventoryLowStockThreshold = document.querySelector('#inventoryLowStockThreshold')
+const refreshInventoryButton = document.querySelector('#refreshInventoryButton')
+const inventorySummary = document.querySelector('#inventorySummary')
+const inventoryList = document.querySelector('#inventoryList')
 
 let productVariantsDraft = []
+let adminProductsCache = []
 
 function formatMoney(priceCents) {
   return new Intl.NumberFormat('it-IT', {
@@ -1290,6 +1300,8 @@ async function loadProducts() {
     }
 
     setAdminDashboardCount('products', data.products?.length || 0)
+    adminProductsCache = data.products || []
+    renderInventory()
 
     if (data.products.length === 0) {
       renderAdminListState(productsList, 'Nessun prodotto trovato.')
@@ -1372,6 +1384,152 @@ async function loadProducts() {
     renderAdminListState(productsList, 'Errore di connessione alla API.', 'error')
   }
 }
+
+function getInventoryRows() {
+  return adminProductsCache.flatMap((product) => {
+    const baseRow = {
+      id: `product-${product.id}`,
+      product_id: product.id,
+      variant_id: 0,
+      name: product.name,
+      detail: product.slug || 'Prodotto',
+      sku: '',
+      category: product.category || '',
+      collection: product.collection_slug || '',
+      stock: Number(product.stock || 0),
+      type: 'product',
+      price_cents: product.price_cents,
+    }
+    const variantRows = (product.variants || []).map((variant) => ({
+      id: `variant-${variant.id}`,
+      product_id: product.id,
+      variant_id: variant.id,
+      name: `${product.name} - ${variant.option_name || 'Opzione'}: ${variant.option_value || 'Valore'}`,
+      detail: product.slug || 'Variante',
+      sku: variant.sku || '',
+      category: product.category || '',
+      collection: product.collection_slug || '',
+      stock: variant.stock === null || variant.stock === undefined ? Number(product.stock || 0) : Number(variant.stock || 0),
+      type: 'variant',
+      price_cents: variant.price_cents || product.price_cents,
+    }))
+
+    return [baseRow, ...variantRows]
+  })
+}
+
+function inventoryStatus(row, threshold) {
+  if (row.stock <= 0) return { key: 'out', label: 'Out of stock' }
+  if (row.stock <= threshold) return { key: 'low', label: 'Stock basso' }
+  return { key: 'ok', label: 'Disponibile' }
+}
+
+function renderInventory() {
+  if (!inventoryList) return
+
+  const threshold = Math.max(1, Number(inventoryLowStockThreshold?.value || 5))
+  const filter = inventoryFilter?.value || 'all'
+  const search = normalizeAdminSearch(inventorySearch?.value)
+  const rows = getInventoryRows()
+  const enrichedRows = rows.map((row) => ({
+    ...row,
+    status: inventoryStatus(row, threshold),
+  }))
+  const visibleRows = enrichedRows.filter((row) => {
+    const matchesFilter = filter === 'all' || row.status.key === filter
+    const matchesSearch = !search || adminItemMatchesSearch(row, search, ['name', 'detail', 'sku', 'category', 'collection'])
+    return matchesFilter && matchesSearch
+  })
+
+  if (inventorySummary) {
+    const lowCount = enrichedRows.filter((row) => row.status.key === 'low').length
+    const outCount = enrichedRows.filter((row) => row.status.key === 'out').length
+    const availableCount = enrichedRows.filter((row) => row.status.key === 'ok').length
+
+    inventorySummary.innerHTML = `
+      <article><strong>${enrichedRows.length}</strong><span>Righe stock</span></article>
+      <article><strong>${availableCount}</strong><span>Disponibili</span></article>
+      <article><strong>${lowCount}</strong><span>Stock basso</span></article>
+      <article><strong>${outCount}</strong><span>Out of stock</span></article>
+    `
+  }
+
+  if (!enrichedRows.length) {
+    inventoryList.innerHTML = '<p class="admin-empty">Nessun prodotto disponibile per l inventario.</p>'
+    return
+  }
+
+  if (!visibleRows.length) {
+    inventoryList.innerHTML = '<p class="admin-empty">Nessuna riga inventario corrisponde ai filtri.</p>'
+    return
+  }
+
+  inventoryList.innerHTML = visibleRows
+    .map((row) => `
+      <article class="product-item inventory-item" data-inventory-row="${escapeHtml(row.id)}">
+        <div>
+          <h3>${escapeHtml(row.name)}</h3>
+          <p>${escapeHtml(row.type === 'variant' ? `Variante - SKU ${row.sku || 'N/D'}` : 'Stock prodotto base')}</p>
+        </div>
+        <div class="meta">
+          <span>${escapeHtml(row.status.label)}</span>
+          <span>${escapeHtml(row.category || 'Senza categoria')}</span>
+          <span>${escapeHtml(row.collection || 'Senza collezione')}</span>
+          <span>${formatMoney(row.price_cents || 0)}</span>
+        </div>
+        <div class="inventory-actions">
+          <label>Stock
+            <input type="number" min="0" step="1" value="${row.stock}" data-inventory-stock="${escapeHtml(row.id)}" />
+          </label>
+          <button type="button" data-save-stock="${escapeHtml(row.id)}">Aggiorna stock</button>
+        </div>
+      </article>
+    `)
+    .join('')
+
+  document.querySelectorAll('[data-save-stock]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const row = visibleRows.find((item) => item.id === button.dataset.saveStock)
+      const input = document.querySelector(`[data-inventory-stock="${button.dataset.saveStock}"]`)
+      const stock = Number(input?.value || 0)
+
+      if (!row || Number.isNaN(stock) || stock < 0) {
+        alert('Stock non valido.')
+        return
+      }
+
+      try {
+        const response = await fetch('/api/admin/products', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'update_stock',
+            product_id: row.product_id,
+            variant_id: row.variant_id,
+            stock,
+          }),
+        })
+        const data = await response.json()
+
+        if (!data.success) {
+          alert(data.message || 'Aggiornamento stock non riuscito.')
+          return
+        }
+
+        await loadProducts()
+      } catch {
+        alert('Errore di connessione inventario.')
+      }
+    })
+  })
+
+  applyAdminAuditUi()
+}
+
+inventorySearch?.addEventListener('input', renderInventory)
+inventoryFilter?.addEventListener('change', renderInventory)
+inventoryLowStockThreshold?.addEventListener('input', renderInventory)
+refreshInventoryButton?.addEventListener('click', loadProducts)
 
 productForm.addEventListener('submit', async (event) => {
   event.preventDefault()
@@ -1460,6 +1618,12 @@ const googleFields = {
   google_tag_id: document.querySelector('#googleTagId'),
   google_tag_active: document.querySelector('#googleTagActive'),
 }
+const cookieSettingsForm = document.querySelector('#cookieSettingsForm')
+const cookieBannerStatus = document.querySelector('#cookieBannerStatus')
+const cookieConsentCategories = document.querySelector('#cookieConsentCategories')
+const privacyGoogleConsentNote = document.querySelector('#privacyGoogleConsentNote')
+const cookieSettingsMessage = document.querySelector('#cookieSettingsMessage')
+const privacySettingsStatus = document.querySelector('#privacySettingsStatus')
 
 function stringifyPreview(data) {
   return typeof data === 'string' ? data : JSON.stringify(data, null, 2)
@@ -1529,7 +1693,7 @@ function renderNativeApps(apps = []) {
       const development = app.status === 'in_development'
       return `
         <a class="mini-card app-card ${development ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
-          <span class="mini-card-status">${escapeHtml(development ? 'In sviluppo' : app.badge || 'Native app')}</span>
+          <span class="mini-card-status">${escapeHtml(development ? adminT('statusDevelopment') : app.badge || 'Native app')}</span>
           <h3>${escapeHtml(app.name)}</h3>
           <p>${escapeHtml(app.description)}</p>
           <div class="meta">
@@ -1604,6 +1768,83 @@ googleSuiteForm?.addEventListener('submit', async (event) => {
   }
 })
 
+function settingsListToMap(settings = []) {
+  return settings.reduce((map, setting) => {
+    map[setting.key] = setting.value || ''
+    return map
+  }, {})
+}
+
+function fillCookieSettings(settings = {}) {
+  if (cookieBannerStatus) cookieBannerStatus.value = settings.cookie_banner_status || 'disabled'
+  if (cookieConsentCategories) {
+    cookieConsentCategories.value = settings.cookie_consent_categories || 'necessary,analytics,marketing'
+  }
+  if (privacyGoogleConsentNote) {
+    privacyGoogleConsentNote.value =
+      settings.privacy_google_consent_note || 'Google tags partono solo dopo consenso analytics o marketing.'
+  }
+  if (privacySettingsStatus) {
+    privacySettingsStatus.textContent =
+      `Cookie banner: ${settings.cookie_banner_status || 'disabled'} - categorie: ${settings.cookie_consent_categories || 'necessary,analytics,marketing'}`
+  }
+}
+
+async function loadCookiePrivacySettings() {
+  if (!cookieSettingsForm && !privacySettingsStatus) return
+
+  if (!canAdminViewSensitiveSettings()) {
+    if (privacySettingsStatus) privacySettingsStatus.textContent = 'Permessi insufficienti per leggere impostazioni privacy.'
+    if (cookieSettingsMessage) cookieSettingsMessage.textContent = 'Permessi insufficienti.'
+    return
+  }
+
+  try {
+    const response = await fetch('/api/admin/settings')
+    const data = await response.json()
+
+    if (!data.success) {
+      if (cookieSettingsMessage) cookieSettingsMessage.textContent = data.message || 'Cookie settings non disponibili.'
+      return
+    }
+
+    fillCookieSettings(settingsListToMap(data.settings || []))
+  } catch {
+    if (cookieSettingsMessage) cookieSettingsMessage.textContent = 'Errore caricamento cookie settings.'
+  }
+}
+
+cookieSettingsForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+
+  if (!canAdminViewSensitiveSettings()) {
+    cookieSettingsMessage.textContent = 'Permessi insufficienti.'
+    return
+  }
+
+  cookieSettingsMessage.textContent = 'Salvataggio cookie settings...'
+
+  try {
+    const response = await fetch('/api/admin/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        settings: {
+          cookie_banner_status: cookieBannerStatus?.value || 'disabled',
+          cookie_consent_categories: cookieConsentCategories?.value || 'necessary,analytics,marketing',
+          privacy_google_consent_note: privacyGoogleConsentNote?.value.trim() || '',
+        },
+      }),
+    })
+    const data = await response.json()
+
+    cookieSettingsMessage.textContent = data.message || 'Cookie settings salvate.'
+    if (data.success) loadCookiePrivacySettings()
+  } catch {
+    cookieSettingsMessage.textContent = 'Salvataggio cookie settings non riuscito.'
+  }
+})
+
 async function loadNativeApps() {
   if (!appsList) return
 
@@ -1662,9 +1903,17 @@ async function loadImportExportHistory() {
     const response = await fetch('/api/admin/import-export?resource=history&format=json')
     const data = await response.json()
 
-    importExportHistoryPreview.textContent = response.ok && data.success
-      ? stringifyPreview(data)
-      : data.message || 'History non disponibile.'
+    if (!response.ok || !data.success) {
+      importExportHistoryPreview.textContent = data.message || 'History non disponibile.'
+      return
+    }
+
+    const rows = data.rows || []
+    importExportHistoryPreview.textContent = rows.length
+      ? rows
+          .map((job) => `${job.created_at || ''} - ${job.type || 'job'} - ${job.status || 'status'} - ${job.summary || ''}`)
+          .join('\n')
+      : 'Nessun job DataFlow registrato. Le prossime esportazioni/importazioni appariranno qui.'
   } catch {
     importExportHistoryPreview.textContent = 'History non disponibile.'
   }
@@ -1757,6 +2006,7 @@ exportSitePackageButton?.addEventListener('click', () => {
 
 refreshImportExportHistoryButton?.addEventListener('click', loadImportExportHistory)
 loadGoogleSuiteSettings()
+loadCookiePrivacySettings()
 
 // ===============================
 // COLLEZIONI
@@ -2195,6 +2445,7 @@ function setupAdminViews() {
       'analytics-sales',
       'analytics-products',
       'analytics-conversions',
+      'analytics-events',
     ]
     const checkoutViews = [
       'checkout-settings',
@@ -3224,6 +3475,148 @@ paymentSettingsForm?.addEventListener('submit', async (event) => {
 })
 
 loadPaymentSettingsAdmin()
+
+// ===============================
+// SPEDIZIONI ADMIN
+// ===============================
+
+const shippingMethodForm = document.querySelector('#shippingMethodForm')
+const shippingMethodsList = document.querySelector('#shippingMethodsList')
+const shippingMethodMessage = document.querySelector('#shippingMethodMessage')
+const refreshShippingMethodsButton = document.querySelector('#refreshShippingMethodsButton')
+const shippingMethodFormTitle = document.querySelector('#shippingMethodFormTitle')
+const shippingMethodSubmitButton = document.querySelector('#shippingMethodSubmitButton')
+const cancelShippingMethodEdit = document.querySelector('#cancelShippingMethodEdit')
+
+function resetShippingMethodForm() {
+  if (!shippingMethodForm) return
+  shippingMethodForm.reset()
+  document.querySelector('#shippingMethodId').value = ''
+  document.querySelector('#shippingMethodActive').checked = true
+  shippingMethodFormTitle.textContent = 'Aggiungi metodo'
+  shippingMethodSubmitButton.textContent = 'Salva spedizione'
+  cancelShippingMethodEdit.hidden = true
+  shippingMethodMessage.textContent = ''
+}
+
+function fillShippingMethodForm(method) {
+  document.querySelector('#shippingMethodId').value = method.id || ''
+  document.querySelector('#shippingMethodName').value = method.name || ''
+  document.querySelector('#shippingMethodHandle').value = method.handle || ''
+  document.querySelector('#shippingMethodDescription').value = method.description || ''
+  document.querySelector('#shippingMethodPrice').value = ((method.price_cents || 0) / 100).toFixed(2)
+  document.querySelector('#shippingMethodFreeOver').value =
+    method.free_over_cents === null || method.free_over_cents === undefined
+      ? ''
+      : ((method.free_over_cents || 0) / 100).toFixed(2)
+  document.querySelector('#shippingMethodSortOrder').value = method.sort_order || 0
+  document.querySelector('#shippingMethodActive').checked = Number(method.active) !== 0
+  shippingMethodFormTitle.textContent = 'Modifica metodo'
+  shippingMethodSubmitButton.textContent = 'Aggiorna spedizione'
+  cancelShippingMethodEdit.hidden = false
+}
+
+function readShippingMethodPayload() {
+  return {
+    id: document.querySelector('#shippingMethodId').value,
+    name: document.querySelector('#shippingMethodName').value.trim(),
+    handle: document.querySelector('#shippingMethodHandle').value.trim(),
+    description: document.querySelector('#shippingMethodDescription').value.trim(),
+    price: document.querySelector('#shippingMethodPrice').value,
+    free_over: document.querySelector('#shippingMethodFreeOver').value,
+    sort_order: document.querySelector('#shippingMethodSortOrder').value,
+    active: document.querySelector('#shippingMethodActive').checked,
+  }
+}
+
+async function loadShippingMethodsAdmin() {
+  if (!shippingMethodsList) return
+  shippingMethodsList.textContent = 'Caricamento spedizioni...'
+
+  try {
+    const response = await fetch('/api/admin/shipping')
+    const data = await response.json()
+
+    if (!data.success) {
+      shippingMethodsList.textContent = data.message || 'Spedizioni non disponibili.'
+      return
+    }
+
+    const methods = data.methods || []
+    shippingMethodsList.innerHTML = methods.length
+      ? methods
+          .map((method) => `
+            <article class="product-item">
+              <h3>${escapeHtml(method.name)}</h3>
+              <p>${escapeHtml(method.description || 'Nessuna descrizione')}</p>
+              <div class="meta">
+                <span>Codice: ${escapeHtml(method.handle)}</span>
+                <span>Prezzo: ${formatMoney(method.price_cents || 0)}</span>
+                <span>Gratis sopra: ${method.free_over_cents ? formatMoney(method.free_over_cents) : 'N/D'}</span>
+                <span>${Number(method.active) === 0 ? 'Disattivo' : 'Attivo'}</span>
+                ${method.fallback ? '<span>Fallback</span>' : ''}
+              </div>
+              <div class="product-actions">
+                ${method.id ? `<button type="button" data-edit-shipping="${method.id}">Modifica</button>` : ''}
+                ${method.id ? `<button type="button" class="danger" data-disable-shipping="${method.id}">Disattiva</button>` : ''}
+              </div>
+            </article>
+          `)
+          .join('')
+      : '<p class="admin-empty">Nessun metodo spedizione configurato.</p>'
+
+    document.querySelectorAll('[data-edit-shipping]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const method = methods.find((item) => item.id === Number(button.dataset.editShipping))
+        if (method) fillShippingMethodForm(method)
+      })
+    })
+
+    document.querySelectorAll('[data-disable-shipping]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch('/api/admin/shipping', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableShipping) }),
+        })
+        resetShippingMethodForm()
+        loadShippingMethodsAdmin()
+      })
+    })
+
+    applyAdminAuditUi()
+  } catch {
+    shippingMethodsList.textContent = 'Errore di connessione spedizioni.'
+  }
+}
+
+shippingMethodForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  shippingMethodMessage.textContent = 'Salvataggio spedizione...'
+  const payload = readShippingMethodPayload()
+  const isEditing = Boolean(payload.id)
+
+  try {
+    const response = await fetch('/api/admin/shipping', {
+      method: isEditing ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+
+    shippingMethodMessage.textContent = data.message || 'Metodo spedizione salvato.'
+    if (data.success) {
+      resetShippingMethodForm()
+      loadShippingMethodsAdmin()
+    }
+  } catch {
+    shippingMethodMessage.textContent = 'Errore salvataggio spedizione.'
+  }
+})
+
+cancelShippingMethodEdit?.addEventListener('click', resetShippingMethodForm)
+refreshShippingMethodsButton?.addEventListener('click', loadShippingMethodsAdmin)
+loadShippingMethodsAdmin()
 
 // ===============================
 // SCONTI
@@ -4785,26 +5178,42 @@ loadLocalizedPricingAdmin()
 
 const analyticsDashboard = document.querySelector('#analyticsDashboard')
 const refreshAnalyticsButton = document.querySelector('#refreshAnalyticsButton')
+const analyticsTrafficPanel = document.querySelector('#analyticsTrafficPanel')
+const analyticsSalesPanel = document.querySelector('#analyticsSalesPanel')
+const analyticsProductsPanel = document.querySelector('#analyticsProductsPanel')
+const analyticsConversionsPanel = document.querySelector('#analyticsConversionsPanel')
+const analyticsEventsPanel = document.querySelector('#analyticsEventsPanel')
+const seoDashboard = document.querySelector('#seoDashboard')
 
-async function loadAnalyticsDashboard() {
-  if (!analyticsDashboard) return
-  analyticsDashboard.textContent = 'Caricamento analytics...'
+function renderAnalyticsEmpty(target, text = 'Nessun dato analytics ancora disponibile.') {
+  if (target) target.innerHTML = `<p class="admin-empty">${escapeHtml(text)}</p>`
+}
 
-  try {
-    const response = await fetch('/api/admin/analytics')
-    const data = await response.json()
+function renderAnalyticsMetricGrid(summary = {}) {
+  return `
+    <div class="analytics-metric-grid">
+      <article><strong>${summary.page_views || 0}</strong><span>Page views</span></article>
+      <article><strong>${summary.product_views || 0}</strong><span>Product views</span></article>
+      <article><strong>${summary.add_to_cart || 0}</strong><span>Add to cart</span></article>
+      <article><strong>${summary.checkout_starts || 0}</strong><span>Checkout start</span></article>
+      <article><strong>${summary.orders_created || 0}</strong><span>Ordini creati</span></article>
+      <article><strong>${summary.conversion_rate || 0}%</strong><span>Checkout conversion</span></article>
+      <article><strong>${formatMoney(summary.revenue_cents || 0)}</strong><span>Revenue</span></article>
+    </div>
+  `
+}
 
-    if (!data.success) {
-      analyticsDashboard.textContent = data.message || 'Errore analytics.'
-      return
-    }
+function renderAnalyticsPanels(data = {}) {
+  const summary = data.summary || {}
 
+  if (analyticsDashboard) {
     analyticsDashboard.innerHTML = `
+      ${renderAnalyticsMetricGrid(summary)}
       <article class="admin-record">
         <div class="admin-record-head">
           <div>
-            <h3>Conteggi eventi</h3>
-            <p>Eventi registrati senza dati personali sensibili.</p>
+            <h3>Overview eventi</h3>
+            <p>Eventi raccolti senza dati personali sensibili.</p>
           </div>
         </div>
         <div class="meta">
@@ -4813,9 +5222,78 @@ async function loadAnalyticsDashboard() {
             .join('') || '<span>Nessun evento</span>'}
         </div>
       </article>
-      ${(data.recent || [])
-        .map(
-          (event) => `
+    `
+  }
+
+  if (analyticsTrafficPanel) {
+    const rows = data.traffic || []
+    analyticsTrafficPanel.innerHTML = rows.length
+      ? rows
+          .map((row) => `
+            <article class="admin-record">
+              <div class="admin-record-head">
+                <div>
+                  <h3>${escapeHtml(row.path || '/')}</h3>
+                  <p>Page views aggregate</p>
+                </div>
+                <strong>${row.views || 0}</strong>
+              </div>
+            </article>
+          `)
+          .join('')
+      : '<p class="admin-empty">Nessuna page view ancora registrata.</p>'
+  }
+
+  if (analyticsSalesPanel) {
+    const sales = data.sales || {}
+    analyticsSalesPanel.innerHTML = `
+      <div class="analytics-metric-grid">
+        <article><strong>${sales.orders_count || 0}</strong><span>Ordini</span></article>
+        <article><strong>${formatMoney(sales.revenue_cents || 0)}</strong><span>Revenue</span></article>
+        <article><strong>${formatMoney(sales.average_order_cents || 0)}</strong><span>Valore medio</span></article>
+      </div>
+    `
+  }
+
+  if (analyticsProductsPanel) {
+    const rows = data.products || []
+    analyticsProductsPanel.innerHTML = rows.length
+      ? rows
+          .map((product) => `
+            <article class="admin-record">
+              <div class="admin-record-head">
+                <div>
+                  <h3>${escapeHtml(product.product_name || product.product_ref || 'Prodotto')}</h3>
+                  <p>${escapeHtml(product.product_ref || '')}</p>
+                </div>
+              </div>
+              <div class="meta">
+                <span>View: ${product.product_views || 0}</span>
+                <span>Add to cart: ${product.add_to_cart || 0}</span>
+              </div>
+            </article>
+          `)
+          .join('')
+      : '<p class="admin-empty">Nessun evento prodotto ancora registrato.</p>'
+  }
+
+  if (analyticsConversionsPanel) {
+    const conversions = data.conversions || {}
+    analyticsConversionsPanel.innerHTML = `
+      <div class="analytics-metric-grid">
+        <article><strong>${conversions.add_to_cart_rate || 0}%</strong><span>Product to cart</span></article>
+        <article><strong>${conversions.checkout_to_order_rate || 0}%</strong><span>Checkout to order</span></article>
+        <article><strong>${summary.checkout_starts || 0}</strong><span>Checkout start</span></article>
+        <article><strong>${summary.orders_created || 0}</strong><span>Orders created</span></article>
+      </div>
+    `
+  }
+
+  if (analyticsEventsPanel) {
+    const rows = data.recent || []
+    analyticsEventsPanel.innerHTML = rows.length
+      ? rows
+          .map((event) => `
             <article class="admin-record">
               <div class="admin-record-head">
                 <div>
@@ -4825,17 +5303,149 @@ async function loadAnalyticsDashboard() {
                 <strong>${escapeHtml(event.created_at || '')}</strong>
               </div>
             </article>
-          `,
-        )
-        .join('')}
-    `
+          `)
+          .join('')
+      : '<p class="admin-empty">Nessun evento recente.</p>'
+  }
+}
+
+async function loadAnalyticsDashboard() {
+  if (analyticsDashboard) analyticsDashboard.textContent = 'Caricamento analytics...'
+  ;[analyticsTrafficPanel, analyticsSalesPanel, analyticsProductsPanel, analyticsConversionsPanel, analyticsEventsPanel].forEach((panel) => {
+    if (panel) panel.textContent = 'Caricamento analytics...'
+  })
+
+  try {
+    const response = await fetch('/api/admin/analytics')
+    const data = await response.json()
+
+    if (!data.success) {
+      renderAnalyticsEmpty(analyticsDashboard, data.message || 'Errore analytics.')
+      return
+    }
+
+    renderAnalyticsPanels(data)
   } catch {
-    analyticsDashboard.textContent = 'Errore di connessione analytics.'
+    renderAnalyticsEmpty(analyticsDashboard, 'Errore di connessione analytics.')
   }
 }
 
 refreshAnalyticsButton?.addEventListener('click', loadAnalyticsDashboard)
 loadAnalyticsDashboard()
+
+function seoStatusForItem(item = {}, type = '') {
+  const seo = item.seo || item
+  const title = seo.meta_title || item.meta_title || item.title || item.name || ''
+  const description = seo.meta_description || item.meta_description || item.excerpt || item.description || ''
+  const missing = []
+
+  if (!title || String(title).length < 20) missing.push('title')
+  if (!description || String(description).length < 70) missing.push('description')
+
+  if (!missing.length) return { key: 'good', label: 'Good', missing }
+  if (missing.length === 2) return { key: 'missing', label: 'Missing', missing }
+  return { key: 'attention', label: 'Needs attention', missing }
+}
+
+function renderGoogleSnippet(item = {}, type = '') {
+  const seo = item.seo || item
+  const title = seo.meta_title || item.meta_title || item.title || item.name || 'Titolo pagina'
+  const description =
+    seo.meta_description ||
+    item.meta_description ||
+    item.excerpt ||
+    item.description ||
+    'Descrizione SEO non configurata: verra usato il contenuto principale come fallback.'
+  const slug = item.slug || item.handle || ''
+
+  return `
+    <div class="seo-snippet">
+      <strong>${escapeHtml(String(title).slice(0, 70))}</strong>
+      <span>takeoffmilan.site/${escapeHtml(type)}/${escapeHtml(slug)}</span>
+      <p>${escapeHtml(String(description).slice(0, 160))}</p>
+    </div>
+  `
+}
+
+async function fetchSeoResource(url, key) {
+  try {
+    const response = await fetch(url)
+    const data = await response.json()
+    return data.success && Array.isArray(data[key]) ? data[key] : []
+  } catch {
+    return []
+  }
+}
+
+async function loadSeoDashboard() {
+  if (!seoDashboard) return
+  seoDashboard.textContent = 'Caricamento SEO...'
+
+  const [productsData, collectionsData, pages, posts, policies] = await Promise.all([
+    fetch('/api/products').then((response) => response.json()).catch(() => ({ success: false, products: [] })),
+    fetch('/api/collections').then((response) => response.json()).catch(() => ({ success: false, collections: [] })),
+    fetchSeoResource('/api/pages', 'pages'),
+    fetchSeoResource('/api/blog', 'posts'),
+    fetchSeoResource('/api/policies', 'policies'),
+  ])
+
+  const resources = [
+    ...((productsData.products || []).map((item) => ({ ...item, seo_type: 'product', seo_label: 'Prodotto' }))),
+    ...((collectionsData.collections || []).map((item) => ({ ...item, seo_type: 'collection', seo_label: 'Collezione' }))),
+    ...(pages.map((item) => ({ ...item, seo_type: 'page', seo_label: 'Pagina' }))),
+    ...(posts.map((item) => ({ ...item, seo_type: 'blog', seo_label: 'Blog' }))),
+    ...(policies.map((item) => ({ ...item, seo_type: 'policy', seo_label: 'Policy' }))),
+  ]
+
+  if (!resources.length) {
+    seoDashboard.innerHTML = '<p class="admin-empty">Nessun contenuto disponibile per l audit SEO.</p>'
+    return
+  }
+
+  const enriched = resources.map((item) => ({
+    ...item,
+    status: seoStatusForItem(item, item.seo_type),
+  }))
+  const counts = enriched.reduce(
+    (acc, item) => {
+      acc[item.status.key] += 1
+      return acc
+    },
+    { good: 0, attention: 0, missing: 0 },
+  )
+
+  seoDashboard.innerHTML = `
+    <div class="analytics-metric-grid">
+      <article><strong>${counts.good}</strong><span>Good</span></article>
+      <article><strong>${counts.attention}</strong><span>Needs attention</span></article>
+      <article><strong>${counts.missing}</strong><span>Missing</span></article>
+      <article><strong>${resources.length}</strong><span>Totale contenuti</span></article>
+    </div>
+    <div class="placeholder-panel compact-panel">
+      <span class="status-badge">Configurazione base</span>
+      <p>Sitemap, robots, canonical e hreflang sono predisposti a livello contenuto/setting. Search Console API e audit AI restano advanced tools in progress.</p>
+    </div>
+    ${enriched
+      .map((item) => `
+        <article class="admin-record seo-record">
+          <div class="admin-record-head">
+            <div>
+              <h3>${escapeHtml(item.name || item.title || item.slug || 'Contenuto')}</h3>
+              <p>${escapeHtml(item.seo_label)} - ${escapeHtml(item.slug || '')}</p>
+            </div>
+            <span class="status-badge ${item.status.key === 'good' ? '' : 'status-badge--future'}">${escapeHtml(item.status.label)}</span>
+          </div>
+          ${renderGoogleSnippet(item, item.seo_type)}
+          <div class="meta">
+            <span>${item.status.missing.length ? `Da completare: ${escapeHtml(item.status.missing.join(', '))}` : 'Metadati principali presenti'}</span>
+          </div>
+        </article>
+      `)
+      .join('')}
+  `
+}
+
+loadSeoDashboard()
 
 // ===============================
 // INTEGRAZIONI
@@ -5177,6 +5787,7 @@ const refreshNotificationsButton = document.querySelector('#refreshNotifications
 const notificationFormTitle = document.querySelector('#notificationFormTitle')
 const notificationSubmitButton = document.querySelector('#notificationSubmitButton')
 const cancelNotificationEdit = document.querySelector('#cancelNotificationEdit')
+const notificationProviderStatus = document.querySelector('#notificationProviderStatus')
 
 function resetNotificationForm() {
   if (!notificationForm) return
@@ -5214,6 +5825,15 @@ async function loadNotifications() {
       return
     }
 
+    if (notificationProviderStatus) {
+      const provider = data.provider_status || {}
+      notificationProviderStatus.innerHTML = `
+        <span class="status-badge">${escapeHtml(provider.active_provider === 'none' ? 'Mock / logging only' : provider.active_provider)}</span>
+        <p>${escapeHtml(provider.message || 'Provider email non configurato.')}</p>
+        <small>Env supportate: RESEND_API_KEY, SENDGRID_API_KEY, BREVO_API_KEY, MAILGUN_API_KEY.</small>
+      `
+    }
+
     notificationsList.innerHTML = `
       ${(data.templates || [])
         .map(
@@ -5224,11 +5844,12 @@ async function loadNotifications() {
               <div class="meta">
                 <span>${escapeHtml(template.type)}</span>
                 <span>${template.active ? 'Attivo' : 'Disattivo'}</span>
+                ${template.fallback ? '<span>Template fallback</span>' : ''}
               </div>
               <div class="product-actions">
                 <button type="button" data-edit-notification="${template.id}">Modifica</button>
-                <button type="button" data-send-notification-mock="${template.id}">Invio mock</button>
-                <button type="button" class="danger" data-disable-notification="${template.id}">Disattiva</button>
+                <button type="button" data-send-notification-mock="${template.id}" data-notification-type="${escapeHtml(template.type)}">Invio mock</button>
+                ${template.id ? `<button type="button" class="danger" data-disable-notification="${template.id}">Disattiva</button>` : ''}
               </div>
             </article>
           `,
@@ -5264,7 +5885,11 @@ async function loadNotifications() {
         await fetch('/api/admin/notifications', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'send_mock', template_id: Number(button.dataset.sendNotificationMock) }),
+          body: JSON.stringify({
+            action: 'send_mock',
+            template_id: Number(button.dataset.sendNotificationMock),
+            type: button.dataset.notificationType || 'generic',
+          }),
         })
         loadNotifications()
         loadActivityLog()

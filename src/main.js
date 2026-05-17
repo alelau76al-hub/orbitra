@@ -1059,6 +1059,11 @@ function googleTrackingConfigured(settings = {}) {
   )
 }
 
+function cookieBannerEnabled(settings = {}) {
+  const status = String(settings.cookie_banner_status || '').trim().toLowerCase()
+  return ['basic', 'custom'].includes(status) || googleTrackingConfigured(settings)
+}
+
 function googleConsentModePayload(consent = getGoogleConsentState()) {
   return {
     analytics_storage: consent.analytics ? 'granted' : 'denied',
@@ -1124,7 +1129,7 @@ function removeGoogleConsentBanner() {
 function showGoogleConsentBanner(settings = {}) {
   const consent = getGoogleConsentState()
 
-  if (!googleTrackingConfigured(settings) || consent.decided) {
+  if (!cookieBannerEnabled(settings) || consent.decided) {
     removeGoogleConsentBanner()
     return
   }
@@ -1143,7 +1148,7 @@ function showGoogleConsentBanner(settings = {}) {
   banner.innerHTML = `
     <div>
       <h2>${escapeCmsHtml(sfT('googleConsentTitle'))}</h2>
-      <p>${escapeCmsHtml(sfT('googleConsentText'))}</p>
+      <p>${escapeCmsHtml(settings.privacy_google_consent_note || sfT('googleConsentText'))}</p>
     </div>
     <div class="google-consent-actions">
       <button class="btn primary" type="button" data-google-consent="accept">${escapeCmsHtml(sfT('googleConsentAccept'))}</button>

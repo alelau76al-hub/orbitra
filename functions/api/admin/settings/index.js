@@ -29,6 +29,43 @@ function groupSettings(settings = []) {
   }, {})
 }
 
+const DEFAULT_SETTINGS = [
+  {
+    key: 'cookie_banner_status',
+    value: 'disabled',
+    group_name: 'privacy',
+    type: 'select',
+    label: 'Cookie banner status',
+  },
+  {
+    key: 'cookie_consent_categories',
+    value: 'necessary,analytics,marketing',
+    group_name: 'privacy',
+    type: 'text',
+    label: 'Cookie consent categories',
+  },
+  {
+    key: 'privacy_google_consent_note',
+    value: 'Google tags are loaded only after visitor consent.',
+    group_name: 'privacy',
+    type: 'text',
+    label: 'Google Consent note',
+  },
+]
+
+const settingMeta = DEFAULT_SETTINGS.reduce((map, setting) => {
+  map[setting.key] = setting
+  return map
+}, {})
+
+function mergeDefaultSettings(settings = []) {
+  const existing = new Set(settings.map((setting) => setting.key))
+  return [
+    ...settings,
+    ...DEFAULT_SETTINGS.filter((setting) => !existing.has(setting.key)),
+  ]
+}
+
 export async function onRequestGet({ env }) {
   try {
     const result = await env.DB.prepare(
@@ -56,7 +93,7 @@ export async function onRequestGet({ env }) {
       `,
     ).all()
 
-    const settings = result.results || []
+    const settings = mergeDefaultSettings(result.results || [])
 
     return json({
       success: true,
@@ -102,16 +139,31 @@ export async function onRequestPut({ request, env }) {
     }
 
     for (const [key, value] of entries) {
+      const meta = settingMeta[key] || {
+        group_name: 'general',
+        type: 'text',
+        label: key,
+      }
+
       await env.DB.prepare(
         `
-        UPDATE site_settings
-        SET
-          value = ?,
+        INSERT INTO site_settings (key, value, group_name, type, label, updated_at)
+        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET
+          value = excluded.value,
+          group_name = excluded.group_name,
+          type = excluded.type,
+          label = excluded.label,
           updated_at = CURRENT_TIMESTAMP
-        WHERE key = ?
         `,
       )
-        .bind(String(value ?? ''), key)
+        .bind(
+          key,
+          String(value ?? ''),
+          meta.group_name,
+          meta.type,
+          meta.label,
+        )
         .run()
     }
 

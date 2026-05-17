@@ -385,6 +385,73 @@ export async function onRequestPut({ request, env }) {
   }
 }
 
+export async function onRequestPatch({ request, env }) {
+  try {
+    const body = await request.json()
+    const action = String(body.action || '').trim()
+
+    if (action !== 'update_stock') {
+      return Response.json(
+        {
+          success: false,
+          message: 'Azione prodotto non supportata.',
+        },
+        { status: 400 },
+      )
+    }
+
+    const productId = Number(body.product_id)
+    const variantId = Number(body.variant_id || 0)
+    const stock = Number(body.stock)
+
+    if (!productId || Number.isNaN(stock) || stock < 0) {
+      return Response.json(
+        {
+          success: false,
+          message: 'Dati stock non validi.',
+        },
+        { status: 400 },
+      )
+    }
+
+    if (variantId > 0) {
+      await env.DB.prepare(`
+        UPDATE product_variants
+        SET stock = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ? AND product_id = ?
+      `)
+        .bind(stock, variantId, productId)
+        .run()
+
+      return Response.json({
+        success: true,
+        message: 'Stock variante aggiornato.',
+      })
+    }
+
+    await env.DB.prepare(`
+      INSERT INTO inventory (product_id, stock)
+      VALUES (?, ?)
+      ON CONFLICT(product_id) DO UPDATE SET stock = excluded.stock
+    `)
+      .bind(productId, stock)
+      .run()
+
+    return Response.json({
+      success: true,
+      message: 'Stock prodotto aggiornato.',
+    })
+  } catch {
+    return Response.json(
+      {
+        success: false,
+        message: 'Aggiornamento stock non riuscito.',
+      },
+      { status: 500 },
+    )
+  }
+}
+
 export async function onRequestDelete({ request, env }) {
   try {
     const body = await request.json()

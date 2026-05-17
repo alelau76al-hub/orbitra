@@ -3573,3 +3573,146 @@ body[data-admin-theme="light"] .preview-device-toggle button:not(.active) {
     width: min(100%, 390px);
   }
 }
+
+/* Shopify parity pass */
+.inventory-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 180px 170px auto;
+  gap: 12px;
+  align-items: end;
+  margin: 22px 0;
+}
+
+.inventory-toolbar label {
+  display: grid;
+  gap: 6px;
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+}
+
+.inventory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+
+.inventory-actions label {
+  display: grid;
+  gap: 6px;
+  min-width: 120px;
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+}
+
+.inventory-actions input {
+  min-width: 92px;
+}
+
+.analytics-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 14px 0 18px;
+}
+
+.analytics-metric-grid article {
+  padding: 16px;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: var(--admin-surface-soft);
+}
+
+.analytics-metric-grid strong {
+  display: block;
+  color: var(--admin-text);
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  line-height: 1;
+}
+
+.analytics-metric-grid span {
+  display: block;
+  margin-top: 8px;
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.seo-dashboard {
+  display: grid;
+  gap: 14px;
+}
+
+.seo-record {
+  gap: 12px;
+}
+
+.seo-snippet {
+  display: grid;
+  gap: 5px;
+  max-width: 720px;
+  padding: 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.seo-snippet strong {
+  color: #8ab4f8;
+  font-size: 1rem;
+}
+
+.seo-snippet span {
+  color: #8bdc9f;
+  font-size: 0.82rem;
+}
+
+.seo-snippet p {
+  margin: 0;
+  color: var(--admin-muted);
+}
+
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.status-list {
+  display: grid;
+  gap: 8px;
+}
+
+.status-list span {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: var(--admin-surface-soft);
+  color: var(--admin-muted);
+}
+
+.placeholder-panel small {
+  display: block;
+  margin-top: 8px;
+  color: var(--admin-muted);
+}
+
+body[data-admin-theme="light"] .seo-snippet {
+  background: #fff;
+}
+
+body[data-admin-theme="light"] .seo-snippet strong {
+  color: #1558d6;
+}
+
+body[data-admin-theme="light"] .seo-snippet span {
+  color: #0f7b45;
+}
+
+@media (max-width: 900px) {
+  .inventory-toolbar {
+    grid-template-columns: 1fr;
+  }
+}

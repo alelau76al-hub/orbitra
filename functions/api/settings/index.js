@@ -21,6 +21,38 @@ function groupSettings(settings = []) {
   }, {})
 }
 
+const DEFAULT_SETTINGS = [
+  {
+    key: 'cookie_banner_status',
+    value: 'disabled',
+    group_name: 'privacy',
+    type: 'select',
+    label: 'Cookie banner status',
+  },
+  {
+    key: 'cookie_consent_categories',
+    value: 'necessary,analytics,marketing',
+    group_name: 'privacy',
+    type: 'text',
+    label: 'Cookie consent categories',
+  },
+  {
+    key: 'privacy_google_consent_note',
+    value: 'Google tags are loaded only after visitor consent.',
+    group_name: 'privacy',
+    type: 'text',
+    label: 'Google Consent note',
+  },
+]
+
+function mergeDefaultSettings(settings = []) {
+  const existing = new Set(settings.map((setting) => setting.key))
+  return [
+    ...settings,
+    ...DEFAULT_SETTINGS.filter((setting) => !existing.has(setting.key)),
+  ]
+}
+
 export async function onRequestGet({ env }) {
   try {
     const result = await env.DB.prepare(
@@ -48,20 +80,23 @@ export async function onRequestGet({ env }) {
       `,
     ).all()
 
-    const settings = result.results || []
+    const settings = mergeDefaultSettings(result.results || [])
 
     return json({
       success: true,
       settings,
       groups: groupSettings(settings),
     })
-  } catch (error) {
+  } catch {
+    const settings = mergeDefaultSettings([])
+
     return json(
       {
-        success: false,
-        message: 'Errore caricamento impostazioni.',
+        success: true,
+        settings,
+        groups: groupSettings(settings),
+        fallback: true,
       },
-      500,
     )
   }
 }

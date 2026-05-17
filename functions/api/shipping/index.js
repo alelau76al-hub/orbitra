@@ -25,6 +25,14 @@ function fallbackShippingMethods() {
 
 export async function onRequestGet({ env }) {
   try {
+    if (!env?.DB) {
+      return Response.json({
+        success: true,
+        methods: fallbackShippingMethods(),
+        fallback: true,
+      })
+    }
+
     const { results } = await env.DB.prepare(`
       SELECT
         id,
@@ -40,9 +48,12 @@ export async function onRequestGet({ env }) {
       ORDER BY sort_order ASC, id ASC
     `).all()
 
+    const methods = results || []
+
     return Response.json({
       success: true,
-      methods: results || [],
+      methods: methods.length ? methods : fallbackShippingMethods(),
+      fallback: methods.length === 0,
     })
   } catch {
     return Response.json({

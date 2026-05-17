@@ -648,6 +648,7 @@ function loadTemplateRows(target) {
   if (target === 'localized_prices') {
     return [
       {
+        instructions: 'Usa price_cents in centesimi. Non elimina prezzi esistenti.',
         product_slug: 'prodotto-demo',
         product_id: 1,
         variant_id: 0,
@@ -662,6 +663,7 @@ function loadTemplateRows(target) {
   if (target === 'collections') {
     return [
       {
+        instructions: 'Slug univoco. Import crea o aggiorna senza cancellare collezioni esistenti.',
         slug: 'collezione-demo',
         name: 'Collezione Demo',
         description: 'Descrizione collezione',
@@ -674,6 +676,7 @@ function loadTemplateRows(target) {
   if (target === 'translations') {
     return [
       {
+        instructions: 'Compila translated_value. Import salva nella tabella translations e non modifica contenuti originali.',
         locale: 'en',
         entity_type: 'product',
         entity_id: 1,
@@ -688,6 +691,7 @@ function loadTemplateRows(target) {
 
   return [
     {
+      instructions: 'Slug univoco. price_cents e in centesimi; stock aggiorna la disponibilita base.',
       slug: 'prodotto-demo',
       name: 'Prodotto Demo',
       description: 'Descrizione prodotto',
@@ -986,6 +990,7 @@ export async function onRequestGet({ request, env }) {
         success: true,
         resource,
         target: templateTarget,
+        instructions: 'Template operativo: mantieni le intestazioni e usa dry-run prima dell import reale.',
         rows,
       })
     }
@@ -1037,7 +1042,10 @@ export async function onRequestPost({ request, env }) {
     const importer = importers[resource]
 
     if (!normalizer || !importer) {
-      return json({ success: false, message: 'Import disponibile solo per prodotti, collezioni e traduzioni.' }, 400)
+      return json({
+        success: false,
+        message: 'Import disponibile per prodotti, collezioni e traduzioni. Site package import, feed fornitori e schedule sono strumenti avanzati in progress.',
+      }, 400)
     }
 
     if (!rawRows.length) {
@@ -1054,6 +1062,7 @@ export async function onRequestPost({ request, env }) {
         message: 'Import non valido. Correggi le righe segnalate e riprova.',
         count: rawRows.length,
         errors,
+        row_errors: errors,
         preview: normalized.map((item) => item.item),
       }, 400)
     }
@@ -1065,6 +1074,7 @@ export async function onRequestPost({ request, env }) {
         dry_run: true,
         message: 'Dry-run completato. Nessuna scrittura eseguita.',
         count: normalized.length,
+        backup_before_import: 'Consigliato: esporta Backup o Site package prima dell import reale.',
         preview: normalized.map((item) => item.item),
         report: {
           created: 0,

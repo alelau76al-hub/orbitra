@@ -513,10 +513,10 @@
             <p>Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#inventario">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#inventario">
+            <span class="mini-card-status">Funzione attiva</span>
             <h3>Inventario</h3>
-            <p>Area dedicata a scorte, disponibilita e movimenti in sviluppo.</p>
+            <p>Scorte prodotto e variante, filtri, soglie low stock e aggiornamento rapido.</p>
           </a>
 
           <a class="mini-card" href="#import-export">
@@ -566,11 +566,11 @@
             <strong>Configurabile</strong>
           </a>
 
-          <a class="mini-card app-card placeholder-card" href="#seo">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card app-card" href="#seo">
+            <span class="mini-card-status">Native app</span>
             <h3>TakeOff SEO</h3>
             <p>Centro SEO nativo per audit, metadati e contenuti ottimizzati.</p>
-            <strong>In sviluppo</strong>
+            <strong>Configurabile</strong>
           </a>
 
           <a class="mini-card app-card" href="#analisi">
@@ -594,11 +594,11 @@
             <strong>Attiva</strong>
           </a>
 
-          <a class="mini-card app-card placeholder-card" href="#editor">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card app-card" href="#editor">
+            <span class="mini-card-status">Native app</span>
             <h3>TakeOff 3D Viewer</h3>
             <p>Viewer prodotto 3D nativo per esperienze premium e interattive.</p>
-            <strong>In sviluppo</strong>
+            <strong>Configurabile</strong>
           </a>
 
           <a class="mini-card app-card" href="#marketing">
@@ -688,21 +688,33 @@
         </form>
       </section>
 
-      <section id="inventario" class="cms-area card placeholder-area admin-view" data-admin-view="inventario">
+      <section id="inventario" class="cms-area card admin-view" data-admin-view="inventario">
         <div class="section-title">
           <div>
             <h2>Inventario</h2>
             <p class="section-subtitle">
-              Area in sviluppo per scorte avanzate, movimenti e disponibilita per variante.
+              Controlla stock base, varianti, disponibilita, low stock e out of stock.
             </p>
           </div>
           <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
         </div>
 
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Lo stock base resta gestito nel form prodotto. Questa vista raccogliera movimenti, filtri e soglie operative.</p>
+        <div class="inventory-toolbar">
+          <input id="inventorySearch" type="search" placeholder="Cerca prodotto, SKU, categoria..." />
+          <select id="inventoryFilter">
+            <option value="all">Tutto lo stock</option>
+            <option value="low">Stock basso</option>
+            <option value="out">Out of stock</option>
+          </select>
+          <label>
+            Soglia low stock
+            <input id="inventoryLowStockThreshold" type="number" min="1" step="1" value="5" />
+          </label>
+          <button id="refreshInventoryButton" type="button">Aggiorna</button>
         </div>
+
+        <div id="inventorySummary" class="analytics-metric-grid"></div>
+        <div id="inventoryList" class="products-list">Caricamento inventario...</div>
       </section>
 
       <section id="collezioni" class="grid admin-section admin-view" data-admin-view="collezioni">
@@ -1057,8 +1069,8 @@
             </div>
             <button id="exportSitePackageButton" type="button">Esporta site package</button>
             <div class="placeholder-panel compact-panel">
-              <span class="status-badge status-badge--future">In sviluppo</span>
-              <p>Import site package completo non attivo: ora e disponibile solo export sicuro dei contenuti configurabili.</p>
+              <span class="status-badge">Advanced tools in progress</span>
+              <p>Import site package completo non attivo per sicurezza: ora e disponibile export sicuro dei contenuti configurabili.</p>
             </div>
             <pre id="sitePackagePreview" class="admin-pre">Nessun site package esportato.</pre>
           </section>
@@ -1067,12 +1079,12 @@
             <div class="section-title compact-title">
               <div>
                 <h3>History</h3>
-                <p class="section-subtitle">I job import/export avanzati saranno consolidati qui.</p>
+                <p class="section-subtitle">Storico operativo dei job DataFlow e report import/export.</p>
               </div>
             </div>
             <div class="placeholder-panel compact-panel">
-              <span class="status-badge status-badge--future">In sviluppo</span>
-              <p>Lo storico avanzato resta in sviluppo. Le azioni principali vengono gia registrate nell'Activity log.</p>
+              <span class="status-badge">Configurazione base</span>
+              <p>Le azioni principali vengono registrate qui e nell'Activity log. Schedule e feed fornitori sono advanced tools in progress.</p>
             </div>
             <button id="refreshImportExportHistoryButton" type="button">Aggiorna history</button>
             <pre id="importExportHistoryPreview" class="admin-pre">Nessun job caricato.</pre>
@@ -1164,10 +1176,10 @@
             <p>Adatta prodotti, pagine, sezioni, blog e policy per mercati internazionali.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#seo">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#seo">
+            <span class="mini-card-status">Native app</span>
             <h3>SEO</h3>
-            <p>Centro SEO in sviluppo per metadati, canonical e anteprime social.</p>
+            <p>Dashboard SEO centrale per metadati, snippet, canonical e priorita di intervento.</p>
           </a>
         </div>
       </section>
@@ -1247,21 +1259,19 @@
         </div>
       </section>
 
-      <section id="seo" class="cms-area card placeholder-area admin-view" data-admin-view="seo">
+      <section id="seo" class="cms-area card admin-view" data-admin-view="seo">
         <div class="section-title">
           <div>
-            <h2>SEO</h2>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff SEO</h2>
             <p class="section-subtitle">
-              Vista centrale per SEO prodotto, collezione e pagina.
+              Audit centrale per prodotti, collezioni, pagine, blog e policy con preview Google snippet.
             </p>
           </div>
           <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
         </div>
 
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>I campi SEO sono gia disponibili nei form di prodotti, collezioni e pagine. Questa vista riunira audit e gestione centralizzata.</p>
-        </div>
+        <div id="seoDashboard" class="seo-dashboard">Caricamento SEO...</div>
       </section>
 
       <section id="policy" class="cms-area card admin-view" data-admin-view="policy">
@@ -1669,15 +1679,15 @@
           </a>
 
           <a class="mini-card placeholder-card" href="#marketing-coupons">
-            <span class="mini-card-status">In sviluppo</span>
+            <span class="mini-card-status">Advanced tools in progress</span>
             <h3>Coupon</h3>
-            <p>Regole coupon avanzate in sviluppo; i codici attivi sono in Sconti.</p>
+            <p>Regole coupon avanzate in progress; i codici attivi sono in Sconti.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#marketing-newsletter">
-            <span class="mini-card-status">In sviluppo</span>
+            <span class="mini-card-status">Advanced tools in progress</span>
             <h3>Newsletter / Automazioni</h3>
-            <p>Base in sviluppo per flussi email, segmenti e automazioni.</p>
+            <p>Flussi email, segmenti e automazioni avanzate in progress.</p>
           </a>
         </div>
       </section>
@@ -1800,13 +1810,13 @@
         <div class="section-title">
           <div>
             <h2>Coupon</h2>
-            <p class="section-subtitle">Area in sviluppo per coupon avanzati e regole promozionali.</p>
+            <p class="section-subtitle">Advanced tools in progress per coupon avanzati e regole promozionali.</p>
           </div>
           <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
         </div>
 
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
+          <span class="status-badge status-badge--future">Advanced tools in progress</span>
           <p>Per ora i coupon semplici sono gestiti come codici sconto nella sezione Sconti.</p>
         </div>
       </section>
@@ -1815,13 +1825,13 @@
         <div class="section-title">
           <div>
             <h2>Newsletter / Automazioni</h2>
-            <p class="section-subtitle">Area in sviluppo per newsletter, segmenti e automazioni.</p>
+            <p class="section-subtitle">Advanced tools in progress per newsletter, segmenti e automazioni.</p>
           </div>
           <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
         </div>
 
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
+          <span class="status-badge status-badge--future">Advanced tools in progress</span>
           <p>Nessun invio email reale viene configurato qui finche non esiste un provider sicuro.</p>
         </div>
       </section>
@@ -2053,28 +2063,34 @@
             <p>Conteggi principali e ultimi eventi raccolti dalla piattaforma.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#analytics-traffic">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#analytics-traffic">
+            <span class="mini-card-status">Funzione attiva</span>
             <h3>Traffico</h3>
-            <p>Page view, sorgenti e percorsi utente in sviluppo.</p>
+            <p>Page view e percorsi principali raccolti dagli eventi pubblici.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#analytics-sales">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#analytics-sales">
+            <span class="mini-card-status">Funzione attiva</span>
             <h3>Vendite</h3>
-            <p>Ricavi, ordini e trend vendita dedicati.</p>
+            <p>Ordini, ricavi e valore medio ordine se disponibili.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#analytics-products">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#analytics-products">
+            <span class="mini-card-status">Funzione attiva</span>
             <h3>Prodotti</h3>
-            <p>Performance prodotti, visualizzazioni e add to cart.</p>
+            <p>Prodotti visti e aggiunti al carrello.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#analytics-conversions">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#analytics-conversions">
+            <span class="mini-card-status">Funzione attiva</span>
             <h3>Conversioni</h3>
-            <p>Funnel carrello, checkout e ordine completato.</p>
+            <p>Funnel prodotto, carrello, checkout e ordine.</p>
+          </a>
+
+          <a class="mini-card" href="#analytics-events">
+            <span class="mini-card-status">Funzione attiva</span>
+            <h3>Events</h3>
+            <p>Ultimi eventi raccolti, senza dati personali sensibili.</p>
           </a>
         </div>
       </section>
@@ -2094,60 +2110,59 @@
         <div id="analyticsDashboard" class="admin-records-list">Caricamento analytics...</div>
       </section>
 
-      <section id="analytics-traffic" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-traffic">
+      <section id="analytics-traffic" class="cms-area card admin-view" data-admin-view="analytics-traffic">
         <div class="section-title">
           <div>
             <h2>Traffico</h2>
-            <p class="section-subtitle">Vista in sviluppo per sorgenti, sessioni e page view aggregate.</p>
+            <p class="section-subtitle">Page view aggregate per percorso.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Gli eventi page_view sono gia raccolti nella dashboard. Qui saranno disponibili segmentazione e percorsi utente.</p>
-        </div>
+        <div id="analyticsTrafficPanel" class="admin-records-list">Caricamento traffico...</div>
       </section>
 
-      <section id="analytics-sales" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-sales">
+      <section id="analytics-sales" class="cms-area card admin-view" data-admin-view="analytics-sales">
         <div class="section-title">
           <div>
             <h2>Vendite</h2>
-            <p class="section-subtitle">Vista in sviluppo per ricavi, ordini e andamento vendite.</p>
+            <p class="section-subtitle">Ricavi e ordini creati dal checkout.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Gli ordini sono disponibili nella sezione Ordini. Questa vista aggiungera reporting aggregato.</p>
-        </div>
+        <div id="analyticsSalesPanel" class="admin-records-list">Caricamento vendite...</div>
       </section>
 
-      <section id="analytics-products" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-products">
+      <section id="analytics-products" class="cms-area card admin-view" data-admin-view="analytics-products">
         <div class="section-title">
           <div>
             <h2>Prodotti</h2>
-            <p class="section-subtitle">Vista in sviluppo per prodotti piu visti, aggiunti al carrello e venduti.</p>
+            <p class="section-subtitle">Prodotti piu visti e aggiunti al carrello.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Gli eventi product_view e add_to_cart sono raccolti. Questa vista li aggrega per prodotto.</p>
-        </div>
+        <div id="analyticsProductsPanel" class="admin-records-list">Caricamento prodotti...</div>
       </section>
 
-      <section id="analytics-conversions" class="cms-area card placeholder-area admin-view" data-admin-view="analytics-conversions">
+      <section id="analytics-conversions" class="cms-area card admin-view" data-admin-view="analytics-conversions">
         <div class="section-title">
           <div>
             <h2>Conversioni</h2>
-            <p class="section-subtitle">Vista in sviluppo per funnel carrello, checkout e ordini creati.</p>
+            <p class="section-subtitle">Tassi base tra visualizzazioni, carrello, checkout e ordine.</p>
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La dashboard mostra eventi recenti. Il funnel completo usera metriche dedicate.</p>
+        <div id="analyticsConversionsPanel" class="admin-records-list">Caricamento conversioni...</div>
+      </section>
+
+      <section id="analytics-events" class="cms-area card admin-view" data-admin-view="analytics-events">
+        <div class="section-title">
+          <div>
+            <h2>Events</h2>
+            <p class="section-subtitle">Log eventi recenti raccolti dal sito pubblico.</p>
+          </div>
+          <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
+        <div id="analyticsEventsPanel" class="admin-records-list">Caricamento eventi...</div>
       </section>
 
       <section id="checkout" class="cms-area card admin-view" data-admin-view="checkout">
@@ -2162,10 +2177,10 @@
         </div>
 
         <div class="mini-grid">
-          <a class="mini-card placeholder-card" href="#checkout-settings">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#checkout-settings">
+            <span class="mini-card-status">Configurazione base</span>
             <h3>Checkout settings</h3>
-            <p>Campi richiesti, note operative e opzioni checkout in sviluppo.</p>
+            <p>Campi richiesti, note operative e opzioni checkout documentate.</p>
           </a>
 
           <a class="mini-card" href="#checkout-payments">
@@ -2173,10 +2188,10 @@
             <p>Provider manuale o Stripe test mode con chiavi gestite via ambiente.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#checkout-shipping">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#checkout-shipping">
+            <span class="mini-card-status">Funzione attiva</span>
             <h3>Spedizioni</h3>
-            <p>Metodi e soglie spedizione in sviluppo lato admin.</p>
+            <p>Metodi, prezzi, soglie free shipping e stato attivo.</p>
           </a>
 
           <a class="mini-card" href="#checkout-taxes">
@@ -2184,8 +2199,8 @@
             <p>Aliquota base, prezzi inclusi/esclusi e riepilogo fiscale checkout.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#checkout-confirmation">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#checkout-confirmation">
+            <span class="mini-card-status">Configurazione base</span>
             <h3>Conferma ordine</h3>
             <p>Testi, contenuti e notifiche della conferma ordine.</p>
           </a>
@@ -2228,7 +2243,7 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
+          <span class="status-badge">Configurazione base</span>
           <p>Il checkout pubblico resta stabile. Questa vista raccogliera opzioni admin in modo controllato.</p>
         </div>
       </section>
@@ -2274,17 +2289,48 @@
         </form>
       </section>
 
-      <section id="checkout-shipping" class="cms-area card placeholder-area admin-view" data-admin-view="checkout-shipping">
+      <section id="checkout-shipping" class="cms-area card admin-view" data-admin-view="checkout-shipping">
         <div class="section-title">
           <div>
             <h2>Spedizioni</h2>
-            <p class="section-subtitle">Metodi, soglie e zone spedizione in una UI dedicata.</p>
+            <p class="section-subtitle">Metodi spedizione configurabili usati dal checkout pubblico.</p>
           </div>
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Il checkout mantiene i fallback spedizione esistenti. La configurazione completa verra centralizzata qui.</p>
+
+        <div class="content-manager">
+          <form id="shippingMethodForm" class="inner-card">
+            <h3 id="shippingMethodFormTitle">Aggiungi metodo</h3>
+            <input id="shippingMethodId" type="hidden" />
+            <label>Nome metodo</label>
+            <input id="shippingMethodName" type="text" placeholder="Spedizione standard" required />
+            <label>Codice</label>
+            <input id="shippingMethodHandle" type="text" placeholder="standard" required />
+            <label>Descrizione</label>
+            <textarea id="shippingMethodDescription" placeholder="Consegna stimata, note operative..."></textarea>
+            <label>Prezzo</label>
+            <input id="shippingMethodPrice" type="number" min="0" step="0.01" placeholder="9.90" />
+            <label>Soglia spedizione gratuita</label>
+            <input id="shippingMethodFreeOver" type="number" min="0" step="0.01" placeholder="100.00" />
+            <label>Ordine visualizzazione</label>
+            <input id="shippingMethodSortOrder" type="number" step="1" placeholder="1" />
+            <label class="inline-check"><input id="shippingMethodActive" type="checkbox" checked /> Attivo</label>
+            <button id="shippingMethodSubmitButton" type="submit">Salva spedizione</button>
+            <button id="cancelShippingMethodEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="shippingMethodMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Metodi spedizione</h3>
+              <button id="refreshShippingMethodsButton" type="button">Aggiorna</button>
+            </div>
+            <div class="placeholder-panel compact-panel">
+              <span class="status-badge">Configurazione base</span>
+              <p>Zone, corrieri reali e regole per mercato richiedono un modello dedicato. Il checkout usa questi metodi con fallback standard/free over 100.</p>
+            </div>
+            <div id="shippingMethodsList" class="products-list">Caricamento spedizioni...</div>
+          </section>
         </div>
       </section>
 
@@ -2297,7 +2343,7 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
+          <span class="status-badge">Configurazione base</span>
           <p>La conferma ordine pubblica resta invariata. Qui saranno gestiti testi e opzioni configurabili.</p>
         </div>
       </section>
@@ -2315,8 +2361,8 @@
         </div>
 
         <div class="mini-grid">
-          <a class="mini-card placeholder-card" href="#settings-general">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#settings-general">
+            <span class="mini-card-status">Configurazione base</span>
             <h3>Generali</h3>
             <p>Nome cliente, dati aziendali, email di sistema e informazioni sito.</p>
           </a>
@@ -2331,16 +2377,16 @@
             <p>Dominio primario, redirect, preview e note DNS operative.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#privacy-settings">
-            <span class="mini-card-status">In sviluppo</span>
+          <a class="mini-card" href="#privacy-settings">
+            <span class="mini-card-status">Configurazione base</span>
             <h3>Privacy</h3>
-            <p>Consensi, GDPR e raccordo con le policy pubbliche del cliente.</p>
+            <p>Consensi, GDPR e raccordo con Google Consent e policy pubbliche.</p>
           </a>
 
-          <a class="mini-card placeholder-card" href="#cookie-settings">
+          <a class="mini-card" href="#cookie-settings">
             <span class="mini-card-status">Configurazione base</span>
             <h3>Cookie</h3>
-            <p>Base consenso Google attiva; preferenze cookie complete in sviluppo.</p>
+            <p>Base consenso Google attiva; preferenze cookie complete come advanced tools in progress.</p>
           </a>
 
           <a class="mini-card" href="#metafields">
@@ -2390,12 +2436,12 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
+          <span class="status-badge">Configurazione base</span>
           <p>Le impostazioni tema sono nel drawer dell'editor visuale. Questa vista centralizzera le impostazioni generali del sito.</p>
         </div>
       </section>
 
-      <section id="privacy-settings" class="cms-area card placeholder-area admin-view" data-admin-view="privacy-settings">
+      <section id="privacy-settings" class="cms-area card admin-view" data-admin-view="privacy-settings">
         <div class="section-title">
           <div>
             <h2>Privacy</h2>
@@ -2403,13 +2449,26 @@
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Le privacy policy pubbliche sono gestite in Contenuto > Policy. Questa vista servira per consensi e impostazioni privacy.</p>
+        <div class="privacy-grid">
+          <section class="inner-card">
+            <h3>Privacy status</h3>
+            <p class="field-help">Le policy pubbliche si gestiscono in Contenuto > Policy. Questa vista documenta consensi e strumenti privacy.</p>
+            <div class="status-list">
+              <span>Necessary cookies: sempre attivi</span>
+              <span>Analytics: richiede consenso visitatore</span>
+              <span>Marketing: richiede consenso visitatore</span>
+              <span>Export/delete customer: configurazione base, da gestire con processo manuale sicuro</span>
+            </div>
+          </section>
+          <section class="inner-card">
+            <h3>Google Consent</h3>
+            <p>Google Analytics, Ads e GTM restano bloccati finche il visitatore non concede consenso analytics o marketing.</p>
+            <p id="privacySettingsStatus" class="field-help">Caricamento stato privacy...</p>
+          </section>
         </div>
       </section>
 
-      <section id="cookie-settings" class="cms-area card placeholder-area admin-view" data-admin-view="cookie-settings">
+      <section id="cookie-settings" class="cms-area card admin-view" data-admin-view="cookie-settings">
         <div class="section-title">
           <div>
             <h2>Cookie</h2>
@@ -2417,10 +2476,21 @@
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
-        <div class="placeholder-panel">
-          <span class="status-badge">Configurazione base</span>
-          <p>Il sito pubblico blocca i tag Google finche il visitatore non concede consenso analytics/marketing. Una CMP completa resta fuori da questo pass.</p>
-        </div>
+        <form id="cookieSettingsForm" class="inner-card settings-form-compact">
+          <h3>Cookie banner base</h3>
+          <label>Stato banner</label>
+          <select id="cookieBannerStatus">
+            <option value="disabled">Disabilitato</option>
+            <option value="basic">Basic</option>
+            <option value="custom">Custom note</option>
+          </select>
+          <label>Categorie gestite</label>
+          <input id="cookieConsentCategories" type="text" value="necessary,analytics,marketing" />
+          <label>Nota Google Consent</label>
+          <textarea id="privacyGoogleConsentNote" placeholder="Google tags partono solo dopo consenso."></textarea>
+          <button id="cookieSettingsSubmitButton" type="submit">Salva cookie settings</button>
+          <p id="cookieSettingsMessage"></p>
+        </form>
       </section>
 
       <section id="settings-import-export" class="cms-area card placeholder-area admin-view" data-admin-view="settings-import-export">
@@ -2432,8 +2502,8 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>Apri TakeOff Import Export da App Hub per export, import controllati, template e pacchetti traduzione.</p>
+          <span class="status-badge">Configurazione base</span>
+          <p>Apri TakeOff Import Export da App Hub per export, import controllati, template, backup e pacchetti traduzione.</p>
         </div>
       </section>
 
@@ -2609,6 +2679,10 @@
             <select id="notificationType">
               <option value="order_created">order_created</option>
               <option value="payment_pending">payment_pending</option>
+              <option value="payment_received">payment_received</option>
+              <option value="order_shipped">order_shipped</option>
+              <option value="refund_created">refund_created</option>
+              <option value="customer_account">customer_account</option>
               <option value="customer_created">customer_created</option>
               <option value="generic">generic</option>
             </select>
@@ -2628,6 +2702,9 @@
             <div class="section-title">
               <h3>Template e log</h3>
               <button id="refreshNotificationsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="notificationProviderStatus" class="placeholder-panel compact-panel">
+              Caricamento stato provider...
             </div>
             <div id="notificationsList" class="products-list">Caricamento notifiche...</div>
           </section>

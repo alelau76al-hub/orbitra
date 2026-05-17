@@ -33,26 +33,6 @@ function fallbackMarkets() {
   ]
 }
 
-function fallbackLanguages() {
-  return [
-    { locale: 'it', name: 'Italiano', native_name: 'Italiano', active: 1, is_default: 1 },
-    { locale: 'en', name: 'Inglese', native_name: 'English', active: 1, is_default: 0 },
-    { locale: 'fr', name: 'Francese', native_name: 'Français', active: 1, is_default: 0 },
-    { locale: 'es', name: 'Spagnolo', native_name: 'Español', active: 1, is_default: 0 },
-    { locale: 'de', name: 'Tedesco', native_name: 'Deutsch', active: 1, is_default: 0 },
-  ]
-}
-
-function fallbackCurrencies() {
-  return [
-    { code: 'EUR', name: 'Euro', symbol: '€', active: 1, is_default: 1, manual_rate: 1 },
-    { code: 'USD', name: 'US Dollar', symbol: '$', active: 1, is_default: 0, manual_rate: 1 },
-    { code: 'GBP', name: 'British Pound', symbol: '£', active: 1, is_default: 0, manual_rate: 1 },
-    { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF', active: 1, is_default: 0, manual_rate: 1 },
-    { code: 'SEK', name: 'Swedish Krona', symbol: 'kr', active: 1, is_default: 0, manual_rate: 1 },
-  ]
-}
-
 function recommendedLanguages() {
   return [
     { locale: 'it', name: 'Italiano', native_name: 'Italiano', active: 1, is_default: 1 },
@@ -74,7 +54,7 @@ function recommendedCurrencies() {
 }
 
 function mergeRecommendedRows(rows, recommendedRows, key) {
-  if (!rows.length) return recommendedRows
+  if (!Array.isArray(rows) || !rows.length) return recommendedRows
 
   const existing = new Set(rows.map((item) => String(item[key] || '').toUpperCase()))
   const missingRecommendations = recommendedRows
@@ -86,6 +66,7 @@ function mergeRecommendedRows(rows, recommendedRows, key) {
 
 async function safeAll(env, sql) {
   try {
+    if (!env?.DB) return []
     const { results } = await env.DB.prepare(sql).all()
     return results || []
   } catch {
@@ -94,29 +75,50 @@ async function safeAll(env, sql) {
 }
 
 async function loadMarkets(env) {
-  try {
-    const { results } = await env.DB.prepare(`
-      SELECT handle, name, country_code, language_code, currency_code, active, is_default, domain, path_prefix, notes
-      FROM markets
-      WHERE active = 1
-      ORDER BY is_default DESC, name ASC
-    `).all()
+  const extendedRows = await safeAll(
+    env,
+    `
+    SELECT handle, name, country_code, language_code, currency_code, active, is_default, domain, path_prefix, notes
+    FROM markets
+    WHERE active = 1
+    ORDER BY is_default DESC, name ASC
+    `,
+  )
 
-    return results || []
-  } catch {
-    const { results } = await env.DB.prepare(`
-      SELECT handle, name, country_code, language_code, currency_code, active, is_default
-      FROM markets
-      WHERE active = 1
-      ORDER BY is_default DESC, name ASC
-    `).all()
+  if (extendedRows.length) return extendedRows
 
-    return (results || []).map((market) => ({
-      ...market,
-      domain: '',
-      path_prefix: '',
-      notes: '',
-    }))
+  const legacyRows = await safeAll(
+    env,
+    `
+    SELECT handle, name, country_code, language_code, currency_code, active, is_default
+    FROM markets
+    WHERE active = 1
+    ORDER BY is_default DESC, name ASC
+    `,
+  )
+
+  return legacyRows.map((market) => ({
+    ...market,
+    domain: '',
+    path_prefix: '',
+    notes: '',
+  }))
+}
+
+function fallbackResponse() {
+  const markets = fallbackMarkets()
+  const languages = recommendedLanguages()
+  const currencies = recommendedCurrencies()
+
+  return {
+    success: true,
+    markets,
+    languages,
+    currencies,
+    default_market: markets[0],
+    default_language: languages[0],
+    default_currency: currencies[0],
+    fallback: true,
   }
 }
 
@@ -143,6 +145,7 @@ export async function onRequestGet({ env }) {
         `,
       ),
     ])
+
     const markets = marketRows.length ? marketRows : fallbackMarkets()
     const languages = mergeRecommendedRows(languageRows, recommendedLanguages(), 'locale')
     const currencies = mergeRecommendedRows(currencyRows, recommendedCurrencies(), 'code')
@@ -152,24 +155,12 @@ export async function onRequestGet({ env }) {
       markets,
       languages,
       currencies,
-      default_market: markets.find((market) => market.is_default) || markets[0],
-      default_language: languages.find((language) => language.is_default) || languages[0],
-      default_currency: currencies.find((currency) => currency.is_default) || currencies[0],
+      default_market: markets.find((market) => Number(market.is_default) === 1) || markets[0],
+      default_language: languages.find((language) => Number(language.is_default) === 1) || languages[0],
+      default_currency: currencies.find((currency) => Number(currency.is_default) === 1) || currencies[0],
+      fallback: !marketRows.length,
     })
   } catch {
-    const markets = fallbackMarkets()
-    const languages = recommendedLanguages()
-    const currencies = recommendedCurrencies()
-
-    return json({
-      success: true,
-      markets,
-      languages,
-      currencies,
-      default_market: markets[0],
-      default_language: languages[0],
-      default_currency: currencies[0],
-      fallback: true,
-    })
+    return json(fallbackResponse())
   }
 }
