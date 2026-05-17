@@ -703,11 +703,91 @@
             <p>Privacy, termini, resi, spedizioni e cookie policy pubblicabili.</p>
           </a>
 
+          <a class="mini-card" href="#traduzioni">
+            <h3>Traduzioni</h3>
+            <p>Adatta prodotti, pagine, sezioni, blog e policy per mercati internazionali.</p>
+          </a>
+
           <a class="mini-card placeholder-card" href="#seo">
             <span class="mini-card-status">In sviluppo</span>
             <h3>SEO</h3>
             <p>Centro SEO in sviluppo per metadati, canonical e anteprime social.</p>
           </a>
+        </div>
+      </section>
+
+      <section id="traduzioni" class="cms-area card admin-view" data-admin-view="traduzioni">
+        <div class="section-title">
+          <div>
+            <h2>Traduzioni</h2>
+            <p class="section-subtitle">
+              Translation Manager per contenuti pubblici con fallback automatico al testo originale.
+            </p>
+          </div>
+          <a class="back-link" href="#contenuto">&larr; Torna a Contenuto</a>
+        </div>
+
+        <div class="translation-manager">
+          <aside class="inner-card translation-controls">
+            <h3>Contenuto da tradurre</h3>
+
+            <label>Lingua target</label>
+            <select id="translationLocale">
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="es">Español</option>
+              <option value="de">Deutsch</option>
+              <option value="it">Italiano</option>
+            </select>
+
+            <label>Tipo contenuto</label>
+            <select id="translationEntityType">
+              <option value="product">Prodotti</option>
+              <option value="collection">Collezioni</option>
+              <option value="page">Pagine</option>
+              <option value="section">Sezioni</option>
+              <option value="blog">Blog</option>
+              <option value="policy">Policy</option>
+            </select>
+
+            <label>Elemento</label>
+            <select id="translationEntitySelect"></select>
+
+            <label>Campo</label>
+            <select id="translationFieldSelect"></select>
+
+            <div class="section-actions">
+              <button id="refreshTranslationsButton" class="secondary" type="button">Aggiorna</button>
+              <button id="deleteTranslationButton" class="danger" type="button" disabled>Disattiva traduzione</button>
+            </div>
+          </aside>
+
+          <form id="translationForm" class="inner-card translation-editor">
+            <h3>Originale e traduzione</h3>
+            <input id="translationId" type="hidden" />
+
+            <label>Testo originale</label>
+            <textarea id="translationSourceValue" readonly></textarea>
+
+            <label>Testo tradotto</label>
+            <textarea id="translationTranslatedValue" placeholder="Inserisci la traduzione..."></textarea>
+
+            <label>Status</label>
+            <select id="translationStatus">
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+            </select>
+
+            <button id="saveTranslationButton" type="submit">Salva traduzione</button>
+            <p id="translationMessage"></p>
+          </form>
+
+          <section class="inner-card translation-overview">
+            <div class="section-title">
+              <h3>Stato traduzioni</h3>
+            </div>
+            <div id="translationsList" class="products-list">Caricamento traduzioni...</div>
+          </section>
         </div>
       </section>
 

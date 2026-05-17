@@ -2,6 +2,14 @@ import './style.css'
 
 const STOREFRONT_LANGUAGE_STORAGE_KEY = 'takeoff_storefront_language_v1'
 const STOREFRONT_DEFAULT_LANGUAGE = 'it'
+const STOREFRONT_SUPPORTED_LANGUAGES = ['it', 'en', 'fr', 'es', 'de']
+const STOREFRONT_LOCALES = {
+  it: 'it-IT',
+  en: 'en-US',
+  fr: 'fr-FR',
+  es: 'es-ES',
+  de: 'de-DE',
+}
 const STOREFRONT_TRANSLATIONS = {
   it: {
     languageLabel: 'Lingua',
@@ -268,14 +276,14 @@ const STOREFRONT_TRANSLATIONS = {
 function getStorefrontLanguage() {
   try {
     const saved = localStorage.getItem(STOREFRONT_LANGUAGE_STORAGE_KEY)
-    return STOREFRONT_TRANSLATIONS[saved] ? saved : STOREFRONT_DEFAULT_LANGUAGE
+    return STOREFRONT_SUPPORTED_LANGUAGES.includes(saved) ? saved : STOREFRONT_DEFAULT_LANGUAGE
   } catch {
     return STOREFRONT_DEFAULT_LANGUAGE
   }
 }
 
 function setStorefrontLanguage(language) {
-  const nextLanguage = STOREFRONT_TRANSLATIONS[language] ? language : STOREFRONT_DEFAULT_LANGUAGE
+  const nextLanguage = STOREFRONT_SUPPORTED_LANGUAGES.includes(language) ? language : STOREFRONT_DEFAULT_LANGUAGE
   try {
     localStorage.setItem(STOREFRONT_LANGUAGE_STORAGE_KEY, nextLanguage)
   } catch {}
@@ -295,7 +303,129 @@ function sfT(key, replacements = {}) {
 }
 
 function getStorefrontLocale() {
-  return getStorefrontLanguage() === 'en' ? 'en-US' : 'it-IT'
+  return STOREFRONT_LOCALES[getStorefrontLanguage()] || STOREFRONT_LOCALES.it
+}
+
+let publicTranslationsLocale = ''
+let publicTranslationMap = new Map()
+
+function getTranslationMapKey(entityType, entityId, fieldKey) {
+  return `${entityType}:${Number(entityId || 0)}:${fieldKey}`
+}
+
+async function loadPublicTranslations(locale = getStorefrontLanguage()) {
+  if (publicTranslationsLocale === locale) return
+
+  publicTranslationsLocale = locale
+  publicTranslationMap = new Map()
+
+  if (!locale) return
+
+  try {
+    const response = await fetch(`/api/translations?locale=${encodeURIComponent(locale)}`)
+    const data = await response.json()
+
+    if (!response.ok || !data.success || !Array.isArray(data.translations)) return
+
+    publicTranslationMap = data.translations.reduce((map, translation) => {
+      if (translation.translated_value) {
+        map.set(
+          getTranslationMapKey(
+            translation.entity_type,
+            translation.entity_id,
+            translation.field_key,
+          ),
+          translation.translated_value,
+        )
+      }
+
+      return map
+    }, new Map())
+  } catch {
+    publicTranslationMap = new Map()
+  }
+}
+
+function getTranslatedField(entityType, entityId, fieldKey, fallback = '') {
+  return publicTranslationMap.get(getTranslationMapKey(entityType, entityId, fieldKey)) || fallback || ''
+}
+
+function translateSeo(seo = {}, entityType, entityId) {
+  return {
+    ...seo,
+    meta_title: getTranslatedField(entityType, entityId, 'seo.meta_title', seo.meta_title || ''),
+    meta_description: getTranslatedField(
+      entityType,
+      entityId,
+      'seo.meta_description',
+      seo.meta_description || '',
+    ),
+  }
+}
+
+function translateContentEntity(entity = {}, entityType, fields = []) {
+  if (!entity?.id) return entity
+
+  const translated = {
+    ...entity,
+  }
+
+  fields.forEach((fieldKey) => {
+    translated[fieldKey] = getTranslatedField(entityType, entity.id, fieldKey, entity[fieldKey] || '')
+  })
+
+  if (translated.seo) {
+    translated.seo = translateSeo(translated.seo, entityType, entity.id)
+  }
+
+  return translated
+}
+
+function translateProducts(products = []) {
+  return products.map((product) => translateContentEntity(product, 'product', ['name', 'description']))
+}
+
+function translateCollections(collections = []) {
+  return collections.map((collection) =>
+    translateContentEntity(collection, 'collection', ['name', 'description']),
+  )
+}
+
+function translatePages(pages = []) {
+  return pages.map((page) => translateContentEntity(page, 'page', ['title']))
+}
+
+function translateBlogPost(post = {}) {
+  return translateContentEntity(post, 'blog', [
+    'title',
+    'excerpt',
+    'content',
+    'meta_title',
+    'meta_description',
+  ])
+}
+
+function translatePolicy(policy = {}) {
+  return translateContentEntity(policy, 'policy', ['title', 'content'])
+}
+
+function translateSection(section = {}) {
+  if (!section?.id || !section.data) return section
+
+  const data = {
+    ...section.data,
+  }
+
+  ;['eyebrow', 'title', 'subtitle', 'text', 'button_text', 'question', 'answer'].forEach(
+    (field) => {
+      data[field] = getTranslatedField('section', section.id, `data.${field}`, data[field] || '')
+    },
+  )
+
+  return {
+    ...section,
+    data,
+  }
 }
 
 const formatMoney = (value) =>
@@ -370,6 +500,9 @@ document.querySelector('#app').innerHTML = `
     <select class="language-selector" id="languageSelector" aria-label="Lingua">
       <option value="it">IT</option>
       <option value="en">EN</option>
+      <option value="fr">FR</option>
+      <option value="es">ES</option>
+      <option value="de">DE</option>
     </select>
     <button class="cart-toggle" type="button" data-cart-open>
       Carrello <span id="cartCount">0</span>
@@ -893,7 +1026,9 @@ function saveSelectedMarket(market) {
 }
 
 function cacheProducts(products = []) {
-  products.forEach((product) => {
+  const translatedProducts = translateProducts(products)
+
+  translatedProducts.forEach((product) => {
     if (product.slug) {
       productCache.set(product.slug, {
         ...product,
@@ -903,6 +1038,8 @@ function cacheProducts(products = []) {
   })
 
   renderCart()
+
+  return translatedProducts
 }
 
 function getProductVariant(product, variantId) {
@@ -1060,9 +1197,7 @@ async function loadProductsForCart() {
     throw new Error('Errore caricamento prodotti')
   }
 
-  cacheProducts(data.products || [])
-
-  return data.products || []
+  return cacheProducts(data.products || [])
 }
 
 function getDetailedCartItems() {
@@ -2816,8 +2951,7 @@ async function hydrateProductGrids() {
       return
     }
 
-    const products = data.products || []
-    cacheProducts(products)
+    const products = cacheProducts(data.products || [])
 
     document.querySelectorAll('[data-products-grid], [data-products-carousel]').forEach((grid) => {
       const collectionSlug = grid.dataset.collectionSlug || ''
@@ -2913,7 +3047,8 @@ async function hydrateCollectionGrids() {
       return
     }
 
-    const html = data.collections
+    const collections = translateCollections(data.collections || [])
+    const html = collections
       .map(
         (collection) => `
           <article class="store-card cms-collection-card">
@@ -2958,10 +3093,11 @@ function getCurrentPublicPageSlug() {
 }
 
 function renderCmsSections(sections) {
+  const translatedSections = (sections || []).map(translateSection)
   const pageSlug = getCurrentPublicPageSlug()
   const isHome = pageSlug === 'home'
 
-  const heroSection = sections.find((section) => section.type === 'hero')
+  const heroSection = translatedSections.find((section) => section.type === 'hero')
 
   if (isHome && heroSection) {
     applyHeroPreview(heroSection.data)
@@ -2969,7 +3105,7 @@ function renderCmsSections(sections) {
 
   const container = getCmsContainer()
 
-  container.innerHTML = sections
+  container.innerHTML = translatedSections
     .filter((section) => !(isHome && section.type === 'hero'))
     .map(renderCmsSection)
     .join('')
@@ -2990,7 +3126,7 @@ async function loadCmsSectionsFromD1(pageSlug = getCurrentPublicPageSlug()) {
 
     if (!data.success) return
 
-    renderCmsSections(data.sections)
+    renderCmsSections((data.sections || []).map(translateSection))
   } catch (error) {
     console.error('Errore caricamento sezioni CMS:', error)
   }
@@ -3042,7 +3178,10 @@ async function renderPublicCollectionPage() {
     const collectionsData = await collectionsResponse.json()
     const productsData = await productsResponse.json()
 
-    const collection = collectionsData.collections?.find(
+    const collections = translateCollections(collectionsData.collections || [])
+    const allProducts = cacheProducts(productsData.products || [])
+
+    const collection = collections.find(
       (item) => item.slug === collectionSlug,
     )
 
@@ -3071,11 +3210,9 @@ async function renderPublicCollectionPage() {
     intro.textContent =
       collection.description || sfT('collectionProductsDefault')
 
-    const products = (productsData.products || []).filter(
+    const products = allProducts.filter(
       (product) => product.collection_slug === collection.slug,
     )
-
-    cacheProducts(productsData.products || [])
 
     if (products.length === 0) {
       container.textContent = sfT('collectionEmpty')
@@ -3259,8 +3396,7 @@ async function renderPublicProductPage() {
       throw new Error('Errore caricamento prodotti')
     }
 
-    const products = productsData.products || []
-    cacheProducts(products)
+    const products = cacheProducts(productsData.products || [])
 
     const product = products.find((item) => item.slug === productSlug)
 
@@ -3294,7 +3430,8 @@ async function renderPublicProductPage() {
       entity_id: product.slug,
     })
 
-    const collection = (collectionsData.collections || []).find(
+    const collections = translateCollections(collectionsData.collections || [])
+    const collection = collections.find(
       (item) => item.slug === product.collection_slug,
     )
     const defaultVariant = getDefaultVariant(product)
@@ -4023,7 +4160,7 @@ async function renderPublicBlogPage() {
         return
       }
 
-      const post = data.post
+      const post = translateBlogPost(data.post)
       applySeoMeta(
         {
           meta_title: post.meta_title,
@@ -4061,7 +4198,7 @@ async function renderPublicBlogPage() {
       return
     }
 
-    const posts = data.posts || []
+    const posts = (data.posts || []).map(translateBlogPost)
     applySeoMeta({}, {
       title: 'Blog | Orbitra',
       description: 'Articoli e aggiornamenti dal CMS Orbitra.',
@@ -4152,7 +4289,7 @@ async function renderPublicPolicyPage() {
       return
     }
 
-    const policy = data.policy
+    const policy = translatePolicy(data.policy)
     applySeoMeta({}, {
       title: `${policy.title} | Orbitra`,
       description: `${policy.title} aggiornata dal CMS.`,
@@ -4217,7 +4354,8 @@ async function renderPublicCmsPage() {
       return
     }
 
-    const page = data.pages.find((item) => item.slug === pageSlug)
+    const pages = translatePages(data.pages || [])
+    const page = pages.find((item) => item.slug === pageSlug)
 
     if (!page) {
       title.textContent = 'Pagina non trovata'
@@ -4243,7 +4381,8 @@ async function applyHomeSeoMeta() {
   try {
     const response = await fetch('/api/pages')
     const data = await response.json()
-    const homePage = data.pages?.find((page) => page.slug === 'home')
+    const pages = translatePages(data.pages || [])
+    const homePage = pages.find((page) => page.slug === 'home')
 
     applySeoMeta(homePage?.seo || {}, {
       title: `${homePage?.title || 'Orbitra'} | Luxury Space Travel`,
@@ -4263,6 +4402,7 @@ async function applyHomeSeoMeta() {
 async function bootPublicRouting() {
   const path = window.location.pathname
   await loadPrimaryCanonicalDomain()
+  await loadPublicTranslations()
   trackAnalyticsEvent('page_view')
 
   if (path.startsWith('/collections/')) {

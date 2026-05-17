@@ -1969,6 +1969,51 @@ h3 {
   margin: 0 auto 18px;
 }
 
+.translation-manager {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(320px, 1.15fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.translation-controls,
+.translation-editor,
+.translation-overview {
+  min-width: 0;
+}
+
+.translation-manager textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.translation-manager textarea[readonly] {
+  color: var(--admin-muted);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.translation-overview {
+  grid-column: 1 / -1;
+}
+
+.translation-status-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 9px;
+  border: 1px solid rgba(255, 106, 77, 0.22);
+  border-radius: 999px;
+  color: #ffd1c7;
+  background: rgba(255, 106, 77, 0.08);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .translation-manager {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-session-bar .admin-current-view {
   border-color: rgba(255, 106, 77, 0.26);
   color: #ffd1c7;

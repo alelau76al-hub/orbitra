@@ -89,6 +89,7 @@ const ADMIN_TRANSLATIONS = {
     mediaTitle: 'Media',
     blogTitle: 'Blog',
     policyTitle: 'Policy',
+    translationsTitle: 'Traduzioni',
     marketingTitle: 'Marketing',
     marketsTitle: 'Markets',
     analyticsTitle: 'Analisi',
@@ -154,6 +155,7 @@ const ADMIN_TRANSLATIONS = {
     mediaTitle: 'Media',
     blogTitle: 'Blog',
     policyTitle: 'Policies',
+    translationsTitle: 'Translations',
     marketingTitle: 'Marketing',
     marketsTitle: 'Markets',
     analyticsTitle: 'Analytics',
@@ -254,6 +256,7 @@ function applyAdminTranslations() {
     ['media', 'mediaTitle'],
     ['blog-admin', 'blogTitle'],
     ['policy', 'policyTitle'],
+    ['traduzioni', 'translationsTitle'],
     ['marketing', 'marketingTitle'],
     ['markets', 'marketsTitle'],
     ['analisi', 'analyticsTitle'],
@@ -670,6 +673,7 @@ function refreshAdminDataAfterAuth() {
     loadMenus,
     loadEditorPages,
     loadSections,
+    loadTranslationManager,
   ]
 
   loaders.forEach((loader) => {
@@ -1669,7 +1673,7 @@ function setupAdminViews() {
     })
 
     const catalogoViews = ['prodotti', 'collezioni', 'inventario', 'import-export']
-    const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy']
+    const contenutoViews = ['pagine', 'menu', 'media', 'seo', 'blog-admin', 'metaobjects', 'policy', 'traduzioni']
     const marketingViews = [
       'marketing-campaigns',
       'marketing-discounts',
@@ -1890,6 +1894,358 @@ policyForm?.addEventListener('submit', async (event) => {
 cancelPolicyEdit?.addEventListener('click', resetPolicyForm)
 refreshPoliciesButton?.addEventListener('click', loadPoliciesAdmin)
 loadPoliciesAdmin()
+
+// ===============================
+// TRANSLATION MANAGER
+// ===============================
+
+const translationForm = document.querySelector('#translationForm')
+const translationLocale = document.querySelector('#translationLocale')
+const translationEntityType = document.querySelector('#translationEntityType')
+const translationEntitySelect = document.querySelector('#translationEntitySelect')
+const translationFieldSelect = document.querySelector('#translationFieldSelect')
+const translationId = document.querySelector('#translationId')
+const translationSourceValue = document.querySelector('#translationSourceValue')
+const translationTranslatedValue = document.querySelector('#translationTranslatedValue')
+const translationStatus = document.querySelector('#translationStatus')
+const translationMessage = document.querySelector('#translationMessage')
+const translationsList = document.querySelector('#translationsList')
+const refreshTranslationsButton = document.querySelector('#refreshTranslationsButton')
+const deleteTranslationButton = document.querySelector('#deleteTranslationButton')
+
+const translationConfigs = {
+  product: {
+    label: 'Prodotti',
+    endpoint: '/api/products',
+    listKey: 'products',
+    fields: [
+      ['name', 'Nome'],
+      ['description', 'Descrizione'],
+      ['seo.meta_title', 'SEO title'],
+      ['seo.meta_description', 'SEO description'],
+    ],
+    title: (item) => item.name || item.slug || `Prodotto #${item.id}`,
+  },
+  collection: {
+    label: 'Collezioni',
+    endpoint: '/api/collections',
+    listKey: 'collections',
+    fields: [
+      ['name', 'Nome'],
+      ['description', 'Descrizione'],
+      ['seo.meta_title', 'SEO title'],
+      ['seo.meta_description', 'SEO description'],
+    ],
+    title: (item) => item.name || item.slug || `Collezione #${item.id}`,
+  },
+  page: {
+    label: 'Pagine',
+    endpoint: '/api/pages',
+    listKey: 'pages',
+    fields: [
+      ['title', 'Titolo'],
+      ['seo.meta_title', 'SEO title'],
+      ['seo.meta_description', 'SEO description'],
+    ],
+    title: (item) => item.title || item.slug || `Pagina #${item.id}`,
+  },
+  section: {
+    label: 'Sezioni',
+    fields: [
+      ['data.eyebrow', 'Eyebrow'],
+      ['data.title', 'Titolo'],
+      ['data.subtitle', 'Sottotitolo'],
+      ['data.text', 'Testo'],
+      ['data.button_text', 'Testo bottone'],
+      ['data.question', 'FAQ domanda'],
+      ['data.answer', 'FAQ risposta'],
+    ],
+    title: (item) => `${item.page_slug || 'home'} / ${item.type || 'section'} #${item.id}`,
+  },
+  blog: {
+    label: 'Blog',
+    endpoint: '/api/admin/blog',
+    listKey: 'posts',
+    fields: [
+      ['title', 'Titolo'],
+      ['excerpt', 'Excerpt'],
+      ['content', 'Contenuto'],
+      ['meta_title', 'SEO title'],
+      ['meta_description', 'SEO description'],
+    ],
+    title: (item) => item.title || item.slug || `Blog #${item.id}`,
+  },
+  policy: {
+    label: 'Policy',
+    endpoint: '/api/admin/policies',
+    listKey: 'policies',
+    fields: [
+      ['title', 'Titolo'],
+      ['content', 'Contenuto'],
+    ],
+    title: (item) => item.title || item.slug || `Policy #${item.id}`,
+  },
+}
+
+const translationState = {
+  resources: [],
+  translations: [],
+}
+
+function getNestedValue(source = {}, path = '') {
+  return path.split('.').reduce((value, key) => {
+    if (value === null || value === undefined) return ''
+    return value[key]
+  }, source) || ''
+}
+
+function getTranslationConfig() {
+  return translationConfigs[translationEntityType?.value || 'product'] || translationConfigs.product
+}
+
+function getCurrentTranslationResource() {
+  const id = Number(translationEntitySelect?.value || 0)
+  return translationState.resources.find((item) => Number(item.id) === id)
+}
+
+function getCurrentTranslationRecord(fieldKey = translationFieldSelect?.value || '') {
+  const locale = translationLocale?.value || 'en'
+  const entityType = translationEntityType?.value || 'product'
+  const resource = getCurrentTranslationResource()
+  if (!resource || !fieldKey) return null
+
+  return translationState.translations.find(
+    (translation) =>
+      translation.locale === locale &&
+      translation.entity_type === entityType &&
+      Number(translation.entity_id) === Number(resource.id) &&
+      translation.field_key === fieldKey,
+  )
+}
+
+function renderTranslationFields() {
+  if (!translationFieldSelect) return
+  const config = getTranslationConfig()
+
+  translationFieldSelect.innerHTML = config.fields
+    .map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`)
+    .join('')
+}
+
+function renderTranslationResources() {
+  if (!translationEntitySelect) return
+  const config = getTranslationConfig()
+
+  translationEntitySelect.innerHTML = translationState.resources.length
+    ? translationState.resources
+        .map(
+          (item) => `
+            <option value="${escapeHtml(item.id)}">${escapeHtml(config.title(item))}</option>
+          `,
+        )
+        .join('')
+    : '<option value="">Nessun elemento disponibile</option>'
+}
+
+function renderTranslationEditor() {
+  const resource = getCurrentTranslationResource()
+  const fieldKey = translationFieldSelect?.value || ''
+  const record = getCurrentTranslationRecord(fieldKey)
+
+  if (!resource || !fieldKey) {
+    if (translationId) translationId.value = ''
+    if (translationSourceValue) translationSourceValue.value = ''
+    if (translationTranslatedValue) translationTranslatedValue.value = ''
+    if (deleteTranslationButton) deleteTranslationButton.disabled = true
+    return
+  }
+
+  if (translationId) translationId.value = record?.id || ''
+  if (translationSourceValue) translationSourceValue.value = String(getNestedValue(resource, fieldKey) || '')
+  if (translationTranslatedValue) translationTranslatedValue.value = record?.translated_value || ''
+  if (translationStatus) translationStatus.value = record?.status || 'active'
+  if (deleteTranslationButton) deleteTranslationButton.disabled = !record?.id
+}
+
+function renderTranslationsList() {
+  if (!translationsList) return
+  const config = getTranslationConfig()
+  const resource = getCurrentTranslationResource()
+
+  if (!resource) {
+    translationsList.textContent = 'Seleziona un elemento da tradurre.'
+    return
+  }
+
+  translationsList.innerHTML = config.fields
+    .map(([fieldKey, label]) => {
+      const record = getCurrentTranslationRecord(fieldKey)
+      const present = record?.status === 'active' && record?.translated_value
+
+      return `
+        <article class="product-item">
+          <h3>${escapeHtml(label)}</h3>
+          <p>${escapeHtml(fieldKey)}</p>
+          <span class="translation-status-pill">${present ? 'Traduzione presente' : 'Mancante'}</span>
+        </article>
+      `
+    })
+    .join('')
+}
+
+async function loadSectionTranslationResources() {
+  try {
+    const pagesResponse = await fetch('/api/pages')
+    const pagesData = await pagesResponse.json()
+    const pages = pagesData.success && pagesData.pages?.length
+      ? pagesData.pages
+      : [{ slug: 'home', title: 'Home' }]
+
+    const groups = await Promise.all(
+      pages.map(async (page) => {
+        try {
+          const response = await fetch(`/api/sections?page_slug=${encodeURIComponent(page.slug || 'home')}`)
+          const data = await response.json()
+          return data.success ? data.sections || [] : []
+        } catch {
+          return []
+        }
+      }),
+    )
+
+    return groups.flat()
+  } catch {
+    return []
+  }
+}
+
+async function loadTranslationResources() {
+  const config = getTranslationConfig()
+
+  if (translationEntityType?.value === 'section') {
+    translationState.resources = await loadSectionTranslationResources()
+    return
+  }
+
+  try {
+    const response = await fetch(config.endpoint)
+    const data = await response.json()
+    translationState.resources = data.success ? data[config.listKey] || [] : []
+  } catch {
+    translationState.resources = []
+  }
+}
+
+async function loadTranslationRecords() {
+  const locale = translationLocale?.value || 'en'
+  const entityType = translationEntityType?.value || 'product'
+
+  try {
+    const response = await fetch(
+      `/api/admin/translations?locale=${encodeURIComponent(locale)}&entity_type=${encodeURIComponent(entityType)}`,
+    )
+    const data = await response.json()
+
+    if (!data.success) {
+      translationState.translations = []
+      if (translationMessage) translationMessage.textContent = data.message || 'Traduzioni non disponibili.'
+      return
+    }
+
+    translationState.translations = data.translations || []
+  } catch {
+    translationState.translations = []
+    if (translationMessage) translationMessage.textContent = 'Errore caricamento traduzioni.'
+  }
+}
+
+async function loadTranslationManager() {
+  if (!translationForm) return
+  if (translationsList) translationsList.textContent = 'Caricamento traduzioni...'
+
+  renderTranslationFields()
+  await Promise.all([loadTranslationResources(), loadTranslationRecords()])
+  renderTranslationResources()
+  renderTranslationEditor()
+  renderTranslationsList()
+  applyAdminAuditUi()
+}
+
+async function saveTranslation(event) {
+  event.preventDefault()
+  const resource = getCurrentTranslationResource()
+  const fieldKey = translationFieldSelect?.value || ''
+
+  if (!resource || !fieldKey) {
+    if (translationMessage) translationMessage.textContent = 'Seleziona contenuto e campo da tradurre.'
+    return
+  }
+
+  if (translationMessage) translationMessage.textContent = 'Salvataggio traduzione...'
+
+  const payload = {
+    id: translationId?.value || '',
+    locale: translationLocale?.value || 'en',
+    entity_type: translationEntityType?.value || 'product',
+    entity_id: Number(resource.id),
+    entity_key: resource.slug || resource.handle || '',
+    field_key: fieldKey,
+    source_value: translationSourceValue?.value || '',
+    translated_value: translationTranslatedValue?.value || '',
+    status: translationStatus?.value || 'active',
+  }
+
+  try {
+    const response = await fetch('/api/admin/translations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (translationMessage) translationMessage.textContent = data.message || 'Traduzione salvata.'
+    if (response.ok && data.success) {
+      await loadTranslationRecords()
+      renderTranslationEditor()
+      renderTranslationsList()
+    }
+  } catch {
+    if (translationMessage) translationMessage.textContent = 'Errore di connessione traduzioni.'
+  }
+}
+
+async function disableCurrentTranslation() {
+  const id = Number(translationId?.value || 0)
+  if (!id) return
+  if (translationMessage) translationMessage.textContent = 'Disattivazione traduzione...'
+
+  try {
+    const response = await fetch('/api/admin/translations', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    })
+    const data = await response.json()
+    if (translationMessage) translationMessage.textContent = data.message || 'Traduzione disattivata.'
+    if (response.ok && data.success) {
+      await loadTranslationRecords()
+      renderTranslationEditor()
+      renderTranslationsList()
+    }
+  } catch {
+    if (translationMessage) translationMessage.textContent = 'Errore disattivazione traduzione.'
+  }
+}
+
+translationLocale?.addEventListener('change', loadTranslationManager)
+translationEntityType?.addEventListener('change', loadTranslationManager)
+translationEntitySelect?.addEventListener('change', () => {
+  renderTranslationEditor()
+  renderTranslationsList()
+})
+translationFieldSelect?.addEventListener('change', renderTranslationEditor)
+refreshTranslationsButton?.addEventListener('click', loadTranslationManager)
+translationForm?.addEventListener('submit', saveTranslation)
+deleteTranslationButton?.addEventListener('click', disableCurrentTranslation)
 
 // ===============================
 // BLOG
