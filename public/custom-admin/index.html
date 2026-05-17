@@ -528,7 +528,7 @@
             <h3>Privacy e stato</h3>
             <p>
               Gli eventi ecommerce base sono predisposti: view_item, add_to_cart, begin_checkout e purchase.
-              Il consenso cookie non e ancora collegato automaticamente.
+              Il sito usa un consenso conservativo: analytics e marketing partono solo dopo scelta del visitatore.
             </p>
             <button id="googleSuiteSubmitButton" type="submit">Salva Google Suite</button>
             <p id="googleSuiteMessage"></p>
@@ -818,7 +818,7 @@
             <div class="section-title compact-title">
               <div>
                 <h3>Import controllato</h3>
-                <p class="section-subtitle">Crea o aggiorna record. Non elimina dati esistenti.</p>
+                <p class="section-subtitle">Usa prima il dry-run per validare il file. L'import crea o aggiorna record e non elimina dati esistenti.</p>
               </div>
             </div>
             <label>Risorsa import</label>
@@ -845,7 +845,7 @@
             <div class="section-title compact-title">
               <div>
                 <h3>Template scaricabili</h3>
-                <p class="section-subtitle">Parti da un formato pulito per import prodotti, collezioni e traduzioni.</p>
+                <p class="section-subtitle">Template con struttura consigliata e campi compatibili per prodotti, collezioni, traduzioni e prezzi localizzati.</p>
               </div>
             </div>
             <label>Template</label>
@@ -869,7 +869,7 @@
               <div>
                 <h3>Translation package</h3>
                 <p class="section-subtitle">
-                  Agency workflow: esporta testi traducibili, traduci esternamente e reimporta solo translated_value.
+                  Agency workflow: esporta testi traducibili, compila translated_value e reimporta senza modificare i contenuti originali.
                 </p>
               </div>
             </div>
@@ -906,7 +906,7 @@
             <button id="exportSitePackageButton" type="button">Esporta site package</button>
             <div class="placeholder-panel compact-panel">
               <span class="status-badge status-badge--future">In sviluppo</span>
-              <p>Import site package completo non attivo: per sicurezza ora e disponibile solo export.</p>
+              <p>Import site package completo non attivo: ora e disponibile solo export sicuro dei contenuti configurabili.</p>
             </div>
             <pre id="sitePackagePreview" class="admin-pre">Nessun site package esportato.</pre>
           </section>
@@ -1793,7 +1793,7 @@
           </div>
           <a class="back-link" href="#markets">&larr; Torna a Markets</a>
         </div>
-        <div class="content-manager media-library-workspace">
+        <div class="content-manager">
           <section class="inner-card">
             <h3>Paesi abilitati</h3>
             <p class="section-subtitle">Lista consigliata con fallback se il database non contiene ancora configurazioni dedicate.</p>
@@ -2186,9 +2186,9 @@
           </a>
 
           <a class="mini-card placeholder-card" href="#cookie-settings">
-            <span class="mini-card-status">In sviluppo</span>
+            <span class="mini-card-status">Configurazione base</span>
             <h3>Cookie</h3>
-            <p>Preferenze cookie e banner consenso in sviluppo.</p>
+            <p>Base consenso Google attiva; preferenze cookie complete in sviluppo.</p>
           </a>
 
           <a class="mini-card" href="#metafields">
@@ -2261,13 +2261,13 @@
         <div class="section-title">
           <div>
             <h2>Cookie</h2>
-            <p class="section-subtitle">Banner, preferenze e categorie cookie in sviluppo.</p>
+            <p class="section-subtitle">Base consenso Google attiva, con preferenze cookie complete da consolidare.</p>
           </div>
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge status-badge--future">In sviluppo</span>
-          <p>La cookie policy e gestita tra le Policy. Il banner consenso sara configurabile da questa area.</p>
+          <span class="status-badge">Configurazione base</span>
+          <p>Il sito pubblico blocca i tag Google finche il visitatore non concede consenso analytics/marketing. Una CMP completa resta fuori da questo pass.</p>
         </div>
       </section>
 

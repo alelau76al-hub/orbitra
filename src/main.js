@@ -140,6 +140,10 @@ const STOREFRONT_TRANSLATIONS = {
     paymentCanceled: 'Pagamento Stripe annullato',
     paymentCanceledText: "L'ordine #{id} resta in attesa. Puoi riprovare o scegliere pagamento manuale.",
     backToCheckout: 'Torna al checkout',
+    googleConsentTitle: 'Privacy e Google analytics',
+    googleConsentText: 'Usiamo tag Google solo con il tuo consenso per misurare il sito e le conversioni marketing.',
+    googleConsentAccept: 'Accetta analytics e marketing',
+    googleConsentNecessary: 'Solo necessari',
   },
   en: {
     languageLabel: 'Language',
@@ -270,6 +274,10 @@ const STOREFRONT_TRANSLATIONS = {
     paymentCanceled: 'Stripe payment canceled',
     paymentCanceledText: 'Order #{id} remains pending. You can retry or choose manual payment.',
     backToCheckout: 'Back to checkout',
+    googleConsentTitle: 'Privacy and Google analytics',
+    googleConsentText: 'Google tags run only with your consent to measure the site and marketing conversions.',
+    googleConsentAccept: 'Accept analytics and marketing',
+    googleConsentNecessary: 'Necessary only',
   },
 }
 
@@ -620,7 +628,7 @@ document.querySelector('#app').innerHTML = `
 
       <div class="holo-panel reveal">
         <div class="scan-line"></div>
-        <p>Mission Control</p>
+        <p>Flight Operations</p>
         <h3>Aurora-X Capsule</h3>
 
         <div class="system-row">
@@ -858,6 +866,7 @@ function buildMenuItemUrl(item) {
 const CART_STORAGE_KEY = 'orbitra_cart_v1'
 const ANALYTICS_SESSION_KEY = 'orbitra_analytics_session_v1'
 const MARKET_STORAGE_KEY = 'orbitra_market_v1'
+const GOOGLE_CONSENT_STORAGE_KEY = 'takeoff_google_consent_v1'
 const productCache = new Map()
 
 function getSelectedCurrencyCode() {
@@ -1011,6 +1020,151 @@ function settingEnabled(value) {
   return value === true || value === '1' || value === 1 || value === 'true'
 }
 
+function getGoogleConsentState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(GOOGLE_CONSENT_STORAGE_KEY) || '{}')
+    return {
+      decided: saved.decided === true,
+      analytics: saved.analytics === true,
+      marketing: saved.marketing === true,
+    }
+  } catch {
+    return {
+      decided: false,
+      analytics: false,
+      marketing: false,
+    }
+  }
+}
+
+function saveGoogleConsentState(consent) {
+  try {
+    localStorage.setItem(
+      GOOGLE_CONSENT_STORAGE_KEY,
+      JSON.stringify({
+        decided: consent.decided === true,
+        analytics: consent.analytics === true,
+        marketing: consent.marketing === true,
+      }),
+    )
+  } catch {}
+}
+
+function googleTrackingConfigured(settings = {}) {
+  return (
+    (settingEnabled(settings.google_ga4_active) && settings.google_ga4_measurement_id) ||
+    (settingEnabled(settings.google_tag_active) && settings.google_tag_id) ||
+    (settingEnabled(settings.google_ads_active) && settings.google_ads_conversion_id) ||
+    (settingEnabled(settings.google_gtm_active) && settings.google_gtm_container_id)
+  )
+}
+
+function googleConsentModePayload(consent = getGoogleConsentState()) {
+  return {
+    analytics_storage: consent.analytics ? 'granted' : 'denied',
+    ad_storage: consent.marketing ? 'granted' : 'denied',
+    ad_user_data: consent.marketing ? 'granted' : 'denied',
+    ad_personalization: consent.marketing ? 'granted' : 'denied',
+  }
+}
+
+function updateGoogleConsentMode(mode = 'default') {
+  ensureGoogleDataLayer()
+  window.gtag('consent', mode, googleConsentModePayload())
+}
+
+function ensureGoogleConsentStyles() {
+  if (document.getElementById('google-consent-styles')) return
+
+  const style = document.createElement('style')
+  style.id = 'google-consent-styles'
+  style.textContent = `
+    .google-consent-banner {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 60;
+      display: grid;
+      gap: 12px;
+      width: min(420px, calc(100vw - 36px));
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 18px;
+      background: rgba(12, 14, 20, 0.94);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+      color: #fff;
+      backdrop-filter: blur(18px);
+    }
+
+    .google-consent-banner h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .google-consent-banner p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .google-consent-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  `
+  document.head.appendChild(style)
+}
+
+function removeGoogleConsentBanner() {
+  document.querySelector('#googleConsentBanner')?.remove()
+}
+
+function showGoogleConsentBanner(settings = {}) {
+  const consent = getGoogleConsentState()
+
+  if (!googleTrackingConfigured(settings) || consent.decided) {
+    removeGoogleConsentBanner()
+    return
+  }
+
+  ensureGoogleConsentStyles()
+
+  let banner = document.querySelector('#googleConsentBanner')
+  if (!banner) {
+    banner = document.createElement('section')
+    banner.id = 'googleConsentBanner'
+    banner.className = 'google-consent-banner'
+    banner.setAttribute('aria-live', 'polite')
+    document.body.appendChild(banner)
+  }
+
+  banner.innerHTML = `
+    <div>
+      <h2>${escapeCmsHtml(sfT('googleConsentTitle'))}</h2>
+      <p>${escapeCmsHtml(sfT('googleConsentText'))}</p>
+    </div>
+    <div class="google-consent-actions">
+      <button class="btn primary" type="button" data-google-consent="accept">${escapeCmsHtml(sfT('googleConsentAccept'))}</button>
+      <button class="btn secondary" type="button" data-google-consent="necessary">${escapeCmsHtml(sfT('googleConsentNecessary'))}</button>
+    </div>
+  `
+
+  banner.querySelector('[data-google-consent="accept"]')?.addEventListener('click', () => {
+    saveGoogleConsentState({ decided: true, analytics: true, marketing: true })
+    updateGoogleConsentMode('update')
+    removeGoogleConsentBanner()
+    applyGoogleSuiteSettings(publicGoogleSettings)
+  })
+
+  banner.querySelector('[data-google-consent="necessary"]')?.addEventListener('click', () => {
+    saveGoogleConsentState({ decided: true, analytics: false, marketing: false })
+    updateGoogleConsentMode('update')
+    removeGoogleConsentBanner()
+  })
+}
+
 function validGoogleTagId(value = '', pattern) {
   const tag = String(value || '').trim().toUpperCase()
   return pattern.test(tag) ? tag : ''
@@ -1066,12 +1220,16 @@ function configureGoogleTagManager(containerId) {
 
 function applyGoogleSuiteSettings(settings = {}) {
   publicGoogleSettings = settings
+  updateGoogleConsentMode('default')
+  showGoogleConsentBanner(settings)
 
   const ga4Id = validGoogleTagId(settings.google_ga4_measurement_id, /^G-[A-Z0-9-]+$/)
   const googleTagId = validGoogleTagId(settings.google_tag_id, /^(G|AW)-[A-Z0-9-]+$/)
   const adsId = validGoogleTagId(settings.google_ads_conversion_id, /^AW-[A-Z0-9-]+$/)
   const gtmId = validGoogleTagId(settings.google_gtm_container_id, /^GTM-[A-Z0-9-]+$/)
   const searchConsoleVerification = String(settings.google_search_console_verification || '').trim()
+  const consent = getGoogleConsentState()
+  const googleTagNeedsMarketing = googleTagId.startsWith('AW-')
 
   if (searchConsoleVerification) {
     setMetaTag('meta[name="google-site-verification"]', {
@@ -1080,15 +1238,28 @@ function applyGoogleSuiteSettings(settings = {}) {
     })
   }
 
-  if (settingEnabled(settings.google_ga4_active) && ga4Id) configureGoogleTag(ga4Id)
-  if (settingEnabled(settings.google_tag_active) && googleTagId) configureGoogleTag(googleTagId)
-  if (settingEnabled(settings.google_ads_active) && adsId) configureGoogleTag(adsId)
-  if (settingEnabled(settings.google_gtm_active) && gtmId) configureGoogleTagManager(gtmId)
+  if (consent.analytics && settingEnabled(settings.google_ga4_active) && ga4Id) configureGoogleTag(ga4Id)
+  if (
+    settingEnabled(settings.google_tag_active) &&
+    googleTagId &&
+    (googleTagNeedsMarketing ? consent.marketing : consent.analytics)
+  ) {
+    configureGoogleTag(googleTagId)
+  }
+  if (consent.marketing && settingEnabled(settings.google_ads_active) && adsId) configureGoogleTag(adsId)
+  if ((consent.analytics || consent.marketing) && settingEnabled(settings.google_gtm_active) && gtmId) {
+    configureGoogleTagManager(gtmId)
+  }
 }
 
 function trackGoogleEvent(eventType, details = {}) {
   const googleEventName = GOOGLE_EVENT_MAP[eventType]
   if (!googleEventName) return
+  const consent = getGoogleConsentState()
+  const canTrackAnalytics = consent.analytics === true
+  const canTrackMarketing = consent.marketing === true
+
+  if (!canTrackAnalytics && !canTrackMarketing) return
 
   const metadata = details.metadata || {}
   const currency = metadata.currency || getSelectedCurrencyCode()
@@ -1102,16 +1273,18 @@ function trackGoogleEvent(eventType, details = {}) {
   }
 
   try {
-    if (window.dataLayer && settingEnabled(publicGoogleSettings.google_gtm_active)) {
+    if ((canTrackAnalytics || canTrackMarketing) && window.dataLayer && settingEnabled(publicGoogleSettings.google_gtm_active)) {
       window.dataLayer.push({
         event: googleEventName,
         ecommerce: payload,
       })
     }
 
-    if (typeof window.gtag === 'function') {
+    if (canTrackAnalytics && typeof window.gtag === 'function') {
       window.gtag('event', googleEventName, payload)
+    }
 
+    if (canTrackMarketing && typeof window.gtag === 'function') {
       const adsId = validGoogleTagId(publicGoogleSettings.google_ads_conversion_id, /^AW-[A-Z0-9-]+$/)
       const label = String(publicGoogleSettings.google_ads_purchase_label || '').trim()
       if (googleEventName === 'purchase' && settingEnabled(publicGoogleSettings.google_ads_active) && adsId && label) {

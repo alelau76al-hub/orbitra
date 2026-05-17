@@ -105,8 +105,25 @@ const ADMIN_TRANSLATIONS = {
     googleSuiteDesc: 'Configura GA4, Google Ads, Search Console e Tag Manager senza salvare secrets.',
     importExportTitle: 'TakeOff Import Export',
     importExportDesc: 'Importa, esporta e aggiorna in massa dati del sito senza app esterne.',
+    googleConsentNote: 'Google tags restano conservativi: gli script di tracking partono solo dopo consenso analytics o marketing sul sito pubblico.',
+    mediaPickerButton: 'Scegli da Media Library',
+    mediaPickerTitle: 'Scegli un media',
+    mediaPickerSearch: 'Cerca per nome, alt text o URL...',
+    mediaPickerEmpty: 'Nessun media disponibile. Il campo URL manuale resta sempre utilizzabile.',
+    mediaPickerLoading: 'Caricamento media...',
+    mediaPickerManualFallback: 'Se la libreria non carica, inserisci o incolla un URL manualmente nel campo.',
+    mediaPickerClose: 'Chiudi',
+    mediaPickerSelect: 'Seleziona',
+    prepareExport: 'Prepara export',
+    validateImport: 'Valida / importa',
+    downloadTemplate: 'Scarica template',
+    exportTranslationPackage: 'Esporta package',
+    importTranslationPackage: 'Importa translation package',
+    exportSitePackage: 'Esporta site package',
+    refreshHistory: 'Aggiorna history',
     statusOperational: 'Operativo',
     statusArea: 'Area',
+    statusBaseConfig: 'Configurazione base',
     statusDevelopment: 'In sviluppo',
     logout: 'Logout',
   },
@@ -178,8 +195,25 @@ const ADMIN_TRANSLATIONS = {
     googleSuiteDesc: 'Configure GA4, Google Ads, Search Console and Tag Manager without storing secrets.',
     importExportTitle: 'TakeOff Import Export',
     importExportDesc: 'Import, export and bulk update site data without external apps.',
+    googleConsentNote: 'Google tags stay conservative: tracking scripts start only after analytics or marketing consent on the storefront.',
+    mediaPickerButton: 'Choose from Media Library',
+    mediaPickerTitle: 'Choose media',
+    mediaPickerSearch: 'Search by name, alt text or URL...',
+    mediaPickerEmpty: 'No media available. The manual URL field always remains usable.',
+    mediaPickerLoading: 'Loading media...',
+    mediaPickerManualFallback: 'If the library cannot load, paste or type a URL manually in the field.',
+    mediaPickerClose: 'Close',
+    mediaPickerSelect: 'Select',
+    prepareExport: 'Prepare export',
+    validateImport: 'Validate / import',
+    downloadTemplate: 'Download template',
+    exportTranslationPackage: 'Export package',
+    importTranslationPackage: 'Import translation package',
+    exportSitePackage: 'Export site package',
+    refreshHistory: 'Refresh history',
     statusOperational: 'Operational',
     statusArea: 'Area',
+    statusBaseConfig: 'Base configuration',
     statusDevelopment: 'In development',
     logout: 'Logout',
   },
@@ -217,6 +251,12 @@ function setAdminText(selector, key) {
   })
 }
 
+function setAdminPlaceholder(selector, key) {
+  document.querySelectorAll(selector).forEach((element) => {
+    element.placeholder = adminT(key)
+  })
+}
+
 function applyAdminTranslations() {
   const language = getAdminLanguage()
   document.documentElement.lang = language
@@ -240,6 +280,18 @@ function applyAdminTranslations() {
   setAdminText('.hero.admin-hero p', 'heroEyebrow')
   setAdminText('.hero.admin-hero h1', 'heroTitle')
   setAdminText('.hero.admin-hero span', 'heroText')
+  setAdminText('#exportDataButton', 'prepareExport')
+  setAdminText('#importProductsButton', 'validateImport')
+  setAdminText('#downloadTemplateButton', 'downloadTemplate')
+  setAdminText('#exportTranslationPackageButton', 'exportTranslationPackage')
+  setAdminText('#importTranslationPackageButton', 'importTranslationPackage')
+  setAdminText('#exportSitePackageButton', 'exportSitePackage')
+  setAdminText('#refreshImportExportHistoryButton', 'refreshHistory')
+  setAdminText('.media-picker-trigger', 'mediaPickerButton')
+  setAdminText('.media-picker-title', 'mediaPickerTitle')
+  setAdminText('.media-picker-close', 'mediaPickerClose')
+  setAdminText('.media-picker-help', 'mediaPickerManualFallback')
+  setAdminPlaceholder('#mediaPickerSearch', 'mediaPickerSearch')
 
   const navTranslations = [
     ['#editor', 'navEditor', 'navEditorDesc'],
@@ -297,11 +349,13 @@ function applyAdminTranslations() {
     const text = badge.textContent.trim().toLowerCase()
     if (text === 'operativo' || text === 'operational') badge.textContent = adminT('statusOperational')
     if (text === 'area') badge.textContent = adminT('statusArea')
+    if (text === 'configurazione base' || text === 'base configuration') badge.textContent = adminT('statusBaseConfig')
     if (text === 'in sviluppo' || text === 'in development') badge.textContent = adminT('statusDevelopment')
   })
 
   document.querySelectorAll('.mini-card-status').forEach((badge) => {
     const text = badge.textContent.trim().toLowerCase()
+    if (text === 'configurazione base' || text === 'base configuration') badge.textContent = adminT('statusBaseConfig')
     if (text === 'in sviluppo' || text === 'in development') badge.textContent = adminT('statusDevelopment')
   })
 
@@ -1237,6 +1291,38 @@ function stringifyPreview(data) {
   return typeof data === 'string' ? data : JSON.stringify(data, null, 2)
 }
 
+function formatImportPreview(data = {}) {
+  const report = data.report || data.summary || {}
+  const created = Number(report.created || data.created || 0)
+  const updated = Number(report.updated || data.updated || 0)
+  const skipped = Number(report.skipped || data.skipped || 0)
+  const rawErrors = report.errors || data.errors || []
+  const errors = Array.isArray(rawErrors) ? rawErrors : []
+  const mode = data.dry_run ? 'Dry-run: nessuna scrittura eseguita.' : 'Import reale: modifiche applicate dove consentito.'
+  const lines = [
+    mode,
+    `Creati: ${created}`,
+    `Aggiornati: ${updated}`,
+    `Saltati: ${skipped}`,
+    `Errori: ${errors.length}`,
+  ]
+
+  if (errors.length) {
+    lines.push('')
+    lines.push('Errori principali:')
+    errors.slice(0, 8).forEach((error, index) => {
+      const row = error.row || error.index || index + 1
+      const message = error.message || error.error || String(error)
+      lines.push(`- Riga ${row}: ${message}`)
+    })
+  }
+
+  lines.push('')
+  lines.push('Dettaglio tecnico:')
+  lines.push(stringifyPreview(data))
+  return lines.join('\n')
+}
+
 function downloadTextFile(filename, content, type = 'application/json') {
   try {
     const blob = new Blob([content], { type })
@@ -1432,7 +1518,7 @@ async function runImport({ resource, format, content, dryRun, previewElement, me
     if (messageElement) {
       messageElement.textContent = data.message || (data.success ? 'Import completato.' : 'Import non disponibile.')
     }
-    if (previewElement) previewElement.textContent = stringifyPreview(data)
+    if (previewElement) previewElement.textContent = formatImportPreview(data)
 
     if (data.success && !data.dry_run) {
       if (resource === 'products') loadProducts()
@@ -3291,6 +3377,160 @@ const mediaAdminSearch = document.querySelector('#mediaAdminSearch')
 const mediaTypeFilter = document.querySelector('#mediaTypeFilter')
 const mediaProviderFilter = document.querySelector('#mediaProviderFilter')
 let mediaItemsCache = []
+let mediaPickerTargetInput = null
+let mediaPickerSearchValue = ''
+
+const mediaPickerStaticSelectors = [
+  '#collectionImageUrl',
+  '#collectionSeoImage',
+  '#image_url',
+  '#productSeoImage',
+  '#blogImageUrl',
+  '#blogOgImage',
+  '#pageSeoImage',
+]
+
+function isMediaPickerField(input) {
+  if (!input) return false
+
+  const sectionField = input.dataset?.sectionField || ''
+  const fieldName = input.id || input.name || sectionField
+  return /(^image_|_image_url$|image_url|og_image|poster_image_url|model_url|video_url|background_image|media_url)/i.test(fieldName)
+}
+
+function ensureMediaPickerModal() {
+  let modal = document.querySelector('#mediaPickerModal')
+  if (modal) return modal
+
+  modal = document.createElement('div')
+  modal.id = 'mediaPickerModal'
+  modal.className = 'media-picker-modal'
+  modal.hidden = true
+  modal.innerHTML = `
+    <div class="media-picker-backdrop" data-close-media-picker></div>
+    <section class="media-picker-panel" role="dialog" aria-modal="true" aria-labelledby="mediaPickerTitle">
+      <div class="section-title compact-title">
+        <div>
+          <h3 id="mediaPickerTitle" class="media-picker-title">${adminT('mediaPickerTitle')}</h3>
+          <p class="section-subtitle media-picker-help">${adminT('mediaPickerManualFallback')}</p>
+        </div>
+        <button id="closeMediaPickerButton" class="secondary media-picker-close" type="button" data-close-media-picker>
+          ${adminT('mediaPickerClose')}
+        </button>
+      </div>
+      <input id="mediaPickerSearch" type="search" placeholder="${adminT('mediaPickerSearch')}" />
+      <div id="mediaPickerGrid" class="media-picker-grid">${adminT('mediaPickerLoading')}</div>
+    </section>
+  `
+
+  document.body.appendChild(modal)
+
+  modal.querySelector('#mediaPickerSearch')?.addEventListener('input', (event) => {
+    mediaPickerSearchValue = event.target.value || ''
+    renderMediaPickerItems()
+  })
+
+  modal.querySelectorAll('[data-close-media-picker]').forEach((control) => {
+    control.addEventListener('click', closeMediaPicker)
+  })
+
+  modal.addEventListener('click', (event) => {
+    const button = event.target.closest?.('[data-pick-media-id]')
+    if (!button) return
+
+    const media = mediaItemsCache.find((item) => String(item.id) === button.dataset.pickMediaId)
+    if (!media?.url || !mediaPickerTargetInput) return
+
+    mediaPickerTargetInput.value = media.url
+    mediaPickerTargetInput.dispatchEvent(new Event('input', { bubbles: true }))
+    mediaPickerTargetInput.dispatchEvent(new Event('change', { bubbles: true }))
+    closeMediaPicker()
+  })
+
+  return modal
+}
+
+function closeMediaPicker() {
+  const modal = document.querySelector('#mediaPickerModal')
+  if (modal) modal.hidden = true
+  mediaPickerTargetInput = null
+  mediaPickerSearchValue = ''
+}
+
+function renderMediaPickerItems() {
+  const grid = document.querySelector('#mediaPickerGrid')
+  if (!grid) return
+
+  const search = normalizeAdminSearch(mediaPickerSearchValue)
+  const visibleMedia = mediaItemsCache.filter((media) =>
+    adminItemMatchesSearch(media, search, ['name', 'url', 'alt_text', 'type', 'storage_provider']),
+  )
+
+  if (!visibleMedia.length) {
+    grid.innerHTML = `<p class="admin-empty-state">${adminT('mediaPickerEmpty')}</p>`
+    return
+  }
+
+  grid.innerHTML = visibleMedia
+    .map(
+      (media) => `
+        <article class="media-picker-item">
+          <div class="media-preview-frame">
+            ${
+              media.type === 'image'
+                ? `<img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.alt_text || media.name || 'Media')}" loading="lazy">`
+                : `<div class="media-file-preview">${escapeHtml(media.type || 'File')}</div>`
+            }
+          </div>
+          <h4>${escapeHtml(media.name || 'Media')}</h4>
+          <p>${escapeHtml(media.alt_text || media.url || '')}</p>
+          <button type="button" class="secondary" data-pick-media-id="${escapeHtml(media.id)}">
+            ${adminT('mediaPickerSelect')}
+          </button>
+        </article>
+      `,
+    )
+    .join('')
+}
+
+async function openMediaPicker(input) {
+  if (!input) return
+  const modal = ensureMediaPickerModal()
+  const grid = modal.querySelector('#mediaPickerGrid')
+  const search = modal.querySelector('#mediaPickerSearch')
+
+  mediaPickerTargetInput = input
+  mediaPickerSearchValue = ''
+  if (search) search.value = ''
+  modal.hidden = false
+  if (grid) grid.textContent = adminT('mediaPickerLoading')
+
+  if (!mediaItemsCache.length) await loadMediaItems()
+  renderMediaPickerItems()
+}
+
+function attachMediaPickerButton(input) {
+  if (!input || input.dataset.mediaPickerAttached === 'true' || !isMediaPickerField(input)) return
+
+  input.dataset.mediaPickerAttached = 'true'
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.className = 'secondary media-picker-trigger'
+  button.textContent = adminT('mediaPickerButton')
+  button.addEventListener('click', () => openMediaPicker(input))
+  input.insertAdjacentElement('afterend', button)
+}
+
+function enhanceMediaPickerFields(root = document) {
+  mediaPickerStaticSelectors.forEach((selector) => {
+    const input = document.querySelector(selector)
+    if (input) attachMediaPickerButton(input)
+  })
+
+  root.querySelectorAll?.('[data-section-field]').forEach((input) => {
+    attachMediaPickerButton(input)
+  })
+}
 
 function resetMediaForm() {
   if (!mediaForm) return
@@ -3533,6 +3773,7 @@ mediaAdminSearch?.addEventListener('input', () => renderMediaItems())
 mediaTypeFilter?.addEventListener('change', () => renderMediaItems())
 mediaProviderFilter?.addEventListener('change', () => renderMediaItems())
 loadMediaItems()
+enhanceMediaPickerFields()
 
 // ===============================
 // METAFIELDS
@@ -6677,6 +6918,8 @@ function renderSelectedSection() {
       updateSitePreview()
     })
   })
+
+  enhanceMediaPickerFields(sectionFields)
 }
 
 async function loadSections() {
