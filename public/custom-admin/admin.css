@@ -2593,6 +2593,24 @@ textarea {
   gap: 14px;
 }
 
+.app-group {
+  grid-column: 1 / -1;
+}
+
+.app-group > h3 {
+  margin: 4px 0 12px;
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.app-group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
 .app-card {
   min-height: 210px;
 }

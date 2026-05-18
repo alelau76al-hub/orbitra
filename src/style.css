@@ -1551,6 +1551,33 @@ input[type="range"] {
   color: var(--text);
 }
 
+.product-reviews-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.product-review-card {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.product-review-card strong {
+  color: var(--accent);
+}
+
+.product-review-card h3 {
+  margin: 8px 0;
+}
+
+.product-review-card span,
+.muted-copy {
+  color: var(--muted);
+}
+
 .product-variant-field,
 .product-quantity-field {
   max-width: 420px;

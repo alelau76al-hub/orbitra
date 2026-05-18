@@ -178,6 +178,93 @@ function normalizeTranslationRow(row = {}, index = 0) {
   return { item: translation, errors }
 }
 
+function normalizeStockRow(row = {}, index = 0) {
+  const stock = Number(row.stock ?? row.Stock ?? row.quantity ?? 0)
+  const item = {
+    product_id: Number(row.product_id || 0),
+    product_slug: String(row.product_slug || row.slug || '').trim(),
+    variant_id: Number(row.variant_id || 0),
+    sku: String(row.sku || '').trim(),
+    stock,
+  }
+  const errors = []
+  if (!item.product_id && !item.product_slug && !item.variant_id && !item.sku) {
+    errors.push(`Riga ${index + 1}: product_id, product_slug, variant_id o SKU richiesto.`)
+  }
+  if (!Number.isFinite(stock) || stock < 0) errors.push(`Riga ${index + 1}: stock non valido.`)
+  return { item, errors }
+}
+
+function normalizeVariantRow(row = {}, index = 0) {
+  const item = {
+    product_id: Number(row.product_id || 0),
+    product_slug: String(row.product_slug || row.slug || '').trim(),
+    option_name: String(row.option_name || row.nome_opzione || '').trim(),
+    option_value: String(row.option_value || row.valore || '').trim(),
+    sku: String(row.sku || '').trim(),
+    price_cents: centsFromValue(row.price_cents ?? row.price ?? row.prezzo ?? ''),
+    stock: Number(row.stock ?? 0),
+    active: Number(row.active ?? 1) === 0 ? 0 : 1,
+  }
+  const errors = []
+  if (!item.product_id && !item.product_slug) errors.push(`Riga ${index + 1}: product_id o product_slug richiesto.`)
+  if (!item.option_name) errors.push(`Riga ${index + 1}: option_name mancante.`)
+  if (!item.option_value) errors.push(`Riga ${index + 1}: option_value mancante.`)
+  if (!Number.isFinite(item.stock) || item.stock < 0) errors.push(`Riga ${index + 1}: stock variante non valido.`)
+  return { item, errors }
+}
+
+function normalizeLocalizedPriceRow(row = {}, index = 0) {
+  const item = {
+    product_id: Number(row.product_id || 0),
+    product_slug: String(row.product_slug || row.slug || '').trim(),
+    variant_id: Number(row.variant_id || 0) || null,
+    market_handle: String(row.market_handle || row.market || '').trim().toLowerCase(),
+    currency_code: String(row.currency_code || row.currency || '').trim().toUpperCase(),
+    price_cents: centsFromValue(row.price_cents ?? row.price ?? ''),
+    active: Number(row.active ?? 1) === 0 ? 0 : 1,
+  }
+  const errors = []
+  if (!item.product_id && !item.product_slug) errors.push(`Riga ${index + 1}: product_id o product_slug richiesto.`)
+  if (!item.market_handle) errors.push(`Riga ${index + 1}: market_handle mancante.`)
+  if (!item.currency_code) errors.push(`Riga ${index + 1}: currency_code mancante.`)
+  if (!Number.isFinite(item.price_cents) || item.price_cents <= 0) errors.push(`Riga ${index + 1}: price_cents non valido.`)
+  return { item, errors }
+}
+
+function normalizeShippingMethodRow(row = {}, index = 0) {
+  const item = {
+    handle: slugify(row.handle || row.code || row.name || ''),
+    name: String(row.name || '').trim(),
+    description: String(row.description || '').trim(),
+    price_cents: centsFromValue(row.price_cents ?? row.price ?? 0),
+    free_over_cents: centsFromValue(row.free_over_cents ?? row.free_over ?? 0),
+    active: Number(row.active ?? 1) === 0 ? 0 : 1,
+    sort_order: Number(row.sort_order || 0),
+  }
+  const errors = []
+  if (!item.handle) errors.push(`Riga ${index + 1}: handle spedizione mancante.`)
+  if (!item.name) errors.push(`Riga ${index + 1}: nome spedizione mancante.`)
+  return { item, errors }
+}
+
+function normalizeReviewRow(row = {}, index = 0) {
+  const rating = Number(row.rating || 5)
+  const item = {
+    product_id: Number(row.product_id || 0),
+    customer_name: String(row.customer_name || row.name || '').trim(),
+    email: String(row.email || '').trim(),
+    rating: Number.isFinite(rating) ? Math.max(1, Math.min(5, Math.round(rating))) : 5,
+    title: String(row.title || '').trim(),
+    body: String(row.body || row.review || '').trim(),
+    status: ['pending', 'approved', 'rejected'].includes(row.status) ? row.status : 'pending',
+  }
+  const errors = []
+  if (!item.product_id) errors.push(`Riga ${index + 1}: product_id review mancante.`)
+  if (!item.customer_name) errors.push(`Riga ${index + 1}: customer_name review mancante.`)
+  return { item, errors }
+}
+
 function parseRowsFromBody(body = {}) {
   const format = String(body.format || 'json').trim()
 
@@ -441,6 +528,126 @@ async function loadExportRows(env, resource) {
     )
   }
 
+  if (resource === 'variants') {
+    return safeAll(
+      env,
+      `
+      SELECT
+        product_variants.id,
+        product_variants.product_id,
+        products.slug AS product_slug,
+        products.name AS product_name,
+        product_variants.option_name,
+        product_variants.option_value,
+        product_variants.sku,
+        product_variants.price_cents,
+        product_variants.stock,
+        product_variants.active,
+        product_variants.created_at,
+        product_variants.updated_at
+      FROM product_variants
+      LEFT JOIN products ON products.id = product_variants.product_id
+      ORDER BY products.name ASC, product_variants.id ASC
+      `,
+    )
+  }
+
+  if (resource === 'stock' || resource === 'stock_update') {
+    return safeAll(
+      env,
+      `
+      SELECT
+        products.id AS product_id,
+        products.slug AS product_slug,
+        products.name AS product_name,
+        COALESCE(inventory.stock, products.stock, 0) AS stock,
+        product_variants.id AS variant_id,
+        product_variants.sku,
+        product_variants.option_name,
+        product_variants.option_value,
+        product_variants.stock AS variant_stock
+      FROM products
+      LEFT JOIN inventory ON inventory.product_id = products.id
+      LEFT JOIN product_variants ON product_variants.product_id = products.id
+      ORDER BY products.name ASC, product_variants.id ASC
+      `,
+    )
+  }
+
+  if (resource === 'shipping_methods') {
+    return safeAll(
+      env,
+      `
+      SELECT id, handle, name, description, price_cents, free_over_cents, active, sort_order, created_at, updated_at
+      FROM shipping_methods
+      ORDER BY sort_order ASC, name ASC
+      `,
+    )
+  }
+
+  if (resource === 'reviews') {
+    return safeAll(
+      env,
+      `
+      SELECT id, product_id, customer_name, email, rating, title, body, status, active, created_at, updated_at
+      FROM product_reviews
+      ORDER BY created_at DESC, id DESC
+      `,
+    )
+  }
+
+  if (resource === 'returns') {
+    return safeAll(
+      env,
+      `
+      SELECT id, order_id, customer_email, reason, note, internal_note, refund_amount_cents, status, active, created_at, updated_at
+      FROM return_requests
+      ORDER BY created_at DESC, id DESC
+      `,
+    )
+  }
+
+  if (resource === 'upsells') {
+    return safeAll(
+      env,
+      `
+      SELECT id, type, name, base_product_id, trigger_product_id, target_product_ids, discount_type, discount_value, message, active, created_at, updated_at
+      FROM upsell_rules
+      ORDER BY created_at DESC, id DESC
+      `,
+    )
+  }
+
+  if (resource === 'product_feeds') {
+    return safeAll(
+      env,
+      `
+      SELECT id, provider, active, title, default_currency, default_language, include_out_of_stock, market_handle, created_at, updated_at
+      FROM product_feed_settings
+      ORDER BY provider ASC
+      `,
+    )
+  }
+
+  if (resource === 'metaobjects') {
+    return safeAll(
+      env,
+      `
+      SELECT
+        metaobject_definitions.id AS definition_id,
+        metaobject_definitions.handle,
+        metaobject_definitions.name,
+        metaobject_entries.id AS entry_id,
+        metaobject_entries.entry_key,
+        metaobject_entries.fields_json,
+        metaobject_entries.status
+      FROM metaobject_definitions
+      LEFT JOIN metaobject_entries ON metaobject_entries.definition_id = metaobject_definitions.id
+      ORDER BY metaobject_definitions.handle ASC, metaobject_entries.entry_key ASC
+      `,
+    )
+  }
+
   if (resource === 'history') {
     return safeAll(
       env,
@@ -592,28 +799,65 @@ async function loadTranslationPackage(env, locale = 'en') {
 }
 
 async function loadBackupData(env) {
-  const [products, collections, pages, menus, settings] = await Promise.all([
+  const [
+    products,
+    variants,
+    stock,
+    collections,
+    pages,
+    menus,
+    settings,
+    translations,
+    markets,
+    localizedPrices,
+    shippingMethods,
+    reviews,
+    returns,
+    upsells,
+    productFeeds,
+  ] = await Promise.all([
     loadExportRows(env, 'products'),
+    loadExportRows(env, 'variants'),
+    loadExportRows(env, 'stock'),
     loadExportRows(env, 'collections'),
     loadExportRows(env, 'pages'),
     loadExportRows(env, 'menus'),
     loadExportRows(env, 'settings'),
+    loadExportRows(env, 'translations'),
+    loadExportRows(env, 'markets'),
+    loadExportRows(env, 'localized_prices'),
+    loadExportRows(env, 'shipping_methods'),
+    loadExportRows(env, 'reviews'),
+    loadExportRows(env, 'returns'),
+    loadExportRows(env, 'upsells'),
+    loadExportRows(env, 'product_feeds'),
   ])
 
   return {
     generated_at: new Date().toISOString(),
+    note: 'Backup JSON completo. Restore automatico resta Advanced tools in progress; usa import controllati per risorse singole.',
     resources: {
       products,
+      variants,
+      stock,
       collections,
       pages,
       menus,
       settings,
+      translations,
+      markets,
+      localized_prices: localizedPrices,
+      shipping_methods: shippingMethods,
+      reviews,
+      returns,
+      upsells,
+      product_feeds: productFeeds,
     },
   }
 }
 
 async function loadSitePackage(env) {
-  const [pages, sections, menus, settings, policies, blog, translations, seo, markets, localizedPrices] = await Promise.all([
+  const [pages, sections, menus, settings, policies, blog, translations, seo, markets, localizedPrices, shippingMethods] = await Promise.all([
     loadExportRows(env, 'pages'),
     loadExportRows(env, 'sections'),
     loadExportRows(env, 'menus'),
@@ -624,6 +868,7 @@ async function loadSitePackage(env) {
     loadExportRows(env, 'seo'),
     loadExportRows(env, 'markets'),
     loadExportRows(env, 'localized_prices'),
+    loadExportRows(env, 'shipping_methods'),
   ])
 
   return {
@@ -640,11 +885,38 @@ async function loadSitePackage(env) {
       seo,
       markets,
       localized_prices: localizedPrices,
+      shipping_methods: shippingMethods,
     },
   }
 }
 
 function loadTemplateRows(target) {
+  if (target === 'variants') {
+    return [
+      {
+        instructions: 'Aggiorna o crea variante per product_id/product_slug e SKU. price_cents e in centesimi.',
+        product_slug: 'prodotto-demo',
+        option_name: 'Size',
+        option_value: 'M',
+        sku: 'DEMO-SIZE-M',
+        price_cents: 4900,
+        stock: 10,
+        active: 1,
+      },
+    ]
+  }
+
+  if (target === 'stock_update' || target === 'stock') {
+    return [
+      {
+        instructions: 'Aggiorna stock prodotto o variante. Usa product_slug, product_id, variant_id o SKU.',
+        product_slug: 'prodotto-demo',
+        sku: 'DEMO-SKU',
+        stock: 25,
+      },
+    ]
+  }
+
   if (target === 'localized_prices') {
     return [
       {
@@ -685,6 +957,36 @@ function loadTemplateRows(target) {
         source_value: 'Prodotto Demo',
         translated_value: 'Demo Product',
         status: 'active',
+      },
+    ]
+  }
+
+  if (target === 'shipping_methods') {
+    return [
+      {
+        instructions: 'Crea o aggiorna metodi spedizione per handle. Import non elimina metodi esistenti.',
+        handle: 'standard',
+        name: 'Standard shipping',
+        description: 'Delivery in 3-5 business days',
+        price_cents: 590,
+        free_over_cents: 10000,
+        active: 1,
+        sort_order: 10,
+      },
+    ]
+  }
+
+  if (target === 'reviews') {
+    return [
+      {
+        instructions: 'Import reviews in stato pending/approved/rejected. La moderazione resta nel CMS.',
+        product_id: 1,
+        customer_name: 'Demo Customer',
+        email: 'customer@example.com',
+        rating: 5,
+        title: 'Excellent product',
+        body: 'Review text',
+        status: 'pending',
       },
     ]
   }
@@ -880,6 +1182,221 @@ async function importTranslations(env, normalized) {
   return report
 }
 
+async function resolveProductId(env, item) {
+  if (item.product_id) return item.product_id
+  if (!item.product_slug) return 0
+  const product = await env.DB.prepare('SELECT id FROM products WHERE slug = ?')
+    .bind(item.product_slug)
+    .first()
+  return Number(product?.id || 0)
+}
+
+async function importStock(env, normalized) {
+  const report = { created: 0, updated: 0, skipped: 0, errors: [] }
+
+  for (const item of normalized) {
+    const row = item.item
+    let handled = false
+
+    if (row.variant_id || row.sku) {
+      const variant = row.variant_id
+        ? await env.DB.prepare('SELECT id FROM product_variants WHERE id = ?').bind(row.variant_id).first()
+        : await env.DB.prepare('SELECT id FROM product_variants WHERE sku = ?').bind(row.sku).first()
+
+      if (variant?.id) {
+        await env.DB.prepare('UPDATE product_variants SET stock = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+          .bind(row.stock, variant.id)
+          .run()
+        report.updated += 1
+        handled = true
+      }
+    }
+
+    if (!handled) {
+      const productId = await resolveProductId(env, row)
+      if (!productId) {
+        report.skipped += 1
+        report.errors.push(`Stock saltato: prodotto non trovato (${row.product_slug || row.product_id || row.sku}).`)
+        continue
+      }
+
+      await env.DB.prepare(`
+        INSERT INTO inventory (product_id, stock)
+        VALUES (?, ?)
+        ON CONFLICT(product_id) DO UPDATE SET stock = excluded.stock
+      `)
+        .bind(productId, row.stock)
+        .run()
+      await env.DB.prepare('UPDATE products SET stock = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .bind(row.stock, productId)
+        .run()
+      report.updated += 1
+    }
+  }
+
+  return report
+}
+
+async function importVariants(env, normalized) {
+  const report = { created: 0, updated: 0, skipped: 0, errors: [] }
+
+  for (const item of normalized) {
+    const variant = item.item
+    const productId = await resolveProductId(env, variant)
+    if (!productId) {
+      report.skipped += 1
+      report.errors.push(`Variante saltata: prodotto non trovato (${variant.product_slug || variant.product_id}).`)
+      continue
+    }
+
+    const existing = variant.sku
+      ? await env.DB.prepare('SELECT id FROM product_variants WHERE sku = ?').bind(variant.sku).first()
+      : await env.DB.prepare(
+          'SELECT id FROM product_variants WHERE product_id = ? AND option_name = ? AND option_value = ?',
+        )
+          .bind(productId, variant.option_name, variant.option_value)
+          .first()
+
+    if (existing?.id) {
+      await env.DB.prepare(`
+        UPDATE product_variants
+        SET option_name = ?, option_value = ?, sku = ?, price_cents = ?, stock = ?, active = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `)
+        .bind(
+          variant.option_name,
+          variant.option_value,
+          variant.sku || null,
+          variant.price_cents || null,
+          variant.stock,
+          variant.active,
+          existing.id,
+        )
+        .run()
+      report.updated += 1
+    } else {
+      await env.DB.prepare(`
+        INSERT INTO product_variants (product_id, option_name, option_value, sku, price_cents, stock, active)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `)
+        .bind(
+          productId,
+          variant.option_name,
+          variant.option_value,
+          variant.sku || null,
+          variant.price_cents || null,
+          variant.stock,
+          variant.active,
+        )
+        .run()
+      report.created += 1
+    }
+  }
+
+  return report
+}
+
+async function importLocalizedPrices(env, normalized) {
+  const report = { created: 0, updated: 0, skipped: 0, errors: [] }
+
+  for (const item of normalized) {
+    const price = item.item
+    const productId = await resolveProductId(env, price)
+    if (!productId) {
+      report.skipped += 1
+      report.errors.push(`Prezzo localizzato saltato: prodotto non trovato (${price.product_slug || price.product_id}).`)
+      continue
+    }
+
+    const existing = await env.DB.prepare(`
+      SELECT id
+      FROM localized_prices
+      WHERE product_id = ? AND COALESCE(variant_id, 0) = COALESCE(?, 0) AND market_handle = ? AND currency_code = ?
+    `)
+      .bind(productId, price.variant_id || 0, price.market_handle, price.currency_code)
+      .first()
+
+    await env.DB.prepare(`
+      INSERT INTO localized_prices (product_id, variant_id, market_handle, currency_code, price_cents, active, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(product_id, variant_id, market_handle, currency_code)
+      DO UPDATE SET price_cents = excluded.price_cents, active = excluded.active, updated_at = CURRENT_TIMESTAMP
+    `)
+      .bind(productId, price.variant_id || 0, price.market_handle, price.currency_code, price.price_cents, price.active)
+      .run()
+
+    if (existing) report.updated += 1
+    else report.created += 1
+  }
+
+  return report
+}
+
+async function importShippingMethods(env, normalized) {
+  const report = { created: 0, updated: 0, skipped: 0, errors: [] }
+
+  for (const item of normalized) {
+    const method = item.item
+    const existing = await env.DB.prepare('SELECT id FROM shipping_methods WHERE handle = ?')
+      .bind(method.handle)
+      .first()
+
+    await env.DB.prepare(`
+      INSERT INTO shipping_methods (handle, name, description, price_cents, free_over_cents, active, sort_order, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(handle)
+      DO UPDATE SET
+        name = excluded.name,
+        description = excluded.description,
+        price_cents = excluded.price_cents,
+        free_over_cents = excluded.free_over_cents,
+        active = excluded.active,
+        sort_order = excluded.sort_order,
+        updated_at = CURRENT_TIMESTAMP
+    `)
+      .bind(
+        method.handle,
+        method.name,
+        method.description,
+        method.price_cents,
+        method.free_over_cents,
+        method.active,
+        method.sort_order,
+      )
+      .run()
+
+    if (existing) report.updated += 1
+    else report.created += 1
+  }
+
+  return report
+}
+
+async function importReviews(env, normalized) {
+  const report = { created: 0, updated: 0, skipped: 0, errors: [] }
+
+  for (const item of normalized) {
+    const review = item.item
+    await env.DB.prepare(`
+      INSERT INTO product_reviews (product_id, customer_name, email, rating, title, body, status, active, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+      .bind(
+        review.product_id,
+        review.customer_name,
+        review.email || null,
+        review.rating,
+        review.title || null,
+        review.body || null,
+        review.status,
+      )
+      .run()
+    report.created += 1
+  }
+
+  return report
+}
+
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url)
@@ -896,6 +1413,15 @@ export async function onRequestGet({ request, env }) {
       'theme',
       'customers',
       'orders',
+      'variants',
+      'stock',
+      'stock_update',
+      'shipping_methods',
+      'reviews',
+      'returns',
+      'upsells',
+      'product_feeds',
+      'metaobjects',
       'blog',
       'policies',
       'metafields',
@@ -1028,15 +1554,27 @@ export async function onRequestPost({ request, env }) {
     const rawRows = parseRowsFromBody(body)
     const normalizers = {
       products: normalizeProductRow,
+      variants: normalizeVariantRow,
+      stock: normalizeStockRow,
+      stock_update: normalizeStockRow,
       collections: normalizeCollectionRow,
       translations: normalizeTranslationRow,
       translation_package: normalizeTranslationRow,
+      localized_prices: normalizeLocalizedPriceRow,
+      shipping_methods: normalizeShippingMethodRow,
+      reviews: normalizeReviewRow,
     }
     const importers = {
       products: importProducts,
+      variants: importVariants,
+      stock: importStock,
+      stock_update: importStock,
       collections: importCollections,
       translations: importTranslations,
       translation_package: importTranslations,
+      localized_prices: importLocalizedPrices,
+      shipping_methods: importShippingMethods,
+      reviews: importReviews,
     }
     const normalizer = normalizers[resource]
     const importer = importers[resource]
@@ -1044,7 +1582,7 @@ export async function onRequestPost({ request, env }) {
     if (!normalizer || !importer) {
       return json({
         success: false,
-        message: 'Import disponibile per prodotti, collezioni e traduzioni. Site package import, feed fornitori e schedule sono strumenti avanzati in progress.',
+        message: 'Import disponibile per prodotti, varianti, stock, collezioni, traduzioni, localized pricing, shipping methods e reviews. Site package import, feed fornitori e schedule sono Advanced tools in progress.',
       }, 400)
     }
 

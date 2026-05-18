@@ -521,7 +521,7 @@
 
           <a class="mini-card" href="#import-export">
             <span class="mini-card-status">Native app</span>
-            <h3>TakeOff Import Export</h3>
+            <h3>TakeOff Import Export Pro</h3>
             <p>Apri l'app nativa per export, import controllati e workflow traduzioni.</p>
           </a>
 
@@ -554,7 +554,7 @@
         <div id="appsList" class="app-grid">
           <a class="mini-card app-card" href="#import-export">
             <span class="mini-card-status">Native app</span>
-            <h3>TakeOff Import Export</h3>
+            <h3>TakeOff Import Export Pro</h3>
             <p>Importa, esporta e aggiorna in massa dati del sito senza app esterne.</p>
             <strong>Attiva</strong>
           </a>
@@ -910,7 +910,7 @@
         <div class="section-title">
           <div>
             <span class="app-kicker">Native app</span>
-            <h2>TakeOff Import Export</h2>
+            <h2>TakeOff Import Export Pro</h2>
             <p class="section-subtitle">
               Importa, esporta e aggiorna in massa dati del sito senza app esterne.
             </p>
@@ -933,9 +933,11 @@
           <span>Export</span>
           <span>Import</span>
           <span>Templates</span>
+          <span>Stock update</span>
           <span>Translation package</span>
           <span>Site package</span>
           <span>History</span>
+          <span>Advanced tools</span>
         </div>
 
         <div class="content-manager import-export-workspace">
@@ -949,6 +951,8 @@
             <label>Risorsa</label>
             <select id="exportResource">
               <option value="products">Prodotti</option>
+              <option value="variants">Varianti</option>
+              <option value="stock">Stock</option>
               <option value="collections">Collezioni</option>
               <option value="menus">Menu</option>
               <option value="pages">Pagine</option>
@@ -961,6 +965,12 @@
               <option value="market_languages">Lingue market</option>
               <option value="market_currencies">Valute market</option>
               <option value="localized_prices">Prezzi localizzati</option>
+              <option value="shipping_methods">Shipping methods</option>
+              <option value="reviews">Reviews</option>
+              <option value="returns">Returns</option>
+              <option value="upsells">Upsell & Bundles</option>
+              <option value="product_feeds">Product feeds config</option>
+              <option value="metaobjects">Metaobjects</option>
               <option value="settings">Settings / Theme content</option>
               <option value="sections">Sezioni</option>
               <option value="seo">SEO metadata</option>
@@ -988,9 +998,14 @@
             <label>Risorsa import</label>
             <select id="importResource">
               <option value="products">Prodotti</option>
+              <option value="variants">Varianti</option>
+              <option value="stock_update">Stock update</option>
               <option value="collections">Collezioni</option>
               <option value="translations">Traduzioni</option>
               <option value="translation_package">Translation package</option>
+              <option value="localized_prices">Prezzi localizzati</option>
+              <option value="shipping_methods">Shipping methods</option>
+              <option value="reviews">Reviews</option>
             </select>
             <label>Formato</label>
             <select id="importFormat">
@@ -1015,9 +1030,13 @@
             <label>Template</label>
             <select id="templateResource">
               <option value="products">Prodotti</option>
+              <option value="variants">Varianti</option>
+              <option value="stock_update">Stock update</option>
               <option value="collections">Collezioni</option>
               <option value="translations">Traduzioni</option>
               <option value="localized_prices">Prezzi localizzati</option>
+              <option value="shipping_methods">Shipping methods</option>
+              <option value="reviews">Reviews</option>
             </select>
             <label>Formato</label>
             <select id="templateFormat">
@@ -1026,6 +1045,20 @@
             </select>
             <button id="downloadTemplateButton" type="button">Scarica template</button>
             <pre id="templatePreview" class="admin-pre">Nessun template preparato.</pre>
+          </section>
+
+          <section class="inner-card">
+            <div class="section-title compact-title">
+              <div>
+                <h3>Stock update</h3>
+                <p class="section-subtitle">Aggiorna stock prodotti o varianti tramite product_slug, product_id, variant_id o SKU.</p>
+              </div>
+            </div>
+            <button type="button" class="secondary" data-fill-import-resource="stock_update">Usa import stock update</button>
+            <div class="placeholder-panel compact-panel">
+              <span class="status-badge">Available in this release</span>
+              <p>Il dry-run valida le righe prima di scrivere. L'import aggiorna solo stock, senza cancellare prodotti o varianti.</p>
+            </div>
           </section>
 
           <section class="inner-card">
@@ -1088,6 +1121,308 @@
             </div>
             <button id="refreshImportExportHistoryButton" type="button">Aggiorna history</button>
             <pre id="importExportHistoryPreview" class="admin-pre">Nessun job caricato.</pre>
+          </section>
+
+          <section class="inner-card">
+            <div class="section-title compact-title">
+              <div>
+                <h3>Advanced tools</h3>
+                <p class="section-subtitle">Workflow enterprise predisposti per operazioni ad alto impatto.</p>
+              </div>
+            </div>
+            <div class="placeholder-panel compact-panel">
+              <span class="status-badge">Advanced tools in progress</span>
+              <p>Supplier feed, scheduled import/export e restore completo saranno attivati solo con controlli dedicati e backup obbligatorio.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="email-automations" class="cms-area card admin-view" data-admin-view="email-automations">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Email Automations</h2>
+            <p class="section-subtitle">Template email, provider status e log in modalita provider-ready.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div id="emailAutomationsProviderStatus" class="analytics-metric-grid"></div>
+        <div class="content-manager">
+          <form id="emailAutomationForm" class="inner-card">
+            <h3 id="emailAutomationFormTitle">Template automazione</h3>
+            <label>Tipo template</label>
+            <select id="emailAutomationType">
+              <option value="order_created">order_created</option>
+              <option value="payment_received">payment_received</option>
+              <option value="order_fulfilled">order_fulfilled</option>
+              <option value="order_cancelled">order_cancelled</option>
+              <option value="refund_created">refund_created</option>
+              <option value="return_requested">return_requested</option>
+              <option value="customer_invite">customer_invite</option>
+              <option value="abandoned_cart">abandoned_cart</option>
+              <option value="welcome_email">welcome_email</option>
+              <option value="newsletter">newsletter</option>
+            </select>
+            <label>Oggetto</label>
+            <input id="emailAutomationSubject" type="text" placeholder="Order update" />
+            <label>Body</label>
+            <textarea id="emailAutomationBody" placeholder="Template email..."></textarea>
+            <label class="inline-check"><input id="emailAutomationActive" type="checkbox" checked /> Active</label>
+            <button id="emailAutomationSubmitButton" type="submit">Salva template</button>
+            <p id="emailAutomationMessage"></p>
+          </form>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Template e log</h3>
+              <button id="refreshEmailAutomationsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="emailAutomationsList" class="products-list">Caricamento automazioni...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="reviews" class="cms-area card admin-view" data-admin-view="reviews">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Reviews</h2>
+            <p class="section-subtitle">Recensioni prodotto native con moderazione e rating pubblico.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="content-manager">
+          <form id="reviewForm" class="inner-card">
+            <h3 id="reviewFormTitle">Aggiungi review</h3>
+            <input id="reviewId" type="hidden" />
+            <label>Prodotto</label>
+            <select id="reviewProductId"></select>
+            <label>Nome cliente</label>
+            <input id="reviewCustomerName" type="text" />
+            <label>Email opzionale</label>
+            <input id="reviewEmail" type="email" />
+            <label>Rating</label>
+            <select id="reviewRating">
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+            </select>
+            <label>Titolo</label>
+            <input id="reviewTitle" type="text" />
+            <label>Testo</label>
+            <textarea id="reviewBody"></textarea>
+            <label>Status</label>
+            <select id="reviewStatus">
+              <option value="pending">pending</option>
+              <option value="approved">approved</option>
+              <option value="rejected">rejected</option>
+            </select>
+            <button id="reviewSubmitButton" type="submit">Salva review</button>
+            <button id="cancelReviewEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="reviewMessage"></p>
+          </form>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Moderazione</h3>
+              <button id="refreshReviewsButton" type="button">Aggiorna</button>
+            </div>
+            <div class="admin-list-tools">
+              <select id="reviewStatusFilter">
+                <option value="">Tutti gli status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div id="reviewsList" class="products-list">Caricamento reviews...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="returns" class="cms-area card admin-view" data-admin-view="returns">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Returns</h2>
+            <p class="section-subtitle">Workflow manuale per resi e rimborsi provider-ready.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="content-manager">
+          <form id="returnForm" class="inner-card">
+            <h3 id="returnFormTitle">Richiesta reso</h3>
+            <input id="returnId" type="hidden" />
+            <label>Order ID</label>
+            <input id="returnOrderId" type="number" />
+            <label>Email cliente</label>
+            <input id="returnCustomerEmail" type="email" />
+            <label>Motivo</label>
+            <input id="returnReason" type="text" />
+            <label>Nota cliente</label>
+            <textarea id="returnNote"></textarea>
+            <label>Nota interna</label>
+            <textarea id="returnInternalNote"></textarea>
+            <label>Refund amount EUR</label>
+            <input id="returnRefundAmount" type="number" step="0.01" />
+            <label>Status</label>
+            <select id="returnStatus">
+              <option value="requested">requested</option>
+              <option value="approved">approved</option>
+              <option value="rejected">rejected</option>
+              <option value="received">received</option>
+              <option value="refunded">refunded</option>
+              <option value="closed">closed</option>
+            </select>
+            <button id="returnSubmitButton" type="submit">Salva reso</button>
+            <button id="cancelReturnEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="returnMessage"></p>
+          </form>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Resi</h3>
+              <button id="refreshReturnsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="returnsList" class="products-list">Caricamento resi...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="upsells" class="cms-area card admin-view" data-admin-view="upsells">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Upsell & Bundles</h2>
+            <p class="section-subtitle">Bundle, frequently bought together e cart upsell in configurazione base.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="content-manager">
+          <form id="upsellForm" class="inner-card">
+            <h3 id="upsellFormTitle">Regola upsell</h3>
+            <input id="upsellId" type="hidden" />
+            <label>Tipo</label>
+            <select id="upsellType">
+              <option value="frequently_bought_together">Frequently bought together</option>
+              <option value="bundle">Bundle</option>
+              <option value="cart_upsell">Cart upsell</option>
+            </select>
+            <label>Nome</label>
+            <input id="upsellName" type="text" />
+            <label>Prodotto base</label>
+            <select id="upsellBaseProductId"></select>
+            <label>Prodotto trigger</label>
+            <select id="upsellTriggerProductId"></select>
+            <label>Prodotti consigliati (ID separati da virgola)</label>
+            <input id="upsellTargetProductIds" type="text" placeholder="1,2,3" />
+            <label>Tipo sconto</label>
+            <select id="upsellDiscountType">
+              <option value="percentage">percentage</option>
+              <option value="fixed">fixed</option>
+            </select>
+            <label>Valore sconto</label>
+            <input id="upsellDiscountValue" type="number" min="0" step="1" />
+            <label>Messaggio</label>
+            <input id="upsellMessageInput" type="text" />
+            <label class="inline-check"><input id="upsellActive" type="checkbox" checked /> Active</label>
+            <button id="upsellSubmitButton" type="submit">Salva upsell</button>
+            <button id="cancelUpsellEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="upsellMessage"></p>
+          </form>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Regole</h3>
+              <button id="refreshUpsellsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="upsellsList" class="products-list">Caricamento upsell...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="product-feeds" class="cms-area card admin-view" data-admin-view="product-feeds">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Product Feed</h2>
+            <p class="section-subtitle">Feed Google Merchant e Meta Catalog in XML/CSV.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="content-manager">
+          <form id="productFeedForm" class="inner-card">
+            <h3>Configura feed</h3>
+            <label>Provider</label>
+            <select id="productFeedProvider">
+              <option value="google">Google Merchant</option>
+              <option value="meta">Meta Catalog</option>
+            </select>
+            <label>Titolo feed</label>
+            <input id="productFeedTitle" type="text" />
+            <label>Valuta default</label>
+            <input id="productFeedCurrency" type="text" placeholder="EUR" />
+            <label>Lingua default</label>
+            <input id="productFeedLanguage" type="text" placeholder="it" />
+            <label>Market handle opzionale</label>
+            <input id="productFeedMarket" type="text" />
+            <label class="inline-check"><input id="productFeedIncludeOutOfStock" type="checkbox" /> Include out of stock</label>
+            <label class="inline-check"><input id="productFeedActive" type="checkbox" /> Active</label>
+            <button id="productFeedSubmitButton" type="submit">Salva feed</button>
+            <p id="productFeedMessage"></p>
+          </form>
+          <section class="inner-card">
+            <div class="section-title">
+              <h3>Endpoint feed</h3>
+              <button id="refreshProductFeedsButton" type="button">Aggiorna</button>
+            </div>
+            <p class="field-help">Google XML: <code>/api/product-feeds/google</code></p>
+            <p class="field-help">Meta CSV: <code>/api/product-feeds/meta</code></p>
+            <div id="productFeedsList" class="products-list">Caricamento feed...</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="backup" class="cms-area card admin-view" data-admin-view="backup">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Backup</h2>
+            <p class="section-subtitle">Export backup JSON completo. Restore automatico resta controllato tramite Import Export Pro.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="app-hero-panel">
+          <div>
+            <h3>Backup sicuro prima di import massivi.</h3>
+            <p>Scarica configurazione, catalogo, contenuti, traduzioni, markets e app native in un JSON non eseguibile.</p>
+          </div>
+          <button id="downloadBackupButton" type="button">Genera backup JSON</button>
+        </div>
+        <pre id="backupPreview" class="admin-pre">Nessun backup generato.</pre>
+      </section>
+
+      <section id="gdpr-cookie" class="cms-area card admin-view" data-admin-view="gdpr-cookie">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff GDPR / Cookie</h2>
+            <p class="section-subtitle">Cookie categories, Google Consent Mode base e strumenti privacy provider-ready.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="content-manager">
+          <section class="inner-card">
+            <h3>Cookie categories</h3>
+            <p>Necessary sempre attivi. Analytics e marketing partono solo dopo consenso del visitatore.</p>
+            <p class="field-help">Legal review required before production.</p>
+            <a class="secondary button-link" href="#cookie-settings">Apri Cookie settings</a>
+          </section>
+          <section class="inner-card">
+            <h3>Privacy tools</h3>
+            <div class="placeholder-panel compact-panel">
+              <span class="status-badge">Basic configuration</span>
+              <p>Export customer data, delete customer data e consent log server-side sono predisposti come strumenti controllati, non automazioni legali certificate.</p>
+            </div>
           </section>
         </div>
       </section>

@@ -3703,6 +3703,97 @@ function renderRelatedProducts(products = [], product = {}) {
   `
 }
 
+function renderProductReviewsShell(product) {
+  return `
+    <section class="product-info-panel product-reviews" id="productReviewsPanel" data-product-id="${escapeCmsHtml(product.id || '')}">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">TakeOff Reviews</p>
+        <h2>Reviews</h2>
+        <p id="productReviewsSummary">Loading reviews...</p>
+      </div>
+      <div id="productReviewsList" class="product-reviews-list"></div>
+    </section>
+  `
+}
+
+function renderProductUpsellsShell(product) {
+  return `
+    <section class="section related-products product-upsells" id="productUpsellsPanel" data-product-id="${escapeCmsHtml(product.id || '')}">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">TakeOff Upsell & Bundles</p>
+        <h2>Complete the set</h2>
+        <p>Recommended products selected for this item.</p>
+      </div>
+      <div id="productUpsellsList" class="store-grid"></div>
+    </section>
+  `
+}
+
+async function hydrateProductReviews(product) {
+  const panel = document.querySelector('#productReviewsPanel')
+  if (!panel || !product?.id) return
+
+  const summaryTarget = document.querySelector('#productReviewsSummary')
+  const listTarget = document.querySelector('#productReviewsList')
+
+  try {
+    const response = await fetch(`/api/reviews?product_id=${encodeURIComponent(product.id)}`)
+    const data = await response.json()
+    const reviews = data.success ? data.reviews || [] : []
+    const summary = data.summary || { count: 0, average: 0 }
+
+    if (!reviews.length) {
+      summaryTarget.textContent = 'No reviews yet.'
+      listTarget.innerHTML = '<p class="muted-copy">Be the first to share your experience.</p>'
+      return
+    }
+
+    summaryTarget.textContent = `${summary.average}/5 · ${summary.count} reviews`
+    listTarget.innerHTML = reviews
+      .map(
+        (review) => `
+          <article class="product-review-card">
+            <strong>${escapeCmsHtml('★'.repeat(Number(review.rating || 0)))}</strong>
+            <h3>${escapeCmsHtml(review.title || 'Review')}</h3>
+            <p>${escapeCmsHtml(review.body || '')}</p>
+            <span>${escapeCmsHtml(review.customer_name || 'Customer')}</span>
+          </article>
+        `,
+      )
+      .join('')
+  } catch {
+    summaryTarget.textContent = 'Reviews are not available right now.'
+    listTarget.innerHTML = ''
+  }
+}
+
+async function hydrateProductUpsells(product) {
+  const panel = document.querySelector('#productUpsellsPanel')
+  const listTarget = document.querySelector('#productUpsellsList')
+  if (!panel || !listTarget || !product?.id) return
+
+  try {
+    const response = await fetch(`/api/upsells?product_id=${encodeURIComponent(product.id)}`)
+    const data = await response.json()
+    const rules = [
+      ...(data.frequently_bought_together || []),
+      ...(data.bundles || []),
+      ...(data.cart_upsells || []),
+    ]
+    const products = rules.flatMap((rule) => rule.products || [])
+    const uniqueProducts = [...new Map(products.map((item) => [item.id, item])).values()].slice(0, 3)
+
+    if (!uniqueProducts.length) {
+      panel.remove()
+      return
+    }
+
+    listTarget.innerHTML = uniqueProducts.map((item) => renderProductCard(item)).join('')
+  } catch {
+    panel.remove()
+  }
+}
+
 function updateProductPageVariant(select) {
   const product = productCache.get(select.dataset.productSlug)
   if (!product) return
@@ -3919,6 +4010,8 @@ async function renderPublicProductPage() {
         </div>
       </section>
       ${productSpecsHtml}
+      ${renderProductReviewsShell(product)}
+      ${renderProductUpsellsShell(product)}
       ${relatedProductsHtml}
       ${renderThreeDModal({
         id: product3dModalId,
@@ -3929,6 +4022,8 @@ async function renderPublicProductPage() {
       })}
     `
     hydrateThreeDViewers()
+    hydrateProductReviews(product)
+    hydrateProductUpsells(product)
   } catch (error) {
     document.querySelector('#productJsonLd')?.remove()
     main.innerHTML = `

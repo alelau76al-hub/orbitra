@@ -917,6 +917,11 @@ function refreshAdminDataAfterAuth() {
     loadTranslationManager,
     loadGoogleSuiteSettings,
     loadCookiePrivacySettings,
+    loadEmailAutomations,
+    loadReviews,
+    loadReturns,
+    loadUpsells,
+    loadProductFeeds,
   ]
 
   loaders.forEach((loader) => {
@@ -1302,6 +1307,7 @@ async function loadProducts() {
     setAdminDashboardCount('products', data.products?.length || 0)
     adminProductsCache = data.products || []
     renderInventory()
+    populateNativeAppProductSelects()
 
     if (data.products.length === 0) {
       renderAdminListState(productsList, 'Nessun prodotto trovato.')
@@ -1675,8 +1681,54 @@ function downloadTextFile(filename, content, type = 'application/json') {
   } catch {}
 }
 
+function parseAdminCsvLine(line = '') {
+  const values = []
+  let current = ''
+  let inQuotes = false
+
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index]
+    const nextChar = line[index + 1]
+    if (char === '"' && inQuotes && nextChar === '"') {
+      current += '"'
+      index += 1
+      continue
+    }
+    if (char === '"') {
+      inQuotes = !inQuotes
+      continue
+    }
+    if (char === ',' && !inQuotes) {
+      values.push(current.trim())
+      current = ''
+      continue
+    }
+    current += char
+  }
+  values.push(current.trim())
+  return values
+}
+
+function parseAdminCsv(text = '') {
+  const lines = String(text || '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  if (lines.length < 2) return []
+  const headers = parseAdminCsvLine(lines[0])
+  return lines.slice(1).map((line) => {
+    const values = parseAdminCsvLine(line)
+    return headers.reduce((row, header, index) => {
+      row[header] = values[index] || ''
+      return row
+    }, {})
+  })
+}
+
 function parseImportRows(format, content) {
-  if (format !== 'json' || !content) return []
+  if (!content) return []
+  if (format === 'csv') return parseAdminCsv(content)
   const parsed = JSON.parse(content)
   if (Array.isArray(parsed)) return parsed
   if (Array.isArray(parsed.rows)) return parsed.rows
@@ -1688,20 +1740,34 @@ function parseImportRows(format, content) {
 function renderNativeApps(apps = []) {
   if (!appsList || !apps.length) return
 
-  appsList.innerHTML = apps
-    .map((app) => {
-      const development = app.status === 'in_development'
+  const groups = ['Core', 'Commerce', 'Growth', 'System']
+  appsList.innerHTML = groups
+    .map((group) => {
+      const groupApps = apps.filter((app) => app.category === group)
+      if (!groupApps.length) return ''
       return `
-        <a class="mini-card app-card ${development ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
-          <span class="mini-card-status">${escapeHtml(development ? adminT('statusDevelopment') : app.badge || 'Native app')}</span>
-          <h3>${escapeHtml(app.name)}</h3>
-          <p>${escapeHtml(app.description)}</p>
-          <div class="meta">
-            <span>${escapeHtml(app.category || 'Module')}</span>
-            <span>${escapeHtml(app.status_label || app.status || 'Attiva')}</span>
+        <div class="app-group">
+          <h3>${escapeHtml(group)}</h3>
+          <div class="app-group-grid">
+            ${groupApps
+              .map((app) => {
+                const progress = app.status === 'in_development' || /progress/i.test(app.status_label || '')
+                return `
+                  <a class="mini-card app-card ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
+                    <span class="mini-card-status">${escapeHtml(app.badge || 'Native app')}</span>
+                    <h3>${escapeHtml(app.name)}</h3>
+                    <p>${escapeHtml(app.description)}</p>
+                    <div class="meta">
+                      <span>${escapeHtml(app.category || 'Module')}</span>
+                      <span>${escapeHtml(app.status_label || app.status || 'Active')}</span>
+                    </div>
+                    <strong>Apri</strong>
+                  </a>
+                `
+              })
+              .join('')}
           </div>
-          <strong>Apri</strong>
-        </a>
+        </div>
       `
     })
     .join('')
@@ -2005,8 +2071,535 @@ exportSitePackageButton?.addEventListener('click', () => {
 })
 
 refreshImportExportHistoryButton?.addEventListener('click', loadImportExportHistory)
+document.querySelectorAll('[data-fill-import-resource]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const importResource = document.querySelector('#importResource')
+    if (importResource) importResource.value = button.dataset.fillImportResource
+    document.querySelector('#importContent')?.focus()
+  })
+})
 loadGoogleSuiteSettings()
 loadCookiePrivacySettings()
+
+// ===============================
+// NATIVE APPS SUITE
+// ===============================
+
+const emailAutomationForm = document.querySelector('#emailAutomationForm')
+const emailAutomationsProviderStatus = document.querySelector('#emailAutomationsProviderStatus')
+const emailAutomationsList = document.querySelector('#emailAutomationsList')
+const emailAutomationMessage = document.querySelector('#emailAutomationMessage')
+const refreshEmailAutomationsButton = document.querySelector('#refreshEmailAutomationsButton')
+
+const reviewForm = document.querySelector('#reviewForm')
+const reviewsList = document.querySelector('#reviewsList')
+const reviewMessage = document.querySelector('#reviewMessage')
+const refreshReviewsButton = document.querySelector('#refreshReviewsButton')
+const reviewStatusFilter = document.querySelector('#reviewStatusFilter')
+const cancelReviewEdit = document.querySelector('#cancelReviewEdit')
+
+const returnForm = document.querySelector('#returnForm')
+const returnsList = document.querySelector('#returnsList')
+const returnMessage = document.querySelector('#returnMessage')
+const refreshReturnsButton = document.querySelector('#refreshReturnsButton')
+const cancelReturnEdit = document.querySelector('#cancelReturnEdit')
+
+const upsellForm = document.querySelector('#upsellForm')
+const upsellsList = document.querySelector('#upsellsList')
+const upsellMessage = document.querySelector('#upsellMessage')
+const refreshUpsellsButton = document.querySelector('#refreshUpsellsButton')
+const cancelUpsellEdit = document.querySelector('#cancelUpsellEdit')
+
+const productFeedForm = document.querySelector('#productFeedForm')
+const productFeedsList = document.querySelector('#productFeedsList')
+const productFeedMessage = document.querySelector('#productFeedMessage')
+const refreshProductFeedsButton = document.querySelector('#refreshProductFeedsButton')
+
+const downloadBackupButton = document.querySelector('#downloadBackupButton')
+const backupPreview = document.querySelector('#backupPreview')
+
+function populateProductSelect(selector, includeEmpty = true) {
+  const select = document.querySelector(selector)
+  if (!select) return
+  const current = select.value
+  select.innerHTML = `${includeEmpty ? '<option value="">Seleziona prodotto</option>' : ''}${adminProductsCache
+    .map((product) => `<option value="${product.id}">${escapeHtml(product.name || product.slug || `Product ${product.id}`)}</option>`)
+    .join('')}`
+  if (current) select.value = current
+}
+
+function populateNativeAppProductSelects() {
+  populateProductSelect('#reviewProductId', false)
+  populateProductSelect('#upsellBaseProductId')
+  populateProductSelect('#upsellTriggerProductId')
+}
+
+function renderProviderStatus(container, providers = []) {
+  if (!container) return
+  container.innerHTML = providers
+    .map(
+      (provider) => `
+        <article class="metric-card">
+          <span>${escapeHtml(provider.provider)}</span>
+          <strong>${provider.configured ? 'Ready' : 'Not configured'}</strong>
+          <small>${escapeHtml(provider.status || provider.required_env || 'Provider required for real sending')}</small>
+        </article>
+      `,
+    )
+    .join('')
+}
+
+async function loadEmailAutomations() {
+  if (!emailAutomationsList && !emailAutomationsProviderStatus) return
+  try {
+    const response = await fetch('/api/admin/email-automations')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      if (emailAutomationsList) emailAutomationsList.textContent = data.message || 'Email Automations non disponibile.'
+      return
+    }
+    renderProviderStatus(emailAutomationsProviderStatus, data.provider_status || [])
+    const templates = data.templates || []
+    const logs = data.logs || []
+    emailAutomationsList.innerHTML = `
+      <div class="placeholder-panel compact-panel">
+        <span class="status-badge">${escapeHtml(data.sending_mode === 'provider_ready' ? 'Provider ready' : 'Mock / logging only')}</span>
+        <p>Provider required for real sending. Nessuna chiave viene salvata nel repository.</p>
+      </div>
+      ${templates.length ? templates.map((item) => `
+        <article class="product-item">
+          <h3>${escapeHtml(item.type || 'template')}</h3>
+          <p>${escapeHtml(item.subject || 'No subject')}</p>
+          <div class="meta"><span>${Number(item.active) ? 'Active' : 'Inactive'}</span></div>
+        </article>
+      `).join('') : '<p>Nessun template configurato.</p>'}
+      <pre class="admin-pre">${logs.length ? logs.slice(0, 10).map((log) => `${log.created_at || ''} - ${log.type || ''} - ${log.status || ''}`).join('\n') : 'Nessun log email.'}</pre>
+    `
+  } catch {
+    if (emailAutomationsList) emailAutomationsList.textContent = 'Email Automations non disponibile.'
+  }
+}
+
+emailAutomationForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (emailAutomationMessage) emailAutomationMessage.textContent = 'Salvataggio template...'
+  try {
+    const response = await fetch('/api/admin/email-automations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: document.querySelector('#emailAutomationType')?.value,
+        subject: document.querySelector('#emailAutomationSubject')?.value.trim(),
+        body: document.querySelector('#emailAutomationBody')?.value.trim(),
+        active: document.querySelector('#emailAutomationActive')?.checked,
+      }),
+    })
+    const data = await response.json()
+    if (emailAutomationMessage) emailAutomationMessage.textContent = data.message || 'Template salvato.'
+    if (data.success) loadEmailAutomations()
+  } catch {
+    if (emailAutomationMessage) emailAutomationMessage.textContent = 'Salvataggio non riuscito.'
+  }
+})
+refreshEmailAutomationsButton?.addEventListener('click', loadEmailAutomations)
+
+function reviewPayload() {
+  return {
+    id: Number(document.querySelector('#reviewId')?.value || 0) || undefined,
+    product_id: Number(document.querySelector('#reviewProductId')?.value || 0),
+    customer_name: document.querySelector('#reviewCustomerName')?.value.trim(),
+    email: document.querySelector('#reviewEmail')?.value.trim(),
+    rating: Number(document.querySelector('#reviewRating')?.value || 5),
+    title: document.querySelector('#reviewTitle')?.value.trim(),
+    body: document.querySelector('#reviewBody')?.value.trim(),
+    status: document.querySelector('#reviewStatus')?.value || 'pending',
+  }
+}
+
+function resetReviewForm() {
+  reviewForm?.reset()
+  document.querySelector('#reviewId').value = ''
+  cancelReviewEdit.hidden = true
+}
+
+function fillReviewForm(review) {
+  document.querySelector('#reviewId').value = review.id || ''
+  document.querySelector('#reviewProductId').value = review.product_id || ''
+  document.querySelector('#reviewCustomerName').value = review.customer_name || ''
+  document.querySelector('#reviewEmail').value = review.email || ''
+  document.querySelector('#reviewRating').value = review.rating || 5
+  document.querySelector('#reviewTitle').value = review.title || ''
+  document.querySelector('#reviewBody').value = review.body || ''
+  document.querySelector('#reviewStatus').value = review.status || 'pending'
+  cancelReviewEdit.hidden = false
+}
+
+async function loadReviews() {
+  if (!reviewsList) return
+  reviewsList.textContent = 'Caricamento reviews...'
+  try {
+    const status = reviewStatusFilter?.value || ''
+    const response = await fetch(`/api/admin/reviews${status ? `?status=${encodeURIComponent(status)}` : ''}`)
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      reviewsList.textContent = data.message || 'Reviews non disponibili.'
+      return
+    }
+    const reviews = data.reviews || []
+    reviewsList.innerHTML = reviews.length
+      ? reviews.map((review) => `
+        <article class="product-item">
+          <h3>${escapeHtml(review.title || `Review #${review.id}`)}</h3>
+          <p>${escapeHtml(review.body || 'Nessun testo')}</p>
+          <div class="meta">
+            <span>${escapeHtml(review.customer_name || 'Cliente')}</span>
+            <span>${'★'.repeat(Number(review.rating || 0))}</span>
+            <span>${escapeHtml(review.status || 'pending')}</span>
+            <span>${escapeHtml(review.product_title || review.product_name || `Product ${review.product_id}`)}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-review="${review.id}">Modifica</button>
+            <button type="button" class="danger" data-delete-review="${review.id}">Disattiva</button>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessuna review presente.</p>'
+    reviewsList.querySelectorAll('[data-edit-review]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const review = reviews.find((item) => item.id === Number(button.dataset.editReview))
+        if (review) fillReviewForm(review)
+      })
+    })
+    reviewsList.querySelectorAll('[data-delete-review]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch(`/api/admin/reviews?id=${button.dataset.deleteReview}`, { method: 'DELETE' })
+        const data = await response.json()
+        if (reviewMessage) reviewMessage.textContent = data.message || 'Review aggiornata.'
+        loadReviews()
+      })
+    })
+  } catch {
+    reviewsList.textContent = 'Reviews non disponibili.'
+  }
+}
+
+reviewForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  const payload = reviewPayload()
+  if (reviewMessage) reviewMessage.textContent = 'Salvataggio review...'
+  try {
+    const response = await fetch('/api/admin/reviews', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (reviewMessage) reviewMessage.textContent = data.message || 'Review salvata.'
+    if (data.success) {
+      resetReviewForm()
+      loadReviews()
+    }
+  } catch {
+    if (reviewMessage) reviewMessage.textContent = 'Salvataggio review non riuscito.'
+  }
+})
+refreshReviewsButton?.addEventListener('click', loadReviews)
+reviewStatusFilter?.addEventListener('change', loadReviews)
+cancelReviewEdit?.addEventListener('click', resetReviewForm)
+
+function returnPayload() {
+  return {
+    id: Number(document.querySelector('#returnId')?.value || 0) || undefined,
+    order_id: Number(document.querySelector('#returnOrderId')?.value || 0) || null,
+    customer_email: document.querySelector('#returnCustomerEmail')?.value.trim(),
+    reason: document.querySelector('#returnReason')?.value.trim(),
+    note: document.querySelector('#returnNote')?.value.trim(),
+    internal_note: document.querySelector('#returnInternalNote')?.value.trim(),
+    refund_amount: Number(document.querySelector('#returnRefundAmount')?.value || 0),
+    status: document.querySelector('#returnStatus')?.value || 'requested',
+  }
+}
+
+function resetReturnForm() {
+  returnForm?.reset()
+  document.querySelector('#returnId').value = ''
+  cancelReturnEdit.hidden = true
+}
+
+function fillReturnForm(item) {
+  document.querySelector('#returnId').value = item.id || ''
+  document.querySelector('#returnOrderId').value = item.order_id || ''
+  document.querySelector('#returnCustomerEmail').value = item.customer_email || ''
+  document.querySelector('#returnReason').value = item.reason || ''
+  document.querySelector('#returnNote').value = item.note || ''
+  document.querySelector('#returnInternalNote').value = item.internal_note || ''
+  document.querySelector('#returnRefundAmount').value = Number(item.refund_amount_cents || 0) / 100
+  document.querySelector('#returnStatus').value = item.status || 'requested'
+  cancelReturnEdit.hidden = false
+}
+
+async function loadReturns() {
+  if (!returnsList) return
+  returnsList.textContent = 'Caricamento resi...'
+  try {
+    const response = await fetch('/api/admin/returns')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      returnsList.textContent = data.message || 'Returns non disponibili.'
+      return
+    }
+    const returns = data.returns || []
+    returnsList.innerHTML = returns.length
+      ? returns.map((item) => `
+        <article class="product-item">
+          <h3>Return #${item.id} - Order ${escapeHtml(item.order_id || 'N/A')}</h3>
+          <p>${escapeHtml(item.reason || 'Nessun motivo')}</p>
+          <div class="meta">
+            <span>${escapeHtml(item.customer_email || '')}</span>
+            <span>${escapeHtml(item.status || 'requested')}</span>
+            <span>${formatMoney(item.refund_amount_cents || 0)}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-return="${item.id}">Modifica</button>
+            <button type="button" class="danger" data-delete-return="${item.id}">Disattiva</button>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessun reso presente.</p>'
+    returnsList.querySelectorAll('[data-edit-return]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const item = returns.find((row) => row.id === Number(button.dataset.editReturn))
+        if (item) fillReturnForm(item)
+      })
+    })
+    returnsList.querySelectorAll('[data-delete-return]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch(`/api/admin/returns?id=${button.dataset.deleteReturn}`, { method: 'DELETE' })
+        const data = await response.json()
+        if (returnMessage) returnMessage.textContent = data.message || 'Return aggiornato.'
+        loadReturns()
+      })
+    })
+  } catch {
+    returnsList.textContent = 'Returns non disponibili.'
+  }
+}
+
+returnForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  const payload = returnPayload()
+  if (returnMessage) returnMessage.textContent = 'Salvataggio reso...'
+  try {
+    const response = await fetch('/api/admin/returns', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (returnMessage) returnMessage.textContent = data.message || 'Reso salvato.'
+    if (data.success) {
+      resetReturnForm()
+      loadReturns()
+    }
+  } catch {
+    if (returnMessage) returnMessage.textContent = 'Salvataggio reso non riuscito.'
+  }
+})
+refreshReturnsButton?.addEventListener('click', loadReturns)
+cancelReturnEdit?.addEventListener('click', resetReturnForm)
+
+function upsellPayload() {
+  return {
+    id: Number(document.querySelector('#upsellId')?.value || 0) || undefined,
+    type: document.querySelector('#upsellType')?.value,
+    name: document.querySelector('#upsellName')?.value.trim(),
+    base_product_id: Number(document.querySelector('#upsellBaseProductId')?.value || 0) || null,
+    trigger_product_id: Number(document.querySelector('#upsellTriggerProductId')?.value || 0) || null,
+    target_product_ids: document.querySelector('#upsellTargetProductIds')?.value.trim(),
+    discount_type: document.querySelector('#upsellDiscountType')?.value,
+    discount_value: Number(document.querySelector('#upsellDiscountValue')?.value || 0),
+    message: document.querySelector('#upsellMessageInput')?.value.trim(),
+    active: document.querySelector('#upsellActive')?.checked,
+  }
+}
+
+function resetUpsellForm() {
+  upsellForm?.reset()
+  document.querySelector('#upsellId').value = ''
+  document.querySelector('#upsellActive').checked = true
+  cancelUpsellEdit.hidden = true
+}
+
+function fillUpsellForm(rule) {
+  document.querySelector('#upsellId').value = rule.id || ''
+  document.querySelector('#upsellType').value = rule.type || 'frequently_bought_together'
+  document.querySelector('#upsellName').value = rule.name || ''
+  document.querySelector('#upsellBaseProductId').value = rule.base_product_id || ''
+  document.querySelector('#upsellTriggerProductId').value = rule.trigger_product_id || ''
+  document.querySelector('#upsellTargetProductIds').value = Array.isArray(rule.target_product_ids) ? rule.target_product_ids.join(',') : rule.target_product_ids || ''
+  document.querySelector('#upsellDiscountType').value = rule.discount_type || 'percentage'
+  document.querySelector('#upsellDiscountValue').value = rule.discount_value || 0
+  document.querySelector('#upsellMessageInput').value = rule.message || ''
+  document.querySelector('#upsellActive').checked = Number(rule.active) !== 0
+  cancelUpsellEdit.hidden = false
+}
+
+async function loadUpsells() {
+  if (!upsellsList) return
+  upsellsList.textContent = 'Caricamento upsell...'
+  try {
+    const response = await fetch('/api/admin/upsells')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      upsellsList.textContent = data.message || 'Upsell non disponibile.'
+      return
+    }
+    const rules = data.rules || []
+    upsellsList.innerHTML = rules.length
+      ? rules.map((rule) => `
+        <article class="product-item">
+          <h3>${escapeHtml(rule.name || `Rule #${rule.id}`)}</h3>
+          <p>${escapeHtml(rule.message || 'Nessun messaggio')}</p>
+          <div class="meta">
+            <span>${escapeHtml(rule.type || '')}</span>
+            <span>${escapeHtml(rule.base_product_title || rule.base_product_name || 'Base product')}</span>
+            <span>${escapeHtml((rule.target_product_ids || []).join(', ') || 'No targets')}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-upsell="${rule.id}">Modifica</button>
+            <button type="button" class="danger" data-delete-upsell="${rule.id}">Disattiva</button>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessuna regola upsell presente.</p>'
+    upsellsList.querySelectorAll('[data-edit-upsell]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const rule = rules.find((item) => item.id === Number(button.dataset.editUpsell))
+        if (rule) fillUpsellForm(rule)
+      })
+    })
+    upsellsList.querySelectorAll('[data-delete-upsell]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch(`/api/admin/upsells?id=${button.dataset.deleteUpsell}`, { method: 'DELETE' })
+        const data = await response.json()
+        if (upsellMessage) upsellMessage.textContent = data.message || 'Upsell aggiornato.'
+        loadUpsells()
+      })
+    })
+  } catch {
+    upsellsList.textContent = 'Upsell non disponibile.'
+  }
+}
+
+upsellForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  const payload = upsellPayload()
+  if (upsellMessage) upsellMessage.textContent = 'Salvataggio upsell...'
+  try {
+    const response = await fetch('/api/admin/upsells', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (upsellMessage) upsellMessage.textContent = data.message || 'Upsell salvato.'
+    if (data.success) {
+      resetUpsellForm()
+      loadUpsells()
+    }
+  } catch {
+    if (upsellMessage) upsellMessage.textContent = 'Salvataggio upsell non riuscito.'
+  }
+})
+refreshUpsellsButton?.addEventListener('click', loadUpsells)
+cancelUpsellEdit?.addEventListener('click', resetUpsellForm)
+
+function fillProductFeedForm(feed) {
+  if (!feed) return
+  document.querySelector('#productFeedProvider').value = feed.provider || 'google'
+  document.querySelector('#productFeedTitle').value = feed.title || ''
+  document.querySelector('#productFeedCurrency').value = feed.default_currency || 'EUR'
+  document.querySelector('#productFeedLanguage').value = feed.default_language || 'it'
+  document.querySelector('#productFeedMarket').value = feed.market_handle || ''
+  document.querySelector('#productFeedIncludeOutOfStock').checked = Number(feed.include_out_of_stock) === 1
+  document.querySelector('#productFeedActive').checked = Number(feed.active) === 1
+}
+
+async function loadProductFeeds() {
+  if (!productFeedsList) return
+  productFeedsList.textContent = 'Caricamento product feeds...'
+  try {
+    const response = await fetch('/api/admin/product-feeds')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      productFeedsList.textContent = data.message || 'Product Feed non disponibile.'
+      return
+    }
+    const feeds = data.feeds || []
+    fillProductFeedForm(feeds[0])
+    productFeedsList.innerHTML = feeds.map((feed) => `
+      <article class="product-item">
+        <h3>${escapeHtml(feed.provider || 'feed')}</h3>
+        <p>${escapeHtml(feed.title || 'Product feed')}</p>
+        <div class="meta">
+          <span>${Number(feed.active) ? 'Active' : 'Inactive'}</span>
+          <span>${escapeHtml(feed.default_currency || 'EUR')}</span>
+          <span>${escapeHtml(feed.default_language || 'it')}</span>
+        </div>
+        <button type="button" data-edit-feed="${escapeHtml(feed.provider)}">Modifica</button>
+      </article>
+    `).join('')
+    productFeedsList.querySelectorAll('[data-edit-feed]').forEach((button) => {
+      button.addEventListener('click', () => fillProductFeedForm(feeds.find((feed) => feed.provider === button.dataset.editFeed)))
+    })
+  } catch {
+    productFeedsList.textContent = 'Product Feed non disponibile.'
+  }
+}
+
+productFeedForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (productFeedMessage) productFeedMessage.textContent = 'Salvataggio feed...'
+  try {
+    const response = await fetch('/api/admin/product-feeds', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: document.querySelector('#productFeedProvider')?.value,
+        title: document.querySelector('#productFeedTitle')?.value.trim(),
+        default_currency: document.querySelector('#productFeedCurrency')?.value.trim(),
+        default_language: document.querySelector('#productFeedLanguage')?.value.trim(),
+        market_handle: document.querySelector('#productFeedMarket')?.value.trim(),
+        include_out_of_stock: document.querySelector('#productFeedIncludeOutOfStock')?.checked,
+        active: document.querySelector('#productFeedActive')?.checked,
+      }),
+    })
+    const data = await response.json()
+    if (productFeedMessage) productFeedMessage.textContent = data.message || 'Feed salvato.'
+    if (data.success) loadProductFeeds()
+  } catch {
+    if (productFeedMessage) productFeedMessage.textContent = 'Salvataggio feed non riuscito.'
+  }
+})
+refreshProductFeedsButton?.addEventListener('click', loadProductFeeds)
+
+downloadBackupButton?.addEventListener('click', async () => {
+  if (!backupPreview) return
+  backupPreview.textContent = 'Generazione backup...'
+  try {
+    const response = await fetch('/api/admin/backup')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      backupPreview.textContent = data.message || 'Backup non disponibile.'
+      return
+    }
+    const text = JSON.stringify(data.backup, null, 2)
+    backupPreview.textContent = text
+    downloadTextFile(`takeoff-backup-${new Date().toISOString().slice(0, 10)}.json`, text)
+  } catch {
+    backupPreview.textContent = 'Backup non riuscito.'
+  }
+})
 
 // ===============================
 // COLLEZIONI
@@ -2469,7 +3062,22 @@ function setupAdminViews() {
       'performance',
     ]
 
-    const directHubViews = ['dashboard', 'media', 'traduzioni', 'import-export', 'google-suite', 'utenti', 'performance']
+    const directHubViews = [
+      'dashboard',
+      'media',
+      'traduzioni',
+      'import-export',
+      'google-suite',
+      'email-automations',
+      'reviews',
+      'returns',
+      'upsells',
+      'product-feeds',
+      'backup',
+      'gdpr-cookie',
+      'utenti',
+      'performance',
+    ]
     const activeHubHash = directHubViews.includes(activeView)
       ? `#${activeView}`
       : contenutoViews.includes(activeView)
