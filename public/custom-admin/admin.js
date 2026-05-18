@@ -455,37 +455,535 @@ const ADMIN_STATIC_TRANSLATIONS = [
   ['Audit mode: modifiche disabilitate.', 'Audit mode: changes are disabled.'],
 ]
 
+ADMIN_STATIC_TRANSLATIONS.push(
+  ['Login non riuscito. Riprova.', 'Sign-in failed. Try again.'],
+  ['Bootstrap non riuscito.', 'Bootstrap failed.'],
+  ['Bootstrap non riuscito. Riprova.', 'Bootstrap failed. Try again.'],
+  ['Crea il primo owner.', 'Create the first owner.'],
+  ['Aggiungi prodotto', 'Add product'],
+  ['Salva prodotto', 'Save product'],
+  ['Modifica prodotto', 'Edit product'],
+  ['Aggiorna prodotto', 'Update product'],
+  ['Nessuna variante configurata.', 'No variants configured.'],
+  ['Caricamento prodotti...', 'Loading products...'],
+  ['Errore nel caricamento prodotti.', 'Product loading error.'],
+  ['Nessun prodotto trovato.', 'No products found.'],
+  ['Nessun prodotto corrisponde alla ricerca.', 'No product matches the search.'],
+  ['Nessuna descrizione', 'No description'],
+  ['Errore durante la disattivazione.', 'Disable failed.'],
+  ['Errore di connessione alla API.', 'API connection error.'],
+  ['Stock basso', 'Low stock'],
+  ['Stock prodotto base', 'Base product stock'],
+  ['Stock non valido.', 'Invalid stock.'],
+  ['Aggiornamento stock non riuscito.', 'Stock update failed.'],
+  ['Errore di connessione inventario.', 'Inventory connection error.'],
+  ['Salvataggio in corso...', 'Saving...'],
+  ['Errore nel salvataggio.', 'Save failed.'],
+  ['Prodotto aggiornato correttamente.', 'Product updated successfully.'],
+  ['Prodotto salvato correttamente.', 'Product saved successfully.'],
+  ['Errore di connessione.', 'Connection error.'],
+  ['Dettaglio tecnico:', 'Technical detail:'],
+  ['Errore caricamento Google Suite.', 'Google Suite loading error.'],
+  ['Salvataggio Google Suite...', 'Saving Google Suite...'],
+  ['Google Suite salvata.', 'Google Suite saved.'],
+  ['Errore Google Suite.', 'Google Suite error.'],
+  ['Salvataggio Google Suite non riuscito.', 'Google Suite save failed.'],
+  ['Errore caricamento cookie settings.', 'Cookie settings loading error.'],
+  ['Salvataggio cookie settings...', 'Saving cookie settings...'],
+  ['Salvataggio cookie settings non riuscito.', 'Cookie settings save failed.'],
+  ['Export non disponibile.', 'Export unavailable.'],
+  ['Export non riuscito. Riprova.', 'Export failed. Try again.'],
+  ['Caricamento history...', 'Loading history...'],
+  ['History non disponibile.', 'History unavailable.'],
+  ['Nessun job DataFlow registrato. Le prossime esportazioni/importazioni appariranno qui.', 'No DataFlow job yet. Future exports/imports will appear here.'],
+  ['Import completato.', 'Import completed.'],
+  ['Import non disponibile.', 'Import unavailable.'],
+  ['Import non riuscito. Verifica formato e riprova.', 'Import failed. Check the format and try again.'],
+  ['Seleziona prodotto', 'Select product'],
+  ['Email Automations non disponibile.', 'Email Automations unavailable.'],
+  ['Nessun template configurato.', 'No templates configured.'],
+  ['Nessun log email.', 'No email logs.'],
+  ['Salvataggio template...', 'Saving template...'],
+  ['Template salvato.', 'Template saved.'],
+  ['Salvataggio non riuscito.', 'Save failed.'],
+  ['Caricamento reviews...', 'Loading reviews...'],
+  ['Nessun testo', 'No text'],
+  ['Cliente', 'Customer'],
+  ['Nessuna review presente.', 'No reviews yet.'],
+  ['Salvataggio review...', 'Saving review...'],
+  ['Salvataggio review non riuscito.', 'Review save failed.'],
+  ['Caricamento resi...', 'Loading returns...'],
+  ['Nessun motivo', 'No reason'],
+  ['Nessun reso presente.', 'No returns yet.'],
+  ['Return aggiornato.', 'Return updated.'],
+  ['Salvataggio reso...', 'Saving return...'],
+  ['Reso salvato.', 'Return saved.'],
+  ['Salvataggio reso non riuscito.', 'Return save failed.'],
+  ['Caricamento upsell...', 'Loading upsells...'],
+  ['Upsell non disponibile.', 'Upsell unavailable.'],
+  ['Nessun messaggio', 'No message'],
+  ['Nessuna regola upsell presente.', 'No upsell rules yet.'],
+  ['Upsell aggiornato.', 'Upsell updated.'],
+  ['Salvataggio upsell...', 'Saving upsell...'],
+  ['Upsell salvato.', 'Upsell saved.'],
+  ['Salvataggio upsell non riuscito.', 'Upsell save failed.'],
+  ['Caricamento product feeds...', 'Loading product feeds...'],
+  ['Product Feed non disponibile.', 'Product Feed unavailable.'],
+  ['Salvataggio feed...', 'Saving feed...'],
+  ['Feed salvato.', 'Feed saved.'],
+  ['Salvataggio feed non riuscito.', 'Feed save failed.'],
+  ['Caricamento gift cards...', 'Loading gift cards...'],
+  ['Nessun cliente associato', 'No linked customer'],
+  ['Gift card aggiornata.', 'Gift card updated.'],
+  ['Caricamento crediti...', 'Loading credits...'],
+  ['Store credit non disponibile.', 'Store credit unavailable.'],
+  ['Nessuna nota', 'No notes'],
+  ['Nessun credito cliente presente.', 'No customer credit yet.'],
+  ['Credito aggiornato.', 'Credit updated.'],
+  ['Salvataggio credito...', 'Saving credit...'],
+  ['Credito salvato.', 'Credit saved.'],
+  ['Salvataggio credito non riuscito.', 'Credit save failed.'],
+  ['Caricamento carrelli...', 'Loading carts...'],
+  ['Nessun carrello abbandonato tracciato.', 'No abandoned carts tracked.'],
+  ['Search config non disponibile.', 'Search config unavailable.'],
+  ['Salvataggio ricerca...', 'Saving search config...'],
+  ['Configurazione salvata.', 'Configuration saved.'],
+  ['Salvataggio ricerca non riuscito.', 'Search config save failed.'],
+  ['SEO Technical non disponibile.', 'SEO Technical unavailable.'],
+  ['Nessun redirect configurato.', 'No redirects configured.'],
+  ['Redirect aggiornato.', 'Redirect updated.'],
+  ['Salvataggio redirect...', 'Saving redirect...'],
+  ['Redirect salvato.', 'Redirect saved.'],
+  ['Salvataggio redirect non riuscito.', 'Redirect save failed.'],
+  ['Webhook aggiornato.', 'Webhook updated.'],
+  ['Nessun delivery log.', 'No delivery logs.'],
+  ['Nessun feed fornitore configurato.', 'No supplier feeds configured.'],
+  ['Feed aggiornato.', 'Feed updated.'],
+  ['Nessun dry-run ancora registrato.', 'No dry-run recorded yet.'],
+  ['Dry-run non riuscito.', 'Dry-run failed.'],
+  ['Caricamento subscriptions...', 'Loading subscriptions...'],
+  ['Backup non disponibile.', 'Backup unavailable.'],
+  ['Backup non riuscito.', 'Backup failed.'],
+  ['Aggiungi collezione', 'Add collection'],
+  ['Salva collezione', 'Save collection'],
+  ['Modifica collezione', 'Edit collection'],
+  ['Aggiorna collezione', 'Update collection'],
+  ['Caricamento collezioni...', 'Loading collections...'],
+  ['Errore nel caricamento collezioni.', 'Collection loading error.'],
+  ['Nessuna collezione trovata.', 'No collections found.'],
+  ['Nessuna collezione corrisponde alla ricerca.', 'No collection matches the search.'],
+  ['Errore durante eliminazione collezione.', 'Collection delete failed.'],
+  ['Errore di connessione alla API collezioni.', 'Collection API connection error.'],
+  ['Aggiungi pagina', 'Add page'],
+  ['Salva pagina', 'Save page'],
+  ['Modifica pagina', 'Edit page'],
+  ['Aggiorna pagina', 'Update page'],
+  ['Caricamento pagine...', 'Loading pages...'],
+  ['Errore nel caricamento pagine.', 'Page loading error.'],
+  ['Nessuna pagina trovata.', 'No pages found.'],
+  ['Errore durante eliminazione pagina.', 'Page delete failed.'],
+  ['Errore di connessione alla API pagine.', 'Page API connection error.'],
+  ['Aggiungi policy', 'Add policy'],
+  ['Salva policy', 'Save policy'],
+  ['Modifica policy', 'Edit policy'],
+  ['Aggiorna policy', 'Update policy'],
+  ['Caricamento policy...', 'Loading policies...'],
+  ['Errore caricamento policy.', 'Policy loading error.'],
+  ['Nessuna policy.', 'No policies.'],
+  ['Errore di connessione policy.', 'Policy connection error.'],
+  ['Salvataggio policy...', 'Saving policy...'],
+  ['Nessun elemento disponibile', 'No items available'],
+  ['Seleziona un elemento da tradurre.', 'Select an item to translate.'],
+  ['Errore caricamento traduzioni.', 'Translation loading error.'],
+  ['Caricamento traduzioni...', 'Loading translations...'],
+  ['Seleziona contenuto e campo da tradurre.', 'Select content and field to translate.'],
+  ['Salvataggio traduzione...', 'Saving translation...'],
+  ['Errore di connessione traduzioni.', 'Translation connection error.'],
+  ['Disattivazione traduzione...', 'Disabling translation...'],
+  ['Errore disattivazione traduzione.', 'Translation disable failed.'],
+  ['Aggiungi articolo', 'Add article'],
+  ['Salva articolo', 'Save article'],
+  ['Modifica articolo', 'Edit article'],
+  ['Aggiorna articolo', 'Update article'],
+  ['Caricamento articoli...', 'Loading articles...'],
+  ['Errore caricamento blog.', 'Blog loading error.'],
+  ['Nessun articolo creato.', 'No articles yet.'],
+  ['Nessun articolo corrisponde alla ricerca.', 'No article matches the search.'],
+  ['Nessun excerpt', 'No excerpt'],
+  ['Errore articolo.', 'Article error.'],
+  ['Errore di connessione blog.', 'Blog connection error.'],
+  ['Salvataggio articolo...', 'Saving article...'],
+  ['Articolo salvato.', 'Article saved.'],
+  ['Caricamento metaobjects...', 'Loading metaobjects...'],
+  ['Errore metaobjects.', 'Metaobjects error.'],
+  ['Nessun metaobject creato.', 'No metaobjects yet.'],
+  ['Errore di connessione metaobjects.', 'Metaobjects connection error.'],
+  ['Salvataggio definizione...', 'Saving definition...'],
+  ['Definizione salvata.', 'Definition saved.'],
+  ['Errore metaobject. Verifica il JSON dei campi e riprova.', 'Metaobject error. Check field JSON and try again.'],
+  ['Salvataggio entry...', 'Saving entry...'],
+  ['Errore entry. Verifica il JSON dei dati e riprova.', 'Entry error. Check data JSON and try again.'],
+  ['Caricamento impostazioni fiscali...', 'Loading tax settings...'],
+  ['Errore caricamento impostazioni fiscali.', 'Tax settings loading error.'],
+  ['Errore di connessione impostazioni fiscali.', 'Tax settings connection error.'],
+  ['Salvataggio impostazioni fiscali...', 'Saving tax settings...'],
+  ['Impostazioni fiscali salvate.', 'Tax settings saved.'],
+  ['Errore impostazioni fiscali.', 'Tax settings error.'],
+  ['Caricamento pagamenti...', 'Loading payments...'],
+  ['Errore caricamento pagamenti.', 'Payment loading error.'],
+  ['Errore di connessione pagamenti.', 'Payment connection error.'],
+  ['Salvataggio pagamenti...', 'Saving payments...'],
+  ['Errore salvataggio pagamenti.', 'Payment save failed.'],
+  ['Aggiungi metodo', 'Add method'],
+  ['Salva spedizione', 'Save shipping'],
+  ['Modifica metodo', 'Edit method'],
+  ['Aggiorna spedizione', 'Update shipping'],
+  ['Caricamento spedizioni...', 'Loading shipping...'],
+  ['Nessun metodo spedizione configurato.', 'No shipping methods configured.'],
+  ['Errore di connessione spedizioni.', 'Shipping connection error.'],
+  ['Salvataggio spedizione...', 'Saving shipping...'],
+  ['Metodo spedizione salvato.', 'Shipping method saved.'],
+  ['Errore salvataggio spedizione.', 'Shipping save failed.'],
+  ['Aggiungi sconto', 'Add discount'],
+  ['Salva sconto', 'Save discount'],
+  ['Modifica sconto', 'Edit discount'],
+  ['Aggiorna sconto', 'Update discount'],
+  ['Caricamento sconti...', 'Loading discounts...'],
+  ['Errore caricamento sconti.', 'Discount loading error.'],
+  ['Nessuno sconto creato.', 'No discounts yet.'],
+  ['Errore disattivazione sconto.', 'Discount disable failed.'],
+  ['Errore di connessione sconti.', 'Discount connection error.'],
+  ['Salvataggio sconto...', 'Saving discount...'],
+  ['Errore salvataggio sconto.', 'Discount save failed.'],
+  ['Sconto salvato.', 'Discount saved.'],
+  ['Aggiungi campagna', 'Add campaign'],
+  ['Salva campagna', 'Save campaign'],
+  ['Modifica campagna', 'Edit campaign'],
+  ['Aggiorna campagna', 'Update campaign'],
+  ['Caricamento campagne...', 'Loading campaigns...'],
+  ['Errore caricamento campagne.', 'Campaign loading error.'],
+  ['Nessuna campagna creata.', 'No campaigns yet.'],
+  ['Salvataggio campagna...', 'Saving campaign...'],
+  ['Aggiungi media', 'Add media'],
+  ['Salva media', 'Save media'],
+  ['Modifica media', 'Edit media'],
+  ['Aggiorna media', 'Update media'],
+  ['Nessun media salvato. Usa upload o URL manuale per popolare la libreria.', 'No media saved yet. Use upload or manual URL to populate the library.'],
+  ['Nessun media corrisponde a ricerca o filtri.', 'No media matches search or filters.'],
+  ['Errore eliminazione media.', 'Media delete failed.'],
+  ['Errore caricamento media.', 'Media loading error.'],
+  ['Errore di connessione media.', 'Media connection error.'],
+  ['Salvataggio media...', 'Saving media...'],
+  ['Errore salvataggio media.', 'Media save failed.'],
+  ['Media salvato.', 'Media saved.'],
+  ['Seleziona un file da caricare.', 'Select a file to upload.'],
+  ['Upload non disponibile. Usa URL manuale.', 'Upload unavailable. Use a manual URL.'],
+  ['Upload non riuscito. Usa URL manuale o verifica la configurazione storage.', 'Upload failed. Use a manual URL or check storage configuration.'],
+  ['Seleziona record', 'Select record'],
+  ['Caricamento analytics...', 'Loading analytics...'],
+  ['Errore analytics.', 'Analytics error.'],
+  ['Caricamento SEO...', 'Loading SEO...'],
+  ['Nessun controllo disponibile.', 'No checks available.'],
+  ['Caricamento Store Health...', 'Loading Store Health...'],
+  ['Store Health non disponibile.', 'Store Health unavailable.'],
+  ['Caricamento checklist...', 'Loading checklist...'],
+  ['Launch checklist non disponibile.', 'Launch checklist unavailable.'],
+  ['Seleziona una sezione', 'Select a section'],
+  ['Seleziona una sezione dalla lista.', 'Select a section from the list.'],
+  ['Salvataggio...', 'Saving...'],
+)
+
+ADMIN_STATIC_TRANSLATIONS.push(
+  ['Stato operativo commerce.', 'Commerce operational status.'],
+  ['Salva sezione', 'Save section'],
+  ['Pagina da modificare', 'Page to edit'],
+  ['Libreria sezioni CMS', 'CMS section library'],
+  ['Scegli una sezione gia pronta e personalizzala nella pagina selezionata.', 'Choose a ready-made section and customize it on the selected page.'],
+  ['Caricamento impostazioni tema...', 'Loading theme settings...'],
+  ['Salva impostazioni', 'Save settings'],
+  ['Salva solo ID pubblici e codici di verifica. OAuth, API private e credenziali restano fuori dal repository.', 'Save only public IDs and verification codes. OAuth, private APIs and credentials stay out of the repository.'],
+  ['Conversion ID e label purchase/order. Nessuna chiave privata viene salvata.', 'Conversion ID and purchase/order label. No private key is saved.'],
+  ['Salva Google Suite', 'Save Google Suite'],
+  ['Cerca prodotto, SKU, categoria...', 'Search product, SKU, category...'],
+  ['Prezzo in euro', 'Price in euros'],
+  ['Aggiungi variante', 'Add variant'],
+  ['Cerca collezioni...', 'Search collections...'],
+  ['Cerca prodotti...', 'Search products...'],
+  ['Importa, esporta e aggiorna in massa dati del sito senza app esterne.', 'Import, export and bulk update site data without external apps.'],
+  ['Gestisci prodotti, collezioni, contenuti, menu e traduzioni in modo centralizzato.', 'Manage products, collections, content, menus and translations in one place.'],
+  ['Nessun abbonamento mensile ad app esterne.', 'No monthly subscription to external apps.'],
+  ['Export', 'Export'],
+  ['Import', 'Import'],
+  ['Templates', 'Templates'],
+  ['Stock update', 'Stock update'],
+  ['Translation package', 'Translation package'],
+  ['Site package', 'Site package'],
+  ['History', 'History'],
+  ['Advanced tools', 'Advanced tools'],
+  ['Nessun export ancora.', 'No export yet.'],
+  ['Nessuna preview.', 'No preview.'],
+  ['Nessun template preparato.', 'No template prepared.'],
+  ['Nessun package preparato.', 'No package prepared.'],
+  ['Nessun site package esportato.', 'No site package exported.'],
+  ['Nessun job caricato.', 'No jobs loaded.'],
+  ['Salva template', 'Save template'],
+  ['Aggiungi review', 'Add review'],
+  ['Salva review', 'Save review'],
+  ['Salva reso', 'Save return'],
+  ['Salva upsell', 'Save upsell'],
+  ['Include out of stock', 'Include out of stock'],
+  ['Usa la scheda clienti per storico ordini, note, tag e invito mock. Nessuna password cliente viene gestita in questa fase.', 'Use the customer view for order history, notes, tags and mock invites. No customer password is managed here.'],
+  ['Salva gift card', 'Save gift card'],
+  ['Salva store credit', 'Save store credit'],
+  ['Stato: active, scheduled, expired, disabled', 'Status: active, scheduled, expired, disabled'],
+  ['Configurazione avanzata', 'Advanced configuration'],
+  ['Tracking leggero e recovery email mock/provider-ready. Nessun dato sensibile viene esposto.', 'Light tracking and mock/provider-ready recovery email. No sensitive data is exposed.'],
+  ['Salva configurazione', 'Save configuration'],
+  ['Caricamento status ricerca...', 'Loading search status...'],
+  ['Caricamento SEO technical...', 'Loading SEO technical...'],
+  ['Caricamento redirects...', 'Loading redirects...'],
+  ['Caricamento delivery log...', 'Loading delivery log...'],
+  ['Caricamento log feed...', 'Loading feed log...'],
+  ['Prezzo subscription in euro', 'Subscription price in euros'],
+  ['Checkout abbonamenti richiede setup provider ricorrente. Nessuna subscription Stripe reale viene creata in questa fase.', 'Subscription checkout requires a recurring provider setup. No real Stripe subscription is created at this stage.'],
+  ['Nessun invio email reale viene configurato qui finche non esiste un provider sicuro.', 'No real email sending is configured here until a secure provider exists.'],
+  ['Stato traduzioni', 'Translation status'],
+  ['Aggiungi voce menu', 'Add menu item'],
+  ['Salva voce menu', 'Save menu item'],
+  ['Caricamento menu...', 'Loading menus...'],
+  ['Configurazione base dei paesi collegabili ai mercati.', 'Basic configuration for countries connected to markets.'],
+  ['Configurazione base delle valute usate da mercati e prezzi localizzati.', 'Basic configuration for currencies used by markets and localized pricing.'],
+  ['Nessun cambio live esterno: se manca un prezzo localizzato, il sito usa il prezzo base.', 'No external live exchange rates: if localized pricing is missing, the site uses the base price.'],
+  ['Prezzo localizzato', 'Localized price'],
+  ['Prezzo prodotto base', 'Base product price'],
+  ['Caricamento prezzi localizzati...', 'Loading localized prices...'],
+  ['Salva prezzo localizzato', 'Save localized price'],
+  ['Caricamento traffico...', 'Loading traffic...'],
+  ['Caricamento vendite...', 'Loading sales...'],
+  ['Caricamento conversioni...', 'Loading conversions...'],
+  ['Caricamento eventi...', 'Loading events...'],
+  ['Configurazione fiscale usata dal riepilogo checkout.', 'Tax configuration used by the checkout summary.'],
+  ['Salva impostazioni fiscali', 'Save tax settings'],
+  ['Caricamento stato Stripe...', 'Loading Stripe status...'],
+  ['Salva pagamenti', 'Save payments'],
+  ['Spedizione standard', 'Standard shipping'],
+  ['Prezzo', 'Price'],
+  ['Ordine visualizzazione', 'Display order'],
+  ['Caricamento stato privacy...', 'Loading privacy status...'],
+  ['Stato banner', 'Banner status'],
+  ['Salva cookie settings', 'Save cookie settings'],
+  ['Seleziona un record.', 'Select a record.'],
+  ['Salva valori', 'Save values'],
+  ['Aggiungi integrazione', 'Add integration'],
+  ['Salva integrazione', 'Save integration'],
+  ['Aggiungi utente', 'Add user'],
+  ['Salva utente', 'Save user'],
+  ['Aggiungi template', 'Add template'],
+  ['Salva notifica', 'Save notification'],
+  ['Caricamento stato provider...', 'Loading provider status...'],
+  ['Registro domini per primario, redirect, preview e note DNS. Nessun DNS reale viene modificato.', 'Domain registry for primary, redirect, preview and DNS notes. No real DNS record is modified.'],
+  ['Aggiungi dominio', 'Add domain'],
+  ['Salva dominio', 'Save domain'],
+  ['Aggiungi tenant', 'Add tenant'],
+  ['Salva tenant', 'Save tenant'],
+  ['Salva performance', 'Save performance'],
+  ['Prezzo localizzato salvato.', 'Localized price saved.'],
+  ['Prezzo caricato nel form.', 'Price loaded into the form.'],
+  ['Nessun dato analytics ancora disponibile.', 'No analytics data available yet.'],
+  ['Nessun evento', 'No events'],
+  ['Nessuna page view ancora registrata.', 'No page views recorded yet.'],
+  ['Nessun evento prodotto ancora registrato.', 'No product events recorded yet.'],
+  ['Nessun evento recente.', 'No recent events.'],
+  ['Nessun contenuto disponibile per l audit SEO.', 'No content available for the SEO audit.'],
+  ['Nessun webhook', 'No webhook'],
+  ['Nessuna integrazione.', 'No integrations.'],
+  ['Errore integrazione. Verifica il JSON configurazione e riprova.', 'Integration error. Check the configuration JSON and try again.'],
+  ['Nessun utente admin.', 'No admin users.'],
+  ['Nessun log.', 'No logs.'],
+  ['Nessun template.', 'No templates.'],
+  ['Nessuna nota DNS', 'No DNS notes'],
+  ['Nessun dominio configurato.', 'No domains configured.'],
+  ['Nessun tenant.', 'No tenants.'],
+  ['Stato base non invasivo.', 'Non-invasive base status.'],
+  ['Nessuna notifica loggata per questo ordine.', 'No notifications logged for this order.'],
+  ['Nessun ordine collegato.', 'No linked orders.'],
+  ['Salva cliente', 'Save customer'],
+  ['Seleziona destinazione', 'Select destination'],
+  ['Errore caricamento destinazioni menu.', 'Menu destination loading error.'],
+  ['Errore nel caricamento menu.', 'Menu loading error.'],
+  ['Nessun menu trovato.', 'No menus found.'],
+  ['Nessuna voce in questo menu.', 'No items in this menu.'],
+  ['Errore eliminazione voce menu.', 'Menu item delete failed.'],
+  ['Errore salvataggio voce menu.', 'Menu item save failed.'],
+  ['Nessun controllo disponibile.', 'No checks available.'],
+  ['Errore caricamento pagine editor.', 'Editor pages loading error.'],
+  ['Errore caricamento sezioni.', 'Section loading error.'],
+  ['Errore eliminazione sezione.', 'Section delete failed.'],
+  ['Errore salvataggio.', 'Save failed.'],
+  ['Errore aggiunta sezione.', 'Section add failed.'],
+)
+
+const ADMIN_STATIC_TRANSLATION_PATTERNS = [
+  { it: /^Iniziale: (.+)$/, en: 'Initial: $1', enRegex: /^Initial: (.+)$/, itText: 'Iniziale: $1' },
+  { it: /^Mercato: (.+)$/, en: 'Market: $1', enRegex: /^Market: (.+)$/, itText: 'Mercato: $1' },
+  { it: /^Webhook: configurato$/, en: 'Webhook: configured', enRegex: /^Webhook: configured$/, itText: 'Webhook: configurato' },
+  { it: /^Webhook: mancante\/opzionale$/, en: 'Webhook: missing/optional', enRegex: /^Webhook: missing\/optional$/, itText: 'Webhook: mancante/opzionale' },
+]
+
 const ADMIN_PLACEHOLDER_TRANSLATIONS = [
   ['cliente@example.com', 'customer@example.com'],
   ['Uso interno', 'Internal use'],
+  ['Cerca prodotto, SKU, categoria...', 'Search product, SKU, category...'],
+  ['Collezione premium', 'Premium collection'],
+  ['Descrizione della collezione...', 'Collection description...'],
+  ['Titolo SEO collezione', 'Collection SEO title'],
+  ['Descrizione SEO...', 'SEO description...'],
+  ['Cerca collezioni...', 'Search collections...'],
+  ['Prodotto premium', 'Premium product'],
+  ['Descrizione prodotto...', 'Product description...'],
+  ['Categoria', 'Category'],
+  ['Titolo SEO prodotto', 'Product SEO title'],
+  ['Cerca prodotti...', 'Search products...'],
+  ['Template email...', 'Email template...'],
+  ['Motivo credito', 'Credit reason'],
+  ['Non viene mostrato dopo il salvataggio', 'Not shown after saving'],
+  ['Catalogo fornitore', 'Supplier catalog'],
+  ['Cerca ordini...', 'Search orders...'],
+  ['Cerca clienti...', 'Search customers...'],
+  ['Inserisci la traduzione...', 'Enter translation...'],
+  ['Testo policy...', 'Policy text...'],
+  ['Nuovo articolo', 'New article'],
+  ['Sintesi articolo', 'Article summary'],
+  ['Testo articolo', 'Article text'],
+  ['Team editoriale', 'Editorial team'],
+  ['Titolo SEO', 'SEO title'],
+  ['Descrizione SEO', 'SEO description'],
+  ['Cerca articoli...', 'Search articles...'],
+  ['Materiali', 'Materials'],
+  ['materiali', 'materials'],
+  ['Descrizione immagine', 'Image description'],
+  ['Cerca media...', 'Search media...'],
+  ['Chi siamo', 'About us'],
+  ['chi-siamo', 'about-us'],
+  ['Titolo SEO pagina', 'Page SEO title'],
+  ['Sconto benvenuto', 'Welcome discount'],
+  ['0 = illimitato', '0 = unlimited'],
+  ['Campagna stagionale', 'Seasonal campaign'],
+  ['Descrizione campagna', 'Campaign description'],
+  ['Italia / EUR', 'Italy / EUR'],
+  ['Note su DNS, pubblico target, fallback lingua o pricing...', 'Notes on DNS, target audience, language fallback or pricing...'],
+  ['Spedizione standard', 'Standard shipping'],
+  ['Consegna stimata, note operative...', 'Estimated delivery, operational notes...'],
+  ['Google tags partono solo dopo consenso.', 'Google tags start only after consent.'],
+  ['CNAME, TXT verification, note operative', 'CNAME, TXT verification, operational notes'],
+  ['Note tecniche isolamento dati', 'Technical data isolation notes'],
   ['https://example.com/webhook', 'https://example.com/webhook'],
   ['/old-url', '/old-url'],
   ['/new-url', '/new-url'],
 ]
 
-function translateAdminStaticCopy() {
+let adminStaticTranslationQueued = false
+let adminStaticTranslationRunning = false
+
+function getAdminStaticTranslation(text) {
   const language = getAdminLanguage()
   const sourceIndex = language === 'en' ? 0 : 1
   const targetIndex = language === 'en' ? 1 : 0
   const copyMap = new Map(
     ADMIN_STATIC_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
   )
+
+  if (copyMap.has(text)) return copyMap.get(text)
+
+  for (const pattern of ADMIN_STATIC_TRANSLATION_PATTERNS) {
+    if (language === 'en' && pattern.it.test(text)) return text.replace(pattern.it, pattern.en)
+    if (language === 'it' && pattern.enRegex.test(text)) return text.replace(pattern.enRegex, pattern.itText)
+  }
+
+  return null
+}
+
+function translateAdminStaticCopy() {
+  if (adminStaticTranslationRunning) return
+  adminStaticTranslationRunning = true
+  const language = getAdminLanguage()
+  const sourceIndex = language === 'en' ? 0 : 1
+  const targetIndex = language === 'en' ? 1 : 0
   const placeholderMap = new Map(
     ADMIN_PLACEHOLDER_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
   )
+  const roots = [adminAuthGate, adminApp].filter(Boolean)
+  const ignoredParents = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'PRE', 'CODE'])
 
-  document
-    .querySelectorAll('button, h1, h2, h3, h4, p, span, small, strong, th, option, legend')
-    .forEach((element) => {
-      if (element.children.length) return
-      const text = element.textContent.trim().replace(/\s+/g, ' ')
-      if (copyMap.has(text)) element.textContent = copyMap.get(text)
+  roots.forEach((root) => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+    const textNodes = []
+    let node = walker.nextNode()
+    while (node) {
+      textNodes.push(node)
+      node = walker.nextNode()
+    }
+
+    textNodes.forEach((textNode) => {
+      const parentName = textNode.parentElement?.tagName
+      if (!parentName || ignoredParents.has(parentName)) return
+
+      const original = textNode.nodeValue || ''
+      const trimmed = original.trim().replace(/\s+/g, ' ')
+      if (!trimmed) return
+
+      const translated = getAdminStaticTranslation(trimmed)
+      if (!translated || translated === trimmed) return
+
+      const leading = original.match(/^\s*/)?.[0] || ''
+      const trailing = original.match(/\s*$/)?.[0] || ''
+      textNode.nodeValue = `${leading}${translated}${trailing}`
     })
+  })
 
   document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((element) => {
     const placeholder = element.getAttribute('placeholder') || ''
     if (placeholderMap.has(placeholder)) element.setAttribute('placeholder', placeholderMap.get(placeholder))
   })
+
+  adminStaticTranslationRunning = false
+}
+
+function queueAdminStaticTranslation() {
+  if (adminStaticTranslationQueued) return
+  adminStaticTranslationQueued = true
+  window.setTimeout(() => {
+    adminStaticTranslationQueued = false
+    translateAdminStaticCopy()
+  }, 40)
+}
+
+function setupAdminStaticTranslationObserver() {
+  const roots = [adminAuthGate, adminApp].filter(Boolean)
+  if (!roots.length || !window.MutationObserver) return
+
+  const observer = new MutationObserver(() => queueAdminStaticTranslation())
+  roots.forEach((root) => {
+    observer.observe(root, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    })
+  })
+}
+
+function setupAdminAlertTranslation() {
+  if (!window.alert || window.__takeoffAlertTranslationReady) return
+  const nativeAlert = window.alert.bind(window)
+  window.alert = (message) => {
+    if (typeof message !== 'string') {
+      nativeAlert(message)
+      return
+    }
+    const normalized = message.trim().replace(/\s+/g, ' ')
+    nativeAlert(getAdminStaticTranslation(normalized) || message)
+  }
+  window.__takeoffAlertTranslationReady = true
 }
 
 function applyAdminTranslations() {
@@ -653,6 +1151,8 @@ function updateAdminCurrentViewLabel() {
 
 setupAdminLanguageControls()
 setupAdminThemeControls()
+setupAdminStaticTranslationObserver()
+setupAdminAlertTranslation()
 applyAdminTranslations()
 
 let adminCurrentUser = null

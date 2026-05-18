@@ -13,6 +13,7 @@ const STOREFRONT_LOCALES = {
 const STOREFRONT_TRANSLATIONS = {
   it: {
     languageLabel: 'Lingua',
+    marketLabel: 'Mercato',
     listAnd: ' e ',
     cart: 'Carrello',
     cartTitle: 'Il tuo carrello',
@@ -220,6 +221,7 @@ const STOREFRONT_TRANSLATIONS = {
   },
   en: {
     languageLabel: 'Language',
+    marketLabel: 'Market',
     listAnd: ' and ',
     cart: 'Cart',
     cartTitle: 'Your cart',
@@ -454,6 +456,150 @@ function sfT(key, replacements = {}) {
     (text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
     template,
   )
+}
+
+const STOREFRONT_STATIC_TRANSLATIONS = [
+  ['Viaggi', 'Trips'],
+  ['Missione', 'Mission'],
+  ['Prenota', 'Book'],
+  ['FAQ', 'FAQ'],
+  ['Mercato', 'Market'],
+  ['Lingua', 'Language'],
+  ['Carrello', 'Cart'],
+  ['Chiudi', 'Close'],
+  ['Vai al checkout', 'Go to checkout'],
+  ['Pagamento manuale o simulato. Nessun pagamento reale viene elaborato.', 'Manual or simulated payment. No real payment is processed.'],
+  ['Luxury Space Travel Agency', 'Luxury Space Travel Agency'],
+  ['Compra il tuo posto tra le stelle.', 'Buy your place among the stars.'],
+  ['Viaggi spaziali privati, esperienze in orbita, suite zero-g e missioni interplanetarie per chi non vuole semplicemente viaggiare, ma lasciare il pianeta.', 'Private space travel, orbital experiences, zero-g suites and interplanetary missions for those who want more than a trip.'],
+  ['Prenota una missione', 'Book a mission'],
+  ['Esplora destinazioni', 'Explore destinations'],
+  ['NASA-grade simulation', 'NASA-grade simulation'],
+  ['Zero-G training', 'Zero-G training'],
+  ['Concierge 24/7', 'Concierge 24/7'],
+  ['Next launch window', 'Next launch window'],
+  ['Missione Aurora-X / Orbita terrestre bassa', 'Aurora-X Mission / Low Earth orbit'],
+  ['Destinazioni', 'Destinations'],
+  ['Scegli la tua orbita.', 'Choose your orbit.'],
+  ['Ogni pacchetto include simulazione, assistenza concierge, briefing tecnico, kit astronauta e accesso lounge pre-lancio.', 'Every package includes simulation, concierge support, technical briefing, astronaut kit and pre-launch lounge access.'],
+  ['Tutti', 'All'],
+  ['Orbitale', 'Orbital'],
+  ['Interplanetario', 'Interplanetary'],
+  ['Deep space', 'Deep space'],
+  ['Esperienza', 'Experience'],
+  ['Non vendiamo biglietti. Progettiamo decolli.', 'We do not sell tickets. We design launches.'],
+  ['Dal primo colloquio alla simulazione zero-g, ogni dettaglio e costruito per trasformare il viaggio in un evento irripetibile.', 'From the first briefing to zero-g simulation, every detail turns the journey into a one-of-a-kind event.'],
+  ['Briefing privato', 'Private briefing'],
+  ['Training astronautico', 'Astronaut training'],
+  ['Launch day', 'Launch day'],
+  ['Configuratore', 'Configurator'],
+  ['Costruisci la tua missione.', 'Build your mission.'],
+  ['Seleziona una destinazione, il numero di passeggeri e ricevi una stima immediata.', 'Select a destination, passengers and get an instant estimate.'],
+  ['Destinazione', 'Destination'],
+  ['Passeggeri', 'Passengers'],
+  ['Pacchetto', 'Package'],
+  ['Stima missione', 'Mission estimate'],
+  ['Calcolo in corso...', 'Calculating...'],
+  ['Nome', 'Name'],
+  ['Email', 'Email'],
+  ['Richiedi invito privato', 'Request private invite'],
+  ['Domande prima del decollo.', 'Questions before launch.'],
+  ['ORBITRA (c) 2026 - Space travel for the impossible generation.', 'ORBITRA (c) 2026 - Space travel for the impossible generation.'],
+  ['Request launch access', 'Request launch access'],
+  ['Il tuo carrello', 'Your cart'],
+  ['Totale', 'Total'],
+  ['Caricamento collezioni...', 'Loading collections...'],
+  ['Nessuna collezione disponibile.', 'No collections available.'],
+  ['Errore nel caricamento collezioni.', 'Collection loading error.'],
+  ['Caricamento prodotti...', 'Loading products...'],
+  ['Nessun prodotto disponibile.', 'No products available.'],
+  ['Errore nel caricamento prodotti.', 'Product loading error.'],
+  ['Caricamento prodotto...', 'Loading product...'],
+  ['Aggiungi un modello 3D dal CMS per creare una vista interattiva.', 'Add a 3D model from the CMS to create an interactive view.'],
+  ['Apri vista 3D', 'Open 3D view'],
+  ['Chiudi vista 3D', 'Close 3D view'],
+  ['Dettaglio', 'Details'],
+  ['Articolo blog non disponibile.', 'Blog article unavailable.'],
+  ['Blog non disponibile', 'Blog unavailable'],
+  ['Non e stato possibile caricare gli articoli.', 'Articles could not be loaded.'],
+  ['Torna al sito', 'Back to site'],
+  ['Policy non disponibile.', 'Policy unavailable.'],
+  ['Non e stato possibile leggere questa pagina dal CMS.', 'This page could not be read from the CMS.'],
+  ['Non e stato possibile caricare questa pagina.', 'This page could not be loaded.'],
+]
+
+let storefrontStaticTranslationQueued = false
+let storefrontStaticTranslationRunning = false
+
+function getStorefrontStaticTranslation(text) {
+  const language = getStorefrontLanguage()
+  const sourceIndex = language === 'en' ? 0 : 1
+  const targetIndex = language === 'en' ? 1 : 0
+  const copyMap = new Map(
+    STOREFRONT_STATIC_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
+  )
+  return copyMap.get(text) || null
+}
+
+function translateStorefrontStaticCopy() {
+  if (storefrontStaticTranslationRunning) return
+  storefrontStaticTranslationRunning = true
+
+  const appRoot = document.querySelector('#app')
+  const ignoredParents = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'PRE', 'CODE'])
+  if (appRoot) {
+    const walker = document.createTreeWalker(appRoot, NodeFilter.SHOW_TEXT)
+    const textNodes = []
+    let node = walker.nextNode()
+    while (node) {
+      textNodes.push(node)
+      node = walker.nextNode()
+    }
+
+    textNodes.forEach((textNode) => {
+      const parentName = textNode.parentElement?.tagName
+      if (!parentName || ignoredParents.has(parentName)) return
+
+      const original = textNode.nodeValue || ''
+      const trimmed = original.trim().replace(/\s+/g, ' ')
+      if (!trimmed) return
+
+      const translated = getStorefrontStaticTranslation(trimmed)
+      if (!translated || translated === trimmed) return
+
+      const leading = original.match(/^\s*/)?.[0] || ''
+      const trailing = original.match(/\s*$/)?.[0] || ''
+      textNode.nodeValue = `${leading}${translated}${trailing}`
+    })
+  }
+
+  document.querySelectorAll('#app input[placeholder], #app textarea[placeholder]').forEach((element) => {
+    const translated = getStorefrontStaticTranslation(element.getAttribute('placeholder') || '')
+    if (translated) element.setAttribute('placeholder', translated)
+  })
+
+  storefrontStaticTranslationRunning = false
+}
+
+function queueStorefrontStaticTranslation() {
+  if (storefrontStaticTranslationQueued) return
+  storefrontStaticTranslationQueued = true
+  window.setTimeout(() => {
+    storefrontStaticTranslationQueued = false
+    translateStorefrontStaticCopy()
+  }, 40)
+}
+
+function setupStorefrontStaticTranslationObserver() {
+  const appRoot = document.querySelector('#app')
+  if (!appRoot || !window.MutationObserver) return
+
+  const observer = new MutationObserver(() => queueStorefrontStaticTranslation())
+  observer.observe(appRoot, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  })
 }
 
 function getStorefrontLocale() {
@@ -928,6 +1074,11 @@ function applyStorefrontLanguage() {
     selector.setAttribute('aria-label', sfT('languageLabel'))
   }
 
+  const marketSelector = document.querySelector('#marketSelector')
+  if (marketSelector) {
+    marketSelector.setAttribute('aria-label', sfT('marketLabel'))
+  }
+
   const cartToggle = document.querySelector('.cart-toggle')
   const countTarget = document.querySelector('#cartCount')
   if (cartToggle && countTarget) {
@@ -952,6 +1103,7 @@ function applyStorefrontLanguage() {
   const cartNote = document.querySelector('.cart-note')
   if (cartNote) cartNote.textContent = sfT('cartNote')
 
+  translateStorefrontStaticCopy()
   renderCart()
 }
 
@@ -5457,5 +5609,6 @@ async function bootPublicRouting() {
 }
 
 setupStorefrontLanguageSelector()
+setupStorefrontStaticTranslationObserver()
 applyStorefrontLanguage()
 bootPublicRouting()
