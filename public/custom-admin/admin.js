@@ -72,7 +72,7 @@ const ADMIN_TRANSLATIONS = {
     entryTitle: 'TakeOffMilan CMS',
     entrySubtitle: 'Il futuro dei siti web',
     entryClaim: 'Powerful. Flexible. Custom.',
-    entryCountdown: 'Il tuo CMS si aprirà tra',
+    entryCountdown: 'Il tuo CMS si aprira tra',
     entryButton: 'Enter CMS',
     themeLight: 'Light mode',
     themeDark: 'Dark mode',
@@ -350,6 +350,144 @@ function setAdminPlaceholder(selector, key) {
   })
 }
 
+const ADMIN_STATIC_TRANSLATIONS = [
+  ['Apri', 'Open'],
+  ['Salva', 'Save'],
+  ['Crea', 'Create'],
+  ['Modifica', 'Edit'],
+  ['Disattiva', 'Disable'],
+  ['Elimina', 'Delete'],
+  ['Aggiorna', 'Refresh'],
+  ['Annulla modifica', 'Cancel edit'],
+  ['Configurazione base', 'Basic configuration'],
+  ['Funzione attiva', 'Available in this release'],
+  ['Requires external configuration', 'Requires external configuration'],
+  ['Advanced tools in progress', 'Advanced tools in progress'],
+  ['Native app', 'Native app'],
+  ['Active', 'Active'],
+  ['Inactive', 'Inactive'],
+  ['Disabled', 'Disabled'],
+  ['Secret set', 'Secret set'],
+  ['No secret', 'No secret'],
+  ['Prodotti', 'Products'],
+  ['Collezioni', 'Collections'],
+  ['Ordini', 'Orders'],
+  ['Clienti', 'Customers'],
+  ['Inventario', 'Inventory'],
+  ['Checkout', 'Checkout'],
+  ['Spedizioni', 'Shipping'],
+  ['Markets', 'Markets'],
+  ['Prezzi localizzati', 'Localized pricing'],
+  ['Traduzioni', 'Translations'],
+  ['Media Library', 'Media Library'],
+  ['Google Suite', 'Google Suite'],
+  ['Import Export', 'Import Export'],
+  ['SEO', 'SEO'],
+  ['Analytics', 'Analytics'],
+  ['Reviews', 'Reviews'],
+  ['Returns', 'Returns'],
+  ['Product Feed', 'Product Feed'],
+  ['Backup', 'Backup'],
+  ['Store Health', 'Store Health'],
+  ['Launch Checklist', 'Launch Checklist'],
+  ['Gift Cards', 'Gift Cards'],
+  ['Store Credit', 'Store Credit'],
+  ['Carrelli abbandonati', 'Abandoned carts'],
+  ['Search & Filters', 'Search & Filters'],
+  ['SEO Technical', 'SEO Technical'],
+  ['Webhooks', 'Webhooks'],
+  ['Supplier Feeds', 'Supplier Feeds'],
+  ['Subscriptions', 'Subscriptions'],
+  ['Utenti e permessi', 'Users and permissions'],
+  ['Impostazioni', 'Settings'],
+  ['Nome', 'Name'],
+  ['Codice', 'Code'],
+  ['Descrizione', 'Description'],
+  ['Tipo', 'Type'],
+  ['Valore', 'Value'],
+  ['Stato', 'Status'],
+  ['Note', 'Notes'],
+  ['Email cliente', 'Customer email'],
+  ['Scadenza opzionale', 'Optional expiry'],
+  ['Saldo iniziale in euro', 'Initial balance in euros'],
+  ['Credito in euro', 'Credit in euros'],
+  ['Gestisci gift card', 'Manage gift cards'],
+  ['Store credit cliente', 'Customer store credit'],
+  ['Crediti cliente', 'Customer credits'],
+  ['Configurazione ricerca', 'Search configuration'],
+  ['Campi ricercabili', 'Searchable fields'],
+  ['Filtri abilitati', 'Enabled filters'],
+  ['Salva configurazione', 'Save configuration'],
+  ['Redirect manager', 'Redirect manager'],
+  ['From path', 'From path'],
+  ['To path', 'To path'],
+  ['Salva redirect', 'Save redirect'],
+  ['Configurazione endpoint', 'Endpoint configuration'],
+  ['Evento', 'Event'],
+  ['Target URL', 'Target URL'],
+  ['Secret opzionale', 'Optional secret'],
+  ['Salva webhook', 'Save webhook'],
+  ['Test log', 'Test delivery'],
+  ['Nome feed', 'Feed name'],
+  ['Source URL', 'Source URL'],
+  ['Formato', 'Format'],
+  ['Schedule', 'Schedule'],
+  ['Target import', 'Import target'],
+  ['Salva feed', 'Save feed'],
+  ['Dry-run manuale', 'Manual dry-run'],
+  ['Subscription product config', 'Subscription product config'],
+  ['Frequenza', 'Frequency'],
+  ['Prezzo subscription in euro', 'Subscription price in euros'],
+  ['Trial days opzionali', 'Optional trial days'],
+  ['Salva subscription', 'Save subscription'],
+  ['Salvataggio gift card...', 'Saving gift card...'],
+  ['Gift card salvata.', 'Gift card saved.'],
+  ['Salvataggio gift card non riuscito.', 'Gift card save failed.'],
+  ['Salvataggio webhook...', 'Saving webhook...'],
+  ['Webhook salvato.', 'Webhook saved.'],
+  ['Salvataggio webhook non riuscito.', 'Webhook save failed.'],
+  ['Salvataggio subscription...', 'Saving subscription...'],
+  ['Subscription salvata.', 'Subscription saved.'],
+  ['Salvataggio subscription non riuscito.', 'Subscription save failed.'],
+  ['Nessuna gift card presente.', 'No gift cards yet.'],
+  ['Nessun webhook configurato.', 'No webhooks configured.'],
+  ['Nessun prodotto subscription configurato.', 'No subscription products configured.'],
+  ['Audit mode: modifiche disabilitate.', 'Audit mode: changes are disabled.'],
+]
+
+const ADMIN_PLACEHOLDER_TRANSLATIONS = [
+  ['cliente@example.com', 'customer@example.com'],
+  ['Uso interno', 'Internal use'],
+  ['https://example.com/webhook', 'https://example.com/webhook'],
+  ['/old-url', '/old-url'],
+  ['/new-url', '/new-url'],
+]
+
+function translateAdminStaticCopy() {
+  const language = getAdminLanguage()
+  const sourceIndex = language === 'en' ? 0 : 1
+  const targetIndex = language === 'en' ? 1 : 0
+  const copyMap = new Map(
+    ADMIN_STATIC_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
+  )
+  const placeholderMap = new Map(
+    ADMIN_PLACEHOLDER_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
+  )
+
+  document
+    .querySelectorAll('button, h1, h2, h3, h4, p, span, small, strong, th, option, legend')
+    .forEach((element) => {
+      if (element.children.length) return
+      const text = element.textContent.trim().replace(/\s+/g, ' ')
+      if (copyMap.has(text)) element.textContent = copyMap.get(text)
+    })
+
+  document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((element) => {
+    const placeholder = element.getAttribute('placeholder') || ''
+    if (placeholderMap.has(placeholder)) element.setAttribute('placeholder', placeholderMap.get(placeholder))
+  })
+}
+
 function applyAdminTranslations() {
   const language = getAdminLanguage()
   document.documentElement.lang = language
@@ -467,6 +605,7 @@ function applyAdminTranslations() {
   const auditBadge = document.querySelector('#adminAuditBadge')
   if (auditBadge) auditBadge.textContent = adminT('auditBadge')
 
+  translateAdminStaticCopy()
   applyAdminTheme()
   updateAdminAuthIntro()
   updateAdminCurrentViewLabel()

@@ -151,9 +151,10 @@ async function validateDiscount(env, code, subtotalCents) {
       type: discount.type,
       value: Number(discount.value || 0),
       discount_kind: discount.discount_kind,
+      free_shipping: discount.discount_kind === 'free_shipping',
       checkout_support:
         discount.discount_kind === 'free_shipping'
-          ? 'Configured / checkout support in progress'
+          ? 'Available in checkout'
           : 'Available in checkout',
       discount_cents: discountCents,
     },

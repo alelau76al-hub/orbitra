@@ -37,8 +37,18 @@ export async function onRequestGet({ env, request }) {
     const where = ['p.active = 1']
 
     if (q) {
-      where.push('(p.name LIKE ? OR p.description LIKE ? OR p.slug LIKE ? OR COALESCE(p.category, \'\') LIKE ?)')
-      params.push(normalizeLike(q), normalizeLike(q), normalizeLike(q), normalizeLike(q))
+      where.push(`(
+        p.name LIKE ?
+        OR p.description LIKE ?
+        OR p.slug LIKE ?
+        OR COALESCE(p.category, '') LIKE ?
+        OR EXISTS (
+          SELECT 1
+          FROM product_variants v
+          WHERE v.product_id = p.id AND COALESCE(v.sku, '') LIKE ?
+        )
+      )`)
+      params.push(normalizeLike(q), normalizeLike(q), normalizeLike(q), normalizeLike(q), normalizeLike(q))
     }
     if (collection) {
       where.push('p.collection_slug = ?')

@@ -77,11 +77,40 @@ const STOREFRONT_TRANSLATIONS = {
     accountOrders: 'Ordini cliente',
     accountAddresses: 'Indirizzi',
     accountStatus: 'Stato account',
+    accountPrivacyNote: 'Per sicurezza usa la stessa email usata in checkout. I dati sensibili restano limitati.',
+    accountOrderDetail: 'Dettaglio',
+    accountOrderNumber: 'Ordine #{id}',
+    accountOrderId: 'Numero ordine opzionale',
+    accountQty: 'Q.ta',
     searchTitle: 'Ricerca prodotti',
     searchIntro: 'Trova prodotti per nome, descrizione o categoria.',
     searchPlaceholder: 'Cerca prodotti...',
     searchSubmit: 'Cerca',
     searchEmpty: 'Nessun risultato trovato.',
+    searchCollection: 'Collezione',
+    searchAllCollections: 'Tutte le collezioni',
+    searchPriceMin: 'Prezzo min',
+    searchPriceMax: 'Prezzo max',
+    searchStock: 'Stock',
+    searchStockAny: 'Qualsiasi stock',
+    searchInStock: 'Disponibili',
+    searchOutStock: 'Esauriti',
+    searchSort: 'Ordina',
+    searchRelevance: 'Rilevanza',
+    searchPriceAsc: 'Prezzo crescente',
+    searchPriceDesc: 'Prezzo decrescente',
+    searchNewest: 'Piu recenti',
+    searchName: 'Nome',
+    reviewsTitle: 'Recensioni',
+    reviewsLoading: 'Caricamento recensioni...',
+    reviewsEmpty: 'Nessuna recensione ancora.',
+    reviewsFirst: 'Condividi per primo la tua esperienza.',
+    reviewsCount: '{average}/5 - {count} recensioni',
+    reviewsFallbackTitle: 'Recensione',
+    reviewsFallbackCustomer: 'Cliente',
+    reviewsUnavailable: 'Recensioni non disponibili in questo momento.',
+    upsellTitle: 'Completa il set',
+    upsellText: 'Prodotti consigliati selezionati per questo articolo.',
     collectionLoading: 'Caricamento collezione...',
     collectionLoadingText: 'Stiamo recuperando prodotti e contenuti dal CMS.',
     collectionNotFound: 'Collezione non trovata',
@@ -115,6 +144,7 @@ const STOREFRONT_TRANSLATIONS = {
     checkoutCity: 'Citta',
     checkoutPostal: 'CAP',
     checkoutCountry: 'Paese',
+    checkoutCountryDefault: 'Italia',
     checkoutShippingMethod: 'Metodo spedizione',
     checkoutPayment: 'Pagamento',
     checkoutPaymentMethod: 'Metodo pagamento',
@@ -126,12 +156,19 @@ const STOREFRONT_TRANSLATIONS = {
     checkoutSummary: 'Riepilogo',
     checkoutDiscountCode: 'Codice sconto',
     checkoutApply: 'Applica',
+    checkoutGiftCardCode: 'Gift card',
+    checkoutGiftCardHelp: 'Il saldo viene scalato solo quando l ordine viene creato correttamente.',
+    checkoutStoreCredit: 'Credito cliente',
+    checkoutUseStoreCredit: 'Usa credito disponibile per questa email',
+    checkoutStoreCreditHelp: 'Il credito cliente viene applicato se disponibile e attivo.',
     checkoutSubtotal: 'Subtotale',
     checkoutShipping: 'Spedizione',
     checkoutStandardShipping: 'Spedizione standard',
     checkoutStandardShippingText: 'Metodo standard disponibile come fallback.',
     checkoutFreeOver: 'sopra {amount}',
     checkoutDiscount: 'Sconto',
+    checkoutGiftCard: 'Gift card',
+    checkoutStoreCreditApplied: 'Credito cliente',
     checkoutTaxIncluded: 'IVA inclusa',
     checkoutTax: 'IVA',
     checkoutTotal: 'Totale',
@@ -162,6 +199,24 @@ const STOREFRONT_TRANSLATIONS = {
     googleConsentText: 'Usiamo tag Google solo con il tuo consenso per misurare il sito e le conversioni marketing.',
     googleConsentAccept: 'Accetta analytics e marketing',
     googleConsentNecessary: 'Solo necessari',
+    blogLoadingPost: 'Caricamento articolo...',
+    blogLoadingList: 'Caricamento blog...',
+    blogContentIntro: 'Contenuti editoriali dal CMS.',
+    blogPostNotFound: 'Articolo non trovato',
+    blogPostMissing: 'Questo articolo non esiste o non e pubblicato.',
+    backToBlog: 'Torna al blog',
+    policyNotFound: 'Policy non trovata',
+    policyMissing: 'Questa policy non esiste o non e pubblicata.',
+    policyUnavailable: 'Policy non disponibile',
+    policyLoadError: 'Non e stato possibile caricare questa policy.',
+    lastUpdated: 'Ultimo aggiornamento',
+    cmsPage: 'Pagina CMS',
+    pageLoading: 'Caricamento pagina...',
+    pageLoadingText: 'Stiamo recuperando questa pagina dal CMS.',
+    pageLoadError: 'Errore caricamento pagina',
+    pageNotFound: 'Pagina non trovata',
+    pageNotFoundText: 'Questa pagina non esiste nel CMS.',
+    pageLoadedText: 'Contenuti caricati dal CMS.',
   },
   en: {
     languageLabel: 'Language',
@@ -229,11 +284,40 @@ const STOREFRONT_TRANSLATIONS = {
     accountOrders: 'Customer orders',
     accountAddresses: 'Addresses',
     accountStatus: 'Account status',
+    accountPrivacyNote: 'For security, use the same email used at checkout. Sensitive data stays limited.',
+    accountOrderDetail: 'Details',
+    accountOrderNumber: 'Order #{id}',
+    accountOrderId: 'Optional order number',
+    accountQty: 'Qty',
     searchTitle: 'Product search',
     searchIntro: 'Find products by name, description or category.',
     searchPlaceholder: 'Search products...',
     searchSubmit: 'Search',
     searchEmpty: 'No results found.',
+    searchCollection: 'Collection',
+    searchAllCollections: 'All collections',
+    searchPriceMin: 'Min price',
+    searchPriceMax: 'Max price',
+    searchStock: 'Stock',
+    searchStockAny: 'Any stock',
+    searchInStock: 'In stock',
+    searchOutStock: 'Out of stock',
+    searchSort: 'Sort',
+    searchRelevance: 'Relevance',
+    searchPriceAsc: 'Price ascending',
+    searchPriceDesc: 'Price descending',
+    searchNewest: 'Newest',
+    searchName: 'Name',
+    reviewsTitle: 'Reviews',
+    reviewsLoading: 'Loading reviews...',
+    reviewsEmpty: 'No reviews yet.',
+    reviewsFirst: 'Be the first to share your experience.',
+    reviewsCount: '{average}/5 - {count} reviews',
+    reviewsFallbackTitle: 'Review',
+    reviewsFallbackCustomer: 'Customer',
+    reviewsUnavailable: 'Reviews are not available right now.',
+    upsellTitle: 'Complete the set',
+    upsellText: 'Recommended products selected for this item.',
     collectionLoading: 'Loading collection...',
     collectionLoadingText: 'Retrieving products and content from the CMS.',
     collectionNotFound: 'Collection not found',
@@ -267,6 +351,7 @@ const STOREFRONT_TRANSLATIONS = {
     checkoutCity: 'City',
     checkoutPostal: 'Postal code',
     checkoutCountry: 'Country',
+    checkoutCountryDefault: 'Italy',
     checkoutShippingMethod: 'Shipping method',
     checkoutPayment: 'Payment',
     checkoutPaymentMethod: 'Payment method',
@@ -278,12 +363,19 @@ const STOREFRONT_TRANSLATIONS = {
     checkoutSummary: 'Summary',
     checkoutDiscountCode: 'Discount code',
     checkoutApply: 'Apply',
+    checkoutGiftCardCode: 'Gift card',
+    checkoutGiftCardHelp: 'Balance is redeemed only after the order is created successfully.',
+    checkoutStoreCredit: 'Store credit',
+    checkoutUseStoreCredit: 'Use available credit for this email',
+    checkoutStoreCreditHelp: 'Customer credit is applied when available and active.',
     checkoutSubtotal: 'Subtotal',
     checkoutShipping: 'Shipping',
     checkoutStandardShipping: 'Standard shipping',
     checkoutStandardShippingText: 'Standard method available as fallback.',
     checkoutFreeOver: 'over {amount}',
     checkoutDiscount: 'Discount',
+    checkoutGiftCard: 'Gift card',
+    checkoutStoreCreditApplied: 'Store credit',
     checkoutTaxIncluded: 'VAT included',
     checkoutTax: 'VAT',
     checkoutTotal: 'Total',
@@ -314,6 +406,24 @@ const STOREFRONT_TRANSLATIONS = {
     googleConsentText: 'Google tags run only with your consent to measure the site and marketing conversions.',
     googleConsentAccept: 'Accept analytics and marketing',
     googleConsentNecessary: 'Necessary only',
+    blogLoadingPost: 'Loading article...',
+    blogLoadingList: 'Loading blog...',
+    blogContentIntro: 'Editorial content from the CMS.',
+    blogPostNotFound: 'Article not found',
+    blogPostMissing: 'This article does not exist or is not published.',
+    backToBlog: 'Back to blog',
+    policyNotFound: 'Policy not found',
+    policyMissing: 'This policy does not exist or is not published.',
+    policyUnavailable: 'Policy unavailable',
+    policyLoadError: 'We could not load this policy.',
+    lastUpdated: 'Last updated',
+    cmsPage: 'CMS page',
+    pageLoading: 'Loading page...',
+    pageLoadingText: 'Retrieving this page from the CMS.',
+    pageLoadError: 'Page loading error',
+    pageNotFound: 'Page not found',
+    pageNotFoundText: 'This page does not exist in the CMS.',
+    pageLoadedText: 'Content loaded from the CMS.',
   },
 }
 
@@ -924,6 +1034,8 @@ const DEFAULT_TAX_SETTINGS = {
 }
 
 let activeCheckoutDiscount = null
+let activeCheckoutGiftCard = null
+let activeCheckoutStoreCredit = null
 let activeCheckoutIdempotencyKey = ''
 let primaryCanonicalOrigin = ''
 let publicGoogleSettings = {}
@@ -3744,8 +3856,8 @@ function renderProductReviewsShell(product) {
     <section class="product-info-panel product-reviews" id="productReviewsPanel" data-product-id="${escapeCmsHtml(product.id || '')}">
       <div class="section-head reveal visible">
         <p class="eyebrow">TakeOff Reviews</p>
-        <h2>Reviews</h2>
-        <p id="productReviewsSummary">Loading reviews...</p>
+        <h2>${escapeCmsHtml(sfT('reviewsTitle'))}</h2>
+        <p id="productReviewsSummary">${escapeCmsHtml(sfT('reviewsLoading'))}</p>
       </div>
       <div id="productReviewsList" class="product-reviews-list"></div>
     </section>
@@ -3757,8 +3869,8 @@ function renderProductUpsellsShell(product) {
     <section class="section related-products product-upsells" id="productUpsellsPanel" data-product-id="${escapeCmsHtml(product.id || '')}">
       <div class="section-head reveal visible">
         <p class="eyebrow">TakeOff Upsell & Bundles</p>
-        <h2>Complete the set</h2>
-        <p>Recommended products selected for this item.</p>
+        <h2>${escapeCmsHtml(sfT('upsellTitle'))}</h2>
+        <p>${escapeCmsHtml(sfT('upsellText'))}</p>
       </div>
       <div id="productUpsellsList" class="store-grid"></div>
     </section>
@@ -3785,26 +3897,29 @@ async function hydrateProductReviews(product) {
     const summary = data.summary || { count: 0, average: 0 }
 
     if (!reviews.length) {
-      summaryTarget.textContent = 'No reviews yet.'
-      listTarget.innerHTML = '<p class="muted-copy">Be the first to share your experience.</p>'
+      summaryTarget.textContent = sfT('reviewsEmpty')
+      listTarget.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('reviewsFirst'))}</p>`
       return
     }
 
-    summaryTarget.textContent = `${summary.average}/5 · ${summary.count} reviews`
+    summaryTarget.textContent = sfT('reviewsCount', {
+      average: summary.average,
+      count: summary.count,
+    })
     listTarget.innerHTML = reviews
       .map(
         (review) => `
           <article class="product-review-card">
-            <strong>${escapeCmsHtml('★'.repeat(Number(review.rating || 0)))}</strong>
-            <h3>${escapeCmsHtml(review.title || 'Review')}</h3>
+            <strong>${escapeCmsHtml('*'.repeat(Number(review.rating || 0)))}</strong>
+            <h3>${escapeCmsHtml(review.title || sfT('reviewsFallbackTitle'))}</h3>
             <p>${escapeCmsHtml(review.body || '')}</p>
-            <span>${escapeCmsHtml(review.customer_name || 'Customer')}</span>
+            <span>${escapeCmsHtml(review.customer_name || sfT('reviewsFallbackCustomer'))}</span>
           </article>
         `,
       )
       .join('')
   } catch {
-    summaryTarget.textContent = 'Reviews are not available right now.'
+    summaryTarget.textContent = sfT('reviewsUnavailable')
     listTarget.innerHTML = ''
   }
 }
@@ -4194,10 +4309,18 @@ function renderCheckoutSummary(
   selectedHandle,
   taxSettings = DEFAULT_TAX_SETTINGS,
   discount = activeCheckoutDiscount,
+  giftCard = activeCheckoutGiftCard,
+  storeCredit = activeCheckoutStoreCredit,
 ) {
   const subtotalCents = calculateCartSubtotal(items)
   const shipping = calculateShippingCost(shippingMethods, selectedHandle, subtotalCents)
+  if (discount?.free_shipping) shipping.shipping_cents = 0
   const discountCents = Math.min(subtotalCents, Math.max(0, Number(discount?.discount_cents || 0)))
+  const giftCardCents = Math.max(0, Number(giftCard?.amount_cents || giftCard?.gift_card_cents || 0))
+  const storeCreditCents = Math.max(
+    0,
+    Number(storeCredit?.amount_cents || storeCredit?.store_credit_cents || 0),
+  )
   const taxSummary = calculateTaxSummary(
     subtotalCents,
     shipping.shipping_cents,
@@ -4208,6 +4331,10 @@ function renderCheckoutSummary(
   const shippingTarget = document.querySelector('#checkoutShipping')
   const discountRow = document.querySelector('#checkoutDiscountRow')
   const discountTarget = document.querySelector('#checkoutDiscount')
+  const giftCardRow = document.querySelector('#checkoutGiftCardRow')
+  const giftCardTarget = document.querySelector('#checkoutGiftCard')
+  const storeCreditRow = document.querySelector('#checkoutStoreCreditRow')
+  const storeCreditTarget = document.querySelector('#checkoutStoreCredit')
   const taxLabel = document.querySelector('#checkoutTaxLabel')
   const taxTarget = document.querySelector('#checkoutTax')
   const totalTarget = document.querySelector('#checkoutTotal')
@@ -4216,13 +4343,21 @@ function renderCheckoutSummary(
   if (shippingTarget) shippingTarget.textContent = formatPriceCents(shipping.shipping_cents)
   if (discountRow) discountRow.hidden = discountCents <= 0
   if (discountTarget) discountTarget.textContent = `-${formatPriceCents(discountCents)}`
+  if (giftCardRow) giftCardRow.hidden = giftCardCents <= 0
+  if (giftCardTarget) giftCardTarget.textContent = `-${formatPriceCents(giftCardCents)}`
+  if (storeCreditRow) storeCreditRow.hidden = storeCreditCents <= 0
+  if (storeCreditTarget) storeCreditTarget.textContent = `-${formatPriceCents(storeCreditCents)}`
   if (taxLabel) {
     taxLabel.textContent = taxSummary.prices_include_tax
       ? `${sfT('checkoutTaxIncluded')} (${Number(taxSettings.vat_rate || 0)}%)`
       : `${sfT('checkoutTax')} (${Number(taxSettings.vat_rate || 0)}%)`
   }
   if (taxTarget) taxTarget.textContent = formatPriceCents(taxSummary.tax_cents)
-  if (totalTarget) totalTarget.textContent = formatPriceCents(taxSummary.total_cents)
+  if (totalTarget) {
+    totalTarget.textContent = formatPriceCents(
+      Math.max(0, taxSummary.total_cents - giftCardCents - storeCreditCents),
+    )
+  }
 }
 
 async function applyCheckoutDiscount(items, shippingMethods, taxSettings) {
@@ -4297,6 +4432,16 @@ function renderOrderConfirmation(order) {
             ? `<small>${escapeCmsHtml(sfT('checkoutDiscount'))} ${escapeCmsHtml(order.discount_code || '')}: -${formatPriceCents(order.discount_cents)}</small>`
             : ''
         }
+        ${
+          order.gift_card_cents
+            ? `<small>${escapeCmsHtml(sfT('checkoutGiftCard'))} ${escapeCmsHtml(order.gift_card_code || '')}: -${formatPriceCents(order.gift_card_cents)}</small>`
+            : ''
+        }
+        ${
+          order.store_credit_cents
+            ? `<small>${escapeCmsHtml(sfT('checkoutStoreCreditApplied'))}: -${formatPriceCents(order.store_credit_cents)}</small>`
+            : ''
+        }
         <small>${escapeCmsHtml(sfT('checkoutTax'))}: ${formatPriceCents(order.tax_cents || 0)}</small>
         <small>${escapeCmsHtml(sfT('paymentMethod'))}: ${escapeCmsHtml(order.payment_method || 'manual')}</small>
       </div>
@@ -4344,6 +4489,8 @@ async function submitCheckoutForm(event, shippingMethods, detailedItems, taxSett
     shipping_method: formData.get('shipping_method'),
     payment_method: formData.get('payment_method'),
     discount_code: activeCheckoutDiscount?.code || document.querySelector('#discountCode')?.value.trim() || '',
+    gift_card_code: document.querySelector('#giftCardCode')?.value.trim() || '',
+    apply_store_credit: Boolean(formData.get('apply_store_credit')),
     policy_accepted: Boolean(formData.get('policy_accepted')),
     items: getCart().map((item) => ({
       productSlug: item.productSlug,
@@ -4499,6 +4646,8 @@ async function renderPublicCheckoutPage() {
     }
 
     activeCheckoutDiscount = null
+    activeCheckoutGiftCard = null
+    activeCheckoutStoreCredit = null
     activeCheckoutIdempotencyKey = createCheckoutIdempotencyKey()
     const [shippingMethods, taxSettings, checkoutPolicies] = await Promise.all([
       loadShippingMethods(),
@@ -4557,7 +4706,7 @@ async function renderPublicCheckoutPage() {
               <label>${escapeCmsHtml(sfT('checkoutAddressLine'))}<input name="address_line1" type="text" required></label>
               <label>${escapeCmsHtml(sfT('checkoutCity'))}<input name="city" type="text" required></label>
               <label>${escapeCmsHtml(sfT('checkoutPostal'))}<input name="postal_code" type="text" required></label>
-              <label>${escapeCmsHtml(sfT('checkoutCountry'))}<input name="country" type="text" value="Italia" required></label>
+              <label>${escapeCmsHtml(sfT('checkoutCountry'))}<input name="country" type="text" value="${escapeCmsHtml(sfT('checkoutCountryDefault'))}" required></label>
             </section>
 
             <section>
@@ -4638,10 +4787,25 @@ async function renderPublicCheckoutPage() {
               <p id="checkoutDiscountMessage" class="checkout-message"></p>
             </div>
 
+            <div class="checkout-discount checkout-redemption">
+              <label>
+                ${escapeCmsHtml(sfT('checkoutGiftCardCode'))}
+                <input id="giftCardCode" name="gift_card_code" type="text" placeholder="GIFT-XXXX">
+              </label>
+              <small>${escapeCmsHtml(sfT('checkoutGiftCardHelp'))}</small>
+              <label class="checkout-policy-check">
+                <input name="apply_store_credit" type="checkbox">
+                <span>${escapeCmsHtml(sfT('checkoutUseStoreCredit'))}</span>
+              </label>
+              <small>${escapeCmsHtml(sfT('checkoutStoreCreditHelp'))}</small>
+            </div>
+
             <div class="checkout-totals">
               <span>${escapeCmsHtml(sfT('checkoutSubtotal'))} <strong id="checkoutSubtotal">${formatPriceCents(subtotalCents)}</strong></span>
               <span>${escapeCmsHtml(sfT('checkoutShipping'))} <strong id="checkoutShipping">${formatPriceCents(0)}</strong></span>
               <span id="checkoutDiscountRow" hidden>${escapeCmsHtml(sfT('checkoutDiscount'))} <strong id="checkoutDiscount">-${formatPriceCents(0)}</strong></span>
+              <span id="checkoutGiftCardRow" hidden>${escapeCmsHtml(sfT('checkoutGiftCard'))} <strong id="checkoutGiftCard">-${formatPriceCents(0)}</strong></span>
+              <span id="checkoutStoreCreditRow" hidden>${escapeCmsHtml(sfT('checkoutStoreCreditApplied'))} <strong id="checkoutStoreCredit">-${formatPriceCents(0)}</strong></span>
               <span><span id="checkoutTaxLabel">${escapeCmsHtml(sfT('checkoutTaxIncluded'))}</span> <strong id="checkoutTax">${formatPriceCents(0)}</strong></span>
               <span class="grand-total">${escapeCmsHtml(sfT('checkoutTotal'))} <strong id="checkoutTotal">${formatPriceCents(0)}</strong></span>
             </div>
@@ -4713,8 +4877,8 @@ async function renderPublicBlogPage() {
     <section class="section blog-page">
       <div class="section-head reveal visible">
         <p class="eyebrow">Blog</p>
-        <h1>${slug ? 'Caricamento articolo...' : 'Caricamento blog...'}</h1>
-        <p>Contenuti editoriali dal CMS.</p>
+        <h1>${escapeCmsHtml(slug ? sfT('blogLoadingPost') : sfT('blogLoadingList'))}</h1>
+        <p>${escapeCmsHtml(sfT('blogContentIntro'))}</p>
       </div>
     </section>
   `
@@ -4728,9 +4892,9 @@ async function renderPublicBlogPage() {
         main.innerHTML = `
           <section class="section blog-empty">
             <p class="eyebrow">Blog</p>
-            <h1>Articolo non trovato</h1>
-            <p>Questo articolo non esiste o non e pubblicato.</p>
-            <a class="btn primary" href="/blog">Torna al blog</a>
+            <h1>${escapeCmsHtml(sfT('blogPostNotFound'))}</h1>
+            <p>${escapeCmsHtml(sfT('blogPostMissing'))}</p>
+            <a class="btn primary" href="/blog">${escapeCmsHtml(sfT('backToBlog'))}</a>
           </section>
         `
         applySeoMeta({}, {
@@ -4772,7 +4936,7 @@ async function renderPublicBlogPage() {
           <div class="blog-content">
             ${renderBlogContent(post.content || post.excerpt || '')}
           </div>
-          <a class="btn ghost" href="/blog">Tutti gli articoli</a>
+          <a class="btn ghost" href="/blog">${escapeCmsHtml(sfT('backToBlog'))}</a>
         </article>
       `
       return
@@ -4809,13 +4973,13 @@ async function renderPublicBlogPage() {
                         <p class="eyebrow">${escapeCmsHtml(renderBlogDate(post.created_at))}</p>
                         <h2><a href="/blog/${escapeCmsHtml(post.slug)}">${escapeCmsHtml(post.title)}</a></h2>
                         <p>${escapeCmsHtml(post.excerpt || '')}</p>
-                        <a class="btn ghost" href="/blog/${escapeCmsHtml(post.slug)}">Leggi</a>
+                        <a class="btn ghost" href="/blog/${escapeCmsHtml(post.slug)}">${escapeCmsHtml(sfT('accountOrderDetail'))}</a>
                       </article>
                     `,
                   )
                   .join('')}
               </div>`
-            : '<p class="blog-empty-text">Nessun articolo pubblicato.</p>'
+            : `<p class="blog-empty-text">${escapeCmsHtml(sfT('searchEmpty'))}</p>`
         }
       </section>
     `
@@ -4843,8 +5007,8 @@ async function renderPublicPolicyPage() {
     <section class="section policy-page">
       <div class="section-head reveal visible">
         <p class="eyebrow">Policy</p>
-        <h1>Caricamento policy...</h1>
-        <p>Stiamo recuperando il contenuto dal CMS.</p>
+        <h1>${escapeCmsHtml(sfT('pageLoading'))}</h1>
+        <p>${escapeCmsHtml(sfT('pageLoadingText'))}</p>
       </div>
     </section>
   `
@@ -4857,9 +5021,9 @@ async function renderPublicPolicyPage() {
       main.innerHTML = `
         <section class="section policy-page policy-empty">
           <p class="eyebrow">Policy</p>
-          <h1>Policy non trovata</h1>
-          <p>Questa policy non esiste o non e pubblicata.</p>
-          <a class="btn primary" href="/">Torna al sito</a>
+          <h1>${escapeCmsHtml(sfT('policyNotFound'))}</h1>
+          <p>${escapeCmsHtml(sfT('policyMissing'))}</p>
+          <a class="btn primary" href="/">${escapeCmsHtml(sfT('backToSite'))}</a>
         </section>
       `
       applySeoMeta({}, {
@@ -4879,7 +5043,7 @@ async function renderPublicPolicyPage() {
       <article class="section policy-page">
         <p class="eyebrow">Policy</p>
         <h1>${escapeCmsHtml(policy.title)}</h1>
-        <p class="policy-date">Ultimo aggiornamento: ${escapeCmsHtml(policy.updated_at || '')}</p>
+        <p class="policy-date">${escapeCmsHtml(sfT('lastUpdated'))}: ${escapeCmsHtml(policy.updated_at || '')}</p>
         <div class="policy-content">
           ${renderBlogContent(policy.content || '')}
         </div>
@@ -4889,9 +5053,9 @@ async function renderPublicPolicyPage() {
     main.innerHTML = `
       <section class="section policy-page policy-empty">
         <p class="eyebrow">Policy</p>
-        <h1>Policy non disponibile</h1>
-        <p>Non e stato possibile caricare questa policy.</p>
-        <a class="btn primary" href="/">Torna al sito</a>
+        <h1>${escapeCmsHtml(sfT('policyUnavailable'))}</h1>
+        <p>${escapeCmsHtml(sfT('policyLoadError'))}</p>
+        <a class="btn primary" href="/">${escapeCmsHtml(sfT('backToSite'))}</a>
       </section>
     `
   }
@@ -4914,9 +5078,9 @@ async function renderPublicCmsPage() {
   main.innerHTML = `
     <section class="section">
       <div class="section-head reveal visible">
-        <p class="eyebrow">Pagina CMS</p>
-        <h2>Caricamento pagina...</h2>
-        <p>Stiamo recuperando questa pagina dal CMS.</p>
+        <p class="eyebrow">${escapeCmsHtml(sfT('cmsPage'))}</p>
+        <h2>${escapeCmsHtml(sfT('pageLoading'))}</h2>
+        <p>${escapeCmsHtml(sfT('pageLoadingText'))}</p>
       </div>
     </section>
   `
@@ -4929,7 +5093,7 @@ async function renderPublicCmsPage() {
     const data = await response.json()
 
     if (!data.success) {
-      title.textContent = 'Errore caricamento pagina'
+      title.textContent = sfT('pageLoadError')
       intro.textContent = 'Non è stato possibile leggere questa pagina dal CMS.'
       return
     }
@@ -4938,13 +5102,13 @@ async function renderPublicCmsPage() {
     const page = pages.find((item) => item.slug === pageSlug)
 
     if (!page) {
-      title.textContent = 'Pagina non trovata'
-      intro.textContent = 'Questa pagina non esiste nel CMS.'
+      title.textContent = sfT('pageNotFound')
+      intro.textContent = sfT('pageNotFoundText')
       return
     }
 
     title.textContent = page.title
-    intro.textContent = 'Contenuti caricati dal CMS custom Orbitra.'
+    intro.textContent = sfT('pageLoadedText')
     applySeoMeta(page.seo || {}, {
       title: `${page.title} | Orbitra`,
       description: 'Pagina CMS Orbitra.',
@@ -4952,7 +5116,7 @@ async function renderPublicCmsPage() {
 
     await loadCmsSectionsFromD1(page.slug)
   } catch (error) {
-    title.textContent = 'Errore caricamento pagina'
+    title.textContent = sfT('pageLoadError')
     intro.textContent = 'Non è stato possibile caricare questa pagina.'
   }
 }
@@ -4984,6 +5148,20 @@ async function renderPublicSearchPage() {
   if (!main) return
   const url = new URL(window.location.href)
   const query = url.searchParams.get('q') || ''
+  const selectedCollection = url.searchParams.get('collection') || ''
+  const priceMin = url.searchParams.get('price_min') || ''
+  const priceMax = url.searchParams.get('price_max') || ''
+  const stock = url.searchParams.get('stock') || ''
+  const sort = url.searchParams.get('sort') || 'relevance'
+  let collections = []
+
+  try {
+    const collectionsResponse = await fetch('/api/collections')
+    const collectionsData = await collectionsResponse.json()
+    if (collectionsResponse.ok && collectionsData.success) {
+      collections = translateCollections(collectionsData.collections || [])
+    }
+  } catch {}
 
   main.innerHTML = `
     <section class="section search-page">
@@ -4994,6 +5172,43 @@ async function renderPublicSearchPage() {
       </div>
       <form id="publicSearchForm" class="checkout-form search-form">
         <input id="publicSearchInput" name="q" type="search" value="${escapeCmsHtml(query)}" placeholder="${escapeCmsHtml(sfT('searchPlaceholder'))}">
+        <div class="search-filter-row">
+          <label>
+            ${escapeCmsHtml(sfT('searchCollection'))}
+            <select name="collection">
+              <option value="">${escapeCmsHtml(sfT('searchAllCollections'))}</option>
+              ${collections
+                .map(
+                  (collection) => `
+                    <option value="${escapeCmsHtml(collection.slug)}" ${collection.slug === selectedCollection ? 'selected' : ''}>
+                      ${escapeCmsHtml(collection.name)}
+                    </option>
+                  `,
+                )
+                .join('')}
+            </select>
+          </label>
+          <label>${escapeCmsHtml(sfT('searchPriceMin'))}<input name="price_min" type="number" min="0" step="1" value="${escapeCmsHtml(priceMin)}"></label>
+          <label>${escapeCmsHtml(sfT('searchPriceMax'))}<input name="price_max" type="number" min="0" step="1" value="${escapeCmsHtml(priceMax)}"></label>
+          <label>
+            ${escapeCmsHtml(sfT('searchStock'))}
+            <select name="stock">
+              <option value="" ${stock ? '' : 'selected'}>${escapeCmsHtml(sfT('searchStockAny'))}</option>
+              <option value="in" ${stock === 'in' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchInStock'))}</option>
+              <option value="out" ${stock === 'out' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchOutStock'))}</option>
+            </select>
+          </label>
+          <label>
+            ${escapeCmsHtml(sfT('searchSort'))}
+            <select name="sort">
+              <option value="relevance" ${sort === 'relevance' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchRelevance'))}</option>
+              <option value="price_asc" ${sort === 'price_asc' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchPriceAsc'))}</option>
+              <option value="price_desc" ${sort === 'price_desc' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchPriceDesc'))}</option>
+              <option value="newest" ${sort === 'newest' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchNewest'))}</option>
+              <option value="name" ${sort === 'name' ? 'selected' : ''}>${escapeCmsHtml(sfT('searchName'))}</option>
+            </select>
+          </label>
+        </div>
         <button class="btn primary" type="submit">${escapeCmsHtml(sfT('searchSubmit'))}</button>
       </form>
       <div id="publicSearchResults" class="store-grid"></div>
@@ -5006,18 +5221,30 @@ async function renderPublicSearchPage() {
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault()
-    const nextQuery = input?.value.trim() || ''
-    window.history.replaceState({}, '', `/search${nextQuery ? `?q=${encodeURIComponent(nextQuery)}` : ''}`)
+    const formData = new FormData(form)
+    const params = new URLSearchParams()
+    ;['q', 'collection', 'price_min', 'price_max', 'stock', 'sort'].forEach((key) => {
+      const value = String(formData.get(key) || '').trim()
+      if (value && !(key === 'sort' && value === 'relevance')) params.set(key, value)
+    })
+    window.history.replaceState({}, '', `/search${params.toString() ? `?${params.toString()}` : ''}`)
     renderPublicSearchPage()
   })
 
-  if (!query) {
+  if (!query && !selectedCollection && !priceMin && !priceMax && !stock) {
     if (results) results.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('searchIntro'))}</p>`
     return
   }
 
   try {
-    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+    const params = new URLSearchParams()
+    if (query) params.set('q', query)
+    if (selectedCollection) params.set('collection', selectedCollection)
+    if (priceMin) params.set('price_min', priceMin)
+    if (priceMax) params.set('price_max', priceMax)
+    if (stock) params.set('stock', stock)
+    if (sort) params.set('sort', sort)
+    const response = await fetch(`/api/search?${params.toString()}`)
     const data = await response.json()
     const products = cacheProducts(data.products || [])
     if (!response.ok || !data.success || !products.length) {
@@ -5046,8 +5273,10 @@ async function renderPublicAccountPage() {
       </div>
       <form id="customerAccountLookupForm" class="checkout-form search-form">
         <input id="customerAccountEmail" name="email" type="email" value="${escapeCmsHtml(email)}" placeholder="${escapeCmsHtml(sfT('accountEmailPlaceholder'))}" required>
+        <input id="customerAccountOrderId" name="order_id" type="text" value="${orderId ? escapeCmsHtml(orderId) : ''}" placeholder="${escapeCmsHtml(sfT('accountOrderId'))}">
         <button class="btn primary" type="submit">${escapeCmsHtml(sfT('accountLookup'))}</button>
       </form>
+      <p class="muted-copy">${escapeCmsHtml(sfT('accountPrivacyNote'))}</p>
       <div id="customerAccountResult" class="account-result"></div>
     </section>
   `
@@ -5058,7 +5287,11 @@ async function renderPublicAccountPage() {
   form?.addEventListener('submit', (event) => {
     event.preventDefault()
     const nextEmail = document.querySelector('#customerAccountEmail')?.value.trim() || ''
-    window.history.replaceState({}, '', `/account${nextEmail ? `?email=${encodeURIComponent(nextEmail)}` : ''}`)
+    const nextOrderId = document.querySelector('#customerAccountOrderId')?.value.trim() || ''
+    const params = new URLSearchParams()
+    if (nextEmail) params.set('email', nextEmail)
+    if (nextOrderId) params.set('order_id', nextOrderId)
+    window.history.replaceState({}, '', `/account${params.toString() ? `?${params.toString()}` : ''}`)
     renderPublicAccountPage()
   })
 
@@ -5092,7 +5325,7 @@ async function renderPublicAccountPage() {
           orderDetailHtml = `
             <section class="product-info-panel">
               <div class="section-head reveal visible">
-                <p class="eyebrow">Order #${escapeCmsHtml(order.id)}</p>
+                <p class="eyebrow">${escapeCmsHtml(sfT('accountOrderNumber', { id: order.id }))}</p>
                 <h2>${formatPriceCents(order.total_cents || 0)}</h2>
                 <p>${escapeCmsHtml(order.payment_status || 'pending')} / ${escapeCmsHtml(order.order_status || 'pending')}</p>
               </div>
@@ -5104,7 +5337,7 @@ async function renderPublicAccountPage() {
                         <h3>${escapeCmsHtml(item.product_name || item.product_slug || 'Product')}</h3>
                         <div class="meta">
                           <span>${escapeCmsHtml(item.variant_label || '')}</span>
-                          <span>Qty ${Number(item.quantity || 0)}</span>
+                          <span>${escapeCmsHtml(sfT('accountQty'))} ${Number(item.quantity || 0)}</span>
                           <span>${formatPriceCents(item.price_cents || 0)}</span>
                         </div>
                       </article>
@@ -5134,14 +5367,14 @@ async function renderPublicAccountPage() {
             orders.length
               ? orders.map((order) => `
                 <article class="product-item">
-                  <h3>Order #${escapeCmsHtml(order.id)}</h3>
+                  <h3>${escapeCmsHtml(sfT('accountOrderNumber', { id: order.id }))}</h3>
                   <div class="meta">
                     <span>${formatPriceCents(order.total_cents || 0)}</span>
                     <span>${escapeCmsHtml(order.payment_status || 'pending')}</span>
                     <span>${escapeCmsHtml(order.order_status || 'pending')}</span>
                     <span>${escapeCmsHtml(order.created_at || '')}</span>
                   </div>
-                  <a class="btn ghost" href="/account?email=${encodeURIComponent(email)}&order_id=${encodeURIComponent(order.id)}">Dettaglio</a>
+                  <a class="btn ghost" href="/account?email=${encodeURIComponent(email)}&order_id=${encodeURIComponent(order.id)}">${escapeCmsHtml(sfT('accountOrderDetail'))}</a>
                 </article>
               `).join('')
               : `<p class="muted-copy">${escapeCmsHtml(accountData.message || sfT('accountNoData'))}</p>`

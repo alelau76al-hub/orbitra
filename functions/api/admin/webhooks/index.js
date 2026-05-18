@@ -25,6 +25,39 @@ async function sha256Hex(value = '') {
   return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
+async function deliverWebhook(env, hook, payload = {}) {
+  const event = hook.event
+  const requestBody = JSON.stringify({ event, data: payload })
+  let status = 'failed'
+  let responseStatus = null
+  let errorText = ''
+
+  try {
+    const response = await fetch(hook.target_url, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-takeoff-event': event,
+      },
+      body: requestBody,
+    })
+    responseStatus = response.status
+    status = response.ok ? 'delivered' : 'failed'
+  } catch {
+    status = 'failed'
+    errorText = 'Delivery failed.'
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO webhook_deliveries (webhook_id, event, status, response_status, error, request_body)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `)
+    .bind(hook.id, event, status, responseStatus, errorText, requestBody)
+    .run()
+
+  return { status, response_status: responseStatus }
+}
+
 export async function onRequestGet({ env }) {
   try {
     const [webhooks, deliveries] = await Promise.all([
@@ -55,13 +88,18 @@ export async function onRequestPost({ env, request }) {
       const id = Number(body.id)
       const hook = await env.DB.prepare('SELECT id, event, target_url FROM webhooks WHERE id = ?').bind(id).first()
       if (!hook) return json({ success: false, message: 'Webhook non trovato.' }, { status: 404 })
-      await env.DB.prepare(`
-        INSERT INTO webhook_deliveries (webhook_id, event, status, request_body)
-        VALUES (?, ?, 'mocked', ?)
-      `)
-        .bind(id, hook.event, JSON.stringify({ test: true, target_url: hook.target_url }))
-        .run()
-      return json({ success: true, message: 'Webhook test registrato in modalita mock/logging.' })
+      const delivery = await deliverWebhook(env, hook, {
+        test: true,
+        source: 'TakeOff Webhooks',
+      })
+      return json({
+        success: true,
+        delivery,
+        message:
+          delivery.status === 'delivered'
+            ? 'Webhook test consegnato.'
+            : 'Webhook test registrato con esito failed. Controlla target URL e log.',
+      })
     }
 
     const event = EVENTS.has(body.event) ? body.event : ''

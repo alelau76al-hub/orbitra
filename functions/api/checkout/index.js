@@ -22,6 +22,10 @@ function normalizeCode(value = '') {
   return String(value || '').trim().toUpperCase()
 }
 
+function normalizeGiftCardCode(value = '') {
+  return String(value || '').trim().replace(/\s+/g, '').toUpperCase()
+}
+
 function normalizeCurrency(value = 'EUR') {
   const currency = String(value || 'EUR').trim().toUpperCase()
   return /^[A-Z]{3}$/.test(currency) ? currency : 'EUR'
@@ -223,7 +227,7 @@ function calculateDiscountCents(discount, subtotalCents) {
   return Math.round((subtotalCents * percent) / 100)
 }
 
-async function resolveDiscount(env, code, subtotalCents) {
+async function resolveDiscount(env, code, subtotalCents, context = {}) {
   const discountCode = normalizeCode(code)
 
   if (!discountCode) {
@@ -233,20 +237,44 @@ async function resolveDiscount(env, code, subtotalCents) {
     }
   }
 
-  const discount = await env.DB.prepare(`
-    SELECT
-      code,
-      type,
-      value,
-      starts_at,
-      ends_at,
-      min_subtotal_cents,
-      active
-    FROM discount_codes
-    WHERE code = ? AND active = 1
-  `)
-    .bind(discountCode)
-    .first()
+  let discount
+
+  try {
+    discount = await env.DB.prepare(`
+      SELECT
+        code,
+        type,
+        value,
+        starts_at,
+        ends_at,
+        min_subtotal_cents,
+        active,
+        discount_kind,
+        usage_limit,
+        usage_count,
+        market_handle,
+        currency_code
+      FROM discount_codes
+      WHERE code = ? AND active = 1
+    `)
+      .bind(discountCode)
+      .first()
+  } catch {
+    discount = await env.DB.prepare(`
+      SELECT
+        code,
+        type,
+        value,
+        starts_at,
+        ends_at,
+        min_subtotal_cents,
+        active
+      FROM discount_codes
+      WHERE code = ? AND active = 1
+    `)
+      .bind(discountCode)
+      .first()
+  }
 
   if (!discount) {
     return {
@@ -267,9 +295,224 @@ async function resolveDiscount(env, code, subtotalCents) {
     }
   }
 
+  const usageLimit = Number(discount.usage_limit || 0)
+  const usageCount = Number(discount.usage_count || 0)
+  if (usageLimit > 0 && usageCount >= usageLimit) {
+    return {
+      error: 'Questo codice sconto ha raggiunto il limite di utilizzo.',
+    }
+  }
+
+  if (discount.market_handle && context.market_handle && discount.market_handle !== context.market_handle) {
+    return {
+      error: 'Questo codice sconto non e valido per il mercato selezionato.',
+    }
+  }
+
+  if (discount.currency_code && context.currency && discount.currency_code !== context.currency) {
+    return {
+      error: 'Questo codice sconto non e valido per la valuta selezionata.',
+    }
+  }
+
+  if (discount.discount_kind === 'free_shipping') {
+    return {
+      code: discount.code,
+      discount_cents: 0,
+      free_shipping: true,
+    }
+  }
+
   return {
     code: discount.code,
     discount_cents: calculateDiscountCents(discount, subtotalCents),
+  }
+}
+
+async function incrementDiscountUsage(env, code) {
+  const discountCode = normalizeCode(code)
+  if (!discountCode) return
+
+  try {
+    await env.DB.prepare(`
+      UPDATE discount_codes
+      SET usage_count = COALESCE(usage_count, 0) + 1,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE code = ?
+    `)
+      .bind(discountCode)
+      .run()
+  } catch {
+    // Older discount schemas do not expose usage counters.
+  }
+}
+
+async function resolveGiftCard(env, code, totalCents) {
+  const giftCardCode = normalizeGiftCardCode(code)
+  if (!giftCardCode) {
+    return { code: '', amount_cents: 0 }
+  }
+
+  try {
+    const giftCard = await env.DB.prepare(`
+      SELECT id, code, balance_cents, status, active, expires_at
+      FROM gift_cards
+      WHERE code = ?
+      LIMIT 1
+    `)
+      .bind(giftCardCode)
+      .first()
+
+    if (!giftCard || Number(giftCard.active) === 0 || giftCard.status !== 'active') {
+      return { error: 'Gift card non valida o non attiva.' }
+    }
+
+    if (giftCard.expires_at && Date.parse(giftCard.expires_at) < Date.now()) {
+      return { error: 'Gift card scaduta.' }
+    }
+
+    const balanceCents = Math.max(0, Number(giftCard.balance_cents || 0))
+    if (balanceCents <= 0) {
+      return { error: 'Gift card senza saldo disponibile.' }
+    }
+
+    return {
+      id: giftCard.id,
+      code: giftCard.code,
+      amount_cents: Math.min(balanceCents, Math.max(0, Number(totalCents || 0))),
+    }
+  } catch {
+    return { error: 'Gift card non disponibile in questo momento.' }
+  }
+}
+
+async function resolveStoreCredit(env, customerEmail, totalCents, enabled) {
+  const email = normalizeEmail(customerEmail)
+  if (!enabled || !email) return { amount_cents: 0, credits: [] }
+
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT id, remaining_amount_cents
+      FROM store_credits
+      WHERE LOWER(customer_email) = ?
+        AND active = 1
+        AND status = 'active'
+        AND remaining_amount_cents > 0
+      ORDER BY created_at ASC, id ASC
+    `)
+      .bind(email)
+      .all()
+
+    const credits = results || []
+    let remaining = Math.max(0, Number(totalCents || 0))
+    const appliedCredits = []
+
+    for (const credit of credits) {
+      if (remaining <= 0) break
+      const available = Math.max(0, Number(credit.remaining_amount_cents || 0))
+      const amount = Math.min(available, remaining)
+      if (amount > 0) {
+        appliedCredits.push({ id: credit.id, amount_cents: amount })
+        remaining -= amount
+      }
+    }
+
+    return {
+      amount_cents: appliedCredits.reduce((sum, credit) => sum + credit.amount_cents, 0),
+      credits: appliedCredits,
+    }
+  } catch {
+    return { error: 'Credito cliente non disponibile in questo momento.' }
+  }
+}
+
+async function redeemGiftCard(env, giftCard) {
+  if (!giftCard?.id || !giftCard.amount_cents) return
+
+  try {
+    await env.DB.prepare(`
+      UPDATE gift_cards
+      SET balance_cents = MAX(0, balance_cents - ?),
+          status = CASE WHEN balance_cents - ? <= 0 THEN 'used' ELSE status END,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `)
+      .bind(giftCard.amount_cents, giftCard.amount_cents, giftCard.id)
+      .run()
+  } catch {
+    // Redemption is best-effort; the order response remains clean if the table is unavailable.
+  }
+}
+
+async function redeemStoreCredit(env, customerId, credits) {
+  if (!Array.isArray(credits) || !credits.length) return
+
+  for (const credit of credits) {
+    try {
+      await env.DB.prepare(`
+        UPDATE store_credits
+        SET remaining_amount_cents = MAX(0, remaining_amount_cents - ?),
+            status = CASE WHEN remaining_amount_cents - ? <= 0 THEN 'used' ELSE status END,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `)
+        .bind(credit.amount_cents, credit.amount_cents, credit.id)
+        .run()
+
+      await env.DB.prepare(`
+        INSERT INTO store_credit_events (store_credit_id, event_type, amount_cents, note)
+        VALUES (?, 'redeemed', ?, ?)
+      `)
+        .bind(credit.id, credit.amount_cents, `Checkout order redemption for customer ${customerId || 'guest'}`)
+        .run()
+    } catch {
+      // Optional operational log; do not fail checkout.
+    }
+  }
+}
+
+async function recordWebhookEvent(env, event, payload = {}) {
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT id, target_url
+      FROM webhooks
+      WHERE event = ? AND active = 1
+      LIMIT 20
+    `)
+      .bind(event)
+      .all()
+
+    for (const webhook of results || []) {
+      const requestBody = JSON.stringify({ event, data: payload })
+      let status = 'failed'
+      let responseStatus = null
+      let errorText = ''
+
+      try {
+        const response = await fetch(webhook.target_url, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-takeoff-event': event,
+          },
+          body: requestBody,
+        })
+        responseStatus = response.status
+        status = response.ok ? 'delivered' : 'failed'
+      } catch {
+        status = 'failed'
+        errorText = 'Delivery failed.'
+      }
+
+      await env.DB.prepare(`
+        INSERT INTO webhook_deliveries (webhook_id, event, status, response_status, error, request_body)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `)
+        .bind(webhook.id, event, status, responseStatus, errorText, requestBody)
+        .run()
+    }
+  } catch {
+    // Webhook delivery is optional and must never block checkout.
   }
 }
 
@@ -542,6 +785,9 @@ function publicOrderResponse(order) {
     shipping_cents: Number(order.shipping_cents || 0),
     discount_code: order.discount_code || '',
     discount_cents: Number(order.discount_cents || 0),
+    gift_card_code: order.gift_card_code || '',
+    gift_card_cents: Number(order.gift_card_cents || 0),
+    store_credit_cents: Number(order.store_credit_cents || 0),
     taxable_base_cents: Number(order.taxable_base_cents || 0),
     tax_cents: Number(order.tax_cents || 0),
     tax_rate: Number(order.tax_rate || 0),
@@ -806,15 +1052,27 @@ export async function onRequestPost({ request, env }) {
     }
 
     const shippingMethods = await getShippingMethods(env)
-    const shipping = resolveShipping(
+    const giftCardCode = normalizeGiftCardCode(body.gift_card_code)
+    const applyStoreCredit = body.apply_store_credit === true || String(body.apply_store_credit) === '1'
+    let shipping = resolveShipping(
       shippingMethods,
       readText(body.shipping_method || 'standard'),
       subtotalCents,
     )
-    const discount = await resolveDiscount(env, requestedDiscountCode, subtotalCents)
+    const discount = await resolveDiscount(env, requestedDiscountCode, subtotalCents, {
+      market_handle: marketHandle,
+      currency,
+    })
 
     if (discount.error) {
       return json({ success: false, message: discount.error }, 400)
+    }
+
+    if (discount.free_shipping) {
+      shipping = {
+        ...shipping,
+        price_cents: 0,
+      }
     }
 
     const taxSettings = await loadTaxSettings(env)
@@ -824,7 +1082,29 @@ export async function onRequestPost({ request, env }) {
       discount.discount_cents,
       taxSettings,
     )
-    const totalCents = taxSummary.total_cents
+    const giftCard = await resolveGiftCard(env, giftCardCode, taxSummary.total_cents)
+    if (giftCard.error) {
+      return json({ success: false, message: giftCard.error }, 400)
+    }
+
+    const afterGiftCardCents = Math.max(0, taxSummary.total_cents - Number(giftCard.amount_cents || 0))
+    const storeCredit = await resolveStoreCredit(env, customer.email, afterGiftCardCents, applyStoreCredit)
+    if (storeCredit.error) {
+      return json({ success: false, message: storeCredit.error }, 400)
+    }
+
+    const totalCents = Math.max(
+      0,
+      afterGiftCardCents - Number(storeCredit.amount_cents || 0),
+    )
+
+    if (totalCents === 0) {
+      payment.requires_payment_redirect = false
+      payment.payment_status = 'paid'
+      payment.payment_method = payment.payment_method === 'stripe' ? 'store_credit' : payment.payment_method
+      payment.payment_provider = 'manual'
+    }
+
     const orderStatus = payment.payment_status === 'paid' ? 'paid' : 'new'
     const customerId = await upsertCustomer(env, customer, address)
     const policyAcceptedAt = body.policy_accepted ? new Date().toISOString() : null
@@ -897,6 +1177,28 @@ export async function onRequestPost({ request, env }) {
       payment_status: payment.payment_status,
     })
 
+    if (!payment.requires_payment_redirect && payment.payment_status !== 'failed') {
+      await redeemGiftCard(env, giftCard)
+      await redeemStoreCredit(env, customerId, storeCredit.credits)
+    }
+
+    if (payment.payment_status !== 'failed') {
+      await incrementDiscountUsage(env, discount.code)
+    }
+    await recordWebhookEvent(env, 'order.created', {
+      order_id: orderId,
+      total_cents: totalCents,
+      currency,
+      payment_status: payment.payment_status,
+    })
+    if (payment.payment_status === 'paid') {
+      await recordWebhookEvent(env, 'order.paid', {
+        order_id: orderId,
+        total_cents: totalCents,
+        currency,
+      })
+    }
+
     return json({
       success: true,
       order: publicOrderResponse({
@@ -906,6 +1208,9 @@ export async function onRequestPost({ request, env }) {
         shipping_cents: shipping.price_cents,
         discount_code: discount.code || '',
         discount_cents: discount.discount_cents,
+        gift_card_code: giftCard.code || '',
+        gift_card_cents: giftCard.amount_cents || 0,
+        store_credit_cents: storeCredit.amount_cents || 0,
         taxable_base_cents: taxSummary.taxable_base_cents,
         tax_cents: taxSummary.tax_cents,
         tax_rate: taxSummary.tax_rate,
