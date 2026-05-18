@@ -1382,6 +1382,237 @@
         </div>
       </section>
 
+      <section id="customer-accounts" class="cms-area card admin-view" data-admin-view="customer-accounts">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Customer Accounts</h2>
+            <p class="section-subtitle">Customer portal base, inviti provider-ready e stato account senza introdurre auth cliente complessa.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Customer portal readiness</h3>
+            <p>Pagina pubblica <code>/account</code> pianificata per ordini cliente, indirizzi e account status. In questa release resta fallback sicuro se il login cliente non e configurato.</p>
+            <div class="status-list">
+              <span>Account states: guest, invited, active, disabled</span>
+              <span>Invite workflow: mock/provider-ready</span>
+              <span>Customer auth completa: Advanced tools in progress</span>
+            </div>
+          </section>
+          <section class="inner-card">
+            <h3>Admin workflow</h3>
+            <p>Usa la scheda clienti per storico ordini, note, tag e invito mock. Nessuna password cliente viene gestita in questa fase.</p>
+            <a class="secondary button-link" href="#clienti">Apri clienti</a>
+          </section>
+        </div>
+      </section>
+
+      <section id="gift-cards" class="cms-area card admin-view" data-admin-view="gift-cards">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Gift Cards</h2>
+            <p class="section-subtitle">Gift cards e store credit pronti per data model dedicato, emissione controllata e checkout support futuro.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card commerce-blueprint-card">
+            <h3>Gift card schema</h3>
+            <p>Codice, saldo iniziale, saldo residuo, scadenza opzionale, customer email, note e stato active / used / expired / disabled.</p>
+            <span class="status-badge">Basic configuration</span>
+          </section>
+          <section class="inner-card commerce-blueprint-card">
+            <h3>Store credit</h3>
+            <p>Credito cliente per email/customer ID, amount, note, status e log eventi credito. Nessuna applicazione checkout viene forzata senza tabella dedicata.</p>
+            <span class="status-badge">Data model ready</span>
+          </section>
+          <section class="inner-card">
+            <h3>Checkout compatibility</h3>
+            <p>Applicazione saldo e combinazione con sconti restano disabilitate finche non viene applicata una migration non distruttiva e testata.</p>
+          </section>
+        </div>
+      </section>
+
+      <section id="advanced-discounts" class="cms-area card admin-view" data-admin-view="advanced-discounts">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Commerce tools</span>
+            <h2>Advanced Discounts</h2>
+            <p class="section-subtitle">Regole sconto Shopify-like con stato chiaro e compatibilita checkout progressiva.</p>
+          </div>
+          <a class="back-link" href="#marketing">&larr; Torna a Marketing</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Disponibile ora</h3>
+            <div class="status-list">
+              <span>Percentuale e importo fisso</span>
+              <span>Minimum cart amount</span>
+              <span>Start/end date e active/inactive</span>
+              <span>Stato: active, scheduled, expired, disabled</span>
+            </div>
+            <a class="secondary button-link" href="#marketing-discounts">Apri sconti</a>
+          </section>
+          <section class="inner-card">
+            <h3>Configurazione avanzata</h3>
+            <p>Free shipping discount, usage limit, customer eligibility, market/currency e combinabilita sono tracciati come configurazione avanzata dove il checkout non applica ancora la regola.</p>
+            <span class="status-badge">Checkout support in progress</span>
+          </section>
+        </div>
+      </section>
+
+      <section id="abandoned-carts" class="cms-area card admin-view" data-admin-view="abandoned-carts">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Growth automation</span>
+            <h2>TakeOff Abandoned Cart</h2>
+            <p class="section-subtitle">Recovery carrello provider-ready con session state, email mock e automazioni collegate.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Recovery pipeline</h3>
+            <p>Stati previsti: open, recovered, expired. Items, totale stimato, email cliente e last activity saranno salvati solo quando il tracking server-side sara attivo.</p>
+            <span class="status-badge">Provider-ready</span>
+          </section>
+          <section class="inner-card">
+            <h3>Email recovery</h3>
+            <p>Il bottone Send recovery email resta mock/logging only finche il provider email reale non viene configurato.</p>
+            <a class="secondary button-link" href="#email-automations">Apri Email Automations</a>
+          </section>
+        </div>
+      </section>
+
+      <section id="search-filters" class="cms-area card admin-view" data-admin-view="search-filters">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Catalog discovery</span>
+            <h2>TakeOff Search & Filters</h2>
+            <p class="section-subtitle">Ricerca prodotti e filtri catalogo configurabili senza motore esterno.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Search fields</h3>
+            <p>Title, description, SKU, categoria, collezione, tag/metafields disponibili e brand/vendor quando presenti.</p>
+            <div class="status-list">
+              <span>Sorting: relevance, price asc/desc, newest, name</span>
+              <span>Filters: collection, price, stock, metadata</span>
+              <span>Search engine esterno: non richiesto</span>
+            </div>
+          </section>
+          <section class="inner-card">
+            <h3>Storefront readiness</h3>
+            <p>Endpoint <code>/api/search?q=</code> pianificato con fallback nessun risultato e senza dipendenze Algolia/Meilisearch.</p>
+            <span class="status-badge">Basic configuration</span>
+          </section>
+        </div>
+      </section>
+
+      <section id="seo-technical" class="cms-area card admin-view" data-admin-view="seo-technical">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Technical SEO</span>
+            <h2>TakeOff SEO Technical Pro</h2>
+            <p class="section-subtitle">Sitemap, robots, redirects, canonical, hreflang e schema readiness in un centro tecnico.</p>
+          </div>
+          <a class="back-link" href="#seo">&larr; Torna a TakeOff SEO</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Sitemap e robots</h3>
+            <p>Endpoint compatibili <code>/api/sitemap.xml</code> e <code>/api/robots.txt</code> sono preparabili senza modificare routing pubblico in questa fase.</p>
+            <span class="status-badge">Configurable</span>
+          </section>
+          <section class="inner-card">
+            <h3>Redirect manager</h3>
+            <p>Campi previsti: from_path, to_path, status 301/302, active/inactive. Richiede tabella dedicata prima di attivare scritture.</p>
+            <span class="status-badge">Data model ready</span>
+          </section>
+          <section class="inner-card">
+            <h3>Schema e hreflang</h3>
+            <p>Organization, Website, Product e Breadcrumb possono essere generati dal contenuto esistente con fallback quando campi SEO sono vuoti.</p>
+          </section>
+        </div>
+      </section>
+
+      <section id="webhooks" class="cms-area card admin-view" data-admin-view="webhooks">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Developer events</span>
+            <h2>TakeOff Webhooks</h2>
+            <p class="section-subtitle">Eventi developer per integrazioni custom, senza marketplace o billing app esterno.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Eventi disponibili</h3>
+            <div class="status-list">
+              <span>order.created, order.paid, order.fulfilled</span>
+              <span>customer.created, product.updated, return.requested</span>
+              <span>Delivery log: mock/logging only finche non c'e una queue dedicata</span>
+            </div>
+          </section>
+          <section class="inner-card">
+            <h3>Configurazione endpoint</h3>
+            <p>target_url, active/inactive e secret opzionale non obbligatorio. Nessun secret viene inserito nel repository.</p>
+            <span class="status-badge">Basic configuration</span>
+          </section>
+        </div>
+      </section>
+
+      <section id="supplier-feeds" class="cms-area card admin-view" data-admin-view="supplier-feeds">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">DataFlow advanced</span>
+            <h2>Supplier Feeds</h2>
+            <p class="section-subtitle">Feed fornitori e import programmati predisposti per cataloghi grandi.</p>
+          </div>
+          <a class="back-link" href="#import-export">&larr; Torna a Import Export</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Feed config</h3>
+            <p>name, source_url, format CSV/JSON/XML, active/inactive, schedule manual/daily/weekly e target products/stock/prices.</p>
+            <span class="status-badge">Advanced tools in progress</span>
+          </section>
+          <section class="inner-card">
+            <h3>Manual dry-run</h3>
+            <p>Il dry-run resta collegato a TakeOff Import Export Pro. Scheduler reale richiede Cloudflare cron o provider esterno configurato.</p>
+            <a class="secondary button-link" href="#import-export">Apri DataFlow</a>
+          </section>
+        </div>
+      </section>
+
+      <section id="subscriptions" class="cms-area card admin-view" data-admin-view="subscriptions">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Recurring commerce</span>
+            <h2>TakeOff Subscriptions</h2>
+            <p class="section-subtitle">Prodotti in abbonamento predisposti senza avviare billing ricorrente reale.</p>
+          </div>
+          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+        </div>
+        <div class="advanced-commerce-grid">
+          <section class="inner-card">
+            <h3>Subscription product config</h3>
+            <p>product_id, frequency weekly/monthly/yearly, subscription price, active/inactive e trial days opzionale.</p>
+            <span class="status-badge">Basic configuration</span>
+          </section>
+          <section class="inner-card">
+            <h3>Payment provider requirement</h3>
+            <p>Checkout abbonamenti richiede setup provider ricorrente. Nessuna subscription Stripe reale viene creata in questa fase.</p>
+            <span class="status-badge">Requires external configuration</span>
+          </section>
+        </div>
+      </section>
+
       <section id="backup" class="cms-area card admin-view" data-admin-view="backup">
         <div class="section-title">
           <div>
@@ -2040,6 +2271,24 @@
           <a class="mini-card" href="#marketing-discounts">
             <h3>Sconti</h3>
             <p>Gestisci codici sconto percentuali o a importo fisso.</p>
+          </a>
+
+          <a class="mini-card" href="#advanced-discounts">
+            <span class="mini-card-status">Basic configuration</span>
+            <h3>Advanced Discounts</h3>
+            <p>Regole promozionali avanzate e compatibilita checkout progressiva.</p>
+          </a>
+
+          <a class="mini-card" href="#abandoned-carts">
+            <span class="mini-card-status">Provider-ready</span>
+            <h3>Abandoned Cart</h3>
+            <p>Recovery email e tracking carrello predisposti senza automazioni invasive.</p>
+          </a>
+
+          <a class="mini-card" href="#search-filters">
+            <span class="mini-card-status">Basic configuration</span>
+            <h3>Search & Filters</h3>
+            <p>Ricerca prodotti, filtri catalogo e ordinamenti ecommerce.</p>
           </a>
 
           <a class="mini-card placeholder-card" href="#marketing-coupons">

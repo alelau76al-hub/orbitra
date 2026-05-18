@@ -3717,6 +3717,31 @@ body[data-admin-theme="light"] .preview-device-toggle button:not(.active) {
   gap: 16px;
 }
 
+.advanced-commerce-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.commerce-blueprint-card {
+  border-color: color-mix(in srgb, var(--app-accent, #ff845f) 22%, var(--admin-border));
+  background:
+    radial-gradient(circle at 92% 8%, var(--app-accent-soft, rgba(255, 132, 95, 0.12)), transparent 32%),
+    var(--admin-surface-soft);
+}
+
+.advanced-commerce-grid code,
+.field-help code {
+  display: inline-flex;
+  padding: 2px 7px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  color: var(--admin-text);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.84em;
+}
+
 .status-list {
   display: grid;
   gap: 8px;
@@ -4564,6 +4589,31 @@ textarea::placeholder {
 .app-detail-view--product-feeds {
   --app-accent: #7cc7ff;
   --app-accent-soft: rgba(124, 199, 255, 0.14);
+}
+
+.app-detail-view--customer-accounts,
+.app-detail-view--gift-cards,
+.app-detail-view--subscriptions {
+  --app-accent: #ff8b55;
+  --app-accent-soft: rgba(255, 139, 85, 0.16);
+}
+
+.app-detail-view--advanced-discounts,
+.app-detail-view--abandoned-carts,
+.app-detail-view--search-filters {
+  --app-accent: #ff7ab8;
+  --app-accent-soft: rgba(255, 122, 184, 0.14);
+}
+
+.app-detail-view--seo-technical {
+  --app-accent: #70e6a8;
+  --app-accent-soft: rgba(112, 230, 168, 0.13);
+}
+
+.app-detail-view--webhooks,
+.app-detail-view--supplier-feeds {
+  --app-accent: #9fb5c8;
+  --app-accent-soft: rgba(159, 181, 200, 0.14);
 }
 
 .app-detail-view--backup,
