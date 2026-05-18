@@ -64,6 +64,24 @@ const STOREFRONT_TRANSLATIONS = {
     relatedProducts: 'Prodotti correlati',
     sameCollection: 'Dalla stessa collezione',
     relatedText: 'Altre scelte coerenti con questo prodotto.',
+    subscriptionOption: 'Opzione abbonamento',
+    subscriptionOneTime: 'Acquisto singolo',
+    subscriptionRecurring: 'Abbonamento {frequency}',
+    subscriptionRequiresProvider: 'Il checkout abbonamenti richiede configurazione provider ricorrente.',
+    subscriptionTrial: 'Trial {days} giorni',
+    accountTitle: 'Account cliente',
+    accountIntro: 'Consulta ordini e indirizzi usando la tua email ordine.',
+    accountEmailPlaceholder: 'email@example.com',
+    accountLookup: 'Cerca account',
+    accountNoData: 'Nessun account cliente trovato per questa email.',
+    accountOrders: 'Ordini cliente',
+    accountAddresses: 'Indirizzi',
+    accountStatus: 'Stato account',
+    searchTitle: 'Ricerca prodotti',
+    searchIntro: 'Trova prodotti per nome, descrizione o categoria.',
+    searchPlaceholder: 'Cerca prodotti...',
+    searchSubmit: 'Cerca',
+    searchEmpty: 'Nessun risultato trovato.',
     collectionLoading: 'Caricamento collezione...',
     collectionLoadingText: 'Stiamo recuperando prodotti e contenuti dal CMS.',
     collectionNotFound: 'Collezione non trovata',
@@ -198,6 +216,24 @@ const STOREFRONT_TRANSLATIONS = {
     relatedProducts: 'Related products',
     sameCollection: 'From the same collection',
     relatedText: 'Other choices aligned with this product.',
+    subscriptionOption: 'Subscription option',
+    subscriptionOneTime: 'One-time purchase',
+    subscriptionRecurring: '{frequency} subscription',
+    subscriptionRequiresProvider: 'Subscription checkout requires recurring payment provider setup.',
+    subscriptionTrial: '{days} days trial',
+    accountTitle: 'Customer account',
+    accountIntro: 'View orders and addresses using your order email.',
+    accountEmailPlaceholder: 'email@example.com',
+    accountLookup: 'Find account',
+    accountNoData: 'No customer account found for this email.',
+    accountOrders: 'Customer orders',
+    accountAddresses: 'Addresses',
+    accountStatus: 'Account status',
+    searchTitle: 'Product search',
+    searchIntro: 'Find products by name, description or category.',
+    searchPlaceholder: 'Search products...',
+    searchSubmit: 'Search',
+    searchEmpty: 'No results found.',
     collectionLoading: 'Loading collection...',
     collectionLoadingText: 'Retrieving products and content from the CMS.',
     collectionNotFound: 'Collection not found',
@@ -3729,6 +3765,12 @@ function renderProductUpsellsShell(product) {
   `
 }
 
+function renderProductSubscriptionShell(product) {
+  return `
+    <section class="product-subscription-panel" id="productSubscriptionPanel" data-product-id="${escapeCmsHtml(product.id || '')}" hidden></section>
+  `
+}
+
 async function hydrateProductReviews(product) {
   const panel = document.querySelector('#productReviewsPanel')
   if (!panel || !product?.id) return
@@ -3789,6 +3831,49 @@ async function hydrateProductUpsells(product) {
     }
 
     listTarget.innerHTML = uniqueProducts.map((item) => renderProductCard(item)).join('')
+  } catch {
+    panel.remove()
+  }
+}
+
+async function hydrateProductSubscriptions(product) {
+  const panel = document.querySelector('#productSubscriptionPanel')
+  if (!panel || !product?.id) return
+
+  try {
+    const response = await fetch(`/api/subscriptions?product_id=${encodeURIComponent(product.id)}`)
+    const data = await response.json()
+    const subscriptions = data.success ? data.subscriptions || [] : []
+    const subscription = subscriptions[0]
+
+    if (!subscription) {
+      panel.remove()
+      return
+    }
+
+    panel.hidden = false
+    panel.innerHTML = `
+      <div class="subscription-choice">
+        <p class="eyebrow">${escapeCmsHtml(sfT('subscriptionOption'))}</p>
+        <label>
+          <input type="radio" name="purchase_mode" value="one_time" checked>
+          <span>${escapeCmsHtml(sfT('subscriptionOneTime'))}</span>
+        </label>
+        <label>
+          <input type="radio" name="purchase_mode" value="subscription">
+          <span>
+            ${escapeCmsHtml(sfT('subscriptionRecurring', { frequency: subscription.frequency || 'monthly' }))}
+            - ${formatPriceCents(subscription.subscription_price_cents || product.price_cents || 0)}
+          </span>
+        </label>
+        ${
+          subscription.trial_days
+            ? `<small>${escapeCmsHtml(sfT('subscriptionTrial', { days: subscription.trial_days }))}</small>`
+            : ''
+        }
+        <small>${escapeCmsHtml(sfT('subscriptionRequiresProvider'))}</small>
+      </div>
+    `
   } catch {
     panel.remove()
   }
@@ -3977,6 +4062,8 @@ async function renderPublicProductPage() {
             <input id="productQuantity" type="number" min="1" value="1">
           </label>
 
+          ${renderProductSubscriptionShell(product)}
+
           ${renderAddToCartButton(
             product,
             defaultVariant,
@@ -4024,6 +4111,7 @@ async function renderPublicProductPage() {
     hydrateThreeDViewers()
     hydrateProductReviews(product)
     hydrateProductUpsells(product)
+    hydrateProductSubscriptions(product)
   } catch (error) {
     document.querySelector('#productJsonLd')?.remove()
     main.innerHTML = `
@@ -4891,6 +4979,199 @@ async function applyHomeSeoMeta() {
   }
 }
 
+async function renderPublicSearchPage() {
+  const main = document.querySelector('main')
+  if (!main) return
+  const url = new URL(window.location.href)
+  const query = url.searchParams.get('q') || ''
+
+  main.innerHTML = `
+    <section class="section search-page">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">TakeOff Search</p>
+        <h1>${escapeCmsHtml(sfT('searchTitle'))}</h1>
+        <p>${escapeCmsHtml(sfT('searchIntro'))}</p>
+      </div>
+      <form id="publicSearchForm" class="checkout-form search-form">
+        <input id="publicSearchInput" name="q" type="search" value="${escapeCmsHtml(query)}" placeholder="${escapeCmsHtml(sfT('searchPlaceholder'))}">
+        <button class="btn primary" type="submit">${escapeCmsHtml(sfT('searchSubmit'))}</button>
+      </form>
+      <div id="publicSearchResults" class="store-grid"></div>
+    </section>
+  `
+
+  const form = document.querySelector('#publicSearchForm')
+  const input = document.querySelector('#publicSearchInput')
+  const results = document.querySelector('#publicSearchResults')
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const nextQuery = input?.value.trim() || ''
+    window.history.replaceState({}, '', `/search${nextQuery ? `?q=${encodeURIComponent(nextQuery)}` : ''}`)
+    renderPublicSearchPage()
+  })
+
+  if (!query) {
+    if (results) results.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('searchIntro'))}</p>`
+    return
+  }
+
+  try {
+    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+    const data = await response.json()
+    const products = cacheProducts(data.products || [])
+    if (!response.ok || !data.success || !products.length) {
+      if (results) results.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('searchEmpty'))}</p>`
+      return
+    }
+    if (results) results.innerHTML = products.map(renderProductCard).join('')
+  } catch {
+    if (results) results.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('searchEmpty'))}</p>`
+  }
+}
+
+async function renderPublicAccountPage() {
+  const main = document.querySelector('main')
+  if (!main) return
+  const url = new URL(window.location.href)
+  const email = url.searchParams.get('email') || ''
+  const orderId = Number(url.searchParams.get('order_id') || 0)
+
+  main.innerHTML = `
+    <section class="section account-page">
+      <div class="section-head reveal visible">
+        <p class="eyebrow">TakeOff Customer Accounts</p>
+        <h1>${escapeCmsHtml(sfT('accountTitle'))}</h1>
+        <p>${escapeCmsHtml(sfT('accountIntro'))}</p>
+      </div>
+      <form id="customerAccountLookupForm" class="checkout-form search-form">
+        <input id="customerAccountEmail" name="email" type="email" value="${escapeCmsHtml(email)}" placeholder="${escapeCmsHtml(sfT('accountEmailPlaceholder'))}" required>
+        <button class="btn primary" type="submit">${escapeCmsHtml(sfT('accountLookup'))}</button>
+      </form>
+      <div id="customerAccountResult" class="account-result"></div>
+    </section>
+  `
+
+  const form = document.querySelector('#customerAccountLookupForm')
+  const result = document.querySelector('#customerAccountResult')
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const nextEmail = document.querySelector('#customerAccountEmail')?.value.trim() || ''
+    window.history.replaceState({}, '', `/account${nextEmail ? `?email=${encodeURIComponent(nextEmail)}` : ''}`)
+    renderPublicAccountPage()
+  })
+
+  if (!email || !result) return
+
+  result.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('accountLookup'))}...</p>`
+  try {
+    const [accountResponse, addressesResponse] = await Promise.all([
+      fetch(`/api/customer-account?email=${encodeURIComponent(email)}`),
+      fetch(`/api/customer-account/addresses?email=${encodeURIComponent(email)}`),
+    ])
+    const accountData = await accountResponse.json()
+    const addressesData = await addressesResponse.json()
+
+    if (!accountResponse.ok || !accountData.success || !accountData.found) {
+      result.innerHTML = `<p class="muted-copy">${escapeCmsHtml(accountData.message || sfT('accountNoData'))}</p>`
+      return
+    }
+
+    const orders = accountData.orders || []
+    const addresses = addressesData.addresses || []
+    let orderDetailHtml = ''
+
+    if (orderId) {
+      try {
+        const detailResponse = await fetch(`/api/customer-account/orders?email=${encodeURIComponent(email)}&order_id=${encodeURIComponent(orderId)}`)
+        const detailData = await detailResponse.json()
+        const order = detailData.orders?.[0]
+        const items = detailData.items || []
+        if (detailResponse.ok && detailData.success && order) {
+          orderDetailHtml = `
+            <section class="product-info-panel">
+              <div class="section-head reveal visible">
+                <p class="eyebrow">Order #${escapeCmsHtml(order.id)}</p>
+                <h2>${formatPriceCents(order.total_cents || 0)}</h2>
+                <p>${escapeCmsHtml(order.payment_status || 'pending')} / ${escapeCmsHtml(order.order_status || 'pending')}</p>
+              </div>
+              <div class="products-list">
+                ${
+                  items.length
+                    ? items.map((item) => `
+                      <article class="product-item">
+                        <h3>${escapeCmsHtml(item.product_name || item.product_slug || 'Product')}</h3>
+                        <div class="meta">
+                          <span>${escapeCmsHtml(item.variant_label || '')}</span>
+                          <span>Qty ${Number(item.quantity || 0)}</span>
+                          <span>${formatPriceCents(item.price_cents || 0)}</span>
+                        </div>
+                      </article>
+                    `).join('')
+                    : `<p class="muted-copy">${escapeCmsHtml(sfT('accountNoData'))}</p>`
+                }
+              </div>
+            </section>
+          `
+        }
+      } catch {}
+    }
+
+    result.innerHTML = `
+      <div class="checkout-confirmation-box">
+        <span>${escapeCmsHtml(accountData.customer?.email || email)}</span>
+        <strong>${escapeCmsHtml(sfT('accountStatus'))}: ${escapeCmsHtml(accountData.customer?.account_status || 'guest')}</strong>
+      </div>
+      ${orderDetailHtml}
+      <section class="product-info-panel">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(sfT('accountOrders'))}</p>
+          <h2>${orders.length}</h2>
+        </div>
+        <div class="products-list">
+          ${
+            orders.length
+              ? orders.map((order) => `
+                <article class="product-item">
+                  <h3>Order #${escapeCmsHtml(order.id)}</h3>
+                  <div class="meta">
+                    <span>${formatPriceCents(order.total_cents || 0)}</span>
+                    <span>${escapeCmsHtml(order.payment_status || 'pending')}</span>
+                    <span>${escapeCmsHtml(order.order_status || 'pending')}</span>
+                    <span>${escapeCmsHtml(order.created_at || '')}</span>
+                  </div>
+                  <a class="btn ghost" href="/account?email=${encodeURIComponent(email)}&order_id=${encodeURIComponent(order.id)}">Dettaglio</a>
+                </article>
+              `).join('')
+              : `<p class="muted-copy">${escapeCmsHtml(accountData.message || sfT('accountNoData'))}</p>`
+          }
+        </div>
+      </section>
+      <section class="product-info-panel">
+        <div class="section-head reveal visible">
+          <p class="eyebrow">${escapeCmsHtml(sfT('accountAddresses'))}</p>
+          <h2>${addresses.length}</h2>
+        </div>
+        <div class="products-list">
+          ${
+            addresses.length
+              ? addresses.map((address) => `
+                <article class="product-item">
+                  <h3>${escapeCmsHtml(address.type || 'shipping')}</h3>
+                  <p>${escapeCmsHtml([address.line1, address.city, address.postal_code, address.country].filter(Boolean).join(', '))}</p>
+                </article>
+              `).join('')
+              : `<p class="muted-copy">${escapeCmsHtml(sfT('accountNoData'))}</p>`
+          }
+        </div>
+      </section>
+    `
+  } catch {
+    result.innerHTML = `<p class="muted-copy">${escapeCmsHtml(sfT('accountNoData'))}</p>`
+  }
+}
+
 async function bootPublicRouting() {
   const path = window.location.pathname
   await publicMarketsReady
@@ -4910,6 +5191,16 @@ async function bootPublicRouting() {
 
   if (path === '/checkout') {
     await renderPublicCheckoutPage()
+    return
+  }
+
+  if (path === '/search' || path === '/search/') {
+    await renderPublicSearchPage()
+    return
+  }
+
+  if (path === '/account' || path === '/account/') {
+    await renderPublicAccountPage()
     return
   }
 

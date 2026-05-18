@@ -1414,24 +1414,75 @@
           <div>
             <span class="app-kicker">Native app</span>
             <h2>TakeOff Gift Cards</h2>
-            <p class="section-subtitle">Gift cards e store credit pronti per data model dedicato, emissione controllata e checkout support futuro.</p>
+            <p class="section-subtitle">Gift cards e store credit gestibili da admin con saldo, stato, cliente e note operative.</p>
           </div>
           <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
         </div>
-        <div class="advanced-commerce-grid">
-          <section class="inner-card commerce-blueprint-card">
-            <h3>Gift card schema</h3>
-            <p>Codice, saldo iniziale, saldo residuo, scadenza opzionale, customer email, note e stato active / used / expired / disabled.</p>
-            <span class="status-badge">Basic configuration</span>
-          </section>
-          <section class="inner-card commerce-blueprint-card">
-            <h3>Store credit</h3>
-            <p>Credito cliente per email/customer ID, amount, note, status e log eventi credito. Nessuna applicazione checkout viene forzata senza tabella dedicata.</p>
-            <span class="status-badge">Data model ready</span>
-          </section>
+        <div class="content-manager">
+          <form id="giftCardForm" class="inner-card">
+            <h3>Gestisci gift card</h3>
+            <input id="giftCardId" type="hidden" />
+            <label>Codice</label>
+            <input id="giftCardCode" type="text" placeholder="GIFT-2026" required />
+            <label>Saldo iniziale in euro</label>
+            <input id="giftCardInitialBalance" type="number" min="0" step="0.01" required />
+            <label>Email cliente opzionale</label>
+            <input id="giftCardCustomerEmail" type="email" placeholder="cliente@example.com" />
+            <label>Scadenza opzionale</label>
+            <input id="giftCardExpiresAt" type="date" />
+            <label>Note</label>
+            <textarea id="giftCardNote" placeholder="Uso interno"></textarea>
+            <label>Stato</label>
+            <select id="giftCardStatus">
+              <option value="active">Active</option>
+              <option value="used">Used</option>
+              <option value="expired">Expired</option>
+              <option value="disabled">Disabled</option>
+            </select>
+            <label class="inline-check">
+              <input id="giftCardActive" type="checkbox" checked />
+              Attiva
+            </label>
+            <button type="submit">Salva gift card</button>
+            <button id="cancelGiftCardEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="giftCardMessage"></p>
+          </form>
+
           <section class="inner-card">
-            <h3>Checkout compatibility</h3>
-            <p>Applicazione saldo e combinazione con sconti restano disabilitate finche non viene applicata una migration non distruttiva e testata.</p>
+            <div class="section-toolbar">
+              <h3>Gift cards</h3>
+              <button id="refreshGiftCardsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="giftCardsList" class="products-list">Caricamento gift cards...</div>
+          </section>
+
+          <form id="storeCreditForm" class="inner-card">
+            <h3>Store credit cliente</h3>
+            <input id="storeCreditId" type="hidden" />
+            <label>Email cliente</label>
+            <input id="storeCreditCustomerEmail" type="email" placeholder="cliente@example.com" required />
+            <label>Credito in euro</label>
+            <input id="storeCreditAmount" type="number" min="0" step="0.01" required />
+            <label>Note</label>
+            <textarea id="storeCreditNote" placeholder="Motivo credito"></textarea>
+            <label>Stato</label>
+            <select id="storeCreditStatus">
+              <option value="active">Active</option>
+              <option value="used">Used</option>
+              <option value="expired">Expired</option>
+              <option value="disabled">Disabled</option>
+            </select>
+            <button type="submit">Salva store credit</button>
+            <button id="cancelStoreCreditEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="storeCreditMessage"></p>
+          </form>
+
+          <section class="inner-card">
+            <div class="section-toolbar">
+              <h3>Crediti cliente</h3>
+              <button id="refreshStoreCreditsButton" type="button">Aggiorna</button>
+            </div>
+            <div id="storeCreditsList" class="products-list">Caricamento crediti...</div>
           </section>
         </div>
       </section>
@@ -1473,15 +1524,18 @@
           </div>
           <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
         </div>
-        <div class="advanced-commerce-grid">
+        <div class="content-manager">
           <section class="inner-card">
-            <h3>Recovery pipeline</h3>
-            <p>Stati previsti: open, recovered, expired. Items, totale stimato, email cliente e last activity saranno salvati solo quando il tracking server-side sara attivo.</p>
-            <span class="status-badge">Provider-ready</span>
+            <div class="section-toolbar">
+              <h3>Carrelli abbandonati</h3>
+              <button id="refreshAbandonedCartsButton" type="button">Aggiorna</button>
+            </div>
+            <p class="field-help">Tracking leggero e recovery email mock/provider-ready. Nessun dato sensibile viene esposto.</p>
+            <div id="abandonedCartsList" class="products-list">Caricamento carrelli...</div>
           </section>
           <section class="inner-card">
             <h3>Email recovery</h3>
-            <p>Il bottone Send recovery email resta mock/logging only finche il provider email reale non viene configurato.</p>
+            <p>Send recovery email crea un log/mock se il provider email non e configurato.</p>
             <a class="secondary button-link" href="#email-automations">Apri Email Automations</a>
           </section>
         </div>
@@ -1508,8 +1562,25 @@
           </section>
           <section class="inner-card">
             <h3>Storefront readiness</h3>
-            <p>Endpoint <code>/api/search?q=</code> pianificato con fallback nessun risultato e senza dipendenze Algolia/Meilisearch.</p>
-            <span class="status-badge">Basic configuration</span>
+            <p>Endpoint pubblico <code>/api/search?q=</code> attivo con fallback nessun risultato e senza dipendenze esterne.</p>
+            <span class="status-badge">Available in this release</span>
+          </section>
+          <form id="searchFiltersForm" class="inner-card">
+            <h3>Configurazione ricerca</h3>
+            <label class="inline-check">
+              <input id="searchSuggestionsEnabled" type="checkbox" checked />
+              Search suggestions abilitate
+            </label>
+            <label>Campi ricercabili</label>
+            <input id="searchableFields" type="text" placeholder="name,description,slug,category" />
+            <label>Filtri abilitati</label>
+            <input id="enabledFilters" type="text" placeholder="collection,price,stock,brand" />
+            <button type="submit">Salva configurazione</button>
+            <p id="searchFiltersMessage"></p>
+          </form>
+          <section class="inner-card">
+            <h3>Status</h3>
+            <div id="searchFiltersStatus" class="status-list">Caricamento status ricerca...</div>
           </section>
         </div>
       </section>
@@ -1526,13 +1597,33 @@
         <div class="advanced-commerce-grid">
           <section class="inner-card">
             <h3>Sitemap e robots</h3>
-            <p>Endpoint compatibili <code>/api/sitemap.xml</code> e <code>/api/robots.txt</code> sono preparabili senza modificare routing pubblico in questa fase.</p>
+            <p>Endpoint compatibili <code>/api/sitemap.xml</code> e <code>/api/robots.txt</code> disponibili con fallback pulito.</p>
             <span class="status-badge">Configurable</span>
           </section>
-          <section class="inner-card">
+          <form id="seoRedirectForm" class="inner-card">
             <h3>Redirect manager</h3>
-            <p>Campi previsti: from_path, to_path, status 301/302, active/inactive. Richiede tabella dedicata prima di attivare scritture.</p>
-            <span class="status-badge">Data model ready</span>
+            <input id="seoRedirectId" type="hidden" />
+            <label>From path</label>
+            <input id="seoRedirectFrom" type="text" placeholder="/old-url" required />
+            <label>To path</label>
+            <input id="seoRedirectTo" type="text" placeholder="/new-url" required />
+            <label>Status</label>
+            <select id="seoRedirectStatusCode">
+              <option value="301">301 permanent</option>
+              <option value="302">302 temporary</option>
+            </select>
+            <label class="inline-check">
+              <input id="seoRedirectActive" type="checkbox" checked />
+              Attivo
+            </label>
+            <button type="submit">Salva redirect</button>
+            <button id="cancelSeoRedirectEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="seoRedirectMessage"></p>
+          </form>
+          <section class="inner-card">
+            <h3>SEO technical status</h3>
+            <div id="seoTechnicalStatus" class="status-list">Caricamento SEO technical...</div>
+            <div id="seoRedirectsList" class="products-list">Caricamento redirects...</div>
           </section>
           <section class="inner-card">
             <h3>Schema e hreflang</h3>
@@ -1550,7 +1641,7 @@
           </div>
           <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
         </div>
-        <div class="advanced-commerce-grid">
+        <div class="content-manager">
           <section class="inner-card">
             <h3>Eventi disponibili</h3>
             <div class="status-list">
@@ -1559,10 +1650,37 @@
               <span>Delivery log: mock/logging only finche non c'e una queue dedicata</span>
             </div>
           </section>
-          <section class="inner-card">
+          <form id="webhookForm" class="inner-card">
             <h3>Configurazione endpoint</h3>
-            <p>target_url, active/inactive e secret opzionale non obbligatorio. Nessun secret viene inserito nel repository.</p>
-            <span class="status-badge">Basic configuration</span>
+            <input id="webhookId" type="hidden" />
+            <label>Evento</label>
+            <select id="webhookEvent">
+              <option value="order.created">order.created</option>
+              <option value="order.paid">order.paid</option>
+              <option value="order.fulfilled">order.fulfilled</option>
+              <option value="customer.created">customer.created</option>
+              <option value="product.updated">product.updated</option>
+              <option value="return.requested">return.requested</option>
+            </select>
+            <label>Target URL</label>
+            <input id="webhookTargetUrl" type="url" placeholder="https://example.com/webhook" required />
+            <label>Secret opzionale</label>
+            <input id="webhookSecret" type="password" placeholder="Non viene mostrato dopo il salvataggio" />
+            <label class="inline-check">
+              <input id="webhookActive" type="checkbox" checked />
+              Attivo
+            </label>
+            <button type="submit">Salva webhook</button>
+            <button id="cancelWebhookEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="webhookMessage"></p>
+          </form>
+          <section class="inner-card">
+            <div class="section-toolbar">
+              <h3>Webhooks</h3>
+              <button id="refreshWebhooksButton" type="button">Aggiorna</button>
+            </div>
+            <div id="webhooksList" class="products-list">Caricamento webhooks...</div>
+            <pre id="webhookDeliveriesList" class="admin-pre">Caricamento delivery log...</pre>
           </section>
         </div>
       </section>
@@ -1576,16 +1694,47 @@
           </div>
           <a class="back-link" href="#import-export">&larr; Torna a Import Export</a>
         </div>
-        <div class="advanced-commerce-grid">
-          <section class="inner-card">
+        <div class="content-manager">
+          <form id="supplierFeedForm" class="inner-card">
             <h3>Feed config</h3>
-            <p>name, source_url, format CSV/JSON/XML, active/inactive, schedule manual/daily/weekly e target products/stock/prices.</p>
-            <span class="status-badge">Advanced tools in progress</span>
-          </section>
+            <input id="supplierFeedId" type="hidden" />
+            <label>Nome feed</label>
+            <input id="supplierFeedName" type="text" placeholder="Catalogo fornitore" required />
+            <label>Source URL</label>
+            <input id="supplierFeedSourceUrl" type="url" placeholder="https://supplier.example/feed.csv" required />
+            <label>Formato</label>
+            <select id="supplierFeedFormat">
+              <option value="csv">CSV</option>
+              <option value="json">JSON</option>
+              <option value="xml">XML</option>
+            </select>
+            <label>Schedule</label>
+            <select id="supplierFeedSchedule">
+              <option value="manual">Manual</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+            </select>
+            <label>Target import</label>
+            <select id="supplierFeedTarget">
+              <option value="products">Products</option>
+              <option value="stock">Stock update</option>
+              <option value="prices">Prices</option>
+            </select>
+            <label class="inline-check">
+              <input id="supplierFeedActive" type="checkbox" checked />
+              Attivo
+            </label>
+            <button type="submit">Salva feed</button>
+            <button id="runSupplierFeedDryRunButton" class="secondary" type="button">Dry-run manuale</button>
+            <button id="cancelSupplierFeedEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <p id="supplierFeedMessage"></p>
+          </form>
           <section class="inner-card">
             <h3>Manual dry-run</h3>
-            <p>Il dry-run resta collegato a TakeOff Import Export Pro. Scheduler reale richiede Cloudflare cron o provider esterno configurato.</p>
+            <p>Il dry-run valida la configurazione e registra l'esecuzione. Scheduler reale richiede Cloudflare cron o provider esterno configurato.</p>
             <a class="secondary button-link" href="#import-export">Apri DataFlow</a>
+            <div id="supplierFeedsList" class="products-list">Caricamento feed...</div>
+            <pre id="supplierFeedRunsList" class="admin-pre">Caricamento log feed...</pre>
           </section>
         </div>
       </section>
@@ -1599,16 +1748,33 @@
           </div>
           <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
         </div>
-        <div class="advanced-commerce-grid">
-          <section class="inner-card">
+        <div class="content-manager">
+          <form id="subscriptionForm" class="inner-card">
             <h3>Subscription product config</h3>
-            <p>product_id, frequency weekly/monthly/yearly, subscription price, active/inactive e trial days opzionale.</p>
-            <span class="status-badge">Basic configuration</span>
-          </section>
+            <label>Prodotto</label>
+            <select id="subscriptionProductId" required></select>
+            <label>Frequenza</label>
+            <select id="subscriptionFrequency">
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            <label>Prezzo subscription in euro</label>
+            <input id="subscriptionPrice" type="number" min="0" step="0.01" required />
+            <label>Trial days opzionali</label>
+            <input id="subscriptionTrialDays" type="number" min="0" step="1" placeholder="0" />
+            <label class="inline-check">
+              <input id="subscriptionActive" type="checkbox" checked />
+              Attiva
+            </label>
+            <button type="submit">Salva subscription</button>
+            <p id="subscriptionMessage"></p>
+          </form>
           <section class="inner-card">
             <h3>Payment provider requirement</h3>
             <p>Checkout abbonamenti richiede setup provider ricorrente. Nessuna subscription Stripe reale viene creata in questa fase.</p>
             <span class="status-badge">Requires external configuration</span>
+            <div id="subscriptionsList" class="products-list">Caricamento subscriptions...</div>
           </section>
         </div>
       </section>
@@ -2337,11 +2503,33 @@
               <option value="fixed">Importo fisso</option>
             </select>
 
+            <label>Regola avanzata</label>
+            <select id="discountKind">
+              <option value="standard">Standard checkout discount</option>
+              <option value="free_shipping">Free shipping configured</option>
+            </select>
+
             <label>Valore</label>
             <input id="discountValue" type="number" step="0.01" placeholder="10" required />
 
             <label>Minimo carrello in euro</label>
             <input id="discountMinimum" type="number" step="0.01" placeholder="0" />
+
+            <label>Limite utilizzi</label>
+            <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="0 = illimitato" />
+
+            <label>Eligibility cliente</label>
+            <select id="discountCustomerEligibility">
+              <option value="all">Tutti i clienti</option>
+              <option value="returning">Clienti esistenti</option>
+              <option value="tagged">Segmento/tag cliente</option>
+            </select>
+
+            <label>Market opzionale</label>
+            <input id="discountMarketHandle" type="text" placeholder="us, eu, global" />
+
+            <label>Valuta opzionale</label>
+            <input id="discountCurrencyCode" type="text" maxlength="3" placeholder="EUR" />
 
             <label>Data inizio opzionale</label>
             <input id="discountStartsAt" type="datetime-local" />
@@ -2352,6 +2540,11 @@
             <label class="inline-check">
               <input id="discountActive" type="checkbox" checked />
               Attivo
+            </label>
+
+            <label class="inline-check">
+              <input id="discountCombinable" type="checkbox" />
+              Combinabile con altre promo
             </label>
 
             <button id="discountSubmitButton" type="submit">Salva sconto</button>

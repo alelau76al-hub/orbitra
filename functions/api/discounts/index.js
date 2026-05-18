@@ -6,6 +6,20 @@ function normalizeCode(value = '') {
   return String(value).trim().toUpperCase()
 }
 
+function tableMissing(error) {
+  return /no such table|no such column/i.test(String(error?.message || ''))
+}
+
+async function hasAdvancedColumns(env) {
+  try {
+    const { results } = await env.DB.prepare('PRAGMA table_info(discount_codes)').all()
+    const columns = new Set((results || []).map((column) => column.name))
+    return columns.has('discount_kind') && columns.has('usage_limit') && columns.has('usage_count')
+  } catch {
+    return false
+  }
+}
+
 function isDiscountDateValid(discount) {
   const now = Date.now()
   const startsAt = discount.starts_at ? Date.parse(discount.starts_at) : null
@@ -18,6 +32,7 @@ function isDiscountDateValid(discount) {
 
 function calculateDiscountCents(discount, subtotalCents) {
   if (!discount || subtotalCents <= 0) return 0
+  if (discount.discount_kind === 'free_shipping') return 0
 
   if (discount.type === 'fixed') {
     return Math.min(subtotalCents, Math.max(0, Number(discount.value || 0)))
@@ -35,15 +50,18 @@ async function readBody(request) {
   }
 }
 
-async function validateDiscount(env, code, subtotalCents) {
-  const normalizedCode = normalizeCode(code)
-
-  if (!normalizedCode) {
-    return {
-      valid: false,
-      message: 'Inserisci un codice sconto.',
-    }
-  }
+async function loadDiscount(env, normalizedCode) {
+  const advancedEnabled = await hasAdvancedColumns(env)
+  const advancedSelect = advancedEnabled
+    ? `,
+      discount_kind,
+      usage_limit,
+      usage_count,
+      customer_eligibility,
+      market_handle,
+      currency_code,
+      combinable`
+    : ''
 
   const discount = await env.DB.prepare(`
     SELECT
@@ -56,11 +74,39 @@ async function validateDiscount(env, code, subtotalCents) {
       ends_at,
       min_subtotal_cents,
       active
+      ${advancedSelect}
     FROM discount_codes
     WHERE code = ? AND active = 1
   `)
     .bind(normalizedCode)
     .first()
+
+  if (!discount) return null
+
+  return {
+    ...discount,
+    discount_kind: advancedEnabled ? discount.discount_kind || 'standard' : 'standard',
+    usage_limit: advancedEnabled ? Number(discount.usage_limit || 0) : 0,
+    usage_count: advancedEnabled ? Number(discount.usage_count || 0) : 0,
+    customer_eligibility: advancedEnabled ? discount.customer_eligibility || 'all' : 'all',
+    market_handle: advancedEnabled ? discount.market_handle || '' : '',
+    currency_code: advancedEnabled ? discount.currency_code || '' : '',
+    combinable: advancedEnabled ? Number(discount.combinable || 0) : 0,
+    advanced_columns_ready: advancedEnabled,
+  }
+}
+
+async function validateDiscount(env, code, subtotalCents) {
+  const normalizedCode = normalizeCode(code)
+
+  if (!normalizedCode) {
+    return {
+      valid: false,
+      message: 'Inserisci un codice sconto.',
+    }
+  }
+
+  const discount = await loadDiscount(env, normalizedCode)
 
   if (!discount) {
     return {
@@ -73,6 +119,13 @@ async function validateDiscount(env, code, subtotalCents) {
     return {
       valid: false,
       message: 'Codice sconto non attivo in questo momento.',
+    }
+  }
+
+  if (discount.usage_limit > 0 && discount.usage_count >= discount.usage_limit) {
+    return {
+      valid: false,
+      message: 'Questo codice ha raggiunto il limite di utilizzo.',
     }
   }
 
@@ -97,6 +150,11 @@ async function validateDiscount(env, code, subtotalCents) {
       description: discount.description || '',
       type: discount.type,
       value: Number(discount.value || 0),
+      discount_kind: discount.discount_kind,
+      checkout_support:
+        discount.discount_kind === 'free_shipping'
+          ? 'Configured / checkout support in progress'
+          : 'Available in checkout',
       discount_cents: discountCents,
     },
   }
@@ -112,12 +170,14 @@ export async function onRequestPost({ request, env }) {
       success: result.valid,
       ...result,
     }, result.valid ? 200 : 400)
-  } catch {
+  } catch (error) {
     return json(
       {
         success: false,
         valid: false,
-        message: 'Sconti non disponibili. Verifica che la migration sconti sia applicata.',
+        message: tableMissing(error)
+          ? 'Sconti non configurati.'
+          : 'Sconti non disponibili.',
       },
       500,
     )

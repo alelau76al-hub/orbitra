@@ -922,6 +922,14 @@ function refreshAdminDataAfterAuth() {
     loadReturns,
     loadUpsells,
     loadProductFeeds,
+    loadGiftCards,
+    loadStoreCredits,
+    loadAbandonedCarts,
+    loadSearchFilters,
+    loadSeoTechnical,
+    loadWebhooks,
+    loadSupplierFeeds,
+    loadSubscriptions,
     loadOperationsSummary,
     loadStoreHealth,
     loadLaunchChecklist,
@@ -2262,6 +2270,49 @@ const productFeedsList = document.querySelector('#productFeedsList')
 const productFeedMessage = document.querySelector('#productFeedMessage')
 const refreshProductFeedsButton = document.querySelector('#refreshProductFeedsButton')
 
+const giftCardForm = document.querySelector('#giftCardForm')
+const giftCardsList = document.querySelector('#giftCardsList')
+const giftCardMessage = document.querySelector('#giftCardMessage')
+const refreshGiftCardsButton = document.querySelector('#refreshGiftCardsButton')
+const cancelGiftCardEdit = document.querySelector('#cancelGiftCardEdit')
+
+const storeCreditForm = document.querySelector('#storeCreditForm')
+const storeCreditsList = document.querySelector('#storeCreditsList')
+const storeCreditMessage = document.querySelector('#storeCreditMessage')
+const refreshStoreCreditsButton = document.querySelector('#refreshStoreCreditsButton')
+const cancelStoreCreditEdit = document.querySelector('#cancelStoreCreditEdit')
+
+const abandonedCartsList = document.querySelector('#abandonedCartsList')
+const refreshAbandonedCartsButton = document.querySelector('#refreshAbandonedCartsButton')
+
+const searchFiltersForm = document.querySelector('#searchFiltersForm')
+const searchFiltersStatus = document.querySelector('#searchFiltersStatus')
+const searchFiltersMessage = document.querySelector('#searchFiltersMessage')
+
+const seoRedirectForm = document.querySelector('#seoRedirectForm')
+const seoTechnicalStatus = document.querySelector('#seoTechnicalStatus')
+const seoRedirectsList = document.querySelector('#seoRedirectsList')
+const seoRedirectMessage = document.querySelector('#seoRedirectMessage')
+const cancelSeoRedirectEdit = document.querySelector('#cancelSeoRedirectEdit')
+
+const webhookForm = document.querySelector('#webhookForm')
+const webhooksList = document.querySelector('#webhooksList')
+const webhookDeliveriesList = document.querySelector('#webhookDeliveriesList')
+const webhookMessage = document.querySelector('#webhookMessage')
+const refreshWebhooksButton = document.querySelector('#refreshWebhooksButton')
+const cancelWebhookEdit = document.querySelector('#cancelWebhookEdit')
+
+const supplierFeedForm = document.querySelector('#supplierFeedForm')
+const supplierFeedsList = document.querySelector('#supplierFeedsList')
+const supplierFeedRunsList = document.querySelector('#supplierFeedRunsList')
+const supplierFeedMessage = document.querySelector('#supplierFeedMessage')
+const runSupplierFeedDryRunButton = document.querySelector('#runSupplierFeedDryRunButton')
+const cancelSupplierFeedEdit = document.querySelector('#cancelSupplierFeedEdit')
+
+const subscriptionForm = document.querySelector('#subscriptionForm')
+const subscriptionsList = document.querySelector('#subscriptionsList')
+const subscriptionMessage = document.querySelector('#subscriptionMessage')
+
 const downloadBackupButton = document.querySelector('#downloadBackupButton')
 const backupPreview = document.querySelector('#backupPreview')
 
@@ -2279,6 +2330,7 @@ function populateNativeAppProductSelects() {
   populateProductSelect('#reviewProductId', false)
   populateProductSelect('#upsellBaseProductId')
   populateProductSelect('#upsellTriggerProductId')
+  populateProductSelect('#subscriptionProductId')
 }
 
 function renderProviderStatus(container, providers = []) {
@@ -2729,6 +2781,675 @@ productFeedForm?.addEventListener('submit', async (event) => {
   }
 })
 refreshProductFeedsButton?.addEventListener('click', loadProductFeeds)
+
+function resetGiftCardForm() {
+  giftCardForm?.reset()
+  const id = document.querySelector('#giftCardId')
+  if (id) id.value = ''
+  if (cancelGiftCardEdit) cancelGiftCardEdit.hidden = true
+}
+
+function fillGiftCardForm(card) {
+  document.querySelector('#giftCardId').value = card.id || ''
+  document.querySelector('#giftCardCode').value = card.code || ''
+  document.querySelector('#giftCardInitialBalance').value = Number(card.initial_balance_cents || 0) / 100
+  document.querySelector('#giftCardCustomerEmail').value = card.customer_email || ''
+  document.querySelector('#giftCardExpiresAt').value = card.expires_at || ''
+  document.querySelector('#giftCardNote').value = card.note || ''
+  document.querySelector('#giftCardStatus').value = card.status || 'active'
+  document.querySelector('#giftCardActive').checked = Number(card.active) !== 0
+  if (cancelGiftCardEdit) cancelGiftCardEdit.hidden = false
+}
+
+async function loadGiftCards() {
+  if (!giftCardsList) return
+  giftCardsList.textContent = 'Caricamento gift cards...'
+  try {
+    const response = await fetch('/api/admin/gift-cards')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      giftCardsList.textContent = data.message || 'Gift cards non disponibili.'
+      return
+    }
+    const cards = data.gift_cards || []
+    giftCardsList.innerHTML = cards.length
+      ? cards.map((card) => `
+        <article class="product-item">
+          <h3>${escapeHtml(card.code)}</h3>
+          <p>${escapeHtml(card.customer_email || 'Nessun cliente associato')}</p>
+          <div class="meta">
+            <span>Saldo: ${formatMoney(card.balance_cents || 0)}</span>
+            <span>Iniziale: ${formatMoney(card.initial_balance_cents || 0)}</span>
+            <span>${escapeHtml(card.status || 'active')}</span>
+            <span>${Number(card.active) ? 'Active' : 'Inactive'}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-gift-card="${card.id}">Modifica</button>
+            <button type="button" class="danger" data-disable-gift-card="${card.id}">Disattiva</button>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessuna gift card presente.</p>'
+    giftCardsList.querySelectorAll('[data-edit-gift-card]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const card = cards.find((item) => item.id === Number(button.dataset.editGiftCard))
+        if (card) fillGiftCardForm(card)
+      })
+    })
+    giftCardsList.querySelectorAll('[data-disable-gift-card]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch('/api/admin/gift-cards', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableGiftCard) }),
+        })
+        const data = await response.json()
+        if (giftCardMessage) giftCardMessage.textContent = data.message || 'Gift card aggiornata.'
+        loadGiftCards()
+      })
+    })
+  } catch {
+    giftCardsList.textContent = 'Gift cards non disponibili.'
+  }
+}
+
+giftCardForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (giftCardMessage) giftCardMessage.textContent = 'Salvataggio gift card...'
+  const payload = {
+    id: Number(document.querySelector('#giftCardId')?.value || 0) || undefined,
+    code: document.querySelector('#giftCardCode')?.value.trim(),
+    initial_balance: Number(document.querySelector('#giftCardInitialBalance')?.value || 0),
+    customer_email: document.querySelector('#giftCardCustomerEmail')?.value.trim(),
+    expires_at: document.querySelector('#giftCardExpiresAt')?.value,
+    note: document.querySelector('#giftCardNote')?.value.trim(),
+    status: document.querySelector('#giftCardStatus')?.value,
+    active: document.querySelector('#giftCardActive')?.checked,
+  }
+  try {
+    const response = await fetch('/api/admin/gift-cards', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (giftCardMessage) giftCardMessage.textContent = data.message || 'Gift card salvata.'
+    if (data.success) {
+      resetGiftCardForm()
+      loadGiftCards()
+    }
+  } catch {
+    if (giftCardMessage) giftCardMessage.textContent = 'Salvataggio gift card non riuscito.'
+  }
+})
+refreshGiftCardsButton?.addEventListener('click', loadGiftCards)
+cancelGiftCardEdit?.addEventListener('click', resetGiftCardForm)
+
+function resetStoreCreditForm() {
+  storeCreditForm?.reset()
+  const id = document.querySelector('#storeCreditId')
+  if (id) id.value = ''
+  if (cancelStoreCreditEdit) cancelStoreCreditEdit.hidden = true
+}
+
+function fillStoreCreditForm(credit) {
+  document.querySelector('#storeCreditId').value = credit.id || ''
+  document.querySelector('#storeCreditCustomerEmail').value = credit.customer_email || ''
+  document.querySelector('#storeCreditAmount').value = Number(credit.amount_cents || 0) / 100
+  document.querySelector('#storeCreditNote').value = credit.note || ''
+  document.querySelector('#storeCreditStatus').value = credit.status || 'active'
+  if (cancelStoreCreditEdit) cancelStoreCreditEdit.hidden = false
+}
+
+async function loadStoreCredits() {
+  if (!storeCreditsList) return
+  storeCreditsList.textContent = 'Caricamento crediti...'
+  try {
+    const response = await fetch('/api/admin/store-credit')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      storeCreditsList.textContent = data.message || 'Store credit non disponibile.'
+      return
+    }
+    const credits = data.store_credits || []
+    storeCreditsList.innerHTML = credits.length
+      ? credits.map((credit) => `
+        <article class="product-item">
+          <h3>${escapeHtml(credit.customer_email || `Credit #${credit.id}`)}</h3>
+          <p>${escapeHtml(credit.note || 'Nessuna nota')}</p>
+          <div class="meta">
+            <span>${formatMoney(credit.remaining_amount_cents || credit.amount_cents || 0)}</span>
+            <span>${escapeHtml(credit.status || 'active')}</span>
+            <span>${escapeHtml(credit.created_at || '')}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-edit-store-credit="${credit.id}">Modifica</button>
+            <button type="button" class="danger" data-disable-store-credit="${credit.id}">Disattiva</button>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessun credito cliente presente.</p>'
+    storeCreditsList.querySelectorAll('[data-edit-store-credit]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const credit = credits.find((item) => item.id === Number(button.dataset.editStoreCredit))
+        if (credit) fillStoreCreditForm(credit)
+      })
+    })
+    storeCreditsList.querySelectorAll('[data-disable-store-credit]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch('/api/admin/store-credit', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(button.dataset.disableStoreCredit) }),
+        })
+        const data = await response.json()
+        if (storeCreditMessage) storeCreditMessage.textContent = data.message || 'Credito aggiornato.'
+        loadStoreCredits()
+      })
+    })
+  } catch {
+    storeCreditsList.textContent = 'Store credit non disponibile.'
+  }
+}
+
+storeCreditForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (storeCreditMessage) storeCreditMessage.textContent = 'Salvataggio credito...'
+  const payload = {
+    id: Number(document.querySelector('#storeCreditId')?.value || 0) || undefined,
+    customer_email: document.querySelector('#storeCreditCustomerEmail')?.value.trim(),
+    amount: Number(document.querySelector('#storeCreditAmount')?.value || 0),
+    note: document.querySelector('#storeCreditNote')?.value.trim(),
+    status: document.querySelector('#storeCreditStatus')?.value,
+  }
+  try {
+    const response = await fetch('/api/admin/store-credit', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (storeCreditMessage) storeCreditMessage.textContent = data.message || 'Credito salvato.'
+    if (data.success) {
+      resetStoreCreditForm()
+      loadStoreCredits()
+    }
+  } catch {
+    if (storeCreditMessage) storeCreditMessage.textContent = 'Salvataggio credito non riuscito.'
+  }
+})
+refreshStoreCreditsButton?.addEventListener('click', loadStoreCredits)
+cancelStoreCreditEdit?.addEventListener('click', resetStoreCreditForm)
+
+async function loadAbandonedCarts() {
+  if (!abandonedCartsList) return
+  abandonedCartsList.textContent = 'Caricamento carrelli...'
+  try {
+    const response = await fetch('/api/admin/abandoned-carts')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      abandonedCartsList.textContent = data.message || 'Abandoned carts non disponibili.'
+      return
+    }
+    const carts = data.carts || []
+    abandonedCartsList.innerHTML = carts.length
+      ? carts.map((cart) => `
+        <article class="product-item">
+          <h3>${escapeHtml(cart.email || cart.session_id || `Cart #${cart.id}`)}</h3>
+          <p>${escapeHtml(cart.status || 'open')} - ${escapeHtml(cart.last_activity_at || '')}</p>
+          <div class="meta">
+            <span>${formatMoney(cart.total_cents || 0)}</span>
+            <span>${escapeHtml(cart.currency || 'EUR')}</span>
+            <span>${escapeHtml(cart.recovery_sent_at ? 'Recovery sent' : 'Recovery ready')}</span>
+          </div>
+          <div class="product-actions">
+            <button type="button" data-send-recovery="${cart.id}">Send recovery email</button>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessun carrello abbandonato tracciato.</p>'
+    abandonedCartsList.querySelectorAll('[data-send-recovery]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch('/api/admin/abandoned-carts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'send_recovery', id: Number(button.dataset.sendRecovery) }),
+        })
+        await response.json()
+        loadAbandonedCarts()
+      })
+    })
+  } catch {
+    abandonedCartsList.textContent = 'Abandoned carts non disponibili.'
+  }
+}
+refreshAbandonedCartsButton?.addEventListener('click', loadAbandonedCarts)
+
+async function loadSearchFilters() {
+  if (!searchFiltersStatus && !searchFiltersForm) return
+  try {
+    const response = await fetch('/api/admin/search-filters')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      if (searchFiltersStatus) searchFiltersStatus.textContent = data.message || 'Search config non disponibile.'
+      return
+    }
+    const suggestionsEnabled = String(data.settings?.search_suggestions_enabled ?? '1') !== '0'
+    document.querySelector('#searchSuggestionsEnabled').checked = suggestionsEnabled
+    document.querySelector('#searchableFields').value = data.settings?.searchable_fields || 'name,description,slug,category'
+    document.querySelector('#enabledFilters').value = data.settings?.enabled_filters || 'collection,price,stock'
+    if (searchFiltersStatus) {
+      searchFiltersStatus.innerHTML = `
+        <span>Endpoint pubblico: /api/search?q=</span>
+        <span>Suggestions: ${suggestionsEnabled ? 'Active' : 'Disabled'}</span>
+        <span>Engine: internal SQL search</span>
+      `
+    }
+  } catch {
+    if (searchFiltersStatus) searchFiltersStatus.textContent = 'Search config non disponibile.'
+  }
+}
+
+searchFiltersForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (searchFiltersMessage) searchFiltersMessage.textContent = 'Salvataggio ricerca...'
+  try {
+    const response = await fetch('/api/admin/search-filters', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        search_suggestions_enabled: document.querySelector('#searchSuggestionsEnabled')?.checked,
+        searchable_fields: document.querySelector('#searchableFields')?.value.trim(),
+        enabled_filters: document.querySelector('#enabledFilters')?.value.trim(),
+      }),
+    })
+    const data = await response.json()
+    if (searchFiltersMessage) searchFiltersMessage.textContent = data.message || 'Configurazione salvata.'
+    if (data.success) loadSearchFilters()
+  } catch {
+    if (searchFiltersMessage) searchFiltersMessage.textContent = 'Salvataggio ricerca non riuscito.'
+  }
+})
+
+function resetSeoRedirectForm() {
+  seoRedirectForm?.reset()
+  const id = document.querySelector('#seoRedirectId')
+  if (id) id.value = ''
+  if (cancelSeoRedirectEdit) cancelSeoRedirectEdit.hidden = true
+}
+
+function fillSeoRedirectForm(redirect) {
+  document.querySelector('#seoRedirectId').value = redirect.id || ''
+  document.querySelector('#seoRedirectFrom').value = redirect.from_path || ''
+  document.querySelector('#seoRedirectTo').value = redirect.to_path || ''
+  document.querySelector('#seoRedirectStatusCode').value = redirect.status_code || 301
+  document.querySelector('#seoRedirectActive').checked = Number(redirect.active) !== 0
+  if (cancelSeoRedirectEdit) cancelSeoRedirectEdit.hidden = false
+}
+
+async function loadSeoTechnical() {
+  if (!seoTechnicalStatus && !seoRedirectsList) return
+  try {
+    const response = await fetch('/api/admin/seo-technical')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      if (seoTechnicalStatus) seoTechnicalStatus.textContent = data.message || 'SEO Technical non disponibile.'
+      return
+    }
+    if (seoTechnicalStatus) {
+      seoTechnicalStatus.innerHTML = `
+        <span>Sitemap: ${escapeHtml(data.status?.sitemap || 'Ready')}</span>
+        <span>Robots: ${escapeHtml(data.status?.robots || 'Ready')}</span>
+        <span>Missing meta: ${Number(data.missing_meta?.length || 0)}</span>
+        <span>Missing image alt: ${Number(data.missing_alt?.length || 0)}</span>
+      `
+    }
+    const redirects = data.redirects || []
+    if (seoRedirectsList) {
+      seoRedirectsList.innerHTML = redirects.length
+        ? redirects.map((redirect) => `
+          <article class="product-item">
+            <h3>${escapeHtml(redirect.from_path)} -> ${escapeHtml(redirect.to_path)}</h3>
+            <div class="meta">
+              <span>${escapeHtml(String(redirect.status_code || 301))}</span>
+              <span>${Number(redirect.active) ? 'Active' : 'Inactive'}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-redirect="${redirect.id}">Modifica</button>
+              <button type="button" class="danger" data-disable-redirect="${redirect.id}">Disattiva</button>
+            </div>
+          </article>
+        `).join('')
+        : '<p>Nessun redirect configurato.</p>'
+      seoRedirectsList.querySelectorAll('[data-edit-redirect]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const redirect = redirects.find((item) => item.id === Number(button.dataset.editRedirect))
+          if (redirect) fillSeoRedirectForm(redirect)
+        })
+      })
+      seoRedirectsList.querySelectorAll('[data-disable-redirect]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const response = await fetch(`/api/admin/seo-technical?id=${button.dataset.disableRedirect}`, { method: 'DELETE' })
+          const data = await response.json()
+          if (seoRedirectMessage) seoRedirectMessage.textContent = data.message || 'Redirect aggiornato.'
+          loadSeoTechnical()
+        })
+      })
+    }
+  } catch {
+    if (seoTechnicalStatus) seoTechnicalStatus.textContent = 'SEO Technical non disponibile.'
+  }
+}
+
+seoRedirectForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (seoRedirectMessage) seoRedirectMessage.textContent = 'Salvataggio redirect...'
+  const payload = {
+    id: Number(document.querySelector('#seoRedirectId')?.value || 0) || undefined,
+    from_path: document.querySelector('#seoRedirectFrom')?.value.trim(),
+    to_path: document.querySelector('#seoRedirectTo')?.value.trim(),
+    status_code: Number(document.querySelector('#seoRedirectStatusCode')?.value || 301),
+    active: document.querySelector('#seoRedirectActive')?.checked,
+  }
+  try {
+    const response = await fetch('/api/admin/seo-technical', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (seoRedirectMessage) seoRedirectMessage.textContent = data.message || 'Redirect salvato.'
+    if (data.success) {
+      resetSeoRedirectForm()
+      loadSeoTechnical()
+    }
+  } catch {
+    if (seoRedirectMessage) seoRedirectMessage.textContent = 'Salvataggio redirect non riuscito.'
+  }
+})
+cancelSeoRedirectEdit?.addEventListener('click', resetSeoRedirectForm)
+
+function resetWebhookForm() {
+  webhookForm?.reset()
+  const id = document.querySelector('#webhookId')
+  if (id) id.value = ''
+  if (cancelWebhookEdit) cancelWebhookEdit.hidden = true
+}
+
+function fillWebhookForm(webhook) {
+  document.querySelector('#webhookId').value = webhook.id || ''
+  document.querySelector('#webhookEvent').value = webhook.event || 'order.created'
+  document.querySelector('#webhookTargetUrl').value = webhook.target_url || ''
+  document.querySelector('#webhookSecret').value = ''
+  document.querySelector('#webhookActive').checked = Number(webhook.active) !== 0
+  if (cancelWebhookEdit) cancelWebhookEdit.hidden = false
+}
+
+async function loadWebhooks() {
+  if (!webhooksList && !webhookDeliveriesList) return
+  try {
+    const response = await fetch('/api/admin/webhooks')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      if (webhooksList) webhooksList.textContent = data.message || 'Webhooks non disponibili.'
+      return
+    }
+    const webhooks = data.webhooks || []
+    if (webhooksList) {
+      webhooksList.innerHTML = webhooks.length
+        ? webhooks.map((webhook) => `
+          <article class="product-item">
+            <h3>${escapeHtml(webhook.event)}</h3>
+            <p>${escapeHtml(webhook.target_url || '')}</p>
+            <div class="meta">
+              <span>${Number(webhook.active) ? 'Active' : 'Inactive'}</span>
+              <span>${webhook.has_secret ? 'Secret set' : 'No secret'}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-webhook="${webhook.id}">Modifica</button>
+              <button type="button" data-test-webhook="${webhook.id}">Test log</button>
+              <button type="button" class="danger" data-disable-webhook="${webhook.id}">Disattiva</button>
+            </div>
+          </article>
+        `).join('')
+        : '<p>Nessun webhook configurato.</p>'
+      webhooksList.querySelectorAll('[data-edit-webhook]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const webhook = webhooks.find((item) => item.id === Number(button.dataset.editWebhook))
+          if (webhook) fillWebhookForm(webhook)
+        })
+      })
+      webhooksList.querySelectorAll('[data-test-webhook]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          await fetch('/api/admin/webhooks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'test', id: Number(button.dataset.testWebhook) }),
+          })
+          loadWebhooks()
+        })
+      })
+      webhooksList.querySelectorAll('[data-disable-webhook]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const response = await fetch(`/api/admin/webhooks?id=${button.dataset.disableWebhook}`, { method: 'DELETE' })
+          const data = await response.json()
+          if (webhookMessage) webhookMessage.textContent = data.message || 'Webhook aggiornato.'
+          loadWebhooks()
+        })
+      })
+    }
+    if (webhookDeliveriesList) {
+      webhookDeliveriesList.textContent = (data.deliveries || [])
+        .map((delivery) => `${delivery.created_at || ''} - ${delivery.event || ''} - ${delivery.status || ''}`)
+        .join('\n') || 'Nessun delivery log.'
+    }
+  } catch {
+    if (webhooksList) webhooksList.textContent = 'Webhooks non disponibili.'
+  }
+}
+
+webhookForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (webhookMessage) webhookMessage.textContent = 'Salvataggio webhook...'
+  const payload = {
+    id: Number(document.querySelector('#webhookId')?.value || 0) || undefined,
+    event: document.querySelector('#webhookEvent')?.value,
+    target_url: document.querySelector('#webhookTargetUrl')?.value.trim(),
+    secret: document.querySelector('#webhookSecret')?.value,
+    active: document.querySelector('#webhookActive')?.checked,
+  }
+  try {
+    const response = await fetch('/api/admin/webhooks', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (webhookMessage) webhookMessage.textContent = data.message || 'Webhook salvato.'
+    if (data.success) {
+      resetWebhookForm()
+      loadWebhooks()
+    }
+  } catch {
+    if (webhookMessage) webhookMessage.textContent = 'Salvataggio webhook non riuscito.'
+  }
+})
+refreshWebhooksButton?.addEventListener('click', loadWebhooks)
+cancelWebhookEdit?.addEventListener('click', resetWebhookForm)
+
+function resetSupplierFeedForm() {
+  supplierFeedForm?.reset()
+  const id = document.querySelector('#supplierFeedId')
+  if (id) id.value = ''
+  if (cancelSupplierFeedEdit) cancelSupplierFeedEdit.hidden = true
+}
+
+function fillSupplierFeedForm(feed) {
+  document.querySelector('#supplierFeedId').value = feed.id || ''
+  document.querySelector('#supplierFeedName').value = feed.name || ''
+  document.querySelector('#supplierFeedSourceUrl').value = feed.source_url || ''
+  document.querySelector('#supplierFeedFormat').value = feed.format || 'csv'
+  document.querySelector('#supplierFeedSchedule').value = feed.schedule || 'manual'
+  document.querySelector('#supplierFeedTarget').value = feed.import_target || 'products'
+  document.querySelector('#supplierFeedActive').checked = Number(feed.active) !== 0
+  if (cancelSupplierFeedEdit) cancelSupplierFeedEdit.hidden = false
+}
+
+async function loadSupplierFeeds() {
+  if (!supplierFeedsList && !supplierFeedRunsList) return
+  try {
+    const response = await fetch('/api/admin/supplier-feeds')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      if (supplierFeedsList) supplierFeedsList.textContent = data.message || 'Supplier feeds non disponibili.'
+      return
+    }
+    const feeds = data.feeds || []
+    if (supplierFeedsList) {
+      supplierFeedsList.innerHTML = feeds.length
+        ? feeds.map((feed) => `
+          <article class="product-item">
+            <h3>${escapeHtml(feed.name)}</h3>
+            <p>${escapeHtml(feed.source_url || '')}</p>
+            <div class="meta">
+              <span>${escapeHtml(feed.format || 'csv')}</span>
+              <span>${escapeHtml(feed.schedule || 'manual')}</span>
+              <span>${escapeHtml(feed.import_target || 'products')}</span>
+              <span>${Number(feed.active) ? 'Active' : 'Inactive'}</span>
+            </div>
+            <div class="product-actions">
+              <button type="button" data-edit-supplier-feed="${feed.id}">Modifica</button>
+              <button type="button" class="danger" data-disable-supplier-feed="${feed.id}">Disattiva</button>
+            </div>
+          </article>
+        `).join('')
+        : '<p>Nessun feed fornitore configurato.</p>'
+      supplierFeedsList.querySelectorAll('[data-edit-supplier-feed]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const feed = feeds.find((item) => item.id === Number(button.dataset.editSupplierFeed))
+          if (feed) fillSupplierFeedForm(feed)
+        })
+      })
+      supplierFeedsList.querySelectorAll('[data-disable-supplier-feed]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const response = await fetch(`/api/admin/supplier-feeds?id=${button.dataset.disableSupplierFeed}`, { method: 'DELETE' })
+          const data = await response.json()
+          if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || 'Feed aggiornato.'
+          loadSupplierFeeds()
+        })
+      })
+    }
+    if (supplierFeedRunsList) {
+      supplierFeedRunsList.textContent = (data.runs || [])
+        .map((run) => `${run.created_at || ''} - feed ${run.feed_id || ''} - ${run.status || ''} - ${run.message || ''}`)
+        .join('\n') || 'Nessun dry-run ancora registrato.'
+    }
+  } catch {
+    if (supplierFeedsList) supplierFeedsList.textContent = 'Supplier feeds non disponibili.'
+  }
+}
+
+function supplierFeedPayload() {
+  return {
+    id: Number(document.querySelector('#supplierFeedId')?.value || 0) || undefined,
+    name: document.querySelector('#supplierFeedName')?.value.trim(),
+    source_url: document.querySelector('#supplierFeedSourceUrl')?.value.trim(),
+    format: document.querySelector('#supplierFeedFormat')?.value,
+    schedule: document.querySelector('#supplierFeedSchedule')?.value,
+    import_target: document.querySelector('#supplierFeedTarget')?.value,
+    active: document.querySelector('#supplierFeedActive')?.checked,
+  }
+}
+
+supplierFeedForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (supplierFeedMessage) supplierFeedMessage.textContent = 'Salvataggio feed...'
+  const payload = supplierFeedPayload()
+  try {
+    const response = await fetch('/api/admin/supplier-feeds', {
+      method: payload.id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await response.json()
+    if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || 'Feed salvato.'
+    if (data.success) {
+      resetSupplierFeedForm()
+      loadSupplierFeeds()
+    }
+  } catch {
+    if (supplierFeedMessage) supplierFeedMessage.textContent = 'Salvataggio feed non riuscito.'
+  }
+})
+
+runSupplierFeedDryRunButton?.addEventListener('click', async () => {
+  if (supplierFeedMessage) supplierFeedMessage.textContent = 'Dry-run feed...'
+  const payload = supplierFeedPayload()
+  try {
+    const response = await fetch('/api/admin/supplier-feeds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'dry_run', ...payload }),
+    })
+    const data = await response.json()
+    if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || 'Dry-run completato.'
+    loadSupplierFeeds()
+  } catch {
+    if (supplierFeedMessage) supplierFeedMessage.textContent = 'Dry-run non riuscito.'
+  }
+})
+cancelSupplierFeedEdit?.addEventListener('click', resetSupplierFeedForm)
+
+async function loadSubscriptions() {
+  if (!subscriptionsList) return
+  subscriptionsList.textContent = 'Caricamento subscriptions...'
+  try {
+    const response = await fetch('/api/admin/subscriptions')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      subscriptionsList.textContent = data.message || 'Subscriptions non disponibili.'
+      return
+    }
+    const subscriptions = data.subscriptions || []
+    subscriptionsList.innerHTML = subscriptions.length
+      ? subscriptions.map((item) => `
+        <article class="product-item">
+          <h3>${escapeHtml(item.product_name || `Product ${item.product_id}`)}</h3>
+          <p>${escapeHtml(item.frequency || 'monthly')} - ${formatMoney(item.subscription_price_cents || 0)}</p>
+          <div class="meta">
+            <span>${Number(item.active) ? 'Active' : 'Inactive'}</span>
+            <span>Trial ${Number(item.trial_days || 0)} days</span>
+          </div>
+        </article>
+      `).join('')
+      : '<p>Nessun prodotto subscription configurato.</p>'
+  } catch {
+    subscriptionsList.textContent = 'Subscriptions non disponibili.'
+  }
+}
+
+subscriptionForm?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  if (subscriptionMessage) subscriptionMessage.textContent = 'Salvataggio subscription...'
+  try {
+    const response = await fetch('/api/admin/subscriptions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        product_id: Number(document.querySelector('#subscriptionProductId')?.value || 0),
+        frequency: document.querySelector('#subscriptionFrequency')?.value,
+        subscription_price: Number(document.querySelector('#subscriptionPrice')?.value || 0),
+        trial_days: Number(document.querySelector('#subscriptionTrialDays')?.value || 0),
+        active: document.querySelector('#subscriptionActive')?.checked,
+      }),
+    })
+    const data = await response.json()
+    if (subscriptionMessage) subscriptionMessage.textContent = data.message || 'Subscription salvata.'
+    if (data.success) loadSubscriptions()
+  } catch {
+    if (subscriptionMessage) subscriptionMessage.textContent = 'Salvataggio subscription non riuscito.'
+  }
+})
 
 downloadBackupButton?.addEventListener('click', async () => {
   if (!backupPreview) return
@@ -4402,6 +5123,9 @@ function resetDiscountForm() {
   discountForm.reset()
   document.querySelector('#discountId').value = ''
   document.querySelector('#discountActive').checked = true
+  document.querySelector('#discountKind').value = 'standard'
+  document.querySelector('#discountCustomerEligibility').value = 'all'
+  document.querySelector('#discountCombinable').checked = false
   discountFormTitle.textContent = 'Aggiungi sconto'
   discountSubmitButton.textContent = 'Salva sconto'
   cancelDiscountEdit.hidden = true
@@ -4413,12 +5137,18 @@ function fillDiscountForm(discount) {
   document.querySelector('#discountCodeAdmin').value = discount.code || ''
   document.querySelector('#discountDescription').value = discount.description || ''
   document.querySelector('#discountType').value = discount.type || 'percentage'
+  document.querySelector('#discountKind').value = discount.discount_kind || 'standard'
   document.querySelector('#discountValue').value =
     discount.type === 'fixed' ? Number(discount.value || 0) / 100 : Number(discount.value || 0)
   document.querySelector('#discountMinimum').value = Number(discount.min_subtotal_cents || 0) / 100
+  document.querySelector('#discountUsageLimit').value = Number(discount.usage_limit || 0)
+  document.querySelector('#discountCustomerEligibility').value = discount.customer_eligibility || 'all'
+  document.querySelector('#discountMarketHandle').value = discount.market_handle || ''
+  document.querySelector('#discountCurrencyCode').value = discount.currency_code || ''
   document.querySelector('#discountStartsAt').value = discount.starts_at || ''
   document.querySelector('#discountEndsAt').value = discount.ends_at || ''
   document.querySelector('#discountActive').checked = Number(discount.active) !== 0
+  document.querySelector('#discountCombinable').checked = Number(discount.combinable || 0) === 1
   discountFormTitle.textContent = 'Modifica sconto'
   discountSubmitButton.textContent = 'Aggiorna sconto'
   cancelDiscountEdit.hidden = false
@@ -4434,7 +5164,13 @@ function getDiscountFormPayload() {
     description: document.querySelector('#discountDescription').value.trim(),
     type,
     value: type === 'fixed' ? Math.round(rawValue * 100) : Math.round(rawValue),
+    discount_kind: document.querySelector('#discountKind').value,
     min_subtotal_cents: Math.round(Number(document.querySelector('#discountMinimum').value || 0) * 100),
+    usage_limit: Number(document.querySelector('#discountUsageLimit').value || 0),
+    customer_eligibility: document.querySelector('#discountCustomerEligibility').value,
+    market_handle: document.querySelector('#discountMarketHandle').value.trim(),
+    currency_code: document.querySelector('#discountCurrencyCode').value.trim(),
+    combinable: document.querySelector('#discountCombinable').checked,
     starts_at: document.querySelector('#discountStartsAt').value,
     ends_at: document.querySelector('#discountEndsAt').value,
     active: document.querySelector('#discountActive').checked,
@@ -4473,9 +5209,12 @@ async function loadDiscounts() {
             <p>${escapeHtml(discount.description || 'Nessuna descrizione')}</p>
             <div class="meta">
               <span>${escapeHtml(discount.type)}</span>
+              <span>${escapeHtml(discount.discount_kind || 'standard')}</span>
               <span>${valueLabel}</span>
               <span>Minimo: ${formatMoney(discount.min_subtotal_cents || 0)}</span>
-              <span>${Number(discount.active) === 0 ? 'Disattivo' : 'Attivo'}</span>
+              <span>Uso: ${Number(discount.usage_count || 0)} / ${Number(discount.usage_limit || 0) || 'illimitato'}</span>
+              <span>${escapeHtml(discount.status || (Number(discount.active) === 0 ? 'disabled' : 'active'))}</span>
+              <span>${escapeHtml(discount.checkout_support || 'Available in checkout')}</span>
             </div>
             <div class="product-actions">
               <button type="button" data-edit-discount="${discount.id}">Modifica</button>
