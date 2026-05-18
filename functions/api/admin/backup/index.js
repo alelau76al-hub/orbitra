@@ -51,6 +51,8 @@ export async function onRequestGet({ env }) {
       return_requests: await safeAll(env, "return_requests"),
       upsell_rules: await safeAll(env, "upsell_rules"),
       product_feed_settings: await safeAll(env, "product_feed_settings", "provider"),
+      order_timeline: await safeAll(env, "order_timeline"),
+      fulfillment_records: await safeAll(env, "fulfillment_records"),
     };
 
     return json({ success: true, backup });

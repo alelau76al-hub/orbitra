@@ -35,6 +35,33 @@ function cents(value) {
   return Math.max(0, Math.round(numeric * 100));
 }
 
+async function appendOrderTimeline(env, orderId, eventType, title, description = "") {
+  if (!orderId) return;
+  try {
+    await env.DB.prepare(
+      `
+        INSERT INTO order_timeline (order_id, event_type, title, description, metadata_json)
+        VALUES (?, ?, ?, ?, ?)
+      `,
+    )
+      .bind(orderId, eventType, title, description, JSON.stringify({ source: "returns" }))
+      .run();
+  } catch {}
+}
+
+async function logNotification(env, type, orderId, description) {
+  try {
+    await env.DB.prepare(
+      `
+        INSERT INTO notification_logs (type, status, description, metadata_json)
+        VALUES (?, 'mocked', ?, ?)
+      `,
+    )
+      .bind(type, description, JSON.stringify({ order_id: orderId || null, source: "returns" }))
+      .run();
+  } catch {}
+}
+
 export async function onRequestGet({ env, request }) {
   try {
     const url = new URL(request.url);
@@ -98,6 +125,9 @@ export async function onRequestPost({ env, request }) {
       )
       .run();
 
+    await appendOrderTimeline(env, Number(body.order_id) || null, "return_requested", "Return requested", String(body.reason || "").trim());
+    await logNotification(env, "return_requested", Number(body.order_id) || null, "Return requested notification mocked/logged.");
+
     return json({ success: true, id: result.meta.last_row_id, message: "Return request salvata." });
   } catch (error) {
     if (tableMissing(error)) {
@@ -133,6 +163,11 @@ export async function onRequestPut({ env, request }) {
         id,
       )
       .run();
+
+    await appendOrderTimeline(env, Number(body.order_id) || null, body.status === "refunded" ? "refund_marked_complete" : "return_updated", "Return updated", normalizeStatus(body.status));
+    if (body.status === "refunded") {
+      await logNotification(env, "refund_created", Number(body.order_id) || null, "Refund notification mocked/logged.");
+    }
 
     return json({ success: true, message: "Return request aggiornata." });
   } catch (error) {

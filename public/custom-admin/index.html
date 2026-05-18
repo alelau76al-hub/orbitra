@@ -1427,6 +1427,31 @@
         </div>
       </section>
 
+      <section id="store-health" class="cms-area card admin-view" data-admin-view="store-health">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Store Health</h2>
+            <p class="section-subtitle">Controllo operativo di API, database, checkout, provider esterni e configurazioni store.</p>
+          </div>
+          <button id="refreshStoreHealthButton" type="button">Aggiorna health</button>
+        </div>
+        <div id="storeHealthSummary" class="analytics-metric-grid"></div>
+        <div id="storeHealthList" class="admin-records-list">Caricamento Store Health...</div>
+      </section>
+
+      <section id="launch-checklist" class="cms-area card admin-view" data-admin-view="launch-checklist">
+        <div class="section-title">
+          <div>
+            <span class="app-kicker">Native app</span>
+            <h2>TakeOff Launch Checklist</h2>
+            <p class="section-subtitle">Checklist go-live calcolata automaticamente per preparare il sito ai test finali e alla produzione.</p>
+          </div>
+          <button id="refreshLaunchChecklistButton" type="button">Aggiorna checklist</button>
+        </div>
+        <div id="launchChecklistList" class="admin-records-list">Caricamento checklist...</div>
+      </section>
+
       <section id="ordini" class="cms-area card admin-view" data-admin-view="ordini">
         <div class="section-title">
           <div>
@@ -1442,6 +1467,8 @@
         <div class="admin-list-tools">
           <input id="orderAdminSearch" type="search" placeholder="Cerca ordini..." />
         </div>
+
+        <div id="operationsSummary" class="analytics-metric-grid"></div>
 
         <div id="ordersList" class="admin-records-list">
           Caricamento ordini...
@@ -1463,6 +1490,8 @@
         <div class="admin-list-tools">
           <input id="customerAdminSearch" type="search" placeholder="Cerca clienti..." />
         </div>
+
+        <div id="customerAccountsSummary" class="analytics-metric-grid"></div>
 
         <div id="customersList" class="admin-records-list">
           Caricamento clienti...

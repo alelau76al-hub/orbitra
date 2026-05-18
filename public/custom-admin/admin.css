@@ -2611,6 +2611,26 @@ textarea {
   gap: 14px;
 }
 
+.operations-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.operations-tools label {
+  display: grid;
+  gap: 6px;
+}
+
+.operations-tools textarea {
+  min-height: 74px;
+}
+
+.timeline-lines div {
+  align-items: flex-start;
+}
+
 .app-card {
   min-height: 210px;
 }

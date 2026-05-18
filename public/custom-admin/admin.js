@@ -922,6 +922,10 @@ function refreshAdminDataAfterAuth() {
     loadReturns,
     loadUpsells,
     loadProductFeeds,
+    loadOperationsSummary,
+    loadStoreHealth,
+    loadLaunchChecklist,
+    loadCustomerAccountsSummary,
   ]
 
   loaders.forEach((loader) => {
@@ -3075,6 +3079,8 @@ function setupAdminViews() {
       'product-feeds',
       'backup',
       'gdpr-cookie',
+      'store-health',
+      'launch-checklist',
       'utenti',
       'performance',
     ]
@@ -6897,15 +6903,19 @@ loadPerformanceAdmin()
 const ordersList = document.querySelector('#ordersList')
 const refreshOrdersButton = document.querySelector('#refreshOrdersButton')
 const orderAdminSearch = document.querySelector('#orderAdminSearch')
+const operationsSummary = document.querySelector('#operationsSummary')
+const storeHealthSummary = document.querySelector('#storeHealthSummary')
+const storeHealthList = document.querySelector('#storeHealthList')
+const refreshStoreHealthButton = document.querySelector('#refreshStoreHealthButton')
+const launchChecklistList = document.querySelector('#launchChecklistList')
+const refreshLaunchChecklistButton = document.querySelector('#refreshLaunchChecklistButton')
 
 function renderOrderStatusSelect(order) {
   const statuses = [
-    ['new', 'Nuovo'],
-    ['paid', 'Pagato'],
-    ['processing', 'In lavorazione'],
-    ['shipped', 'Spedito'],
-    ['completed', 'Completato'],
-    ['cancelled', 'Annullato'],
+    ['pending', 'Pending'],
+    ['confirmed', 'Confirmed'],
+    ['fulfilled', 'Fulfilled'],
+    ['cancelled', 'Cancelled'],
   ]
 
   return `
@@ -6983,6 +6993,8 @@ async function loadOrders() {
               <span>Ref: ${escapeHtml(order.provider_reference || 'N/D')}</span>
               <span>Valuta: ${escapeHtml(order.currency || 'EUR')}</span>
               <span>Spedizione: ${escapeHtml(order.shipping_method || 'standard')}</span>
+              <span>Fulfillment: ${escapeHtml(order.fulfillment_status || 'unfulfilled')}</span>
+              <span>Refund: ${escapeHtml(order.refund_status || 'none')}</span>
               <span>Sconto: ${order.discount_cents ? `-${formatMoney(order.discount_cents)}` : formatMoney(0)}</span>
               <span>Tasse: ${formatMoney(order.tax_cents || 0)}</span>
               <span>${escapeHtml(order.created_at || '')}</span>
@@ -7018,6 +7030,96 @@ async function loadOrders() {
               Stato ordine
               ${renderOrderStatusSelect(order)}
             </label>
+
+            <label class="admin-status-control">
+              Stato pagamento
+              ${renderPaymentStatusSelect(order)}
+            </label>
+
+            <details open>
+              <summary>Operations workflow</summary>
+              <div class="operations-tools" data-order-tools="${order.id}">
+                <label>Carrier
+                  <input data-order-tracking-carrier type="text" value="${escapeHtml(order.tracking_carrier || '')}" placeholder="DHL, UPS, Poste..." />
+                </label>
+                <label>Tracking number
+                  <input data-order-tracking-number type="text" value="${escapeHtml(order.tracking_number || '')}" placeholder="Tracking number" />
+                </label>
+                <label>Tracking URL
+                  <input data-order-tracking-url type="text" value="${escapeHtml(order.tracking_url || '')}" placeholder="https://..." />
+                </label>
+                <label>Shipping note
+                  <input data-order-shipping-note type="text" value="${escapeHtml(order.shipping_note || '')}" placeholder="Nota spedizione" />
+                </label>
+                <label>Internal note
+                  <textarea data-order-internal-note placeholder="Nota interna ordine">${escapeHtml(order.internal_note || '')}</textarea>
+                </label>
+                <label>Refund amount EUR
+                  <input data-order-refund-amount type="number" step="0.01" value="${Number(order.refund_amount_cents || 0) / 100}" />
+                </label>
+                <label>Refund note
+                  <input data-order-refund-note type="text" value="${escapeHtml(order.refund_note || '')}" placeholder="Manual refund / provider required" />
+                </label>
+                <div class="product-actions">
+                  <button type="button" data-order-action="confirm_order" data-order-id="${order.id}">Conferma ordine</button>
+                  <button type="button" data-order-action="mark_paid" data-order-id="${order.id}">Marca pagato</button>
+                  <button type="button" data-order-action="add_tracking" data-order-id="${order.id}">Add tracking</button>
+                  <button type="button" data-order-action="mark_fulfilled" data-order-id="${order.id}">Mark as fulfilled</button>
+                  <button type="button" data-order-action="add_note" data-order-id="${order.id}">Salva nota</button>
+                  <button type="button" data-order-action="refund_requested" data-order-id="${order.id}">Refund requested</button>
+                  <button type="button" data-order-action="refund_complete" data-order-id="${order.id}">Refund complete</button>
+                  <button type="button" class="danger" data-order-action="cancel_order" data-order-id="${order.id}">Cancella ordine</button>
+                </div>
+              </div>
+            </details>
+
+            <details>
+              <summary>Returns / refunds (${order.returns?.length || 0})</summary>
+              <div class="admin-lines">
+                ${(order.returns || [])
+                  .map(
+                    (item) => `
+                      <div>
+                        <span>${escapeHtml(item.status || 'requested')} - ${escapeHtml(item.reason || 'Return request')}</span>
+                        <strong>${formatMoney(item.refund_amount_cents || 0)}</strong>
+                      </div>
+                    `,
+                  )
+                  .join('') || '<p>Manual refund / provider required. Nessun reso collegato.</p>'}
+              </div>
+            </details>
+
+            <details>
+              <summary>Timeline (${order.timeline?.length || 0})</summary>
+              <div class="admin-lines timeline-lines">
+                ${(order.timeline || [])
+                  .map(
+                    (event) => `
+                      <div>
+                        <span>${escapeHtml(event.title || event.event_type)} ${event.description ? `- ${escapeHtml(event.description)}` : ''}</span>
+                        <strong>${escapeHtml(event.created_at || '')}</strong>
+                      </div>
+                    `,
+                  )
+                  .join('') || '<p>La timeline verra registrata con la migration Operations Suite.</p>'}
+              </div>
+            </details>
+
+            <details>
+              <summary>Notification log (${order.notification_logs?.length || 0})</summary>
+              <div class="admin-lines">
+                ${(order.notification_logs || [])
+                  .map(
+                    (log) => `
+                      <div>
+                        <span>${escapeHtml(log.type || 'notification')} - ${escapeHtml(log.status || 'mocked')}</span>
+                        <strong>${escapeHtml(log.created_at || '')}</strong>
+                      </div>
+                    `,
+                  )
+                  .join('') || '<p>Nessuna notifica loggata per questo ordine.</p>'}
+              </div>
+            </details>
           </article>
         `,
       )
@@ -7043,6 +7145,28 @@ async function loadOrders() {
         }
       })
     })
+
+    document.querySelectorAll('[data-payment-status]').forEach((select) => {
+      select.addEventListener('change', async () => {
+        await sendOrderAction({
+          id: Number(select.dataset.paymentStatus),
+          action: select.value === 'paid' ? 'mark_paid' : 'update_payment_status',
+          payment_status: select.value,
+        })
+      })
+    })
+
+    document.querySelectorAll('[data-order-action]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const order = data.orders.find((item) => item.id === Number(button.dataset.orderId))
+        if (!order) return
+        if (button.dataset.orderAction === 'cancel_order') {
+          const confirmed = confirm('Confermi cancellazione ordine?')
+          if (!confirmed) return
+        }
+        await sendOrderAction(orderActionPayload(order, button.dataset.orderAction))
+      })
+    })
   } catch {
     renderAdminListState(ordersList, 'Errore di connessione agli ordini.', 'error')
   }
@@ -7050,6 +7174,8 @@ async function loadOrders() {
 
 refreshOrdersButton?.addEventListener('click', loadOrders)
 orderAdminSearch?.addEventListener('input', loadOrders)
+refreshStoreHealthButton?.addEventListener('click', loadStoreHealth)
+refreshLaunchChecklistButton?.addEventListener('click', loadLaunchChecklist)
 loadOrders()
 
 // ===============================
@@ -7059,6 +7185,33 @@ loadOrders()
 const customersList = document.querySelector('#customersList')
 const refreshCustomersButton = document.querySelector('#refreshCustomersButton')
 const customerAdminSearch = document.querySelector('#customerAdminSearch')
+const customerAccountsSummary = document.querySelector('#customerAccountsSummary')
+
+async function loadCustomerAccountsSummary() {
+  if (!customerAccountsSummary) return
+  try {
+    const response = await fetch('/api/admin/customer-accounts')
+    const data = await response.json()
+    if (!response.ok || !data.success) return
+    customerAccountsSummary.innerHTML = `
+      ${(data.statuses || [])
+        .map(
+          (item) => `
+            <article class="metric-card">
+              <span>${escapeHtml(item.account_status || 'guest')}</span>
+              <strong>${item.count || 0}</strong>
+            </article>
+          `,
+        )
+        .join('')}
+      <article class="metric-card">
+        <span>Account readiness</span>
+        <strong>${data.setup_required ? 'Setup required' : 'Provider-ready'}</strong>
+        <small>${escapeHtml(data.note || '')}</small>
+      </article>
+    `
+  } catch {}
+}
 
 async function loadCustomers() {
   if (!customersList) return
@@ -7111,6 +7264,9 @@ async function loadCustomers() {
               <span>Telefono: ${escapeHtml(customer.phone || 'N/D')}</span>
               <span>${escapeHtml(customer.shipping_address_city || 'Citta N/D')}</span>
               <span>${escapeHtml(customer.shipping_address_country || 'Paese N/D')}</span>
+              <span>Account: ${escapeHtml(customer.account_status || 'guest')}</span>
+              <span>LTV: ${formatMoney(customer.lifetime_value_cents || 0)}</span>
+              <span>Tags: ${escapeHtml(customer.tags || 'N/D')}</span>
             </div>
 
             <div class="admin-record-address">
@@ -7133,10 +7289,57 @@ async function loadCustomers() {
                   .join('') || '<p>Nessun ordine collegato.</p>'}
               </div>
             </details>
+
+            <details>
+              <summary>Customer account</summary>
+              <div class="operations-tools" data-customer-tools="${customer.id}">
+                <label>Status account
+                  <select data-customer-account-status>
+                    ${['guest', 'invited', 'active', 'disabled']
+                      .map((status) => `<option value="${status}" ${customer.account_status === status ? 'selected' : ''}>${status}</option>`)
+                      .join('')}
+                  </select>
+                </label>
+                <label>Tags
+                  <input data-customer-tags type="text" value="${escapeHtml(customer.tags || '')}" placeholder="vip, wholesale, newsletter" />
+                </label>
+                <label>Note cliente
+                  <textarea data-customer-note placeholder="Note interne cliente">${escapeHtml(customer.note || '')}</textarea>
+                </label>
+                <div class="product-actions">
+                  <button type="button" data-customer-action="save" data-customer-id="${customer.id}">Salva cliente</button>
+                  <button type="button" data-customer-action="send_invite" data-customer-id="${customer.id}">Send invite</button>
+                </div>
+                <p class="field-help">Customer account ready / provider-ready. Login cliente completo non attivo in questa release.</p>
+              </div>
+            </details>
           </article>
         `,
       )
       .join('')
+
+    customersList.querySelectorAll('[data-customer-action]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const wrapper = customersList.querySelector(`[data-customer-tools="${button.dataset.customerId}"]`)
+        const action = button.dataset.customerAction
+        const response = await fetch('/api/admin/customers', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: Number(button.dataset.customerId),
+            action: action === 'send_invite' ? 'send_invite' : 'update',
+            account_status: wrapper?.querySelector('[data-customer-account-status]')?.value || 'guest',
+            tags: wrapper?.querySelector('[data-customer-tags]')?.value.trim() || '',
+            note: wrapper?.querySelector('[data-customer-note]')?.value.trim() || '',
+          }),
+        })
+        const result = await response.json()
+        if (!result.success) alert(result.message || 'Aggiornamento cliente non riuscito.')
+        await loadCustomers()
+        await loadCustomerAccountsSummary()
+        await loadNotifications()
+      })
+    })
   } catch {
     renderAdminListState(customersList, 'Errore di connessione ai clienti.', 'error')
   }
@@ -7755,6 +7958,143 @@ function setPreviewDevice(device = 'desktop') {
       mobile: 'previewMobile',
     }[nextDevice]
     previewDeviceLabel.textContent = adminT(labelKey)
+  }
+}
+
+function renderPaymentStatusSelect(order) {
+  const statuses = ['pending', 'paid', 'failed', 'refunded']
+  return `
+    <select data-payment-status="${order.id}">
+      ${statuses.map((status) => `<option value="${status}" ${order.payment_status === status ? 'selected' : ''}>${status}</option>`).join('')}
+    </select>
+  `
+}
+
+function orderActionPayload(order, action) {
+  const prefix = `[data-order-tools="${order.id}"]`
+  return {
+    id: order.id,
+    action,
+    tracking_carrier: document.querySelector(`${prefix} [data-order-tracking-carrier]`)?.value.trim() || '',
+    tracking_number: document.querySelector(`${prefix} [data-order-tracking-number]`)?.value.trim() || '',
+    tracking_url: document.querySelector(`${prefix} [data-order-tracking-url]`)?.value.trim() || '',
+    shipping_note: document.querySelector(`${prefix} [data-order-shipping-note]`)?.value.trim() || '',
+    internal_note: document.querySelector(`${prefix} [data-order-internal-note]`)?.value.trim() || '',
+    refund_note: document.querySelector(`${prefix} [data-order-refund-note]`)?.value.trim() || '',
+    refund_amount: Number(document.querySelector(`${prefix} [data-order-refund-amount]`)?.value || 0),
+  }
+}
+
+async function sendOrderAction(payload) {
+  const response = await fetch('/api/admin/orders', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const result = await response.json()
+  if (!result.success) alert(result.message || 'Operazione ordine non riuscita.')
+  await loadOrders()
+  await loadOperationsSummary()
+  await loadNotifications()
+}
+
+async function loadOperationsSummary() {
+  if (!operationsSummary) return
+  try {
+    const response = await fetch('/api/admin/operations')
+    const data = await response.json()
+    if (!response.ok || !data.success) return
+    const summary = data.summary || {}
+    operationsSummary.innerHTML = [
+      ['Pending orders', summary.pending_orders || 0],
+      ['Unfulfilled', summary.unfulfilled_orders || 0],
+      ['Refund queue', summary.refund_queue || 0],
+      ['Return queue', summary.return_queue || 0],
+    ]
+      .map(
+        ([label, value]) => `
+          <article class="metric-card">
+            <span>${escapeHtml(label)}</span>
+            <strong>${value}</strong>
+          </article>
+        `,
+      )
+      .join('')
+  } catch {}
+}
+
+function renderOperationalChecks(container, checks = []) {
+  if (!container) return
+  container.innerHTML = checks.length
+    ? checks
+        .map(
+          (check) => `
+            <article class="admin-record">
+              <div class="admin-record-head">
+                <div>
+                  <h3>${escapeHtml(check.label)}</h3>
+                  <p>${escapeHtml(check.description || '')}</p>
+                </div>
+                <strong>${escapeHtml(check.status || 'Warning')}</strong>
+              </div>
+              <div class="meta">
+                <span>${escapeHtml(check.action || '')}</span>
+                ${check.href ? `<a href="${escapeHtml(check.href)}">Apri sezione</a>` : ''}
+              </div>
+            </article>
+          `,
+        )
+        .join('')
+    : '<p>Nessun controllo disponibile.</p>'
+}
+
+async function loadStoreHealth() {
+  if (!storeHealthList && !storeHealthSummary) return
+  if (storeHealthList) storeHealthList.textContent = 'Caricamento Store Health...'
+  try {
+    const response = await fetch('/api/admin/health')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      if (storeHealthList) storeHealthList.textContent = data.message || 'Store Health non disponibile.'
+      return
+    }
+    const summary = data.summary || {}
+    if (storeHealthSummary) {
+      storeHealthSummary.innerHTML = [
+        ['Products', summary.products || 0],
+        ['Collections', summary.collections || 0],
+        ['Orders', summary.orders || 0],
+        ['Email provider', summary.email_provider || 'none'],
+      ]
+        .map(
+          ([label, value]) => `
+            <article class="metric-card">
+              <span>${escapeHtml(label)}</span>
+              <strong>${escapeHtml(value)}</strong>
+            </article>
+          `,
+        )
+        .join('')
+    }
+    renderOperationalChecks(storeHealthList, data.checks || [])
+  } catch {
+    if (storeHealthList) storeHealthList.textContent = 'Store Health non disponibile.'
+  }
+}
+
+async function loadLaunchChecklist() {
+  if (!launchChecklistList) return
+  launchChecklistList.textContent = 'Caricamento checklist...'
+  try {
+    const response = await fetch('/api/admin/launch-checklist')
+    const data = await response.json()
+    if (!response.ok || !data.success) {
+      launchChecklistList.textContent = data.message || 'Launch checklist non disponibile.'
+      return
+    }
+    renderOperationalChecks(launchChecklistList, data.items || [])
+  } catch {
+    launchChecklistList.textContent = 'Launch checklist non disponibile.'
   }
 }
 
