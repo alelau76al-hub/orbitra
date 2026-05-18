@@ -1776,19 +1776,40 @@ const APP_ICON_MAP = {
 }
 
 const APP_VIEW_VISUALS = {
+  editor: { icon: 'ED', category: 'Core', status: 'Active' },
+  apps: { icon: 'AP', category: 'System', status: 'Active' },
   'import-export': { icon: 'IE', category: 'Core', status: 'Active' },
   'google-suite': { icon: 'G', category: 'Growth', status: 'Requires external configuration' },
+  traduzioni: { icon: 'Aa', category: 'Core', status: 'Configurable' },
   media: { icon: 'ML', category: 'Core', status: 'Configurable' },
   seo: { icon: 'SEO', category: 'Core', status: 'Configurable' },
   analisi: { icon: 'AN', category: 'Growth', status: 'Configurable' },
+  'analytics-dashboard': { icon: 'AN', category: 'Growth', status: 'Active' },
+  'analytics-traffic': { icon: 'TR', category: 'Growth', status: 'Active' },
+  'analytics-sales': { icon: 'SL', category: 'Commerce', status: 'Active' },
+  'analytics-products': { icon: 'PR', category: 'Commerce', status: 'Active' },
+  'analytics-conversions': { icon: 'CV', category: 'Growth', status: 'Active' },
+  'analytics-events': { icon: 'EV', category: 'Growth', status: 'Active' },
   markets: { icon: 'MK', category: 'Core', status: 'Configurable' },
+  'markets-mercati': { icon: 'MK', category: 'Core', status: 'Configurable' },
+  'markets-paesi': { icon: 'PA', category: 'Core', status: 'Basic configuration' },
+  'markets-lingue': { icon: 'LG', category: 'Core', status: 'Basic configuration' },
+  'markets-valute': { icon: 'FX', category: 'Core', status: 'Basic configuration' },
+  'markets-prezzi': { icon: 'LP', category: 'Commerce', status: 'Configurable' },
   reviews: { icon: 'RV', category: 'Commerce', status: 'Configurable' },
   returns: { icon: 'RT', category: 'Commerce', status: 'Basic configuration' },
+  upsells: { icon: 'UP', category: 'Commerce', status: 'Configurable' },
   'product-feeds': { icon: 'PF', category: 'Growth', status: 'Configurable' },
   backup: { icon: 'BK', category: 'System', status: 'Active' },
+  'gdpr-cookie': { icon: 'GD', category: 'System', status: 'Basic configuration' },
   'email-automations': { icon: '@', category: 'Growth', status: 'Requires external configuration' },
   'store-health': { icon: 'HT', category: 'System', status: 'Active' },
   'launch-checklist': { icon: 'LC', category: 'System', status: 'Active' },
+  ordini: { icon: 'OR', category: 'Commerce', status: 'Active' },
+  clienti: { icon: 'CA', category: 'Commerce', status: 'Active' },
+  'checkout-shipping': { icon: 'SH', category: 'Commerce', status: 'Configurable' },
+  notifiche: { icon: 'EM', category: 'Growth', status: 'Requires external configuration' },
+  performance: { icon: 'PF', category: 'System', status: 'Configurable' },
 }
 
 function slugifyCss(value = '') {
@@ -1860,7 +1881,7 @@ function enhanceAppDetailShells() {
     if (!section) return
 
     const tone = (APP_VISUALS[visual.category] || APP_VISUALS.Core).tone
-    section.classList.add('app-detail-view', `app-detail-view--${tone}`)
+    section.classList.add('app-detail-view', `app-detail-view--${tone}`, `app-detail-view--${slugifyCss(viewId)}`)
     section.dataset.appStatus = visual.status
     section.dataset.appCategory = visual.category
 

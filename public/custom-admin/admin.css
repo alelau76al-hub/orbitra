@@ -4203,3 +4203,591 @@ body[data-admin-theme="light"] .admin-entry-countdown span {
     padding: 18px;
   }
 }
+
+/* Futuristic UI redesign pass */
+:root {
+  --takeoff-gradient: linear-gradient(110deg, #ffffff 0%, #ffb15f 32%, #ff6a4d 58%, #e73668 82%, #ffffff 100%);
+  --takeoff-gradient-soft: linear-gradient(135deg, rgba(255, 106, 77, 0.16), rgba(231, 54, 104, 0.08), rgba(255, 177, 95, 0.08));
+  --takeoff-ring: rgba(255, 106, 77, 0.24);
+  --takeoff-focus: 0 0 0 3px rgba(255, 106, 77, 0.28);
+}
+
+@keyframes takeoffGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes takeoffSoftPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.012);
+  }
+}
+
+@keyframes takeoffSectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-view:not([hidden]) {
+  animation: takeoffSectionIn 260ms ease both;
+}
+
+.dashboard-hero h2,
+.hero.admin-hero h1,
+.admin-entry-content h1,
+.app-detail-view .section-title h2,
+#apps .section-title h2,
+.visual-editor .section-title h2,
+#store-health .section-title h2,
+#launch-checklist .section-title h2 {
+  width: fit-content;
+  max-width: 100%;
+  background: var(--takeoff-gradient);
+  background-size: 260% 260%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: takeoffGradientFlow 12s ease infinite;
+}
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  border-color: rgba(255, 106, 77, 0.26);
+  background:
+    radial-gradient(circle at 84% 16%, rgba(255, 106, 77, 0.22), transparent 28%),
+    radial-gradient(circle at 16% 90%, rgba(231, 54, 104, 0.13), transparent 28%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+}
+
+.dashboard-hero::before,
+.dashboard-hero::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.dashboard-hero::before {
+  inset: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 26px;
+}
+
+.dashboard-hero::after {
+  right: -42px;
+  bottom: -88px;
+  width: 240px;
+  height: 240px;
+  border: 1px solid rgba(255, 106, 77, 0.22);
+  border-radius: 54px;
+  transform: rotate(18deg);
+}
+
+.dashboard-hero h2 {
+  margin-block: 6px 10px;
+  font-size: clamp(2rem, 4vw, 4.4rem);
+  line-height: 0.98;
+}
+
+.dashboard-hero p,
+.editor-kicker,
+.section-title > div > p:first-child {
+  color: #ffb15f;
+}
+
+.dashboard-hero strong {
+  position: relative;
+  border-color: rgba(255, 106, 77, 0.3);
+  background:
+    linear-gradient(135deg, rgba(255, 106, 77, 0.2), rgba(255, 177, 95, 0.08)),
+    rgba(255, 255, 255, 0.05);
+  box-shadow: 0 16px 44px rgba(255, 106, 77, 0.12);
+}
+
+.dashboard-quick-actions .mini-card {
+  min-height: 168px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255, 106, 77, 0.12), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+}
+
+.dashboard-summary-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-summary-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 16px 14px 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 106, 77, 0.74), transparent);
+  opacity: 0.72;
+}
+
+.admin-topbar,
+.admin-session-bar {
+  backdrop-filter: blur(18px);
+}
+
+.admin-topbar {
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.026)),
+    rgba(10, 10, 13, 0.74);
+}
+
+.admin-current-view,
+.theme-toggle,
+.admin-language-control select {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hub-card,
+.mini-card,
+.inner-card,
+.admin-record,
+.product-item,
+.settings-group,
+.placeholder-panel {
+  border-radius: 20px;
+}
+
+.hub-card:hover,
+.mini-card:hover,
+.app-card:hover,
+.dashboard-summary-card:hover {
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.26),
+    0 0 0 1px rgba(255, 106, 77, 0.08);
+}
+
+.hub-card.active {
+  background:
+    linear-gradient(135deg, rgba(255, 106, 77, 0.24), rgba(231, 54, 104, 0.16)),
+    rgba(255, 255, 255, 0.055);
+}
+
+button,
+.button,
+.app-card strong,
+.dashboard-quick-actions .mini-card,
+.preview-device-toggle button,
+.app-tabs span,
+.tab-button {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+button:hover,
+.button:hover,
+.preview-device-toggle button:hover {
+  transform: translateY(-1px);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+.hub-card:focus-visible,
+.app-card:focus-visible {
+  outline: none;
+  box-shadow: var(--takeoff-focus);
+}
+
+input,
+textarea,
+select {
+  border-color: rgba(255, 255, 255, 0.105);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.03);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(235, 231, 226, 0.44);
+}
+
+.visual-editor {
+  border-color: rgba(255, 106, 77, 0.18);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 106, 77, 0.1), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02));
+}
+
+.editor-title-bar {
+  border-color: rgba(255, 106, 77, 0.2);
+}
+
+.preview-device-toggle {
+  box-shadow: inset 0 0 0 1px rgba(255, 106, 77, 0.08);
+}
+
+.preview-device-toggle button.active {
+  box-shadow: 0 12px 28px rgba(255, 106, 77, 0.18);
+}
+
+.site-preview-frame {
+  border-color: rgba(255, 106, 77, 0.16);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 26px 70px rgba(0, 0, 0, 0.28);
+}
+
+.app-detail-view .section-title {
+  min-height: 154px;
+}
+
+.app-detail-view .section-title::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--app-accent, #ff6a4d) 16%, transparent), transparent 34%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 34px);
+  opacity: 0.58;
+}
+
+.app-detail-view .section-title > * {
+  position: relative;
+  z-index: 1;
+}
+
+.app-detail-view .section-title h2 {
+  font-size: clamp(1.8rem, 3vw, 3.1rem);
+  line-height: 1;
+}
+
+.app-detail-symbol {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  animation: takeoffSoftPulse 5.5s ease-in-out infinite;
+}
+
+.app-detail-view--import-export {
+  --app-accent: #5fdcff;
+  --app-accent-soft: rgba(95, 220, 255, 0.15);
+}
+
+.app-detail-view--google-suite {
+  --app-accent: #ff8f5f;
+  --app-accent-soft: rgba(255, 143, 95, 0.15);
+}
+
+.app-detail-view--media {
+  --app-accent: #ff6fb1;
+  --app-accent-soft: rgba(255, 111, 177, 0.14);
+}
+
+.app-detail-view--traduzioni {
+  --app-accent: #c78cff;
+  --app-accent-soft: rgba(199, 140, 255, 0.15);
+}
+
+.app-detail-view--markets,
+.app-detail-view--markets-mercati,
+.app-detail-view--markets-paesi,
+.app-detail-view--markets-lingue,
+.app-detail-view--markets-valute {
+  --app-accent: #75d8ff;
+  --app-accent-soft: rgba(117, 216, 255, 0.14);
+}
+
+.app-detail-view--markets-prezzi,
+.app-detail-view--upsells {
+  --app-accent: #ff8b55;
+  --app-accent-soft: rgba(255, 139, 85, 0.16);
+}
+
+.app-detail-view--seo,
+.app-detail-view--gdpr-cookie {
+  --app-accent: #70e6a8;
+  --app-accent-soft: rgba(112, 230, 168, 0.13);
+}
+
+.app-detail-view--analisi,
+.app-detail-view--analytics-dashboard,
+.app-detail-view--analytics-traffic,
+.app-detail-view--analytics-conversions,
+.app-detail-view--analytics-events {
+  --app-accent: #9aa4ff;
+  --app-accent-soft: rgba(154, 164, 255, 0.14);
+}
+
+.app-detail-view--reviews {
+  --app-accent: #ffd36c;
+  --app-accent-soft: rgba(255, 211, 108, 0.14);
+}
+
+.app-detail-view--returns,
+.app-detail-view--checkout-shipping {
+  --app-accent: #ff9a67;
+  --app-accent-soft: rgba(255, 154, 103, 0.15);
+}
+
+.app-detail-view--product-feeds {
+  --app-accent: #7cc7ff;
+  --app-accent-soft: rgba(124, 199, 255, 0.14);
+}
+
+.app-detail-view--backup,
+.app-detail-view--store-health,
+.app-detail-view--launch-checklist,
+.app-detail-view--performance {
+  --app-accent: #9fb5c8;
+  --app-accent-soft: rgba(159, 181, 200, 0.14);
+}
+
+.app-detail-view--email-automations,
+.app-detail-view--notifiche {
+  --app-accent: #ff7ab8;
+  --app-accent-soft: rgba(255, 122, 184, 0.14);
+}
+
+.app-tabs span,
+.tab-button {
+  border-color: color-mix(in srgb, var(--app-accent, #ff6a4d) 16%, rgba(255, 255, 255, 0.12));
+}
+
+.app-tabs span:first-child,
+.tab-button.active {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--app-accent, #ff6a4d) 42%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--app-accent, #ff6a4d) 22%, transparent), rgba(255, 255, 255, 0.04));
+}
+
+.admin-entry-screen::before {
+  animation: takeoffSoftPulse 7s ease-in-out infinite;
+}
+
+.admin-entry-content h1 {
+  font-size: clamp(2.4rem, 7vw, 6.8rem);
+}
+
+.admin-entry-countdown strong {
+  filter: drop-shadow(0 0 30px rgba(255, 106, 77, 0.28));
+}
+
+#adminEntryEnterButton {
+  border-color: rgba(255, 106, 77, 0.32);
+  background:
+    linear-gradient(135deg, #ff6a4d, #ffb15f),
+    #ff6a4d;
+  color: #1b1110;
+  box-shadow: 0 20px 50px rgba(255, 106, 77, 0.26);
+}
+
+body[data-admin-theme="light"] {
+  --admin-bg: #f8f7f4;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #ffffff;
+  --admin-surface-strong: #ffffff;
+  --admin-border: rgba(36, 30, 31, 0.14);
+  --admin-text: #211c1d;
+  --admin-muted: #62595d;
+}
+
+body[data-admin-theme="light"] .admin-topbar,
+body[data-admin-theme="light"] .admin-session-bar {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 242, 0.9)),
+    #ffffff;
+}
+
+body[data-admin-theme="light"] .admin-sidebar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 246, 242, 0.94)),
+    #ffffff;
+}
+
+body[data-admin-theme="light"] .admin-topbar,
+body[data-admin-theme="light"] .admin-sidebar,
+body[data-admin-theme="light"] .admin-session-bar,
+body[data-admin-theme="light"] .card,
+body[data-admin-theme="light"] .inner-card,
+body[data-admin-theme="light"] .mini-card,
+body[data-admin-theme="light"] .admin-record,
+body[data-admin-theme="light"] .product-item,
+body[data-admin-theme="light"] .settings-group,
+body[data-admin-theme="light"] .placeholder-panel,
+body[data-admin-theme="light"] .theme-settings-drawer,
+body[data-admin-theme="light"] .modal,
+body[data-admin-theme="light"] .media-picker-modal,
+body[data-admin-theme="light"] .app-tabs span,
+body[data-admin-theme="light"] .tab-button {
+  color: var(--admin-text);
+  border-color: var(--admin-border);
+}
+
+body[data-admin-theme="light"] p,
+body[data-admin-theme="light"] small,
+body[data-admin-theme="light"] label,
+body[data-admin-theme="light"] .section-subtitle,
+body[data-admin-theme="light"] .admin-muted,
+body[data-admin-theme="light"] .admin-record p,
+body[data-admin-theme="light"] .mini-card p,
+body[data-admin-theme="light"] .app-card p,
+body[data-admin-theme="light"] .product-item p,
+body[data-admin-theme="light"] .placeholder-panel small,
+body[data-admin-theme="light"] .meta,
+body[data-admin-theme="light"] .status-list span {
+  color: #655c60;
+}
+
+body[data-admin-theme="light"] h1,
+body[data-admin-theme="light"] h2,
+body[data-admin-theme="light"] h3,
+body[data-admin-theme="light"] h4,
+body[data-admin-theme="light"] strong,
+body[data-admin-theme="light"] .admin-current-view,
+body[data-admin-theme="light"] .hub-card strong,
+body[data-admin-theme="light"] .admin-nav-group h3,
+body[data-admin-theme="light"] table,
+body[data-admin-theme="light"] th,
+body[data-admin-theme="light"] td {
+  color: var(--admin-text);
+}
+
+body[data-admin-theme="light"] input,
+body[data-admin-theme="light"] textarea,
+body[data-admin-theme="light"] select,
+body[data-admin-theme="light"] .setting-field input,
+body[data-admin-theme="light"] .setting-field textarea,
+body[data-admin-theme="light"] .setting-field select {
+  color: #211c1d;
+  border-color: rgba(36, 30, 31, 0.18);
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(36, 30, 31, 0.04);
+}
+
+body[data-admin-theme="light"] input::placeholder,
+body[data-admin-theme="light"] textarea::placeholder {
+  color: #8b8185;
+}
+
+body[data-admin-theme="light"] .dashboard-hero,
+body[data-admin-theme="light"] .visual-editor,
+body[data-admin-theme="light"] .site-preview-frame {
+  background:
+    radial-gradient(circle at 84% 12%, rgba(255, 106, 77, 0.12), transparent 30%),
+    linear-gradient(145deg, #ffffff, #fff9f5);
+}
+
+body[data-admin-theme="light"] .dashboard-hero::before,
+body[data-admin-theme="light"] .app-detail-view .section-title::before {
+  border-color: rgba(36, 30, 31, 0.05);
+}
+
+body[data-admin-theme="light"] .hub-card:hover,
+body[data-admin-theme="light"] .hub-card.active {
+  color: #211c1d;
+  background: rgba(255, 106, 77, 0.09);
+}
+
+body[data-admin-theme="light"] .hub-card.active strong,
+body[data-admin-theme="light"] .hub-card.active small {
+  color: #211c1d;
+}
+
+body[data-admin-theme="light"] button:not(#adminEntryEnterButton),
+body[data-admin-theme="light"] .button,
+body[data-admin-theme="light"] .app-card strong {
+  color: #221818;
+}
+
+body[data-admin-theme="light"] button.secondary,
+body[data-admin-theme="light"] .secondary,
+body[data-admin-theme="light"] .preview-device-toggle button:not(.active) {
+  color: #3d3437;
+  background: #ffffff;
+  border-color: rgba(36, 30, 31, 0.15);
+}
+
+body[data-admin-theme="light"] .app-tabs span:first-child,
+body[data-admin-theme="light"] .tab-button.active,
+body[data-admin-theme="light"] .preview-device-toggle button.active {
+  color: #211c1d;
+}
+
+body[data-admin-theme="light"] .status-chip--progress,
+body[data-admin-theme="light"] .status-badge--progress {
+  color: #536171;
+}
+
+body[data-admin-theme="light"] .audit-mode-badge,
+body[data-admin-theme="light"] .admin-audit-badge {
+  color: #7a320d;
+  border-color: rgba(233, 85, 66, 0.24);
+  background: rgba(255, 106, 77, 0.12);
+}
+
+body[data-admin-theme="light"].admin-audit-mode button:disabled,
+body[data-admin-theme="light"][data-admin-audit-mode="true"] button:disabled,
+body[data-admin-theme="light"] button.audit-disabled {
+  color: #7a7375;
+  border-color: rgba(36, 30, 31, 0.12);
+  background: rgba(36, 30, 31, 0.045);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-hero {
+    min-height: auto;
+  }
+
+  .dashboard-hero h2 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .app-detail-symbol {
+    width: 52px;
+    height: 52px;
+  }
+}
