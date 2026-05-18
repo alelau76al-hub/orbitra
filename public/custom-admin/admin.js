@@ -1741,6 +1741,73 @@ function parseImportRows(format, content) {
   return []
 }
 
+const APP_VISUALS = {
+  Core: { icon: 'CO', tone: 'core' },
+  Commerce: { icon: 'CM', tone: 'commerce' },
+  Growth: { icon: 'GR', tone: 'growth' },
+  System: { icon: 'SY', tone: 'system' },
+}
+
+const APP_ICON_MAP = {
+  'takeoff-editor': 'ED',
+  'takeoff-media-library': 'ML',
+  'takeoff-import-export': 'IE',
+  'takeoff-translate': 'Aa',
+  'takeoff-markets': 'MK',
+  'takeoff-seo': 'SEO',
+  'takeoff-orders': 'OR',
+  'takeoff-checkout': 'CK',
+  'takeoff-shipping-rules': 'SH',
+  'takeoff-customer-accounts': 'CA',
+  'takeoff-returns': 'RT',
+  'takeoff-reviews': 'RV',
+  'takeoff-upsells': '+',
+  'takeoff-analytics': 'AN',
+  'takeoff-google-suite': 'G',
+  'takeoff-email-automations': '@',
+  'takeoff-product-feed': 'PF',
+  'takeoff-marketing': 'MA',
+  'takeoff-backup': 'BK',
+  'takeoff-gdpr-cookie': 'GD',
+  'takeoff-store-health': 'HT',
+  'takeoff-launch-checklist': 'LC',
+  'takeoff-integrations': 'IN',
+  'takeoff-3d-viewer': '3D',
+}
+
+const APP_VIEW_VISUALS = {
+  'import-export': { icon: 'IE', category: 'Core', status: 'Active' },
+  'google-suite': { icon: 'G', category: 'Growth', status: 'Requires external configuration' },
+  media: { icon: 'ML', category: 'Core', status: 'Configurable' },
+  seo: { icon: 'SEO', category: 'Core', status: 'Configurable' },
+  analisi: { icon: 'AN', category: 'Growth', status: 'Configurable' },
+  markets: { icon: 'MK', category: 'Core', status: 'Configurable' },
+  reviews: { icon: 'RV', category: 'Commerce', status: 'Configurable' },
+  returns: { icon: 'RT', category: 'Commerce', status: 'Basic configuration' },
+  'product-feeds': { icon: 'PF', category: 'Growth', status: 'Configurable' },
+  backup: { icon: 'BK', category: 'System', status: 'Active' },
+  'email-automations': { icon: '@', category: 'Growth', status: 'Requires external configuration' },
+  'store-health': { icon: 'HT', category: 'System', status: 'Active' },
+  'launch-checklist': { icon: 'LC', category: 'System', status: 'Active' },
+}
+
+function slugifyCss(value = '') {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function appStatusClass(value = '') {
+  const text = String(value).toLowerCase()
+  if (text.includes('external')) return 'requires-external'
+  if (text.includes('basic')) return 'basic'
+  if (text.includes('advanced') || text.includes('progress')) return 'progress'
+  if (text.includes('disabled')) return 'disabled'
+  if (text.includes('configurable')) return 'configurable'
+  return 'active'
+}
+
 function renderNativeApps(apps = []) {
   if (!appsList || !apps.length) return
 
@@ -1749,23 +1816,33 @@ function renderNativeApps(apps = []) {
     .map((group) => {
       const groupApps = apps.filter((app) => app.category === group)
       if (!groupApps.length) return ''
+      const groupVisual = APP_VISUALS[group] || APP_VISUALS.Core
       return `
-        <div class="app-group">
-          <h3>${escapeHtml(group)}</h3>
+        <div class="app-group app-group--${escapeHtml(groupVisual.tone)}">
+          <div class="app-group-heading">
+            <span>${escapeHtml(groupVisual.icon)}</span>
+            <h3>${escapeHtml(group)}</h3>
+          </div>
           <div class="app-group-grid">
             ${groupApps
               .map((app) => {
                 const progress = app.status === 'in_development' || /progress/i.test(app.status_label || '')
+                const tone = (APP_VISUALS[app.category] || APP_VISUALS.Core).tone
+                const icon = app.icon || APP_ICON_MAP[app.id] || (APP_VISUALS[app.category] || APP_VISUALS.Core).icon
+                const statusLabel = app.status_label || app.status || 'Active'
                 return `
-                  <a class="mini-card app-card ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
-                    <span class="mini-card-status">${escapeHtml(app.badge || 'Native app')}</span>
+                  <a class="mini-card app-card app-card--${escapeHtml(tone)} app-card--${escapeHtml(slugifyCss(app.id || app.name))} ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
+                    <div class="app-card-topline">
+                      <span class="app-card-icon" aria-hidden="true">${escapeHtml(icon)}</span>
+                      <span class="mini-card-status status-badge--${escapeHtml(appStatusClass(statusLabel))}">${escapeHtml(app.badge || 'Native app')}</span>
+                    </div>
                     <h3>${escapeHtml(app.name)}</h3>
                     <p>${escapeHtml(app.description)}</p>
-                    <div class="meta">
-                      <span>${escapeHtml(app.category || 'Module')}</span>
-                      <span>${escapeHtml(app.status_label || app.status || 'Active')}</span>
+                    <div class="meta app-card-meta">
+                      <span class="category-chip category-chip--${escapeHtml(tone)}">${escapeHtml(app.category || 'Module')}</span>
+                      <span class="status-chip status-chip--${escapeHtml(appStatusClass(statusLabel))}">${escapeHtml(statusLabel)}</span>
                     </div>
-                    <strong>Apri</strong>
+                    <strong>Apri <span aria-hidden="true">-&gt;</span></strong>
                   </a>
                 `
               })
@@ -1775,6 +1852,35 @@ function renderNativeApps(apps = []) {
       `
     })
     .join('')
+}
+
+function enhanceAppDetailShells() {
+  Object.entries(APP_VIEW_VISUALS).forEach(([viewId, visual]) => {
+    const section = document.querySelector(`[data-admin-view="${viewId}"]`)
+    if (!section) return
+
+    const tone = (APP_VISUALS[visual.category] || APP_VISUALS.Core).tone
+    section.classList.add('app-detail-view', `app-detail-view--${tone}`)
+    section.dataset.appStatus = visual.status
+    section.dataset.appCategory = visual.category
+
+    const title = section.querySelector('.section-title')
+    if (!title || title.querySelector('.app-detail-symbol')) return
+
+    const symbol = document.createElement('span')
+    symbol.className = 'app-detail-symbol'
+    symbol.textContent = visual.icon
+    title.prepend(symbol)
+
+    const meta = document.createElement('div')
+    meta.className = 'app-detail-meta'
+    meta.innerHTML = `
+      <span class="category-chip category-chip--${tone}">${escapeHtml(visual.category)}</span>
+      <span class="status-chip status-chip--${appStatusClass(visual.status)}">${escapeHtml(visual.status)}</span>
+    `
+    const heading = title.querySelector('div')
+    if (heading) heading.append(meta)
+  })
 }
 
 function fillGoogleSuiteForm(settings = {}) {
@@ -3119,6 +3225,7 @@ function setupAdminViews() {
 }
 
 setupAdminViews()
+enhanceAppDetailShells()
 
 function readJsonTextarea(selector, fallback = {}) {
   const value = document.querySelector(selector)?.value.trim()
