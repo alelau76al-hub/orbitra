@@ -1049,6 +1049,8 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   navAppsDesc: 'Moduli nativi opzionali',
   navSettingsDesc: 'Store, accessi e sistema',
   settingsTitle: 'Impostazioni',
+  'breadcrumb.admin': 'Admin',
+  'common.back': 'Torna',
   appsTitle: 'App',
   appsDesc: 'Moduli nativi inclusi nel CMS TakeOff. Nessun marketplace esterno. Nessun abbonamento mensile.',
   'apps.heroTitle': 'Moduli avanzati, attivabili quando servono.',
@@ -1196,6 +1198,8 @@ Object.assign(ADMIN_TRANSLATIONS.en, {
   navTakeOffToolsDesc: 'Bulk, backup and health',
   navAppsDesc: 'Optional native modules',
   navSettingsDesc: 'Store, access and system',
+  'breadcrumb.admin': 'Admin',
+  'common.back': 'Back',
   appsTitle: 'Apps',
   appsDesc: 'Native modules included in your TakeOff CMS. No external marketplace. No monthly app fees.',
   'apps.heroTitle': 'Advanced modules, enabled when needed.',
@@ -2741,8 +2745,8 @@ function updateAdminAuthIntro() {
 
 function updateAdminCurrentViewLabel() {
   if (!adminCurrentView) return
-  const activeView = window.location.hash.replace('#', '') || 'dashboard'
-  const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+  const activeView = getActiveAdminViewId()
+  const target = adminViewRegistry.get(activeView) || document.querySelector(`[data-admin-view="${activeView}"]`)
   const heading = target?.querySelector('h2')?.textContent?.trim()
   if (heading) adminCurrentView.textContent = heading
 }
@@ -3119,70 +3123,242 @@ function showAdminApp(user) {
 }
 
 function refreshAdminDataAfterAuth() {
-  const loaders = [
-    loadProducts,
-    loadCollections,
-    loadPages,
-    loadPoliciesAdmin,
-    loadBlogPosts,
-    loadMetaobjects,
-    loadTaxSettingsAdmin,
-    loadPaymentSettingsAdmin,
-    loadShippingMethodsAdmin,
-    loadDiscounts,
-    loadCampaigns,
-    loadMediaItems,
-    loadMetafieldResources,
-    loadMarketsAdmin,
-    loadLocalizedPricingAdmin,
-    loadAnalyticsDashboard,
-    loadSeoDashboard,
-    loadIntegrations,
-    loadAdminUsers,
-    loadActivityLog,
-    loadNotifications,
-    loadDomainsAdmin,
-    loadTenantsAdmin,
-    loadPerformanceAdmin,
-    loadNativeApps,
-    loadOrders,
-    loadCustomers,
-    loadMenuResources,
-    loadMenus,
-    loadEditorPages,
-    loadSections,
-    loadTranslationManager,
-    loadGoogleSuiteSettings,
-    loadCookiePrivacySettings,
-    loadEmailAutomations,
-    loadReviews,
-    loadReturns,
-    loadUpsells,
-    loadProductFeeds,
-    loadGiftCards,
-    loadStoreCredits,
-    loadAbandonedCarts,
-    loadSearchFilters,
-    loadSeoTechnical,
-    loadWebhooks,
-    loadSupplierFeeds,
-    loadSubscriptions,
-    loadOperationsSummary,
-    loadStoreHealth,
-    loadLaunchChecklist,
-    loadCustomerAccountsSummary,
-  ]
+  rerenderActiveAdminView()
+}
 
-  loaders.forEach((loader) => {
-    try {
-      if (typeof loader === 'function') loader()
-    } catch {}
+const ADMIN_ROUTE_TO_VIEW = {
+  dashboard: 'dashboard',
+  website: 'website',
+  'website/editor': 'editor',
+  'website/pages': 'pagine',
+  'website/menus': 'menu',
+  'website/theme': 'editor',
+  'website/header-footer': 'menu',
+  'website/media': 'media',
+  'website/blog': 'blog-admin',
+  'website/policies': 'policy',
+  'website/metaobjects': 'metaobjects',
+  catalog: 'catalogo',
+  catalogo: 'catalogo',
+  'catalog/products': 'prodotti',
+  'catalog/collections': 'collezioni',
+  'catalog/inventory': 'inventario',
+  'catalog/variants': 'prodotti',
+  'catalog/metafields': 'metafields',
+  commerce: 'commerce',
+  'commerce/orders': 'ordini',
+  'commerce/customers': 'clienti',
+  'commerce/checkout': 'checkout',
+  'commerce/payments': 'checkout-payments',
+  'commerce/shipping': 'checkout-shipping',
+  'commerce/taxes': 'checkout-taxes',
+  'commerce/returns': 'returns',
+  'commerce/gift-cards': 'gift-cards',
+  'commerce/store-credit': 'gift-cards',
+  growth: 'growth',
+  'growth/marketing': 'marketing',
+  'growth/campaigns': 'marketing-campaigns',
+  'growth/discounts': 'marketing-discounts',
+  'growth/coupons': 'marketing-coupons',
+  'growth/newsletter': 'marketing-newsletter',
+  'growth/seo': 'seo',
+  'growth/seo-technical': 'seo-technical',
+  'growth/analytics': 'analytics-dashboard',
+  'growth/analytics/traffic': 'analytics-traffic',
+  'growth/analytics/sales': 'analytics-sales',
+  'growth/analytics/products': 'analytics-products',
+  'growth/analytics/conversions': 'analytics-conversions',
+  'growth/analytics/events': 'analytics-events',
+  'growth/google-suite': 'google-suite',
+  'growth/search-filters': 'search-filters',
+  'growth/product-feed': 'product-feeds',
+  'growth/advanced-discounts': 'advanced-discounts',
+  'growth/abandoned-cart': 'abandoned-carts',
+  markets: 'markets',
+  'markets/markets': 'markets-mercati',
+  'markets/countries': 'markets-paesi',
+  'markets/languages': 'markets-lingue',
+  'markets/currencies': 'markets-valute',
+  'markets/prices': 'markets-prezzi',
+  tools: 'takeoff-tools',
+  'takeoff-tools': 'takeoff-tools',
+  'tools/import-export': 'import-export',
+  'tools/backup': 'backup',
+  'tools/translations': 'traduzioni',
+  'tools/supplier-feeds': 'supplier-feeds',
+  'tools/store-health': 'store-health',
+  'tools/launch-checklist': 'launch-checklist',
+  'tools/dataflow': 'import-export',
+  'tools/import-history': 'import-export',
+  apps: 'apps',
+  'apps/reviews': 'reviews',
+  'apps/email-automations': 'email-automations',
+  'apps/upsell-bundles': 'upsells',
+  'apps/abandoned-cart': 'abandoned-carts',
+  'apps/customer-accounts': 'customer-accounts',
+  'apps/webhooks': 'webhooks',
+  'apps/gdpr-cookie': 'gdpr-cookie',
+  'apps/subscriptions': 'subscriptions',
+  settings: 'impostazioni',
+  impostazioni: 'impostazioni',
+  'settings/general': 'settings-general',
+  'settings/users': 'utenti',
+  'settings/domains': 'domini',
+  'settings/privacy': 'privacy-settings',
+  'settings/cookies': 'cookie-settings',
+  'settings/notifications': 'notifiche',
+  'settings/integrations': 'integrazioni',
+  'settings/metafields': 'metafields',
+  'settings/multi-client': 'tenants',
+  'settings/activity-log': 'activity',
+  'settings/performance': 'performance',
+  'settings/import-export': 'settings-import-export',
+}
+
+const ADMIN_VIEW_TO_ROUTE = {
+  dashboard: 'dashboard',
+  website: 'website',
+  editor: 'website/editor',
+  pagine: 'website/pages',
+  menu: 'website/menus',
+  media: 'website/media',
+  'blog-admin': 'website/blog',
+  policy: 'website/policies',
+  metaobjects: 'website/metaobjects',
+  contenuto: 'website',
+  catalogo: 'catalog',
+  prodotti: 'catalog/products',
+  collezioni: 'catalog/collections',
+  inventario: 'catalog/inventory',
+  commerce: 'commerce',
+  ordini: 'commerce/orders',
+  clienti: 'commerce/customers',
+  checkout: 'commerce/checkout',
+  'checkout-settings': 'commerce/checkout',
+  'checkout-payments': 'commerce/payments',
+  'checkout-shipping': 'commerce/shipping',
+  'checkout-taxes': 'commerce/taxes',
+  'checkout-confirmation': 'commerce/checkout',
+  returns: 'commerce/returns',
+  'gift-cards': 'commerce/gift-cards',
+  growth: 'growth',
+  marketing: 'growth/marketing',
+  'marketing-campaigns': 'growth/campaigns',
+  'marketing-discounts': 'growth/discounts',
+  'marketing-coupons': 'growth/coupons',
+  'marketing-newsletter': 'growth/newsletter',
+  seo: 'growth/seo',
+  'seo-technical': 'growth/seo-technical',
+  analisi: 'growth/analytics',
+  'analytics-dashboard': 'growth/analytics',
+  'analytics-traffic': 'growth/analytics/traffic',
+  'analytics-sales': 'growth/analytics/sales',
+  'analytics-products': 'growth/analytics/products',
+  'analytics-conversions': 'growth/analytics/conversions',
+  'analytics-events': 'growth/analytics/events',
+  'google-suite': 'growth/google-suite',
+  'search-filters': 'growth/search-filters',
+  'product-feeds': 'growth/product-feed',
+  'advanced-discounts': 'growth/advanced-discounts',
+  'abandoned-carts': 'apps/abandoned-cart',
+  markets: 'markets',
+  'markets-mercati': 'markets/markets',
+  'markets-paesi': 'markets/countries',
+  'markets-lingue': 'markets/languages',
+  'markets-valute': 'markets/currencies',
+  'markets-prezzi': 'markets/prices',
+  'takeoff-tools': 'tools',
+  'import-export': 'tools/import-export',
+  backup: 'tools/backup',
+  traduzioni: 'tools/translations',
+  'supplier-feeds': 'tools/supplier-feeds',
+  'store-health': 'tools/store-health',
+  'launch-checklist': 'tools/launch-checklist',
+  apps: 'apps',
+  reviews: 'apps/reviews',
+  'email-automations': 'apps/email-automations',
+  upsells: 'apps/upsell-bundles',
+  'customer-accounts': 'apps/customer-accounts',
+  webhooks: 'apps/webhooks',
+  'gdpr-cookie': 'apps/gdpr-cookie',
+  subscriptions: 'apps/subscriptions',
+  impostazioni: 'settings',
+  'settings-general': 'settings/general',
+  utenti: 'settings/users',
+  domini: 'settings/domains',
+  'privacy-settings': 'settings/privacy',
+  'cookie-settings': 'settings/cookies',
+  notifiche: 'settings/notifications',
+  integrazioni: 'settings/integrations',
+  metafields: 'settings/metafields',
+  tenants: 'settings/multi-client',
+  activity: 'settings/activity-log',
+  performance: 'settings/performance',
+  'settings-import-export': 'settings/import-export',
+}
+
+const ADMIN_PRIMARY_ROUTE_KEYS = {
+  dashboard: 'navDashboard',
+  website: 'navWebsite',
+  catalog: 'navCatalog',
+  commerce: 'navCommerce',
+  growth: 'navGrowth',
+  markets: 'navMarkets',
+  tools: 'navTakeOffTools',
+  apps: 'navApps',
+  settings: 'navSettings',
+}
+
+let adminViewRegistry = new Map()
+
+function normalizeAdminRoutePath(rawHash = window.location.hash) {
+  let raw = String(rawHash || '')
+    .replace(/^#/, '')
+    .trim()
+
+  if (!raw) return 'dashboard'
+  if (raw.startsWith('/')) raw = raw.slice(1)
+  raw = raw.replace(/^\/+|\/+$/g, '').toLowerCase()
+
+  if (!raw) return 'dashboard'
+  if (ADMIN_VIEW_TO_ROUTE[raw]) return ADMIN_VIEW_TO_ROUTE[raw]
+  if (ADMIN_ROUTE_TO_VIEW[raw]) return raw
+  return 'dashboard'
+}
+
+function getAdminViewForRoute(routePath = normalizeAdminRoutePath()) {
+  return ADMIN_ROUTE_TO_VIEW[routePath] || 'dashboard'
+}
+
+function getAdminRouteForView(viewId = 'dashboard') {
+  return ADMIN_VIEW_TO_ROUTE[viewId] || 'dashboard'
+}
+
+function getAdminRouteHashForView(viewId = 'dashboard') {
+  return `#/${getAdminRouteForView(viewId)}`
+}
+
+function getCanonicalAdminHref(href = '') {
+  if (!href.startsWith('#')) return ''
+  const path = normalizeAdminRoutePath(href)
+  return `#/${path}`
+}
+
+function upgradeAdminRouteLinks(scope = document) {
+  scope.querySelectorAll?.('a[href^="#"]').forEach((link) => {
+    const href = link.getAttribute('href') || ''
+    const canonical = getCanonicalAdminHref(href)
+    if (canonical && canonical !== href) link.setAttribute('href', canonical)
   })
 }
 
+function getAdminPrimaryRouteForView(viewId = 'dashboard') {
+  const route = getAdminRouteForView(viewId)
+  return route.split('/')[0] || 'dashboard'
+}
+
 function getActiveAdminViewId() {
-  const hash = window.location.hash.replace('#', '') || 'dashboard'
-  return document.querySelector(`[data-admin-view="${hash}"]`) ? hash : 'dashboard'
+  return getAdminViewForRoute(normalizeAdminRoutePath())
 }
 
 function runAdminViewLoader(loader) {
@@ -4251,8 +4427,9 @@ function renderNativeApps(apps = []) {
                 const tone = (APP_VISUALS[app.category] || APP_VISUALS.Core).tone
                 const icon = app.icon || APP_ICON_MAP[app.id] || (APP_VISUALS[app.category] || APP_VISUALS.Core).icon
                 const statusLabel = app.status_label || app.status || 'Active'
+                const appHref = getCanonicalAdminHref(app.open_hash || '#apps') || '#/apps'
                 return `
-                  <a class="mini-card app-card app-card--${escapeHtml(tone)} app-card--${escapeHtml(slugifyCss(app.id || app.name))} ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
+                  <a class="mini-card app-card app-card--${escapeHtml(tone)} app-card--${escapeHtml(slugifyCss(app.id || app.name))} ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(appHref)}">
                     <div class="app-card-topline">
                       <span class="app-card-icon" aria-hidden="true">${escapeHtml(icon)}</span>
                       <span class="mini-card-status status-badge--${escapeHtml(appStatusClass(statusLabel))}">${adminUiHtml(app.badge || 'Native app')}</span>
@@ -4273,6 +4450,7 @@ function renderNativeApps(apps = []) {
       `
     })
     .join('')
+  upgradeAdminRouteLinks(appsList)
 }
 
 function enhanceAppDetailShells() {
@@ -6240,13 +6418,34 @@ loadPages()
 // ===============================
 
 function setupAdminViews() {
-  const views = document.querySelectorAll('[data-admin-view]')
+  const views = Array.from(document.querySelectorAll('[data-admin-view]'))
+  const viewHost = views[0]?.parentElement || adminApp
   const hubLinks = document.querySelectorAll('.hub-card')
+  let singlePageMounted = false
+
+  adminViewRegistry = new Map(views.map((view) => [view.dataset.adminView, view]))
+  upgradeAdminRouteLinks(document)
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest?.('a[href^="#"]')
+    if (!link) return
+
+    const href = link.getAttribute('href') || ''
+    const canonical = getCanonicalAdminHref(href)
+    if (!canonical || canonical === href) return
+
+    event.preventDefault()
+    window.location.hash = canonical
+  })
+
+  function getRegisteredView(viewId) {
+    return adminViewRegistry.get(viewId) || document.querySelector(`[data-admin-view="${viewId}"]`)
+  }
 
   function updateCurrentViewLabel(activeView) {
     if (!adminCurrentView) return
 
-    const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+    const target = getRegisteredView(activeView)
     const heading =
       target?.querySelector('.view-heading h2, .section-title h2, h2')?.textContent?.trim() ||
       'Dashboard'
@@ -6254,141 +6453,103 @@ function setupAdminViews() {
     adminCurrentView.textContent = heading
   }
 
-  function openViewFromHash() {
-    const hash = window.location.hash.replace('#', '') || 'dashboard'
-    const viewExists = document.querySelector(`[data-admin-view="${hash}"]`)
-    const activeView = viewExists ? hash : 'dashboard'
+  function renderAdminPageChrome(target, activeView, routePath) {
+    if (!target) return
+
+    const primaryRoute = getAdminPrimaryRouteForView(activeView)
+    const isDashboard = activeView === 'dashboard'
+    const isHubPage = getAdminRouteForView(activeView) === primaryRoute
+    let chrome = target.querySelector(':scope > .admin-page-chrome')
+
+    target.classList.toggle('admin-hub-page', isHubPage && !isDashboard)
+    target.classList.toggle('admin-detail-page', !isHubPage && !isDashboard)
+
+    if (isDashboard) {
+      chrome?.remove()
+      return
+    }
+
+    if (!chrome) {
+      chrome = document.createElement('div')
+      chrome.className = 'admin-page-chrome'
+      target.prepend(chrome)
+    }
+
+    const title =
+      target.querySelector('.view-heading h2, .section-title h2, h2')?.textContent?.trim() ||
+      adminT(ADMIN_PRIMARY_ROUTE_KEYS[primaryRoute] || 'navDashboard', 'Dashboard')
+    const areaLabel = adminT(ADMIN_PRIMARY_ROUTE_KEYS[primaryRoute] || 'navDashboard', primaryRoute)
+    const backLink = !isHubPage
+      ? `<a class="admin-page-back" href="#/${escapeHtml(primaryRoute)}">${escapeHtml(adminT('common.back', 'Torna'))}</a>`
+      : ''
+
+    chrome.innerHTML = `
+      <nav class="admin-breadcrumb" aria-label="Breadcrumb">
+        <span>${escapeHtml(adminT('breadcrumb.admin', 'Admin'))}</span>
+        <span>${escapeHtml(areaLabel)}</span>
+        ${!isHubPage ? `<span>${escapeHtml(title)}</span>` : ''}
+      </nav>
+      ${backLink}
+    `
+  }
+
+  function mountActiveView(activeView) {
+    const activeElement = getRegisteredView(activeView) || getRegisteredView('dashboard')
+    if (!activeElement || !viewHost) return activeElement
 
     views.forEach((view) => {
-      view.hidden = view.dataset.adminView !== activeView
+      const isActive = view === activeElement
+      view.hidden = !isActive
+
+      if (singlePageMounted && !isActive && view.parentElement === viewHost) {
+        view.remove()
+      }
     })
 
-    const websiteViews = ['website', 'editor', 'contenuto', 'pagine', 'menu', 'media', 'blog-admin', 'metaobjects', 'policy']
-    const catalogoViews = ['catalogo', 'prodotti', 'collezioni', 'inventario']
-    const commerceViews = [
-      'commerce',
-      'ordini',
-      'clienti',
-      'checkout',
-      'checkout-settings',
-      'checkout-payments',
-      'checkout-shipping',
-      'checkout-taxes',
-      'checkout-confirmation',
-      'gift-cards',
-      'returns',
-    ]
-    const marketingViews = [
-      'growth',
-      'marketing',
-      'marketing-campaigns',
-      'marketing-discounts',
-      'marketing-coupons',
-      'marketing-newsletter',
-      'advanced-discounts',
-      'seo',
-      'seo-technical',
-      'analisi',
-      'analytics-dashboard',
-      'analytics-traffic',
-      'analytics-sales',
-      'analytics-products',
-      'analytics-conversions',
-      'analytics-events',
-      'google-suite',
-      'search-filters',
-      'product-feeds',
-    ]
-    const marketsViews = [
-      'markets',
-      'markets-mercati',
-      'markets-paesi',
-      'markets-lingue',
-      'markets-valute',
-      'markets-prezzi',
-    ]
-    const takeOffToolsViews = [
-      'takeoff-tools',
-      'import-export',
-      'traduzioni',
-      'supplier-feeds',
-      'backup',
-      'store-health',
-      'launch-checklist',
-    ]
-    const appsViews = [
-      'apps',
-      'email-automations',
-      'reviews',
-      'upsells',
-      'abandoned-carts',
-      'customer-accounts',
-      'webhooks',
-      'gdpr-cookie',
-      'subscriptions',
-    ]
-    const impostazioniViews = [
-      'impostazioni',
-      'settings-general',
-      'privacy-settings',
-      'cookie-settings',
-      'settings-import-export',
-      'metafields',
-      'integrazioni',
-      'utenti',
-      'activity',
-      'notifiche',
-      'domini',
-      'tenants',
-      'performance',
-    ]
+    if (singlePageMounted && activeElement.parentElement !== viewHost) {
+      viewHost.appendChild(activeElement)
+    }
 
-    const directHubViews = [
-      'dashboard',
-      'website',
-      'catalogo',
-      'commerce',
-      'growth',
-      'markets',
-      'takeoff-tools',
-      'apps',
-      'impostazioni',
-    ]
-    const activeHubHash = directHubViews.includes(activeView)
-      ? `#${activeView}`
-      : websiteViews.includes(activeView)
-      ? '#website'
-      : catalogoViews.includes(activeView)
-        ? '#catalogo'
-        : commerceViews.includes(activeView)
-          ? '#commerce'
-        : marketingViews.includes(activeView)
-          ? '#growth'
-          : marketsViews.includes(activeView)
-            ? '#markets'
-            : takeOffToolsViews.includes(activeView)
-              ? '#takeoff-tools'
-              : appsViews.includes(activeView)
-                ? '#apps'
-                : impostazioniViews.includes(activeView)
-                  ? '#impostazioni'
-                  : `#${activeView}`
+    activeElement.hidden = false
+    return activeElement
+  }
+
+  function openViewFromHash({ skipScroll = false, load = true } = {}) {
+    const routePath = normalizeAdminRoutePath()
+    const activeView = getAdminViewForRoute(routePath)
+    const canonicalHash = `#/${routePath}`
+
+    if (window.location.hash !== canonicalHash) {
+      window.history.replaceState(null, '', canonicalHash)
+    }
+
+    const target = mountActiveView(activeView)
+    const activeHubHash = `#/${getAdminPrimaryRouteForView(activeView)}`
 
     hubLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
     })
 
-    const target = document.querySelector(`[data-admin-view="${activeView}"]`)
     applyAdminLanguage()
+    renderAdminPageChrome(target, activeView, routePath)
     updateCurrentViewLabel(activeView)
-    target?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
+    upgradeAdminRouteLinks(target || document)
+    applyAdminAuditUi()
+    if (load) rerenderActiveAdminView()
+    if (!skipScroll) {
+      target?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
   }
 
   window.addEventListener('hashchange', openViewFromHash)
-  openViewFromHash()
+  openViewFromHash({ load: false, skipScroll: true })
+  window.setTimeout(() => {
+    singlePageMounted = true
+    openViewFromHash({ load: false, skipScroll: true })
+  }, 0)
 }
 
 setupAdminViews()
