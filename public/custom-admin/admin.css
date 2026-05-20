@@ -4849,3 +4849,63 @@ body[data-admin-theme="light"] button.audit-disabled {
     height: 52px;
   }
 }
+
+/* CMS UX / IA refactor */
+.admin-nav-group--primary {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.dashboard-operations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.setup-checklist {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.setup-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.setup-checklist li::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+  flex: 0 0 auto;
+}
+
+.mini-card--featured {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--border));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent 48%),
+    var(--card);
+}
+
+.mini-card--featured strong {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.65rem;
+  color: var(--accent);
+  font-size: 0.86rem;
+}
+
+@media (max-width: 860px) {
+  .dashboard-operations-grid {
+    grid-template-columns: 1fr;
+  }
+}
