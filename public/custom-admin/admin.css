@@ -2861,6 +2861,14 @@ body[data-admin-audit-mode="true"] button.audit-disabled::after {
   letter-spacing: 0.08em;
 }
 
+html[lang="it"] body[data-admin-audit-mode="true"] button.audit-disabled::after {
+  content: "Sola lettura";
+}
+
+html[lang="en"] body[data-admin-audit-mode="true"] button.audit-disabled::after {
+  content: "Read only";
+}
+
 @media (max-width: 980px) {
   .content-manager,
   .grid.admin-view,

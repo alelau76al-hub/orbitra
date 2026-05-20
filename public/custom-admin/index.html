@@ -23,16 +23,20 @@
         </div>
 
         <label class="admin-language-control admin-language-control--auth">
-          <span>Lingua</span>
-          <select data-admin-language-select aria-label="Lingua admin">
+          <span data-i18n="languageLabel">Lingua</span>
+          <select
+            data-admin-language-select
+            aria-label="Lingua admin"
+            data-i18n-aria-label="languageAriaLabel"
+          >
             <option value="it">Italiano</option>
             <option value="en">English</option>
           </select>
         </label>
 
         <p class="auth-eyebrow">TakeOffMilan CMS</p>
-        <h1>TakeOff Control Panel</h1>
-        <p id="adminAuthIntro">
+        <h1 data-i18n="authTitle">TakeOff Control Panel</h1>
+        <p id="adminAuthIntro" data-i18n="authLoginIntro">
           Accedi al Website Operating System per gestire contenuti, catalogo e impostazioni del sito.
         </p>
 
@@ -41,7 +45,7 @@
           <input id="adminLoginEmail" type="email" autocomplete="username" required />
           <label>Password</label>
           <input id="adminLoginPassword" type="password" autocomplete="current-password" required />
-          <button type="submit">Accedi</button>
+          <button type="submit" data-i18n="authLoginButton">Accedi</button>
         </form>
 
         <form id="adminBootstrapForm" class="admin-auth-form" hidden>
@@ -51,7 +55,7 @@
           <input id="adminBootstrapEmail" type="email" autocomplete="username" required />
           <label>Password</label>
           <input id="adminBootstrapPassword" type="password" autocomplete="new-password" minlength="8" required />
-          <button type="submit">Crea primo owner</button>
+          <button type="submit" data-i18n="authBootstrapButton">Crea primo owner</button>
         </form>
 
         <p id="adminAuthMessage" class="admin-auth-message"></p>
@@ -77,14 +81,14 @@
           />
           <span class="admin-logo-fallback" hidden>TakeOffMilan CMS</span>
         </div>
-        <p class="admin-entry-kicker">Powerful. Flexible. Custom.</p>
-        <h1>TakeOffMilan CMS</h1>
-        <h2>Il futuro dei siti web</h2>
+        <p class="admin-entry-kicker" data-i18n="entryClaim">Powerful. Flexible. Custom.</p>
+        <h1 data-i18n="entryTitle">TakeOffMilan CMS</h1>
+        <h2 data-i18n="entrySubtitle">Il futuro dei siti web</h2>
         <div class="admin-entry-countdown" aria-live="polite">
-          <span id="adminEntryCountdownLabel">Il tuo CMS si aprirà tra</span>
+          <span id="adminEntryCountdownLabel" data-i18n="entryCountdown">Il tuo CMS si aprirà tra</span>
           <strong id="adminEntryCountdownNumber">5</strong>
         </div>
-        <button id="adminEntryEnterButton" type="button">Enter CMS</button>
+        <button id="adminEntryEnterButton" type="button" data-i18n="entryButton">Enter CMS</button>
       </div>
     </section>
 
@@ -107,8 +111,12 @@
           <span id="adminCurrentView" class="admin-current-view">Dashboard</span>
         </div>
         <label class="admin-language-control">
-          <span>Lingua</span>
-          <select data-admin-language-select aria-label="Lingua admin">
+          <span data-i18n="languageLabel">Lingua</span>
+          <select
+            data-admin-language-select
+            aria-label="Lingua admin"
+            data-i18n-aria-label="languageAriaLabel"
+          >
             <option value="it">IT</option>
             <option value="en">EN</option>
           </select>
@@ -116,13 +124,13 @@
         <button id="adminThemeToggle" class="secondary admin-theme-toggle" type="button" aria-label="Cambia tema">
           Light mode
         </button>
-        <button id="adminLogoutButton" class="secondary" type="button">Logout</button>
+        <button id="adminLogoutButton" class="secondary" type="button" data-i18n="logout">Logout</button>
       </section>
 
       <section class="hero admin-hero">
-        <p>TakeOffMilan CMS</p>
-        <h1>TakeOff Control Panel</h1>
-        <span>
+        <p data-i18n="heroEyebrow">TakeOffMilan CMS</p>
+        <h1 data-i18n="heroTitle">TakeOff Control Panel</h1>
+        <span data-i18n="heroText">
           Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.
         </span>
       </section>
@@ -261,55 +269,55 @@
         <div class="dashboard-hero">
           <div>
             <p>TakeOff Control Panel</p>
-            <h2>Benvenuto nel CMS</h2>
-            <span>Build, manage and scale custom websites from one operating system.</span>
+            <h2 data-i18n="dashboard.title">Benvenuto nel CMS</h2>
+            <span data-i18n="dashboard.claim">Crea, gestisci e fai crescere siti custom da un unico sistema operativo.</span>
           </div>
           <strong>Website Operating System</strong>
         </div>
 
         <div class="dashboard-quick-actions">
           <a class="mini-card" href="#editor">
-            <span class="mini-card-status">Quick action</span>
-            <h3>Modifica il sito</h3>
-            <p>Apri editor visuale, sezioni e tema.</p>
+            <span class="mini-card-status" data-i18n="dashboard.quickAction">Azione rapida</span>
+            <h3 data-i18n="dashboard.editSite.title">Modifica il sito</h3>
+            <p data-i18n="dashboard.editSite.description">Apri editor visuale, sezioni e tema.</p>
           </a>
           <a class="mini-card" href="#prodotti">
-            <span class="mini-card-status">Quick action</span>
-            <h3>Gestisci prodotti</h3>
-            <p>Catalogo, varianti, immagini e stock.</p>
+            <span class="mini-card-status" data-i18n="dashboard.quickAction">Azione rapida</span>
+            <h3 data-i18n="dashboard.manageProducts.title">Gestisci prodotti</h3>
+            <p data-i18n="dashboard.manageProducts.description">Catalogo, varianti, immagini e stock.</p>
           </a>
           <a class="mini-card" href="#media">
-            <span class="mini-card-status">Quick action</span>
-            <h3>Carica media</h3>
-            <p>Libreria visuale, upload e URL.</p>
+            <span class="mini-card-status" data-i18n="dashboard.quickAction">Azione rapida</span>
+            <h3 data-i18n="dashboard.uploadMedia.title">Carica media</h3>
+            <p data-i18n="dashboard.uploadMedia.description">Libreria visuale, upload e URL.</p>
           </a>
           <a class="mini-card" href="#markets">
-            <span class="mini-card-status">Quick action</span>
-            <h3>Configura markets</h3>
-            <p>Lingue, valute e prezzi localizzati.</p>
+            <span class="mini-card-status" data-i18n="dashboard.quickAction">Azione rapida</span>
+            <h3 data-i18n="dashboard.configureMarkets.title">Configura markets</h3>
+            <p data-i18n="dashboard.configureMarkets.description">Lingue, valute e prezzi localizzati.</p>
           </a>
         </div>
 
         <div class="dashboard-summary-grid">
           <article class="dashboard-summary-card">
-            <span>Prodotti</span>
+            <span data-i18n="dashboard.summary.products">Prodotti</span>
             <strong id="dashboardProductsCount">-</strong>
-            <p>Catalogo attivo e varianti.</p>
+            <p data-i18n="dashboard.summary.productsDescription">Catalogo attivo e varianti.</p>
           </article>
           <article class="dashboard-summary-card">
-            <span>Collezioni</span>
+            <span data-i18n="dashboard.summary.collections">Collezioni</span>
             <strong id="dashboardCollectionsCount">-</strong>
-            <p>Struttura catalogo.</p>
+            <p data-i18n="dashboard.summary.collectionsDescription">Struttura catalogo.</p>
           </article>
           <article class="dashboard-summary-card">
-            <span>Ordini</span>
+            <span data-i18n="dashboard.summary.orders">Ordini</span>
             <strong id="dashboardOrdersCount">-</strong>
-            <p>Stato operativo commerce.</p>
+            <p data-i18n="dashboard.summary.ordersDescription">Stato operativo commerce.</p>
           </article>
           <article class="dashboard-summary-card">
-            <span>Media</span>
+            <span data-i18n="dashboard.summary.media">Media</span>
             <strong id="dashboardMediaCount">-</strong>
-            <p>Asset disponibili nel CMS.</p>
+            <p data-i18n="dashboard.summary.mediaDescription">Asset disponibili nel CMS.</p>
           </article>
         </div>
       </section>
@@ -317,26 +325,26 @@
       <section id="editor" class="visual-editor card admin-view" data-admin-view="editor">
         <div class="section-title editor-title-bar">
   <div>
-    <p class="editor-kicker">Main feature</p>
-    <h2>Visual Editor</h2>
-    <p class="section-subtitle">
+    <p class="editor-kicker" data-i18n="editor.mainFeature">Funzione principale</p>
+    <h2 data-i18n="editor.visualEditor">Visual Editor</h2>
+    <p class="section-subtitle" data-i18n="editor.description">
       Il cuore del CMS: costruisci, controlla e verifica il sito in tempo reale su desktop, tablet e mobile.
     </p>
   </div>
 
   <div class="editor-title-actions">
-    <div class="preview-device-toggle" role="group" aria-label="Formato preview">
-      <button type="button" class="active" data-preview-device="desktop">Desktop</button>
-      <button type="button" data-preview-device="tablet">Tablet</button>
-      <button type="button" data-preview-device="mobile">Mobile</button>
+    <div class="preview-device-toggle" role="group" aria-label="Formato preview" data-i18n-aria-label="editor.previewFormat">
+      <button type="button" class="active" data-preview-device="desktop" data-i18n="editor.desktop">Desktop</button>
+      <button type="button" data-preview-device="tablet" data-i18n="editor.tablet">Tablet</button>
+      <button type="button" data-preview-device="mobile" data-i18n="editor.mobile">Mobile</button>
     </div>
 
     <button id="themeSettingsButton" class="icon-button" type="button">
       <span aria-hidden="true">&#9881;</span>
-      Impostazioni tema
+      <span data-i18n="editor.themeSettings">Impostazioni tema</span>
     </button>
 
-    <button id="saveSectionButton" type="button">Salva sezione</button>
+    <button id="saveSectionButton" type="button" data-i18n="editor.saveSection">Salva sezione</button>
   </div>
 </div>
 
@@ -345,9 +353,9 @@
             <div class="editor-preview-head">
               <div>
                 <span class="preview-status-dot"></span>
-                <strong id="previewDeviceLabel">Desktop preview</strong>
+                <strong id="previewDeviceLabel" data-i18n="editor.desktopPreview">Desktop preview</strong>
               </div>
-              <small>Live canvas</small>
+              <small data-i18n="editor.liveCanvas">Live canvas</small>
             </div>
             <div class="site-preview-frame">
               <iframe
@@ -355,25 +363,26 @@
                 class="site-preview"
                 src="/?preview=admin"
                 title="Anteprima sito"
+                data-i18n-title="editor.sitePreviewTitle"
               ></iframe>
             </div>
           </section>
 
           <div class="editor-panel">
-            <label>Pagina da modificare</label>
+            <label data-i18n="editor.pageToEdit">Pagina da modificare</label>
             <select id="editorPageSelect">
               <option value="home">Homepage</option>
             </select>
 
             <div class="section-library-head">
               <div>
-                <label>Libreria sezioni CMS</label>
-                <p>
+                <label data-i18n="editor.sectionLibrary">Libreria sezioni CMS</label>
+                <p data-i18n="editor.sectionLibraryDescription">
                   Scegli una sezione gia pronta e personalizzala nella pagina selezionata.
                 </p>
               </div>
 
-              <span>Section Library</span>
+              <span data-i18n="editor.sectionLibraryLabel">Libreria sezioni</span>
             </div>
 
             <div id="themeSettingsOverlay" class="theme-settings-overlay" hidden></div>
@@ -381,24 +390,24 @@
             <aside id="themeSettingsDrawer" class="theme-settings-drawer" aria-hidden="true">
               <div class="theme-settings-head">
                 <div>
-                  <p>Theme settings</p>
-                  <h3>Impostazioni tema</h3>
-                  <span>Logo, colori, tipografie, header e footer.</span>
+                  <p data-i18n="editor.themeSettings">Impostazioni tema</p>
+                  <h3 data-i18n="editor.themeSettings">Impostazioni tema</h3>
+                  <span data-i18n="editor.themeSettingsDescription">Logo, colori, tipografie, header e footer.</span>
                 </div>
 
-                <button id="closeThemeSettingsButton" type="button" aria-label="Chiudi impostazioni tema">
+                <button id="closeThemeSettingsButton" type="button" aria-label="Chiudi impostazioni tema" data-i18n-aria-label="editor.closeThemeSettings">
                   &times;
                 </button>
               </div>
 
               <form id="themeSettingsForm" class="theme-settings-form">
                 <div id="themeSettingsGroups" class="theme-settings-groups">
-                  Caricamento impostazioni tema...
+                  <span data-i18n="editor.loadingThemeSettings">Caricamento impostazioni tema...</span>
                 </div>
 
                 <div class="theme-settings-actions">
                   <button id="saveThemeSettingsButton" type="submit">
-                    Salva impostazioni
+                    <span data-i18n="editor.saveSettings">Salva impostazioni</span>
                   </button>
 
                   <p id="themeSettingsMessage"></p>
@@ -470,13 +479,13 @@
   </optgroup>
 </select>
 
-              <button id="addSectionButton" type="button">Aggiungi</button>
+              <button id="addSectionButton" type="button" data-i18n="editor.addSection">Aggiungi</button>
             </div>
 
-            <h3>Sezioni pagina</h3>
+            <h3 data-i18n="editor.pageSections">Sezioni pagina</h3>
             <div id="sectionsList" class="sections-list"></div>
 
-            <h3 id="selectedSectionTitle">Seleziona una sezione</h3>
+            <h3 id="selectedSectionTitle" data-i18n="editor.selectSection">Seleziona una sezione</h3>
             <div id="sectionFields"></div>
 
             <p id="sectionMessage"></p>
@@ -487,36 +496,36 @@
       <section id="catalogo" class="cms-area card admin-view" data-admin-view="catalogo">
         <div class="section-title">
           <div>
-            <h2>Catalogo</h2>
-            <p class="section-subtitle">
+            <h2 data-i18n="catalogTitle">Catalogo</h2>
+            <p class="section-subtitle" data-i18n="catalogDesc">
               Gestisci prodotti, collezioni, stock, immagini e struttura commerciale del sito.
             </p>
           </div>
 
-          <span class="status-badge">Operativo</span>
+          <span class="status-badge" data-i18n="statusOperational">Operativo</span>
         </div>
 
         <div class="mini-grid">
           <a class="mini-card" href="#prodotti">
-            <h3>Prodotti</h3>
-            <p>Gestisci schede prodotto, immagini, prezzi e disponibilita.</p>
+            <h3 data-i18n="productsTitle">Prodotti</h3>
+            <p data-i18n="catalog.products.description">Gestisci schede prodotto, immagini, prezzi e disponibilita.</p>
           </a>
 
           <a class="mini-card" href="#collezioni">
-            <h3>Collezioni</h3>
-            <p>Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
+            <h3 data-i18n="collectionsTitle">Collezioni</h3>
+            <p data-i18n="catalog.collections.description">Raggruppa prodotti in collezioni cliccabili e pagine dedicate.</p>
           </a>
 
           <a class="mini-card" href="#prodotti">
-            <span class="mini-card-status">Nel prodotto</span>
-            <h3>Varianti</h3>
-            <p>Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.</p>
+            <span class="mini-card-status" data-i18n="catalog.variants.location">Nel prodotto</span>
+            <h3 data-i18n="catalog.variants.title">Varianti</h3>
+            <p data-i18n="catalog.variants.description">Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.</p>
           </a>
 
           <a class="mini-card" href="#inventario">
-            <span class="mini-card-status">Funzione attiva</span>
-            <h3>Inventario</h3>
-            <p>Scorte prodotto e variante, filtri, soglie low stock e aggiornamento rapido.</p>
+            <span class="mini-card-status" data-i18n="catalog.inventory.active">Funzione attiva</span>
+            <h3 data-i18n="catalog.inventory.title">Inventario</h3>
+            <p data-i18n="catalog.inventory.description">Scorte prodotto e variante, filtri, soglie low stock e aggiornamento rapido.</p>
           </a>
 
           <a class="mini-card" href="#import-export">
@@ -696,7 +705,7 @@
               Controlla stock base, varianti, disponibilita, low stock e out of stock.
             </p>
           </div>
-          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
+          <a class="back-link" href="#catalogo">&larr; <span data-i18n="collections.backToCatalog">Torna a Catalogo</span></a>
         </div>
 
         <div class="inventory-toolbar">
@@ -720,23 +729,24 @@
       <section id="collezioni" class="grid admin-section admin-view" data-admin-view="collezioni">
         <div class="view-heading">
           <div>
-            <h2>Collezioni</h2>
-            <p>Crea e modifica le collezioni del catalogo.</p>
+            <h2 data-i18n="collections.title">Collezioni</h2>
+            <p data-i18n="collections.description">Crea e modifica le collezioni del catalogo.</p>
           </div>
 
-          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
+          <a class="back-link" href="#catalogo">&larr; <span data-i18n="collections.backToCatalog">Torna a Catalogo</span></a>
         </div>
 
         <form id="collectionForm" class="card">
-          <h2 id="collectionFormTitle">Aggiungi collezione</h2>
+          <h2 id="collectionFormTitle" data-i18n="collections.add">Aggiungi collezione</h2>
 
           <input id="collectionId" type="hidden" />
 
-          <label>Nome collezione</label>
+          <label data-i18n="collections.name">Nome collezione</label>
           <input
             id="collectionName"
             type="text"
             placeholder="Collezione premium"
+            data-i18n-placeholder="collections.namePlaceholder"
             required
           />
 
@@ -776,7 +786,7 @@
             <input id="collectionSeoCanonical" type="text" placeholder="https://..." />
           </section>
 
-          <button id="collectionSubmitButton" type="submit">
+          <button id="collectionSubmitButton" type="submit" data-i18n="collections.save">
             Salva collezione
           </button>
 
@@ -786,7 +796,7 @@
             type="button"
             hidden
           >
-            Annulla modifica
+            <span data-i18n="common.cancelEdit">Annulla modifica</span>
           </button>
 
           <p id="collectionMessage"></p>
@@ -794,16 +804,16 @@
 
         <section class="card">
           <div class="section-title">
-            <h2>Archivio collezioni</h2>
-            <button id="refreshCollectionsButton" type="button">Aggiorna</button>
+            <h2 data-i18n="collections.archive">Archivio collezioni</h2>
+            <button id="refreshCollectionsButton" type="button" data-i18n="common.refresh">Aggiorna</button>
           </div>
 
           <div class="admin-list-tools">
-            <input id="collectionAdminSearch" type="search" placeholder="Cerca collezioni..." />
+            <input id="collectionAdminSearch" type="search" placeholder="Cerca collezioni..." data-i18n-placeholder="collections.searchPlaceholder" />
           </div>
 
           <div id="collectionsList" class="products-list">
-            Caricamento collezioni...
+            <span data-i18n="collections.loading">Caricamento collezioni...</span>
           </div>
         </section>
       </section>
@@ -811,15 +821,15 @@
       <section id="prodotti" class="grid admin-view" data-admin-view="prodotti">
         <div class="view-heading">
           <div>
-            <h2>Prodotti</h2>
-            <p>Gestisci prodotti, varianti, prezzo, stock e dati SEO del catalogo cliente.</p>
+            <h2 data-i18n="productsTitle">Prodotti</h2>
+            <p data-i18n="products.description">Gestisci prodotti, varianti, prezzo, stock e dati SEO del catalogo cliente.</p>
           </div>
 
-          <a class="back-link" href="#catalogo">&larr; Torna a Catalogo</a>
+          <a class="back-link" href="#catalogo">&larr; <span data-i18n="collections.backToCatalog">Torna a Catalogo</span></a>
         </div>
 
         <form id="productForm" class="card">
-          <h2 id="formTitle">Aggiungi prodotto</h2>
+          <h2 id="formTitle" data-i18n="products.add">Aggiungi prodotto</h2>
 
           <input id="productId" type="hidden" />
 
@@ -867,13 +877,13 @@
           <section class="variant-manager">
             <div class="section-title">
               <div>
-                <h3>Varianti prodotto</h3>
+                <h3 data-i18n="catalog.variants.title">Varianti prodotto</h3>
                 <p class="section-subtitle">
                   Opzioni semplici come taglia, colore o formato. Lascia vuoto se il prodotto non ha varianti.
                 </p>
               </div>
 
-              <button id="addVariantButton" class="secondary" type="button">
+              <button id="addVariantButton" class="secondary" type="button" data-i18n="products.variant.add">
                 Aggiungi variante
               </button>
             </div>
@@ -881,10 +891,10 @@
             <div id="productVariantsList" class="variant-list"></div>
           </section>
 
-          <button id="submitButton" type="submit">Salva prodotto</button>
+          <button id="submitButton" type="submit" data-i18n="products.save">Salva prodotto</button>
 
           <button id="cancelEdit" class="secondary" type="button" hidden>
-            Annulla modifica
+            <span data-i18n="common.cancelEdit">Annulla modifica</span>
           </button>
 
           <p id="message"></p>
@@ -892,16 +902,16 @@
 
         <section class="card">
           <div class="section-title">
-            <h2>Archivio prodotti</h2>
-            <button id="refreshButton" type="button">Aggiorna</button>
+            <h2 data-i18n="products.archive">Archivio prodotti</h2>
+            <button id="refreshButton" type="button" data-i18n="common.refresh">Aggiorna</button>
           </div>
 
           <div class="admin-list-tools">
-            <input id="productAdminSearch" type="search" placeholder="Cerca prodotti..." />
+            <input id="productAdminSearch" type="search" placeholder="Cerca prodotti..." data-i18n-placeholder="products.searchPlaceholder" />
           </div>
 
           <div id="productsList" class="products-list">
-            Caricamento prodotti...
+            <span data-i18n="products.loading">Caricamento prodotti...</span>
           </div>
         </section>
       </section>
@@ -909,29 +919,29 @@
       <section id="import-export" class="cms-area card admin-view" data-admin-view="import-export">
         <div class="section-title">
           <div>
-            <span class="app-kicker">Native app</span>
+            <span class="app-kicker" data-i18n="statusNativeApp">Native app</span>
             <h2>TakeOff Import Export Pro</h2>
-            <p class="section-subtitle">
+            <p class="section-subtitle" data-i18n="importExportDesc">
               Importa, esporta e aggiorna in massa dati del sito senza app esterne.
             </p>
           </div>
-          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+          <a class="back-link" href="#apps">&larr; <span data-i18n="dataflow.backToAppHub">Torna ad App Hub</span></a>
         </div>
 
         <div class="app-hero-panel">
           <div>
-            <h3>Operativita centralizzata per dati, contenuti e traduzioni.</h3>
-            <p>
+            <h3 data-i18n="dataflow.heroTitle">Operativita centralizzata per dati, contenuti e traduzioni.</h3>
+            <p data-i18n="dataflow.heroDescription">
               Gestisci prodotti, collezioni, contenuti, menu e traduzioni in modo centralizzato.
               Nessun abbonamento mensile ad app esterne.
             </p>
           </div>
-          <span class="status-badge">Attiva</span>
+          <span class="status-badge" data-i18n="status.active">Attiva</span>
         </div>
 
         <div class="app-tabs">
-          <span>Export</span>
-          <span>Import</span>
+          <span data-i18n="dataflow.export">Export</span>
+          <span data-i18n="dataflow.import">Import</span>
           <span>Templates</span>
           <span>Stock update</span>
           <span>Translation package</span>
@@ -950,16 +960,16 @@
             </div>
             <label>Risorsa</label>
             <select id="exportResource">
-              <option value="products">Prodotti</option>
-              <option value="variants">Varianti</option>
-              <option value="stock">Stock</option>
-              <option value="collections">Collezioni</option>
+              <option value="products" data-i18n="productsTitle">Prodotti</option>
+              <option value="variants" data-i18n="catalog.variants.title">Varianti</option>
+              <option value="stock" data-i18n="products.stock">Stock</option>
+              <option value="collections" data-i18n="collectionsTitle">Collezioni</option>
               <option value="menus">Menu</option>
-              <option value="pages">Pagine</option>
+              <option value="pages" data-i18n="pages.title">Pagine</option>
               <option value="blog">Blog</option>
               <option value="policies">Policy</option>
               <option value="metafields">Metafields</option>
-              <option value="translations">Traduzioni</option>
+              <option value="translations" data-i18n="translationsTitle">Traduzioni</option>
               <option value="translation_package">Translation package</option>
               <option value="markets">Markets</option>
               <option value="market_languages">Lingue market</option>
@@ -997,11 +1007,11 @@
             </div>
             <label>Risorsa import</label>
             <select id="importResource">
-              <option value="products">Prodotti</option>
-              <option value="variants">Varianti</option>
-              <option value="stock_update">Stock update</option>
-              <option value="collections">Collezioni</option>
-              <option value="translations">Traduzioni</option>
+              <option value="products" data-i18n="productsTitle">Prodotti</option>
+              <option value="variants" data-i18n="catalog.variants.title">Varianti</option>
+              <option value="stock_update" data-i18n="dataflow.stockUpdate">Stock update</option>
+              <option value="collections" data-i18n="collectionsTitle">Collezioni</option>
+              <option value="translations" data-i18n="translationsTitle">Traduzioni</option>
               <option value="translation_package">Translation package</option>
               <option value="localized_prices">Prezzi localizzati</option>
               <option value="shipping_methods">Shipping methods</option>
@@ -1029,11 +1039,11 @@
             </div>
             <label>Template</label>
             <select id="templateResource">
-              <option value="products">Prodotti</option>
-              <option value="variants">Varianti</option>
-              <option value="stock_update">Stock update</option>
-              <option value="collections">Collezioni</option>
-              <option value="translations">Traduzioni</option>
+              <option value="products" data-i18n="productsTitle">Prodotti</option>
+              <option value="variants" data-i18n="catalog.variants.title">Varianti</option>
+              <option value="stock_update" data-i18n="dataflow.stockUpdate">Stock update</option>
+              <option value="collections" data-i18n="collectionsTitle">Collezioni</option>
+              <option value="translations" data-i18n="translationsTitle">Traduzioni</option>
               <option value="localized_prices">Prezzi localizzati</option>
               <option value="shipping_methods">Shipping methods</option>
               <option value="reviews">Reviews</option>
@@ -1116,7 +1126,7 @@
               </div>
             </div>
             <div class="placeholder-panel compact-panel">
-              <span class="status-badge">Configurazione base</span>
+              <span class="status-badge" data-i18n="status.basicConfiguration">Configurazione base</span>
               <p>Le azioni principali vengono registrate qui e nell'Activity log. Schedule e feed fornitori sono advanced tools in progress.</p>
             </div>
             <button id="refreshImportExportHistoryButton" type="button">Aggiorna history</button>
@@ -1141,11 +1151,11 @@
       <section id="email-automations" class="cms-area card admin-view" data-admin-view="email-automations">
         <div class="section-title">
           <div>
-            <span class="app-kicker">Native app</span>
+            <span class="app-kicker" data-i18n="statusNativeApp">Native app</span>
             <h2>TakeOff Email Automations</h2>
             <p class="section-subtitle">Template email, provider status e log in modalita provider-ready.</p>
           </div>
-          <a class="back-link" href="#apps">&larr; Torna ad App Hub</a>
+          <a class="back-link" href="#apps">&larr; <span data-i18n="dataflow.backToAppHub">Torna ad App Hub</span></a>
         </div>
         <div id="emailAutomationsProviderStatus" class="analytics-metric-grid"></div>
         <div class="content-manager">
@@ -1193,7 +1203,7 @@
         </div>
         <div class="content-manager">
           <form id="reviewForm" class="inner-card">
-            <h3 id="reviewFormTitle">Aggiungi review</h3>
+            <h3 id="reviewFormTitle" data-i18n="reviews.add">Aggiungi review</h3>
             <input id="reviewId" type="hidden" />
             <label>Prodotto</label>
             <select id="reviewProductId"></select>
@@ -1220,7 +1230,7 @@
               <option value="rejected">rejected</option>
             </select>
             <button id="reviewSubmitButton" type="submit">Salva review</button>
-            <button id="cancelReviewEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelReviewEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="reviewMessage"></p>
           </form>
           <section class="inner-card">
@@ -1276,7 +1286,7 @@
               <option value="closed">closed</option>
             </select>
             <button id="returnSubmitButton" type="submit">Salva reso</button>
-            <button id="cancelReturnEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelReturnEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="returnMessage"></p>
           </form>
           <section class="inner-card">
@@ -1327,7 +1337,7 @@
             <input id="upsellMessageInput" type="text" />
             <label class="inline-check"><input id="upsellActive" type="checkbox" checked /> Active</label>
             <button id="upsellSubmitButton" type="submit">Salva upsell</button>
-            <button id="cancelUpsellEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelUpsellEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="upsellMessage"></p>
           </form>
           <section class="inner-card">
@@ -1444,7 +1454,7 @@
               Attiva
             </label>
             <button type="submit">Salva gift card</button>
-            <button id="cancelGiftCardEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelGiftCardEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="giftCardMessage"></p>
           </form>
 
@@ -1473,7 +1483,7 @@
               <option value="disabled">Disabled</option>
             </select>
             <button type="submit">Salva store credit</button>
-            <button id="cancelStoreCreditEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelStoreCreditEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="storeCreditMessage"></p>
           </form>
 
@@ -1617,7 +1627,7 @@
               Attivo
             </label>
             <button type="submit">Salva redirect</button>
-            <button id="cancelSeoRedirectEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelSeoRedirectEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="seoRedirectMessage"></p>
           </form>
           <section class="inner-card">
@@ -1671,7 +1681,7 @@
               Attivo
             </label>
             <button type="submit">Salva webhook</button>
-            <button id="cancelWebhookEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelWebhookEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="webhookMessage"></p>
           </form>
           <section class="inner-card">
@@ -1716,9 +1726,9 @@
             </select>
             <label>Target import</label>
             <select id="supplierFeedTarget">
-              <option value="products">Products</option>
-              <option value="stock">Stock update</option>
-              <option value="prices">Prices</option>
+              <option value="products" data-i18n="productsTitle">Products</option>
+              <option value="stock" data-i18n="dataflow.stockUpdate">Stock update</option>
+              <option value="prices" data-i18n="dataflow.prices">Prices</option>
             </select>
             <label class="inline-check">
               <input id="supplierFeedActive" type="checkbox" checked />
@@ -1726,7 +1736,7 @@
             </label>
             <button type="submit">Salva feed</button>
             <button id="runSupplierFeedDryRunButton" class="secondary" type="button">Dry-run manuale</button>
-            <button id="cancelSupplierFeedEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelSupplierFeedEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="supplierFeedMessage"></p>
           </form>
           <section class="inner-card">
@@ -1817,7 +1827,7 @@
           <section class="inner-card">
             <h3>Privacy tools</h3>
             <div class="placeholder-panel compact-panel">
-              <span class="status-badge">Basic configuration</span>
+              <span class="status-badge" data-i18n="status.basicConfiguration">Basic configuration</span>
               <p>Export customer data, delete customer data e consent log server-side sono predisposti come strumenti controllati, non automazioni legali certificate.</p>
             </div>
           </section>
@@ -1897,50 +1907,50 @@
 
       <section id="contenuto" class="cms-area card admin-view" data-admin-view="contenuto">
         <div class="section-title">
-          <h2>Contenuto</h2>
-          <span class="status-badge">Operativo</span>
+          <h2 data-i18n="content.title">Contenuto</h2>
+          <span class="status-badge" data-i18n="statusOperational">Operativo</span>
         </div>
 
         <div class="mini-grid">
           <a class="mini-card" href="#pagine">
-            <h3>Pagine</h3>
-            <p>Crea e modifica pagine istituzionali, landing e contenuti custom.</p>
+            <h3 data-i18n="content.pages.title">Pagine</h3>
+            <p data-i18n="content.pages.description">Crea e modifica pagine istituzionali, landing e contenuti custom.</p>
           </a>
 
           <a class="mini-card" href="#menu">
-            <h3>Menu</h3>
-            <p>Crea menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
+            <h3 data-i18n="content.menu.title">Menu</h3>
+            <p data-i18n="content.menu.description">Crea menu collegati a pagine, collezioni, prodotti o URL esterni.</p>
           </a>
 
           <a class="mini-card" href="#media">
-            <h3>Media</h3>
-            <p>Gestisci upload predisposto, URL media, anteprime, alt text e asset riutilizzabili.</p>
+            <h3 data-i18n="mediaTitle">Media</h3>
+            <p data-i18n="content.media.description">Gestisci upload predisposto, URL media, anteprime, alt text e asset riutilizzabili.</p>
           </a>
 
           <a class="mini-card" href="#blog-admin">
-            <h3>Blog</h3>
-            <p>Articoli pubblici, bozze, contenuti e SEO base.</p>
+            <h3 data-i18n="blogTitle">Blog</h3>
+            <p data-i18n="content.blog.description">Articoli pubblici, bozze, contenuti e SEO base.</p>
           </a>
 
           <a class="mini-card" href="#metaobjects">
             <h3>Metaobjects</h3>
-            <p>Oggetti contenuto riutilizzabili e API pubblica read-only.</p>
+            <p data-i18n="content.metaobjects.description">Oggetti contenuto riutilizzabili e API pubblica read-only.</p>
           </a>
 
           <a class="mini-card" href="#policy">
-            <h3>Policy</h3>
-            <p>Privacy, termini, resi, spedizioni e cookie policy pubblicabili.</p>
+            <h3 data-i18n="policyTitle">Policy</h3>
+            <p data-i18n="content.policy.description">Privacy, termini, resi, spedizioni e cookie policy pubblicabili.</p>
           </a>
 
           <a class="mini-card" href="#traduzioni">
-            <h3>Traduzioni</h3>
-            <p>Adatta prodotti, pagine, sezioni, blog e policy per mercati internazionali.</p>
+            <h3 data-i18n="translationsTitle">Traduzioni</h3>
+            <p data-i18n="content.translations.description">Adatta prodotti, pagine, sezioni, blog e policy per mercati internazionali.</p>
           </a>
 
           <a class="mini-card" href="#seo">
-            <span class="mini-card-status">Native app</span>
+            <span class="mini-card-status" data-i18n="statusNativeApp">Native app</span>
             <h3>SEO</h3>
-            <p>Dashboard SEO centrale per metadati, snippet, canonical e priorita di intervento.</p>
+            <p data-i18n="content.seo.description">Dashboard SEO centrale per metadati, snippet, canonical e priorita di intervento.</p>
           </a>
         </div>
       </section>
@@ -1971,10 +1981,10 @@
 
             <label>Tipo contenuto</label>
             <select id="translationEntityType">
-              <option value="product">Prodotti</option>
-              <option value="collection">Collezioni</option>
-              <option value="page">Pagine</option>
-              <option value="section">Sezioni</option>
+              <option value="product" data-i18n="productsTitle">Prodotti</option>
+              <option value="collection" data-i18n="collectionsTitle">Collezioni</option>
+              <option value="page" data-i18n="pages.title">Pagine</option>
+              <option value="section" data-i18n="editor.pageSections">Sezioni</option>
               <option value="blog">Blog</option>
               <option value="policy">Policy</option>
             </select>
@@ -2046,7 +2056,7 @@
 
         <div class="content-manager">
           <form id="policyForm" class="inner-card">
-            <h3 id="policyFormTitle">Aggiungi policy</h3>
+            <h3 id="policyFormTitle" data-i18n="policies.add">Aggiungi policy</h3>
             <input id="policyId" type="hidden" />
 
             <label>Tipo policy</label>
@@ -2074,7 +2084,7 @@
             </select>
 
             <button id="policySubmitButton" type="submit">Salva policy</button>
-            <button id="cancelPolicyEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelPolicyEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="policyMessage"></p>
           </form>
 
@@ -2100,7 +2110,7 @@
 
         <div class="content-manager">
           <form id="blogPostForm" class="inner-card">
-            <h3 id="blogPostFormTitle">Aggiungi articolo</h3>
+            <h3 id="blogPostFormTitle" data-i18n="blog.add">Aggiungi articolo</h3>
             <input id="blogPostId" type="hidden" />
 
             <label>Titolo</label>
@@ -2138,7 +2148,7 @@
             </section>
 
             <button id="blogSubmitButton" type="submit">Salva articolo</button>
-            <button id="cancelBlogEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelBlogEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="blogMessage"></p>
           </form>
 
@@ -2201,7 +2211,7 @@
               <textarea id="metaobjectEntryDataJson" placeholder='{"nome":"Titanio"}'></textarea>
 
               <button id="metaobjectEntrySubmit" type="submit">Salva entry</button>
-              <button id="cancelMetaobjectEntryEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+              <button id="cancelMetaobjectEntryEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
               <p id="metaobjectEntryMessage"></p>
             </form>
 
@@ -2245,7 +2255,7 @@
           </form>
 
           <form id="mediaForm" class="inner-card">
-            <h3 id="mediaFormTitle">Aggiungi media</h3>
+            <h3 id="mediaFormTitle" data-i18n="media.add">Aggiungi media</h3>
             <input id="mediaId" type="hidden" />
 
             <label>Nome media</label>
@@ -2265,7 +2275,7 @@
             <input id="mediaAltText" type="text" placeholder="Descrizione immagine" />
 
             <button id="mediaSubmitButton" type="submit">Salva media</button>
-            <button id="cancelMediaEdit" class="secondary" type="button" hidden>
+            <button id="cancelMediaEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">
               Annulla modifica
             </button>
             <p id="mediaMessage"></p>
@@ -2301,8 +2311,8 @@
       <section id="pagine" class="cms-area card admin-view" data-admin-view="pagine">
         <div class="section-title">
           <div>
-            <h2>Pagine</h2>
-            <p class="section-subtitle">
+            <h2 data-i18n="pages.title">Pagine</h2>
+            <p class="section-subtitle" data-i18n="pages.description">
               Crea, modifica e organizza le pagine del sito.
             </p>
           </div>
@@ -2312,11 +2322,11 @@
 
         <div class="content-manager">
           <form id="pageForm" class="inner-card">
-            <h3 id="pageFormTitle">Aggiungi pagina</h3>
+            <h3 id="pageFormTitle" data-i18n="pages.addTitle">Aggiungi pagina</h3>
 
             <input id="pageId" type="hidden" />
 
-            <label>Titolo pagina</label>
+            <label data-i18n="pages.titleLabel">Titolo pagina</label>
             <input id="pageTitle" type="text" placeholder="Chi siamo" required />
 
             <label>Slug URL</label>
@@ -2337,9 +2347,9 @@
               <input id="pageSeoCanonical" type="text" placeholder="https://..." />
             </section>
 
-            <button id="pageSubmitButton" type="submit">Salva pagina</button>
+            <button id="pageSubmitButton" type="submit" data-i18n="pages.save">Salva pagina</button>
 
-            <button id="cancelPageEdit" class="secondary" type="button" hidden>
+            <button id="cancelPageEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">
               Annulla modifica
             </button>
 
@@ -2348,12 +2358,12 @@
 
           <section class="inner-card">
             <div class="section-title">
-              <h3>Pagine nel CMS</h3>
-              <button id="refreshPagesButton" type="button">Aggiorna</button>
+              <h3 data-i18n="pages.archive">Pagine nel CMS</h3>
+              <button id="refreshPagesButton" type="button" data-i18n="common.refresh">Aggiorna</button>
             </div>
 
             <div id="pagesList" class="products-list">
-              Caricamento pagine...
+              <span data-i18n="pages.loading">Caricamento pagine...</span>
             </div>
           </section>
         </div>
@@ -2373,7 +2383,7 @@
 
         <div class="content-manager">
           <form id="menuItemForm" class="inner-card">
-            <h3>Aggiungi voce menu</h3>
+            <h3 data-i18n="menu.addItem">Aggiungi voce menu</h3>
 
             <label>Menu</label>
             <select id="menuSelect" required>
@@ -2425,22 +2435,22 @@
               Campagne, sconti e strumenti promozionali organizzati per stato operativo.
             </p>
           </div>
-          <span class="status-badge">Area</span>
+          <span class="status-badge" data-i18n="statusArea">Area</span>
         </div>
 
         <div class="mini-grid">
           <a class="mini-card" href="#marketing-campaigns">
-            <h3>Campagne</h3>
-            <p>Crea e modifica campagne con date, stato e coupon opzionale.</p>
+            <h3 data-i18n="marketing.campaigns">Campagne</h3>
+            <p data-i18n="marketing.campaignsDesc">Crea e modifica campagne con date, stato e coupon opzionale.</p>
           </a>
 
           <a class="mini-card" href="#marketing-discounts">
-            <h3>Sconti</h3>
-            <p>Gestisci codici sconto percentuali o a importo fisso.</p>
+            <h3 data-i18n="marketing.discounts">Sconti</h3>
+            <p data-i18n="marketing.discountsDesc">Gestisci codici sconto percentuali o a importo fisso.</p>
           </a>
 
           <a class="mini-card" href="#advanced-discounts">
-            <span class="mini-card-status">Basic configuration</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Basic configuration</span>
             <h3>Advanced Discounts</h3>
             <p>Regole promozionali avanzate e compatibilita checkout progressiva.</p>
           </a>
@@ -2452,7 +2462,7 @@
           </a>
 
           <a class="mini-card" href="#search-filters">
-            <span class="mini-card-status">Basic configuration</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Basic configuration</span>
             <h3>Search & Filters</h3>
             <p>Ricerca prodotti, filtri catalogo e ordinamenti ecommerce.</p>
           </a>
@@ -2488,7 +2498,7 @@
 
         <div class="content-manager">
           <form id="discountForm" class="inner-card">
-            <h3 id="discountFormTitle">Aggiungi sconto</h3>
+            <h3 id="discountFormTitle" data-i18n="discounts.add">Aggiungi sconto</h3>
             <input id="discountId" type="hidden" />
 
             <label>Codice</label>
@@ -2548,7 +2558,7 @@
             </label>
 
             <button id="discountSubmitButton" type="submit">Salva sconto</button>
-            <button id="cancelDiscountEdit" class="secondary" type="button" hidden>
+            <button id="cancelDiscountEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">
               Annulla modifica
             </button>
             <p id="discountMessage"></p>
@@ -2574,7 +2584,7 @@
 
         <div class="content-manager">
           <form id="campaignForm" class="inner-card">
-            <h3 id="campaignFormTitle">Aggiungi campagna</h3>
+            <h3 id="campaignFormTitle" data-i18n="campaigns.add">Aggiungi campagna</h3>
             <input id="campaignId" type="hidden" />
 
             <label>Titolo campagna</label>
@@ -2598,7 +2608,7 @@
             </label>
 
             <button id="campaignSubmitButton" type="submit">Salva campagna</button>
-            <button id="cancelCampaignEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelCampaignEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="campaignMessage"></p>
           </form>
 
@@ -2701,7 +2711,7 @@
 
         <div class="content-manager markets-workspace">
           <form id="marketForm" class="inner-card">
-            <h3 id="marketFormTitle">Aggiungi mercato</h3>
+            <h3 id="marketFormTitle" data-i18n="markets.add">Aggiungi mercato</h3>
             <p class="field-help">Markets controlla esperienza pubblica, valuta, lingua, paese, path/dominio e listini localizzati.</p>
             <input id="marketId" type="hidden" />
 
@@ -2733,7 +2743,7 @@
             <label class="inline-check"><input id="marketDefault" type="checkbox" /> Default</label>
 
             <button id="marketSubmitButton" type="submit">Salva mercato</button>
-            <button id="cancelMarketEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelMarketEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="marketMessage"></p>
           </form>
 
@@ -2946,7 +2956,9 @@
           </div>
           <a class="back-link" href="#analisi">&larr; Torna a Analisi</a>
         </div>
-        <div id="analyticsProductsPanel" class="admin-records-list">Caricamento prodotti...</div>
+        <div id="analyticsProductsPanel" class="admin-records-list">
+          <span data-i18n="products.loading">Caricamento prodotti...</span>
+        </div>
       </section>
 
       <section id="analytics-conversions" class="cms-area card admin-view" data-admin-view="analytics-conversions">
@@ -2984,7 +2996,7 @@
 
         <div class="mini-grid">
           <a class="mini-card" href="#checkout-settings">
-            <span class="mini-card-status">Configurazione base</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Configurazione base</span>
             <h3>Checkout settings</h3>
             <p>Campi richiesti, note operative e opzioni checkout documentate.</p>
           </a>
@@ -3006,7 +3018,7 @@
           </a>
 
           <a class="mini-card" href="#checkout-confirmation">
-            <span class="mini-card-status">Configurazione base</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Configurazione base</span>
             <h3>Conferma ordine</h3>
             <p>Testi, contenuti e notifiche della conferma ordine.</p>
           </a>
@@ -3049,7 +3061,7 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">Configurazione base</span>
+          <span class="status-badge" data-i18n="status.basicConfiguration">Configurazione base</span>
           <p>Il checkout pubblico resta stabile. Questa vista raccogliera opzioni admin in modo controllato.</p>
         </div>
       </section>
@@ -3106,7 +3118,7 @@
 
         <div class="content-manager">
           <form id="shippingMethodForm" class="inner-card">
-            <h3 id="shippingMethodFormTitle">Aggiungi metodo</h3>
+            <h3 id="shippingMethodFormTitle" data-i18n="shipping.add">Aggiungi metodo</h3>
             <input id="shippingMethodId" type="hidden" />
             <label>Nome metodo</label>
             <input id="shippingMethodName" type="text" placeholder="Spedizione standard" required />
@@ -3122,7 +3134,7 @@
             <input id="shippingMethodSortOrder" type="number" step="1" placeholder="1" />
             <label class="inline-check"><input id="shippingMethodActive" type="checkbox" checked /> Attivo</label>
             <button id="shippingMethodSubmitButton" type="submit">Salva spedizione</button>
-            <button id="cancelShippingMethodEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelShippingMethodEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="shippingMethodMessage"></p>
           </form>
 
@@ -3132,7 +3144,7 @@
               <button id="refreshShippingMethodsButton" type="button">Aggiorna</button>
             </div>
             <div class="placeholder-panel compact-panel">
-              <span class="status-badge">Configurazione base</span>
+              <span class="status-badge" data-i18n="status.basicConfiguration">Configurazione base</span>
               <p>Zone, corrieri reali e regole per mercato richiedono un modello dedicato. Il checkout usa questi metodi con fallback standard/free over 100.</p>
             </div>
             <div id="shippingMethodsList" class="products-list">Caricamento spedizioni...</div>
@@ -3149,7 +3161,7 @@
           <a class="back-link" href="#checkout">&larr; Torna a Check-out</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">Configurazione base</span>
+          <span class="status-badge" data-i18n="status.basicConfiguration">Configurazione base</span>
           <p>La conferma ordine pubblica resta invariata. Qui saranno gestiti testi e opzioni configurabili.</p>
         </div>
       </section>
@@ -3168,7 +3180,7 @@
 
         <div class="mini-grid">
           <a class="mini-card" href="#settings-general">
-            <span class="mini-card-status">Configurazione base</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Configurazione base</span>
             <h3>Generali</h3>
             <p>Nome cliente, dati aziendali, email di sistema e informazioni sito.</p>
           </a>
@@ -3184,13 +3196,13 @@
           </a>
 
           <a class="mini-card" href="#privacy-settings">
-            <span class="mini-card-status">Configurazione base</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Configurazione base</span>
             <h3>Privacy</h3>
             <p>Consensi, GDPR e raccordo con Google Consent e policy pubbliche.</p>
           </a>
 
           <a class="mini-card" href="#cookie-settings">
-            <span class="mini-card-status">Configurazione base</span>
+            <span class="mini-card-status" data-i18n="status.basicConfiguration">Configurazione base</span>
             <h3>Cookie</h3>
             <p>Base consenso Google attiva; preferenze cookie complete come advanced tools in progress.</p>
           </a>
@@ -3242,7 +3254,7 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">Configurazione base</span>
+          <span class="status-badge" data-i18n="status.basicConfiguration">Configurazione base</span>
           <p>Le impostazioni tema sono nel drawer dell'editor visuale. Questa vista centralizzera le impostazioni generali del sito.</p>
         </div>
       </section>
@@ -3308,7 +3320,7 @@
           <a class="back-link" href="#impostazioni">&larr; Torna a Impostazioni</a>
         </div>
         <div class="placeholder-panel">
-          <span class="status-badge">Configurazione base</span>
+          <span class="status-badge" data-i18n="status.basicConfiguration">Configurazione base</span>
           <p>Apri TakeOff Import Export da App Hub per export, import controllati, template, backup e pacchetti traduzione.</p>
         </div>
       </section>
@@ -3388,7 +3400,7 @@
 
         <div class="content-manager">
           <form id="integrationForm" class="inner-card">
-            <h3 id="integrationFormTitle">Aggiungi integrazione</h3>
+            <h3 id="integrationFormTitle" data-i18n="integrations.add">Aggiungi integrazione</h3>
             <input id="integrationId" type="hidden" />
             <label>Nome</label>
             <input id="integrationName" type="text" placeholder="CRM" required />
@@ -3400,7 +3412,7 @@
             <textarea id="integrationConfigJson" placeholder='{"channel":"orders"}'></textarea>
             <label class="inline-check"><input id="integrationActive" type="checkbox" checked /> Attiva</label>
             <button id="integrationSubmitButton" type="submit">Salva integrazione</button>
-            <button id="cancelIntegrationEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelIntegrationEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="integrationMessage"></p>
           </form>
 
@@ -3425,7 +3437,7 @@
 
         <div class="content-manager">
           <form id="adminUserForm" class="inner-card">
-            <h3 id="adminUserFormTitle">Aggiungi utente</h3>
+            <h3 id="adminUserFormTitle" data-i18n="users.add">Aggiungi utente</h3>
             <input id="adminUserId" type="hidden" />
             <label>Nome</label>
             <input id="adminUserName" type="text" required />
@@ -3443,7 +3455,7 @@
             </select>
             <label class="inline-check"><input id="adminUserActive" type="checkbox" checked /> Attivo</label>
             <button id="adminUserSubmitButton" type="submit">Salva utente</button>
-            <button id="cancelAdminUserEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelAdminUserEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="adminUserMessage"></p>
           </form>
 
@@ -3479,7 +3491,7 @@
 
         <div class="content-manager">
           <form id="notificationForm" class="inner-card">
-            <h3 id="notificationFormTitle">Aggiungi template</h3>
+            <h3 id="notificationFormTitle" data-i18n="notifications.add">Aggiungi template</h3>
             <input id="notificationId" type="hidden" />
             <label>Tipo</label>
             <select id="notificationType">
@@ -3500,7 +3512,7 @@
             <textarea id="notificationBody"></textarea>
             <label class="inline-check"><input id="notificationActive" type="checkbox" checked /> Attivo</label>
             <button id="notificationSubmitButton" type="submit">Salva template</button>
-            <button id="cancelNotificationEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelNotificationEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="notificationMessage"></p>
           </form>
 
@@ -3528,7 +3540,7 @@
 
         <div class="content-manager">
           <form id="domainForm" class="inner-card">
-            <h3 id="domainFormTitle">Aggiungi dominio</h3>
+            <h3 id="domainFormTitle" data-i18n="domains.add">Aggiungi dominio</h3>
             <input id="domainId" type="hidden" />
             <label>Dominio</label>
             <input id="domainName" type="text" placeholder="example.com" required />
@@ -3548,7 +3560,7 @@
             <textarea id="domainDnsNotes" placeholder="CNAME, TXT verification, note operative"></textarea>
             <label class="inline-check"><input id="domainPrimary" type="checkbox" /> Dominio primario</label>
             <button id="domainSubmitButton" type="submit">Salva dominio</button>
-            <button id="cancelDomainEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelDomainEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="domainMessage"></p>
           </form>
 
@@ -3573,7 +3585,7 @@
 
         <div class="content-manager">
           <form id="tenantForm" class="inner-card">
-            <h3 id="tenantFormTitle">Aggiungi tenant</h3>
+            <h3 id="tenantFormTitle" data-i18n="tenants.add">Aggiungi tenant</h3>
             <input id="tenantId" type="hidden" />
             <label>Nome store</label>
             <input id="tenantName" type="text" placeholder="Store default" required />
@@ -3589,7 +3601,7 @@
             <textarea id="tenantNotes" placeholder="Note tecniche isolamento dati"></textarea>
             <label class="inline-check"><input id="tenantDefault" type="checkbox" /> Tenant default</label>
             <button id="tenantSubmitButton" type="submit">Salva tenant</button>
-            <button id="cancelTenantEdit" class="secondary" type="button" hidden>Annulla modifica</button>
+            <button id="cancelTenantEdit" class="secondary" type="button" hidden data-i18n="common.cancelEdit">Annulla modifica</button>
             <p id="tenantMessage"></p>
           </form>
 

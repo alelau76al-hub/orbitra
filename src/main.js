@@ -126,6 +126,7 @@ const STOREFRONT_TRANSLATIONS = {
     productsLoadError: 'Errore caricamento prodotti.',
     collectionsLoadError: 'Errore caricamento collezioni.',
     viewCollection: 'Vedi collezione',
+    viewProducts: 'Vedi prodotti',
     discoverProduct: 'Scopri il prodotto',
     checkout: 'Checkout',
     checkoutLoading: 'Caricamento checkout...',
@@ -156,7 +157,7 @@ const STOREFRONT_TRANSLATIONS = {
     checkoutSubmit: 'Completa ordine',
     checkoutSummary: 'Riepilogo',
     checkoutDiscountCode: 'Codice sconto',
-    checkoutApply: 'Applica',
+    checkoutApply: 'Applica codice',
     checkoutGiftCardCode: 'Gift card',
     checkoutGiftCardHelp: 'Il saldo viene scalato solo quando l ordine viene creato correttamente.',
     checkoutStoreCredit: 'Credito cliente',
@@ -199,7 +200,8 @@ const STOREFRONT_TRANSLATIONS = {
     googleConsentTitle: 'Privacy e Google analytics',
     googleConsentText: 'Usiamo tag Google solo con il tuo consenso per misurare il sito e le conversioni marketing.',
     googleConsentAccept: 'Accetta analytics e marketing',
-    googleConsentNecessary: 'Solo necessari',
+    googleConsentNecessary: 'Rifiuta',
+    googleConsentPreferences: 'Preferenze',
     blogLoadingPost: 'Caricamento articolo...',
     blogLoadingList: 'Caricamento blog...',
     blogContentIntro: 'Contenuti editoriali dal CMS.',
@@ -334,6 +336,7 @@ const STOREFRONT_TRANSLATIONS = {
     productsLoadError: 'Product loading error.',
     collectionsLoadError: 'Collection loading error.',
     viewCollection: 'View collection',
+    viewProducts: 'View products',
     discoverProduct: 'Discover product',
     checkout: 'Checkout',
     checkoutLoading: 'Loading checkout...',
@@ -364,7 +367,7 @@ const STOREFRONT_TRANSLATIONS = {
     checkoutSubmit: 'Complete order',
     checkoutSummary: 'Summary',
     checkoutDiscountCode: 'Discount code',
-    checkoutApply: 'Apply',
+    checkoutApply: 'Apply code',
     checkoutGiftCardCode: 'Gift card',
     checkoutGiftCardHelp: 'Balance is redeemed only after the order is created successfully.',
     checkoutStoreCredit: 'Store credit',
@@ -407,7 +410,8 @@ const STOREFRONT_TRANSLATIONS = {
     googleConsentTitle: 'Privacy and Google analytics',
     googleConsentText: 'Google tags run only with your consent to measure the site and marketing conversions.',
     googleConsentAccept: 'Accept analytics and marketing',
-    googleConsentNecessary: 'Necessary only',
+    googleConsentNecessary: 'Reject',
+    googleConsentPreferences: 'Preferences',
     blogLoadingPost: 'Loading article...',
     blogLoadingList: 'Loading blog...',
     blogContentIntro: 'Editorial content from the CMS.',
@@ -445,14 +449,24 @@ function setStorefrontLanguage(language) {
   } catch {}
 }
 
-function sfT(key, replacements = {}) {
+function sfT(key, replacements = {}, fallback = '') {
   const language = getStorefrontLanguage()
-  const template =
+  const safeReplacements =
+    replacements && typeof replacements === 'object' && !Array.isArray(replacements)
+      ? replacements
+      : {}
+  const explicitFallback = typeof replacements === 'string' ? replacements : fallback
+  const templateValue =
     STOREFRONT_TRANSLATIONS[language]?.[key] ||
     STOREFRONT_TRANSLATIONS[STOREFRONT_DEFAULT_LANGUAGE]?.[key] ||
-    key
+    explicitFallback ||
+    ''
+  const template =
+    templateValue === null || templateValue === undefined || typeof templateValue === 'object'
+      ? explicitFallback || ''
+      : String(templateValue)
 
-  return Object.entries(replacements).reduce(
+  return Object.entries(safeReplacements).reduce(
     (text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
     template,
   )
@@ -504,7 +518,7 @@ const STOREFRONT_STATIC_TRANSLATIONS = [
   ['Email', 'Email'],
   ['Richiedi invito privato', 'Request private invite'],
   ['Domande prima del decollo.', 'Questions before launch.'],
-  ['ORBITRA (c) 2026 - Space travel for the impossible generation.', 'ORBITRA (c) 2026 - Space travel for the impossible generation.'],
+  ['TAKEOFFMILAN (c) 2026 - Space travel for the impossible generation.', 'TAKEOFFMILAN (c) 2026 - Space travel for the impossible generation.'],
   ['Request launch access', 'Request launch access'],
   ['Il tuo carrello', 'Your cart'],
   ['Totale', 'Total'],
@@ -528,17 +542,199 @@ const STOREFRONT_STATIC_TRANSLATIONS = [
   ['Non e stato possibile caricare questa pagina.', 'This page could not be loaded.'],
 ]
 
+STOREFRONT_STATIC_TRANSLATIONS.push(
+  ['Aggiungi al carrello', 'Add to cart'],
+  ['Checkout', 'Checkout'],
+  ['Continua', 'Continue'],
+  ['Torna', 'Back'],
+  ['Cerca', 'Search'],
+  ['Nessun risultato', 'No results'],
+  ['Nessun risultato trovato.', 'No results found.'],
+  ['Prodotto non trovato', 'Product not found'],
+  ['Collezione non trovata', 'Collection not found'],
+  ['Prodotti correlati', 'Related products'],
+  ['Recensioni', 'Reviews'],
+  ['Scrivi una recensione', 'Write a review'],
+  ['Frequently bought together', 'Frequently bought together'],
+  ['Completa il set', 'Complete the set'],
+  ['Complete the set', 'Complete the set'],
+  ['Acquisto singolo', 'One-time purchase'],
+  ['One-time purchase', 'One-time purchase'],
+  ['Abbonamento', 'Subscription'],
+  ['Subscription', 'Subscription'],
+  ['Gift card', 'Gift card'],
+  ['Credito cliente', 'Store credit'],
+  ['Store credit', 'Store credit'],
+  ['Applica codice', 'Apply code'],
+  ['Applica', 'Apply'],
+  ['Rimuovi', 'Remove'],
+  ['Sconto', 'Discount'],
+  ['Spedizione', 'Shipping'],
+  ['Tasse', 'Taxes'],
+  ['IVA', 'VAT'],
+  ['Totale', 'Total'],
+  ['Grazie', 'Thank you'],
+  ['Ordine confermato', 'Order confirmed'],
+  ['Ordine creato', 'Order created'],
+  ['Account', 'Account'],
+  ['Search', 'Search'],
+  ['Cookie banner', 'Cookie banner'],
+  ['Accetta', 'Accept'],
+  ['Rifiuta', 'Reject'],
+  ['Preferenze', 'Preferences'],
+  ['Caricamento', 'Loading'],
+  ['Loading', 'Loading'],
+  ['Errore', 'Error'],
+  ['Error', 'Error'],
+  ['Carrello', 'Cart'],
+  ['Il tuo carrello', 'Your cart'],
+  ['Il carrello e vuoto.', 'Your cart is empty.'],
+  ['Aggiungi almeno un prodotto prima del checkout.', 'Add at least one product before checkout.'],
+  ['Prodotto non disponibile.', 'Product unavailable.'],
+  ['Quantita richiesta superiore allo stock disponibile.', 'Requested quantity exceeds available stock.'],
+  ['Dettagli prodotto non ancora caricati.', 'Product details not loaded yet.'],
+  ['Prodotto senza immagine', 'Product without image'],
+  ['Collezioni', 'Collections'],
+  ['Esplora le collezioni.', 'Explore collections.'],
+  ['Queste collezioni arrivano da Cloudflare D1 e sono gestite dal CMS custom.', 'These collections come from Cloudflare D1 and are managed by the custom CMS.'],
+  ['Shop pre-lancio', 'Pre-launch shop'],
+  ['Prodotti dal database.', 'Products from the database.'],
+  ['Questi prodotti arrivano da Cloudflare D1 e sono gestiti dalla dashboard custom.', 'These products come from Cloudflare D1 and are managed from the custom dashboard.'],
+  ['Vedi prodotti', 'View products'],
+  ['Nessuna descrizione disponibile.', 'No description available.'],
+  ['Non disponibile', 'Unavailable'],
+  ['Disponibile', 'Available'],
+  ['Esaurito', 'Out of stock'],
+  ['Stock basso', 'Low stock'],
+  ['Quantita', 'Quantity'],
+  ['Categoria', 'Category'],
+  ['Collezione', 'Collection'],
+  ['Senza categoria', 'No category'],
+  ['Senza collezione', 'No collection'],
+  ['Dettagli', 'Details'],
+  ['Spedizione e resi', 'Shipping and returns'],
+  ['Specifiche', 'Specifications'],
+  ['Dalla stessa collezione', 'From the same collection'],
+  ['Nessuna recensione ancora.', 'No reviews yet.'],
+  ['Condividi per primo la tua esperienza.', 'Be the first to share your experience.'],
+  ['Recensioni non disponibili in questo momento.', 'Reviews are not available right now.'],
+  ['Ricerca prodotti', 'Product search'],
+  ['Trova prodotti per nome, descrizione o categoria.', 'Find products by name, description or category.'],
+  ['Cerca prodotti...', 'Search products...'],
+  ['Tutte le collezioni', 'All collections'],
+  ['Prezzo min', 'Min price'],
+  ['Prezzo max', 'Max price'],
+  ['Qualsiasi stock', 'Any stock'],
+  ['Disponibili', 'In stock'],
+  ['Esauriti', 'Out of stock'],
+  ['Ordina', 'Sort'],
+  ['Rilevanza', 'Relevance'],
+  ['Prezzo crescente', 'Price ascending'],
+  ['Prezzo decrescente', 'Price descending'],
+  ['Piu recenti', 'Newest'],
+  ['Nome', 'Name'],
+  ['Dati cliente', 'Customer details'],
+  ['Nome completo', 'Full name'],
+  ['Telefono opzionale', 'Phone optional'],
+  ['Indirizzo spedizione', 'Shipping address'],
+  ['Indirizzo', 'Address'],
+  ['Citta', 'City'],
+  ['CAP', 'Postal code'],
+  ['Paese', 'Country'],
+  ['Italia', 'Italy'],
+  ['Metodo spedizione', 'Shipping method'],
+  ['Pagamento', 'Payment'],
+  ['Metodo pagamento', 'Payment method'],
+  ['Completa ordine', 'Complete order'],
+  ['Riepilogo', 'Summary'],
+  ['Codice sconto', 'Discount code'],
+  ['Subtotale', 'Subtotal'],
+  ['IVA inclusa', 'VAT included'],
+  ['Creazione ordine in corso...', 'Creating order...'],
+  ['Errore creazione ordine.', 'Order creation error.'],
+  ['Errore di connessione durante il checkout.', 'Connection error during checkout.'],
+  ['Torna al checkout', 'Back to checkout'],
+  ['Torna al sito', 'Back to site'],
+  ['Torna allo shop', 'Back to shop'],
+  ['Accetta analytics e marketing', 'Accept analytics and marketing'],
+  ['Solo necessari', 'Reject'],
+  ['Privacy e Google analytics', 'Privacy and Google analytics'],
+  ['Articolo non trovato', 'Article not found'],
+  ['Policy non trovata', 'Policy not found'],
+  ['Pagina non trovata', 'Page not found'],
+  ['undefined', ''],
+  ['null', ''],
+)
+
 let storefrontStaticTranslationQueued = false
 let storefrontStaticTranslationRunning = false
+const storefrontRuntimeTranslationMapCache = new Map()
 
-function getStorefrontStaticTranslation(text) {
+function normalizeStorefrontRuntimeText(value) {
+  return String(value ?? '').trim().replace(/\s+/g, ' ')
+}
+
+function getStorefrontRuntimeMap() {
   const language = getStorefrontLanguage()
+  if (storefrontRuntimeTranslationMapCache.has(language)) {
+    return storefrontRuntimeTranslationMapCache.get(language)
+  }
+
   const sourceIndex = language === 'en' ? 0 : 1
   const targetIndex = language === 'en' ? 1 : 0
-  const copyMap = new Map(
+  const map = new Map(
     STOREFRONT_STATIC_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
   )
-  return copyMap.get(text) || null
+  storefrontRuntimeTranslationMapCache.set(language, map)
+  return map
+}
+
+function getStorefrontStaticTranslation(text) {
+  const normalized = normalizeStorefrontRuntimeText(text)
+  if (!normalized) return null
+  if (/^(undefined|null)$/i.test(normalized)) return ''
+
+  const copyMap = getStorefrontRuntimeMap()
+  return copyMap.has(normalized) ? copyMap.get(normalized) : null
+}
+
+function shouldSkipStorefrontRuntimeElement(element) {
+  if (!element) return true
+  return Boolean(
+    element.closest(
+      '[data-storefront-no-translate], [data-cms-content], [contenteditable="true"], script, style, noscript, pre, code',
+    ),
+  )
+}
+
+function translateStorefrontDataI18n(root = document) {
+  root.querySelectorAll('[data-i18n]').forEach((element) => {
+    if (shouldSkipStorefrontRuntimeElement(element)) return
+    const translated = sfT(element.dataset.i18n, {})
+    if (translated && translated !== element.dataset.i18n) element.textContent = translated
+  })
+
+  root.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
+    if (shouldSkipStorefrontRuntimeElement(element)) return
+    const translated = sfT(element.dataset.i18nPlaceholder, {})
+    if (translated && translated !== element.dataset.i18nPlaceholder) {
+      element.setAttribute('placeholder', translated)
+    }
+  })
+
+  root.querySelectorAll('[data-i18n-title]').forEach((element) => {
+    if (shouldSkipStorefrontRuntimeElement(element)) return
+    const translated = sfT(element.dataset.i18nTitle, {})
+    if (translated && translated !== element.dataset.i18nTitle) element.setAttribute('title', translated)
+  })
+
+  root.querySelectorAll('[data-i18n-aria-label]').forEach((element) => {
+    if (shouldSkipStorefrontRuntimeElement(element)) return
+    const translated = sfT(element.dataset.i18nAriaLabel, {})
+    if (translated && translated !== element.dataset.i18nAriaLabel) {
+      element.setAttribute('aria-label', translated)
+    }
+  })
 }
 
 function translateStorefrontStaticCopy() {
@@ -547,6 +743,8 @@ function translateStorefrontStaticCopy() {
 
   const appRoot = document.querySelector('#app')
   const ignoredParents = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'PRE', 'CODE'])
+  translateStorefrontDataI18n()
+
   if (appRoot) {
     const walker = document.createTreeWalker(appRoot, NodeFilter.SHOW_TEXT)
     const textNodes = []
@@ -559,13 +757,14 @@ function translateStorefrontStaticCopy() {
     textNodes.forEach((textNode) => {
       const parentName = textNode.parentElement?.tagName
       if (!parentName || ignoredParents.has(parentName)) return
+      if (shouldSkipStorefrontRuntimeElement(textNode.parentElement)) return
 
       const original = textNode.nodeValue || ''
       const trimmed = original.trim().replace(/\s+/g, ' ')
       if (!trimmed) return
 
       const translated = getStorefrontStaticTranslation(trimmed)
-      if (!translated || translated === trimmed) return
+      if (translated === null || translated === undefined || translated === trimmed) return
 
       const leading = original.match(/^\s*/)?.[0] || ''
       const trailing = original.match(/\s*$/)?.[0] || ''
@@ -574,8 +773,27 @@ function translateStorefrontStaticCopy() {
   }
 
   document.querySelectorAll('#app input[placeholder], #app textarea[placeholder]').forEach((element) => {
+    if (shouldSkipStorefrontRuntimeElement(element)) return
+    if (element.dataset.i18nPlaceholder) return
+
     const translated = getStorefrontStaticTranslation(element.getAttribute('placeholder') || '')
-    if (translated) element.setAttribute('placeholder', translated)
+    if (translated !== null && translated !== undefined) element.setAttribute('placeholder', translated)
+  })
+
+  document.querySelectorAll('#app [title], #app [aria-label]').forEach((element) => {
+    if (shouldSkipStorefrontRuntimeElement(element)) return
+
+    ;['title', 'aria-label'].forEach((attribute) => {
+      if (!element.hasAttribute(attribute)) return
+      if (attribute === 'title' && element.dataset.i18nTitle) return
+      if (attribute === 'aria-label' && element.dataset.i18nAriaLabel) return
+
+      const value = element.getAttribute(attribute) || ''
+      const translated = getStorefrontStaticTranslation(value)
+      if (translated !== null && translated !== undefined && translated !== value) {
+        element.setAttribute(attribute, translated)
+      }
+    })
   })
 
   storefrontStaticTranslationRunning = false
@@ -599,6 +817,16 @@ function setupStorefrontStaticTranslationObserver() {
     childList: true,
     subtree: true,
     characterData: true,
+    attributes: true,
+    attributeFilter: [
+      'aria-label',
+      'data-i18n',
+      'data-i18n-aria-label',
+      'data-i18n-placeholder',
+      'data-i18n-title',
+      'placeholder',
+      'title',
+    ],
   })
 }
 
@@ -785,7 +1013,7 @@ document.querySelector('#app').innerHTML = `
   <header class="nav">
     <a class="logo" href="#">
       <span class="logo-mark">✦</span>
-      ORBITRA
+      TakeOffMilan
     </a>
 
     <nav class="nav-links" id="mainMenuLinks">
@@ -1033,7 +1261,7 @@ document.querySelector('#app').innerHTML = `
 
   <footer class="footer">
     <div class="footer-main">
-      <p class="footer-text">ORBITRA © 2026 — Space travel for the impossible generation.</p>
+      <p class="footer-text">TakeOffMilan © 2026 — Space travel for the impossible generation.</p>
       <a class="footer-cta" href="#booking">Request launch access</a>
     </div>
 
@@ -1229,11 +1457,11 @@ function setMetaTag(selector, attributes) {
 }
 
 function applySeoMeta(seo = {}, fallback = {}) {
-  const title = seo.meta_title || fallback.title || 'Orbitra'
+  const title = seo.meta_title || fallback.title || 'TakeOffMilan'
   const description =
     seo.meta_description ||
     fallback.description ||
-    'CMS ecommerce custom Orbitra.'
+    'CMS ecommerce custom TakeOffMilan.'
   const image = seo.og_image || fallback.image || ''
   const canonical =
     seo.canonical_url ||
@@ -1946,7 +2174,7 @@ function renderCart() {
         return `
           <article class="cart-item">
             <div>
-              <h3>${escapeCmsHtml(item.productSlug)}</h3>
+              <h3 data-cms-content>${escapeCmsHtml(item.productSlug)}</h3>
               <p>${escapeCmsHtml(sfT('cartProductDetailsLoading'))}</p>
             </div>
             <button type="button" class="cart-remove" data-cart-remove="${escapeCmsHtml(item.key)}">${escapeCmsHtml(sfT('cartRemove'))}</button>
@@ -1969,8 +2197,8 @@ function renderCart() {
           </div>
 
           <div>
-            <h3>${escapeCmsHtml(product.name)}</h3>
-            ${variant ? `<p>${escapeCmsHtml(variant.option_name)}: ${escapeCmsHtml(variant.option_value)}</p>` : ''}
+            <h3 data-cms-content>${escapeCmsHtml(product.name)}</h3>
+            ${variant ? `<p data-cms-content>${escapeCmsHtml(variant.option_name)}: ${escapeCmsHtml(variant.option_value)}</p>` : ''}
             <strong>${formatPriceCents(priceCents)}</strong>
           </div>
 
@@ -2504,7 +2732,7 @@ async function loadStoreCollections() {
     </div>
 
     <div id="storeCollections" class="store-grid">
-      Caricamento collezioni...
+      ${escapeCmsHtml(sfT('collectionLoading'))}
     </div>
   `
 
@@ -2517,7 +2745,7 @@ async function loadStoreCollections() {
     const data = await response.json()
 
     if (!data.success || data.collections.length === 0) {
-      container.textContent = 'Nessuna collezione disponibile.'
+      container.textContent = sfT('noCollections')
       return
     }
 
@@ -2533,18 +2761,18 @@ async function loadStoreCollections() {
               }
             </div>
 
-            <h3>${escapeCmsHtml(collection.name)}</h3>
-            <p>${escapeCmsHtml(collection.description || '')}</p>
+            <h3 data-cms-content>${escapeCmsHtml(collection.name)}</h3>
+            <p data-cms-content>${escapeCmsHtml(collection.description || '')}</p>
 
             <a class="btn primary" href="#shop" data-collection-link="${escapeCmsHtml(collection.slug)}">
-              Vedi prodotti
+              ${escapeCmsHtml(sfT('viewProducts'))}
             </a>
           </article>
         `,
       )
       .join('')
   } catch {
-    container.textContent = 'Errore nel caricamento collezioni.'
+    container.textContent = sfT('collectionsLoadError')
   }
 }
 
@@ -2562,7 +2790,7 @@ async function loadStoreProducts() {
       <h2>Prodotti dal database.</h2>
       <p>Questi prodotti arrivano da Cloudflare D1 e sono gestiti dalla dashboard custom.</p>
     </div>
-    <div id="storeProducts" class="store-grid">Caricamento prodotti...</div>
+    <div id="storeProducts" class="store-grid">${escapeCmsHtml(sfT('productLoading'))}</div>
   `
 
   main.appendChild(section)
@@ -2574,14 +2802,14 @@ async function loadStoreProducts() {
     const data = await response.json()
 
     if (!data.success || data.products.length === 0) {
-      container.textContent = 'Nessun prodotto disponibile.'
+      container.textContent = sfT('noProducts')
       return
     }
 
     cacheProducts(data.products)
     container.innerHTML = data.products.map(renderProductCard).join('')
   } catch {
-    container.textContent = 'Errore nel caricamento prodotti.'
+    container.textContent = sfT('productsLoadError')
   }
 }
 
@@ -3081,7 +3309,7 @@ function renderCmsSection(section) {
         </div>
 
         <div class="store-grid cms-collection-grid" data-collections-grid>
-          Caricamento collezioni...
+          ${escapeCmsHtml(sfT('collectionLoading'))}
         </div>
       </section>
     `
@@ -3102,7 +3330,7 @@ function renderCmsSection(section) {
           data-button-text="${escapeCmsHtml(data.button_text || 'Scopri il prodotto')}"
           data-button-url="${escapeCmsHtml(data.button_url || '#')}"
         >
-          Caricamento prodotto...
+          ${escapeCmsHtml(sfT('productLoading'))}
         </div>
       </section>
     `
@@ -3151,7 +3379,7 @@ function renderCmsSection(section) {
           data-products-carousel
           data-collection-slug="${escapeCmsHtml(data.collection_slug || '')}"
         >
-          Caricamento prodotti...
+          ${escapeCmsHtml(sfT('productLoading'))}
         </div>
       </section>
     `
@@ -3211,7 +3439,7 @@ function renderCmsSection(section) {
         </div>
 
         <div class="store-grid" data-products-grid data-products-mode="best_sellers">
-          Caricamento prodotti...
+          ${escapeCmsHtml(sfT('productLoading'))}
         </div>
       </section>
     `
@@ -3227,7 +3455,7 @@ function renderCmsSection(section) {
         </div>
 
         <div class="store-grid" data-products-grid data-products-mode="new_arrivals">
-          Caricamento prodotti...
+          ${escapeCmsHtml(sfT('productLoading'))}
         </div>
       </section>
     `
@@ -3533,7 +3761,7 @@ function renderCmsSection(section) {
         </div>
 
         <div class="store-grid cms-product-grid" data-products-grid>
-          Caricamento prodotti...
+          ${escapeCmsHtml(sfT('productLoading'))}
         </div>
       </section>
     `
@@ -3585,8 +3813,8 @@ function renderProductCard(product) {
         }
       </a>
 
-      <h3><a href="${productHref}">${escapeCmsHtml(product.name)}</a></h3>
-      <p>${escapeCmsHtml(product.description || '')}</p>
+      <h3 data-cms-content><a href="${productHref}">${escapeCmsHtml(product.name)}</a></h3>
+      <p data-cms-content>${escapeCmsHtml(product.description || '')}</p>
 
       <div class="store-meta">
         <strong>${formatPriceCents(priceCents)}</strong>
@@ -3684,8 +3912,8 @@ async function hydrateProductGrids() {
           </div>
 
           <div>
-            <h3>${escapeCmsHtml(product.name)}</h3>
-            <p>${escapeCmsHtml(product.description || '')}</p>
+            <h3 data-cms-content>${escapeCmsHtml(product.name)}</h3>
+            <p data-cms-content>${escapeCmsHtml(product.description || '')}</p>
 
             <div class="store-meta">
               <strong>${formatPriceCents(getEffectivePriceCents(product, getDefaultVariant(product)))}</strong>
@@ -3734,8 +3962,8 @@ async function hydrateCollectionGrids() {
               }
             </div>
 
-            <h3>${escapeCmsHtml(collection.name)}</h3>
-            <p>${escapeCmsHtml(collection.description || '')}</p>
+            <h3 data-cms-content>${escapeCmsHtml(collection.name)}</h3>
+            <p data-cms-content>${escapeCmsHtml(collection.description || '')}</p>
 
             <a class="btn primary" href="/collections/${escapeCmsHtml(collection.slug)}">
               ${escapeCmsHtml(sfT('viewCollection'))}
@@ -3867,7 +4095,7 @@ async function renderPublicCollectionPage() {
       applySeoMeta(
         {},
         {
-          title: `${sfT('collectionNotFound')} | Orbitra`,
+          title: `${sfT('collectionNotFound')} | TakeOffMilan`,
           description: sfT('collectionUnavailable'),
         },
       )
@@ -3875,11 +4103,13 @@ async function renderPublicCollectionPage() {
     }
 
     applySeoMeta(collection.seo || {}, {
-      title: `${collection.name} | Orbitra`,
-      description: collection.description || 'Collezione prodotti Orbitra.',
+      title: `${collection.name} | TakeOffMilan`,
+      description: collection.description || 'Collezione prodotti TakeOffMilan.',
       image: collection.image_url || '',
     })
 
+    title.setAttribute('data-cms-content', '')
+    intro.setAttribute('data-cms-content', '')
     title.textContent = collection.name
     intro.textContent =
       collection.description || sfT('collectionProductsDefault')
@@ -4230,7 +4460,7 @@ async function renderPublicProductPage() {
       applySeoMeta(
         {},
         {
-          title: `${sfT('productNotFound')} | Orbitra`,
+          title: `${sfT('productNotFound')} | TakeOffMilan`,
           description: sfT('cartProductUnavailable'),
         },
       )
@@ -4238,8 +4468,8 @@ async function renderPublicProductPage() {
     }
 
     applySeoMeta(product.seo || {}, {
-      title: `${product.name} | Orbitra`,
-      description: product.description || 'Scheda prodotto Orbitra.',
+      title: `${product.name} | TakeOffMilan`,
+      description: product.description || 'Scheda prodotto TakeOffMilan.',
       image: product.image_url || '',
     })
     trackAnalyticsEvent('product_view', {
@@ -4274,8 +4504,8 @@ async function renderPublicProductPage() {
 
         <div class="product-detail-info">
           <p class="eyebrow">${escapeCmsHtml(product.category || 'Prodotto')}</p>
-          <h1>${escapeCmsHtml(product.name)}</h1>
-          <p>${escapeCmsHtml(product.description || sfT('productNoDescription'))}</p>
+          <h1 data-cms-content>${escapeCmsHtml(product.name)}</h1>
+          <p data-cms-content>${escapeCmsHtml(product.description || sfT('productNoDescription'))}</p>
 
           <div class="product-detail-price" id="productPagePrice">
             ${formatPriceCents(priceCents)}
@@ -4354,7 +4584,7 @@ async function renderPublicProductPage() {
           <div class="product-accordion">
             <details open>
               <summary>${escapeCmsHtml(sfT('description'))}</summary>
-              <p>${escapeCmsHtml(product.description || sfT('productNoDescription'))}</p>
+              <p data-cms-content>${escapeCmsHtml(product.description || sfT('productNoDescription'))}</p>
             </details>
             <details>
               <summary>${escapeCmsHtml(sfT('shippingReturns'))}</summary>
@@ -4919,7 +5149,7 @@ async function renderPublicCheckoutPage() {
                   (item) => `
                     <article>
                       <div>
-                        <strong>${escapeCmsHtml(item.product.name)}</strong>
+                        <strong data-cms-content>${escapeCmsHtml(item.product.name)}</strong>
                         ${item.variant ? `<span>${escapeCmsHtml(item.variant.option_name)}: ${escapeCmsHtml(item.variant.option_value)}</span>` : ''}
                         <small>${escapeCmsHtml(sfT('quantity'))}: ${item.quantity}</small>
                       </div>
@@ -5050,7 +5280,7 @@ async function renderPublicBlogPage() {
           </section>
         `
         applySeoMeta({}, {
-          title: 'Articolo non trovato | Orbitra',
+          title: `${sfT('blogPostNotFound')} | TakeOffMilan`,
           description: 'Articolo blog non disponibile.',
         })
         return
@@ -5064,8 +5294,8 @@ async function renderPublicBlogPage() {
           og_image: post.og_image || post.image_url,
         },
         {
-          title: `${post.title} | Orbitra Blog`,
-          description: post.excerpt || 'Articolo blog Orbitra.',
+          title: `${post.title} | TakeOffMilan Blog`,
+          description: post.excerpt || 'Articolo blog TakeOffMilan.',
           image: post.image_url || '',
         },
       )
@@ -5096,8 +5326,8 @@ async function renderPublicBlogPage() {
 
     const posts = (data.posts || []).map(translateBlogPost)
     applySeoMeta({}, {
-      title: 'Blog | Orbitra',
-      description: 'Articoli e aggiornamenti dal CMS Orbitra.',
+      title: 'Blog | TakeOffMilan',
+      description: 'Articoli e aggiornamenti dal CMS TakeOffMilan.',
     })
 
     main.innerHTML = `
@@ -5179,7 +5409,7 @@ async function renderPublicPolicyPage() {
         </section>
       `
       applySeoMeta({}, {
-        title: 'Policy non trovata | Orbitra',
+        title: `${sfT('policyNotFound')} | TakeOffMilan`,
         description: 'Policy non disponibile.',
       })
       return
@@ -5187,7 +5417,7 @@ async function renderPublicPolicyPage() {
 
     const policy = translatePolicy(data.policy)
     applySeoMeta({}, {
-      title: `${policy.title} | Orbitra`,
+      title: `${policy.title} | TakeOffMilan`,
       description: `${policy.title} aggiornata dal CMS.`,
     })
 
@@ -5262,8 +5492,8 @@ async function renderPublicCmsPage() {
     title.textContent = page.title
     intro.textContent = sfT('pageLoadedText')
     applySeoMeta(page.seo || {}, {
-      title: `${page.title} | Orbitra`,
-      description: 'Pagina CMS Orbitra.',
+      title: `${page.title} | TakeOffMilan`,
+      description: 'Pagina CMS TakeOffMilan.',
     })
 
     await loadCmsSectionsFromD1(page.slug)
@@ -5281,15 +5511,15 @@ async function applyHomeSeoMeta() {
     const homePage = pages.find((page) => page.slug === 'home')
 
     applySeoMeta(homePage?.seo || {}, {
-      title: `${homePage?.title || 'Orbitra'} | Luxury Space Travel`,
-      description: 'Store e CMS custom Orbitra.',
+      title: `${homePage?.title || 'TakeOffMilan'} | Luxury Space Travel`,
+      description: 'Store e CMS custom TakeOffMilan.',
     })
   } catch {
     applySeoMeta(
       {},
       {
-        title: 'Orbitra | Luxury Space Travel',
-        description: 'Store e CMS custom Orbitra.',
+        title: 'TakeOffMilan | Luxury Space Travel',
+        description: 'Store e CMS custom TakeOffMilan.',
       },
     )
   }

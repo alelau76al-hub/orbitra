@@ -55,6 +55,7 @@ const ADMIN_TRANSLATIONS = {
   it: {
     documentTitle: 'TakeOffMilan CMS',
     languageLabel: 'Lingua',
+    languageAriaLabel: 'Lingua admin',
     auditBadge: 'AUDIT MODE - READ ONLY',
     auditMessage: 'Audit mode: modifiche disabilitate.',
     authEyebrow: 'TakeOffMilan CMS',
@@ -169,6 +170,7 @@ const ADMIN_TRANSLATIONS = {
   en: {
     documentTitle: 'TakeOffMilan CMS',
     languageLabel: 'Language',
+    languageAriaLabel: 'Admin language',
     auditBadge: 'AUDIT MODE - READ ONLY',
     auditMessage: 'Audit mode: changes are disabled.',
     authEyebrow: 'TakeOffMilan CMS',
@@ -276,11 +278,759 @@ const ADMIN_TRANSLATIONS = {
     refreshHistory: 'Refresh history',
     statusOperational: 'Operational',
     statusArea: 'Area',
-    statusBaseConfig: 'Base configuration',
+    statusBaseConfig: 'Basic configuration',
     statusDevelopment: 'Advanced tools in progress',
     logout: 'Logout',
   },
 }
+
+Object.assign(ADMIN_TRANSLATIONS.it, {
+  'dashboard.title': 'Benvenuto nel CMS',
+  'dashboard.claim': 'Crea, gestisci e fai crescere siti custom da un unico sistema operativo.',
+  'dashboard.quickAction': 'Azione rapida',
+  'dashboard.editSite.title': 'Modifica il sito',
+  'dashboard.editSite.description': 'Apri editor visuale, sezioni e tema.',
+  'dashboard.manageProducts.title': 'Gestisci prodotti',
+  'dashboard.manageProducts.description': 'Catalogo, varianti, immagini e stock.',
+  'dashboard.uploadMedia.title': 'Carica media',
+  'dashboard.uploadMedia.description': 'Libreria visuale, upload e URL.',
+  'dashboard.configureMarkets.title': 'Configura markets',
+  'dashboard.configureMarkets.description': 'Lingue, valute e prezzi localizzati.',
+  'dashboard.summary.products': 'Prodotti',
+  'dashboard.summary.productsDescription': 'Catalogo attivo e varianti.',
+  'dashboard.summary.collections': 'Collezioni',
+  'dashboard.summary.collectionsDescription': 'Struttura catalogo.',
+  'dashboard.summary.orders': 'Ordini',
+  'dashboard.summary.ordersDescription': 'Stato operativo commerce.',
+  'dashboard.summary.media': 'Media',
+  'dashboard.summary.mediaDescription': 'Asset disponibili nel CMS.',
+  'editor.mainFeature': 'Funzione principale',
+  'editor.visualEditor': 'Visual Editor',
+  'editor.description': 'Il cuore del CMS: costruisci, controlla e verifica il sito in tempo reale su desktop, tablet e mobile.',
+  'editor.previewFormat': 'Formato preview',
+  'editor.pageToEdit': 'Pagina da modificare',
+  'editor.sectionLibrary': 'Libreria sezioni CMS',
+  'editor.sectionLibraryDescription': 'Scegli una sezione gia pronta e personalizzala nella pagina selezionata.',
+  'editor.sectionLibraryLabel': 'Libreria sezioni',
+  'editor.themeSettings': 'Impostazioni tema',
+  'editor.themeSettingsDescription': 'Logo, colori, tipografie, header e footer.',
+  'editor.closeThemeSettings': 'Chiudi impostazioni tema',
+  'editor.loadingThemeSettings': 'Caricamento impostazioni tema...',
+  'editor.saveSettings': 'Salva impostazioni',
+  'editor.saveSection': 'Salva sezione',
+  'editor.addSection': 'Aggiungi',
+  'editor.pageSections': 'Sezioni pagina',
+  'editor.selectSection': 'Seleziona una sezione',
+  'editor.selectSectionHelp': 'Seleziona una sezione dalla lista.',
+  'editor.pagesLoadError': 'Errore caricamento pagine editor.',
+  'editor.sectionsLoadError': 'Errore caricamento sezioni.',
+  'editor.sectionDeleteConfirm': 'Vuoi eliminare questa sezione?',
+  'editor.sectionDeleteError': 'Errore eliminazione sezione.',
+  'editor.sectionDeleted': 'Sezione eliminata.',
+  'editor.sectionSaving': 'Salvataggio...',
+  'editor.sectionSaved': 'Sezione salvata.',
+  'editor.sectionSaveError': 'Errore salvataggio.',
+  'editor.sectionAdding': 'Aggiunta sezione...',
+  'editor.sectionAddError': 'Errore aggiunta sezione.',
+  'editor.sectionAdded': 'Sezione aggiunta.',
+  'editor.up': 'Su',
+  'editor.down': 'Giu',
+  'editor.desktop': 'Desktop',
+  'editor.tablet': 'Tablet',
+  'editor.mobile': 'Mobile',
+  'editor.liveCanvas': 'Live canvas',
+  'editor.sitePreviewTitle': 'Anteprima sito',
+  'content.title': 'Contenuto',
+  'content.pages.title': 'Pagine',
+  'content.pages.description': 'Crea e modifica pagine istituzionali, landing e contenuti custom.',
+  'content.menu.title': 'Menu',
+  'content.menu.description': 'Crea menu collegati a pagine, collezioni, prodotti o URL esterni.',
+  'content.media.description': 'Gestisci upload predisposto, URL media, anteprime, alt text e asset riutilizzabili.',
+  'content.blog.description': 'Articoli pubblici, bozze, contenuti e SEO base.',
+  'content.metaobjects.description': 'Oggetti contenuto riutilizzabili e API pubblica read-only.',
+  'content.policy.description': 'Privacy, termini, resi, spedizioni e cookie policy pubblicabili.',
+  'content.translations.description': 'Adatta prodotti, pagine, sezioni, blog e policy per mercati internazionali.',
+  'content.seo.description': 'Dashboard SEO centrale per metadati, snippet, canonical e priorita di intervento.',
+  'catalog.products.description': 'Gestisci schede prodotto, immagini, prezzi e disponibilita.',
+  'catalog.collections.description': 'Raggruppa prodotti in collezioni cliccabili e pagine dedicate.',
+  'catalog.variants.location': 'Nel prodotto',
+  'catalog.variants.title': 'Varianti',
+  'catalog.variants.description': 'Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.',
+  'catalog.inventory.active': 'Funzione attiva',
+  'catalog.inventory.title': 'Inventario',
+  'catalog.inventory.description': 'Scorte prodotto e variante, filtri, soglie low stock e aggiornamento rapido.',
+  'pages.title': 'Pagine',
+  'pages.description': 'Crea, modifica e organizza le pagine del sito.',
+  'pages.addTitle': 'Aggiungi pagina',
+  'pages.editTitle': 'Modifica pagina',
+  'pages.updateTitle': 'Aggiorna pagina',
+  'pages.titleLabel': 'Titolo pagina',
+  'pages.save': 'Salva pagina',
+  'pages.update': 'Aggiorna pagina',
+  'pages.archive': 'Pagine nel CMS',
+  'pages.loading': 'Caricamento pagine...',
+  'pages.loadError': 'Errore nel caricamento pagine.',
+  'pages.empty': 'Nessuna pagina trovata.',
+  'pages.editSections': 'Modifica sezioni',
+  'pages.protectedHomepage': 'Homepage protetta',
+  'pages.deleteConfirm': 'Vuoi eliminare questa pagina?',
+  'pages.deleteError': 'Errore durante eliminazione pagina.',
+  'pages.connectionError': 'Errore di connessione alla API pagine.',
+  'pages.saveProgress': 'Salvataggio in corso...',
+  'pages.saveError': 'Errore nel salvataggio.',
+  'pages.saved': 'Pagina salvata correttamente.',
+  'pages.updated': 'Pagina aggiornata correttamente.',
+  'catalog.products.manage': 'Gestisci prodotti',
+  'products.add': 'Aggiungi prodotto',
+  'products.description': 'Gestisci prodotti, varianti, prezzo, stock e dati SEO del catalogo cliente.',
+  'products.save': 'Salva prodotto',
+  'products.edit': 'Modifica prodotto',
+  'products.update': 'Aggiorna prodotto',
+  'products.archive': 'Archivio prodotti',
+  'products.searchPlaceholder': 'Cerca prodotti...',
+  'products.loading': 'Caricamento prodotti...',
+  'products.loadError': 'Errore nel caricamento prodotti.',
+  'products.empty': 'Nessun prodotto trovato.',
+  'products.noSearchResults': 'Nessun prodotto corrisponde alla ricerca.',
+  'products.noDescription': 'Nessuna descrizione',
+  'products.noCategory': 'Senza categoria',
+  'products.noCollection': 'Senza collezione',
+  'products.disableConfirm': 'Vuoi disattivare questo prodotto?',
+  'products.disableError': 'Errore durante la disattivazione.',
+  'products.connectionError': 'Errore di connessione alla API.',
+  'products.stock': 'Stock',
+  'products.variants': 'varianti',
+  'products.outOfStock': 'Esaurito',
+  'products.lowStock': 'Stock basso',
+  'products.variant.empty': 'Nessuna variante configurata.',
+  'products.variant.optionName': 'Nome opzione',
+  'products.variant.optionValue': 'Valore',
+  'products.variant.optionNamePlaceholder': 'Colore',
+  'products.variant.optionValuePlaceholder': 'Rosso',
+  'products.variant.price': 'Prezzo variante',
+  'products.variant.stock': 'Stock variante',
+  'products.variant.optionalSku': 'SKU opzionale',
+  'products.variant.emptyValue': 'Lascia vuoto',
+  'collections.title': 'Collezioni',
+  'collections.description': 'Crea e modifica le collezioni del catalogo.',
+  'collections.backToCatalog': 'Torna a Catalogo',
+  'collections.add': 'Aggiungi collezione',
+  'collections.save': 'Salva collezione',
+  'collections.edit': 'Modifica collezione',
+  'collections.update': 'Aggiorna collezione',
+  'collections.name': 'Nome collezione',
+  'collections.namePlaceholder': 'Collezione premium',
+  'collections.archive': 'Archivio collezioni',
+  'collections.searchPlaceholder': 'Cerca collezioni...',
+  'collections.noCollection': 'Senza collezione',
+  'collections.loadError': 'Errore nel caricamento collezioni.',
+  'collections.empty': 'Nessuna collezione trovata.',
+  'collections.noSearchResults': 'Nessuna collezione corrisponde alla ricerca.',
+  'collections.noDescription': 'Nessuna descrizione',
+  'collections.deleteConfirm': 'Vuoi eliminare questa collezione?',
+  'collections.deleteError': 'Errore durante eliminazione collezione.',
+  'collections.saved': 'Collezione salvata correttamente.',
+  'collections.updated': 'Collezione aggiornata correttamente.',
+  'collections.loading': 'Caricamento collezioni...',
+  'collections.saving': 'Salvataggio in corso...',
+  'collections.connectionError': 'Errore di connessione collezioni.',
+  'common.wait': 'Attendi qualche secondo.',
+  'common.updateOrSearch': 'Puoi aggiornare o modificare la ricerca.',
+  'common.edit': 'Modifica',
+  'common.disable': 'Disattiva',
+  'common.delete': 'Elimina',
+  'common.remove': 'Rimuovi',
+  'common.refresh': 'Aggiorna',
+  'common.loading': 'Caricamento',
+  'common.error': 'Errore',
+  'common.connectionError': 'Errore di connessione.',
+  'common.noResults': 'Nessun risultato',
+  'common.operationCompleted': 'Operazione completata',
+  'common.cancelEdit': 'Annulla modifica',
+  'status.active': 'Attiva',
+  'status.configurable': 'Configurabile',
+  'status.basicConfiguration': 'Configurazione base',
+  'status.requiresExternalConfiguration': 'Richiede configurazione esterna',
+  'status.advancedToolsInProgress': 'Strumenti avanzati in corso',
+  statusNativeApp: 'App nativa',
+  'apps.open': 'Apri',
+  'dataflow.import': 'Importa',
+  'dataflow.export': 'Esporta',
+  'dataflow.templates': 'Templates',
+  'dataflow.translationPackage': 'Translation package',
+  'dataflow.sitePackage': 'Site package',
+  'dataflow.history': 'History',
+  'dataflow.stockUpdate': 'Stock update',
+  'dataflow.dryRun': 'Dry run',
+  'dataflow.preview': 'Preview',
+  'dataflow.created': 'Creati',
+  'dataflow.updated': 'Aggiornati',
+  'dataflow.skipped': 'Saltati',
+  'dataflow.errors': 'Errori',
+  'dataflow.backToAppHub': 'Torna ad App Hub',
+  'dataflow.heroTitle': 'Operativita centralizzata per dati, contenuti e traduzioni.',
+  'dataflow.heroDescription': 'Gestisci prodotti, collezioni, contenuti, menu e traduzioni in modo centralizzato. Nessun abbonamento mensile ad app esterne.',
+  'seo.dashboardNote': 'Sitemap, robots, canonical e hreflang sono predisposti a livello contenuto/setting. Search Console API e audit AI restano advanced tools in progress.',
+  'translations.noItems': 'Nessun elemento disponibile',
+  'translations.selectItem': 'Seleziona un elemento da tradurre.',
+  'translations.present': 'Traduzione presente',
+  'translations.missing': 'Mancante',
+})
+
+Object.assign(ADMIN_TRANSLATIONS.en, {
+  'dashboard.title': 'Welcome to the CMS',
+  'dashboard.claim': 'Build, manage and scale custom websites from one operating system.',
+  'dashboard.quickAction': 'Quick action',
+  'dashboard.editSite.title': 'Edit site',
+  'dashboard.editSite.description': 'Open the visual editor, sections and theme.',
+  'dashboard.manageProducts.title': 'Manage products',
+  'dashboard.manageProducts.description': 'Catalog, variants, images and stock.',
+  'dashboard.uploadMedia.title': 'Upload media',
+  'dashboard.uploadMedia.description': 'Visual library, uploads and URLs.',
+  'dashboard.configureMarkets.title': 'Configure markets',
+  'dashboard.configureMarkets.description': 'Languages, currencies and localized prices.',
+  'dashboard.summary.products': 'Products',
+  'dashboard.summary.productsDescription': 'Active catalog and variants.',
+  'dashboard.summary.collections': 'Collections',
+  'dashboard.summary.collectionsDescription': 'Catalog structure.',
+  'dashboard.summary.orders': 'Orders',
+  'dashboard.summary.ordersDescription': 'Commerce operational status.',
+  'dashboard.summary.media': 'Media',
+  'dashboard.summary.mediaDescription': 'Assets available in the CMS.',
+  'editor.mainFeature': 'Main feature',
+  'editor.visualEditor': 'Visual Editor',
+  'editor.description': 'The CMS core: build, control and verify the site in real time across desktop, tablet and mobile.',
+  'editor.previewFormat': 'Preview format',
+  'editor.pageToEdit': 'Page to edit',
+  'editor.sectionLibrary': 'CMS section library',
+  'editor.sectionLibraryDescription': 'Choose a ready-made section and customize it on the selected page.',
+  'editor.sectionLibraryLabel': 'Section library',
+  'editor.themeSettings': 'Theme settings',
+  'editor.themeSettingsDescription': 'Logo, colors, typography, header and footer.',
+  'editor.closeThemeSettings': 'Close theme settings',
+  'editor.loadingThemeSettings': 'Loading theme settings...',
+  'editor.saveSettings': 'Save settings',
+  'editor.saveSection': 'Save section',
+  'editor.addSection': 'Add',
+  'editor.pageSections': 'Page sections',
+  'editor.selectSection': 'Select a section',
+  'editor.selectSectionHelp': 'Select a section from the list.',
+  'editor.pagesLoadError': 'Editor pages loading error.',
+  'editor.sectionsLoadError': 'Section loading error.',
+  'editor.sectionDeleteConfirm': 'Do you want to delete this section?',
+  'editor.sectionDeleteError': 'Section delete failed.',
+  'editor.sectionDeleted': 'Section deleted.',
+  'editor.sectionSaving': 'Saving...',
+  'editor.sectionSaved': 'Section saved.',
+  'editor.sectionSaveError': 'Save failed.',
+  'editor.sectionAdding': 'Adding section...',
+  'editor.sectionAddError': 'Section add failed.',
+  'editor.sectionAdded': 'Section added.',
+  'editor.up': 'Up',
+  'editor.down': 'Down',
+  'editor.desktop': 'Desktop',
+  'editor.tablet': 'Tablet',
+  'editor.mobile': 'Mobile',
+  'editor.liveCanvas': 'Live canvas',
+  'editor.sitePreviewTitle': 'Site preview',
+  'content.title': 'Content',
+  'content.pages.title': 'Pages',
+  'content.pages.description': 'Create and edit institutional pages, landing pages and custom content.',
+  'content.menu.title': 'Menu',
+  'content.menu.description': 'Create menus linked to pages, collections, products or external URLs.',
+  'content.media.description': 'Manage prepared uploads, media URLs, previews, alt text and reusable assets.',
+  'content.blog.description': 'Public articles, drafts, content and base SEO.',
+  'content.metaobjects.description': 'Reusable content objects and read-only public API.',
+  'content.policy.description': 'Privacy, terms, returns, shipping and cookie policies ready to publish.',
+  'content.translations.description': 'Adapt products, pages, sections, blog and policies for international markets.',
+  'content.seo.description': 'Central SEO dashboard for metadata, snippets, canonical URLs and intervention priorities.',
+  'catalog.products.description': 'Manage product cards, images, prices and availability.',
+  'catalog.collections.description': 'Group products into clickable collections and dedicated pages.',
+  'catalog.variants.location': 'In product',
+  'catalog.variants.title': 'Variants',
+  'catalog.variants.description': 'Manage options, SKU, price and variant stock in the product form.',
+  'catalog.inventory.active': 'Active feature',
+  'catalog.inventory.title': 'Inventory',
+  'catalog.inventory.description': 'Product and variant stock, filters, low-stock thresholds and quick updates.',
+  'pages.title': 'Pages',
+  'pages.description': 'Create, edit and organize site pages.',
+  'pages.addTitle': 'Add page',
+  'pages.editTitle': 'Edit page',
+  'pages.updateTitle': 'Update page',
+  'pages.titleLabel': 'Page title',
+  'pages.save': 'Save page',
+  'pages.update': 'Update page',
+  'pages.archive': 'CMS pages',
+  'pages.loading': 'Loading pages...',
+  'pages.loadError': 'Page loading error.',
+  'pages.empty': 'No pages found.',
+  'pages.editSections': 'Edit sections',
+  'pages.protectedHomepage': 'Protected homepage',
+  'pages.deleteConfirm': 'Do you want to delete this page?',
+  'pages.deleteError': 'Page delete failed.',
+  'pages.connectionError': 'Page API connection error.',
+  'pages.saveProgress': 'Saving...',
+  'pages.saveError': 'Save failed.',
+  'pages.saved': 'Page saved successfully.',
+  'pages.updated': 'Page updated successfully.',
+  'catalog.products.manage': 'Manage products',
+  'products.add': 'Add product',
+  'products.description': 'Manage products, variants, price, stock and SEO data for the client catalog.',
+  'products.save': 'Save product',
+  'products.edit': 'Edit product',
+  'products.update': 'Update product',
+  'products.archive': 'Product archive',
+  'products.searchPlaceholder': 'Search products...',
+  'products.loading': 'Loading products...',
+  'products.loadError': 'Product loading error.',
+  'products.empty': 'No products found.',
+  'products.noSearchResults': 'No product matches the search.',
+  'products.noDescription': 'No description',
+  'products.noCategory': 'No category',
+  'products.noCollection': 'No collection',
+  'products.disableConfirm': 'Do you want to disable this product?',
+  'products.disableError': 'Disable failed.',
+  'products.connectionError': 'API connection error.',
+  'products.stock': 'Stock',
+  'products.variants': 'variants',
+  'products.outOfStock': 'Out of stock',
+  'products.lowStock': 'Low stock',
+  'products.variant.empty': 'No variants configured.',
+  'products.variant.optionName': 'Option name',
+  'products.variant.optionValue': 'Value',
+  'products.variant.optionNamePlaceholder': 'Color',
+  'products.variant.optionValuePlaceholder': 'Red',
+  'products.variant.price': 'Variant price',
+  'products.variant.stock': 'Variant stock',
+  'products.variant.optionalSku': 'Optional SKU',
+  'products.variant.emptyValue': 'Leave empty',
+  'collections.title': 'Collections',
+  'collections.description': 'Create and edit catalog collections.',
+  'collections.backToCatalog': 'Back to Catalog',
+  'collections.add': 'Add collection',
+  'collections.save': 'Save collection',
+  'collections.edit': 'Edit collection',
+  'collections.update': 'Update collection',
+  'collections.name': 'Collection name',
+  'collections.namePlaceholder': 'Premium collection',
+  'collections.archive': 'Collection archive',
+  'collections.searchPlaceholder': 'Search collections...',
+  'collections.noCollection': 'No collection',
+  'collections.loadError': 'Collection loading error.',
+  'collections.empty': 'No collections found.',
+  'collections.noSearchResults': 'No collection matches the search.',
+  'collections.noDescription': 'No description',
+  'collections.deleteConfirm': 'Do you want to delete this collection?',
+  'collections.deleteError': 'Collection delete failed.',
+  'collections.saved': 'Collection saved successfully.',
+  'collections.updated': 'Collection updated successfully.',
+  'collections.loading': 'Loading collections...',
+  'collections.saving': 'Saving...',
+  'collections.connectionError': 'Collections connection error.',
+  'common.wait': 'Wait a few seconds.',
+  'common.updateOrSearch': 'You can refresh or adjust the search.',
+  'common.edit': 'Edit',
+  'common.disable': 'Disable',
+  'common.delete': 'Delete',
+  'common.remove': 'Remove',
+  'common.refresh': 'Refresh',
+  'common.loading': 'Loading',
+  'common.error': 'Error',
+  'common.connectionError': 'Connection error.',
+  'common.noResults': 'No results',
+  'common.operationCompleted': 'Operation completed',
+  'common.cancelEdit': 'Cancel edit',
+  'status.active': 'Active',
+  'status.configurable': 'Configurable',
+  'status.basicConfiguration': 'Basic configuration',
+  'status.requiresExternalConfiguration': 'Requires external configuration',
+  'status.advancedToolsInProgress': 'Advanced tools in progress',
+  statusNativeApp: 'Native app',
+  'apps.open': 'Open',
+  'dataflow.import': 'Import',
+  'dataflow.export': 'Export',
+  'dataflow.templates': 'Templates',
+  'dataflow.translationPackage': 'Translation package',
+  'dataflow.sitePackage': 'Site package',
+  'dataflow.history': 'History',
+  'dataflow.stockUpdate': 'Stock update',
+  'dataflow.dryRun': 'Dry run',
+  'dataflow.preview': 'Preview',
+  'dataflow.created': 'Created',
+  'dataflow.updated': 'Updated',
+  'dataflow.skipped': 'Skipped',
+  'dataflow.errors': 'Errors',
+  'dataflow.backToAppHub': 'Back to App Hub',
+  'dataflow.heroTitle': 'Centralized operations for data, content and translations.',
+  'dataflow.heroDescription': 'Manage products, collections, content, menus and translations in one place. No monthly subscriptions to external apps.',
+  'seo.dashboardNote': 'Sitemap, robots, canonical URLs and hreflang are prepared at content/settings level. Search Console API and AI audit remain advanced tools in progress.',
+  'translations.noItems': 'No items available',
+  'translations.selectItem': 'Select an item to translate.',
+  'translations.present': 'Translation available',
+  'translations.missing': 'Missing',
+})
+
+Object.assign(ADMIN_TRANSLATIONS.it, {
+  'dashboard.welcome': 'Benvenuto nel CMS',
+  'dashboard.editSite': 'Modifica il sito',
+  'dashboard.editSiteDesc': 'Apri editor visuale, sezioni e tema.',
+  'dashboard.manageProducts': 'Gestisci prodotti',
+  'dashboard.manageProductsDesc': 'Catalogo, varianti, immagini e stock.',
+  'dashboard.uploadMedia': 'Carica media',
+  'dashboard.uploadMediaDesc': 'Libreria visuale, upload e URL.',
+  'dashboard.configureMarkets': 'Configura markets',
+  'dashboard.configureMarketsDesc': 'Lingue, valute e prezzi localizzati.',
+  'dashboard.products': 'Prodotti',
+  'dashboard.collections': 'Collezioni',
+  'dashboard.orders': 'Ordini',
+  'dashboard.media': 'Media',
+  'catalog.title': 'Catalogo',
+  'catalog.description': 'Gestisci prodotti, collezioni, stock, immagini e struttura commerciale.',
+  'catalog.products': 'Prodotti',
+  'catalog.productsDesc': 'Gestisci schede prodotto, immagini, prezzi e disponibilita.',
+  'catalog.collections': 'Collezioni',
+  'catalog.collectionsDesc': 'Raggruppa prodotti in collezioni cliccabili e pagine dedicate.',
+  'catalog.variants': 'Varianti',
+  'catalog.variantsDesc': 'Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.',
+  'catalog.inventory': 'Inventario',
+  'catalog.inventoryDesc': 'Scorte prodotto e variante, filtri, soglie low stock e aggiornamento rapido.',
+  'content.pages': 'Pagine',
+  'content.pagesDesc': 'Crea e modifica pagine istituzionali, landing e contenuti custom.',
+  'content.menu': 'Menu',
+  'content.menuDesc': 'Crea menu collegati a pagine, collezioni, prodotti o URL esterni.',
+  'content.media': 'Media',
+  'content.mediaDesc': 'Gestisci upload predisposto, URL media, anteprime, alt text e asset riutilizzabili.',
+  'content.blog': 'Blog',
+  'content.blogDesc': 'Articoli pubblici, bozze, contenuti e SEO base.',
+  'content.metaobjects': 'Metaobjects',
+  'content.metaobjectsDesc': 'Oggetti contenuto riutilizzabili e API pubblica read-only.',
+  'content.policy': 'Policy',
+  'content.policyDesc': 'Privacy, termini, resi, spedizioni e cookie policy pubblicabili.',
+  'content.translations': 'Traduzioni',
+  'content.translationsDesc': 'Adatta prodotti, pagine, sezioni, blog e policy per mercati internazionali.',
+  'editor.title': 'Editor visuale sito',
+  'editor.sectionLibraryDesc': 'Scegli una sezione gia pronta e personalizzala nella pagina selezionata.',
+  'editor.desktopPreview': 'Anteprima desktop',
+  'editor.add': 'Aggiungi',
+  'editor.remove': 'Rimuovi',
+  'orders.title': 'Ordini',
+  'orders.description': 'Monitora ordini, stato pagamento, spedizione e avanzamento operativo.',
+  'orders.order': 'Ordine',
+  'orders.orderLines': 'Righe ordine',
+  'orders.payment': 'Pagamento',
+  'orders.method': 'Metodo',
+  'orders.provider': 'Provider',
+  'orders.currency': 'Valuta',
+  'orders.shipping': 'Spedizione',
+  'orders.fulfillment': 'Fulfillment',
+  'orders.refund': 'Rimborso',
+  'orders.discount': 'Sconto',
+  'orders.taxes': 'Tasse',
+  'orders.orderStatus': 'Stato ordine',
+  'orders.paymentStatus': 'Stato pagamento',
+  'orders.pendingOrders': 'Ordini in attesa',
+  'orders.unfulfilled': 'Da spedire',
+  'orders.refundQueue': 'Coda rimborsi',
+  'orders.returnQueue': 'Coda resi',
+  'orders.confirm': 'Conferma ordine',
+  'orders.markPaid': 'Marca pagato',
+  'orders.addTracking': 'Aggiungi tracking',
+  'orders.markFulfilled': 'Marca come spedito',
+  'orders.saveNote': 'Salva nota',
+  'orders.cancel': 'Cancella ordine',
+  'orders.cancelConfirm': 'Confermi cancellazione ordine?',
+  'orders.loading': 'Caricamento ordini...',
+  'orders.loadError': 'Errore caricamento ordini.',
+  'orders.empty': 'Nessun ordine trovato.',
+  'orders.noSearchResults': 'Nessun ordine corrisponde alla ricerca.',
+  'orders.updateError': 'Errore aggiornamento ordine.',
+  'orders.operationError': 'Operazione ordine non riuscita.',
+  'customers.customer': 'Cliente',
+  'common.open': 'Apri',
+  'common.close': 'Chiudi',
+  'common.save': 'Salva',
+  'common.create': 'Crea',
+  'common.search': 'Cerca',
+  'common.filter': 'Filtra',
+  'common.success': 'Operazione completata',
+  'common.status': 'Stato',
+  'common.price': 'Prezzo',
+  'common.stock': 'Stock',
+  'common.active': 'Attivo',
+  'common.inactive': 'Inattivo',
+  'common.draft': 'Bozza',
+  'common.available': 'Disponibile',
+  'common.unavailable': 'Non disponibile',
+  'common.basicConfiguration': 'Configurazione base',
+  'common.requiresExternalConfiguration': 'Richiede configurazione esterna',
+  'common.advancedToolsInProgress': 'Strumenti avanzati in corso',
+  'common.availableInThisRelease': 'Disponibile in questa release',
+  'common.nativeApp': 'App nativa',
+  'common.readOnly': 'Sola lettura',
+  'common.auditDisabled': 'Audit mode: modifiche disabilitate.',
+  'analytics.loading': 'Caricamento analytics...',
+  'analytics.empty': 'Nessun dato analytics ancora disponibile.',
+  'analytics.overview': 'Overview eventi',
+  'analytics.overviewDesc': 'Eventi raccolti senza dati personali sensibili.',
+  'analytics.noEvents': 'Nessun evento',
+  'analytics.ordersCreated': 'Ordini creati',
+  'analytics.averageOrder': 'Valore medio',
+  'analytics.noPageViews': 'Nessuna page view ancora registrata.',
+  'analytics.noProductEvents': 'Nessun evento prodotto ancora registrato.',
+  'analytics.noRecentEvents': 'Nessun evento recente.',
+  'apps.openCta': 'Apri',
+  'apps.module': 'Modulo',
+  'apps.ready': 'Pronto',
+  'apps.notConfigured': 'Non configurato',
+  'apps.providerRequired': 'Provider richiesto per invio reale',
+  'settings.permissionDenied': 'Permessi insufficienti.',
+  'settings.permissionReadDenied': 'Permessi insufficienti per leggere impostazioni sensibili.',
+  'marketing.campaigns': 'Campagne',
+  'marketing.campaignsDesc': 'Crea e modifica campagne con date, stato e coupon opzionale.',
+  'marketing.discounts': 'Sconti',
+  'marketing.discountsDesc': 'Gestisci codici sconto percentuali o a importo fisso.',
+  'dataflow.prices': 'Prezzi',
+})
+
+Object.assign(ADMIN_TRANSLATIONS.en, {
+  'dashboard.welcome': 'Welcome to the CMS',
+  'dashboard.editSite': 'Edit site',
+  'dashboard.editSiteDesc': 'Open the visual editor, sections and theme.',
+  'dashboard.manageProducts': 'Manage products',
+  'dashboard.manageProductsDesc': 'Catalog, variants, images and stock.',
+  'dashboard.uploadMedia': 'Upload media',
+  'dashboard.uploadMediaDesc': 'Visual library, uploads and URLs.',
+  'dashboard.configureMarkets': 'Configure markets',
+  'dashboard.configureMarketsDesc': 'Languages, currencies and localized prices.',
+  'dashboard.products': 'Products',
+  'dashboard.collections': 'Collections',
+  'dashboard.orders': 'Orders',
+  'dashboard.media': 'Media',
+  'catalog.title': 'Catalog',
+  'catalog.description': 'Manage products, collections, stock, images and commercial structure.',
+  'catalog.products': 'Products',
+  'catalog.productsDesc': 'Manage product records, images, prices and availability.',
+  'catalog.collections': 'Collections',
+  'catalog.collectionsDesc': 'Group products into clickable collections and dedicated pages.',
+  'catalog.variants': 'Variants',
+  'catalog.variantsDesc': 'Manage options, SKUs, price and variant stock in the product form.',
+  'catalog.inventory': 'Inventory',
+  'catalog.inventoryDesc': 'Product and variant stock, filters, low-stock thresholds and quick updates.',
+  'content.pages': 'Pages',
+  'content.pagesDesc': 'Create and edit institutional pages, landing pages and custom content.',
+  'content.menu': 'Menus',
+  'content.menuDesc': 'Create menus linked to pages, collections, products or external URLs.',
+  'content.media': 'Media',
+  'content.mediaDesc': 'Manage uploads, media URLs, previews, alt text and reusable assets.',
+  'content.blog': 'Blog',
+  'content.blogDesc': 'Public articles, drafts, content and basic SEO.',
+  'content.metaobjects': 'Metaobjects',
+  'content.metaobjectsDesc': 'Reusable content objects and read-only public API.',
+  'content.policy': 'Policies',
+  'content.policyDesc': 'Privacy, terms, returns, shipping and cookie policies ready to publish.',
+  'content.translations': 'Translations',
+  'content.translationsDesc': 'Adapt products, pages, sections, blog and policies for international markets.',
+  'editor.title': 'Visual site editor',
+  'editor.sectionLibraryDesc': 'Choose a ready-made section and customize it on the selected page.',
+  'editor.desktopPreview': 'Desktop preview',
+  'editor.add': 'Add',
+  'editor.remove': 'Remove',
+  'orders.title': 'Orders',
+  'orders.description': 'Monitor orders, payment status, shipping and operational progress.',
+  'orders.order': 'Order',
+  'orders.orderLines': 'Order lines',
+  'orders.payment': 'Payment',
+  'orders.method': 'Method',
+  'orders.provider': 'Provider',
+  'orders.currency': 'Currency',
+  'orders.shipping': 'Shipping',
+  'orders.fulfillment': 'Fulfillment',
+  'orders.refund': 'Refund',
+  'orders.discount': 'Discount',
+  'orders.taxes': 'Taxes',
+  'orders.orderStatus': 'Order status',
+  'orders.paymentStatus': 'Payment status',
+  'orders.pendingOrders': 'Pending orders',
+  'orders.unfulfilled': 'Unfulfilled',
+  'orders.refundQueue': 'Refund queue',
+  'orders.returnQueue': 'Return queue',
+  'orders.confirm': 'Confirm order',
+  'orders.markPaid': 'Mark as paid',
+  'orders.addTracking': 'Add tracking',
+  'orders.markFulfilled': 'Mark as fulfilled',
+  'orders.saveNote': 'Save note',
+  'orders.cancel': 'Cancel order',
+  'orders.cancelConfirm': 'Confirm order cancellation?',
+  'orders.loading': 'Loading orders...',
+  'orders.loadError': 'Order loading error.',
+  'orders.empty': 'No orders found.',
+  'orders.noSearchResults': 'No order matches the search.',
+  'orders.updateError': 'Order update error.',
+  'orders.operationError': 'Order operation failed.',
+  'customers.customer': 'Customer',
+  'common.open': 'Open',
+  'common.close': 'Close',
+  'common.save': 'Save',
+  'common.create': 'Create',
+  'common.search': 'Search',
+  'common.filter': 'Filter',
+  'common.success': 'Operation completed',
+  'common.status': 'Status',
+  'common.price': 'Price',
+  'common.stock': 'Stock',
+  'common.active': 'Active',
+  'common.inactive': 'Inactive',
+  'common.draft': 'Draft',
+  'common.available': 'Available',
+  'common.unavailable': 'Unavailable',
+  'common.basicConfiguration': 'Basic configuration',
+  'common.requiresExternalConfiguration': 'Requires external configuration',
+  'common.advancedToolsInProgress': 'Advanced tools in progress',
+  'common.availableInThisRelease': 'Available in this release',
+  'common.nativeApp': 'Native app',
+  'common.readOnly': 'Read only',
+  'common.auditDisabled': 'Audit mode: changes are disabled.',
+  'analytics.loading': 'Loading analytics...',
+  'analytics.empty': 'No analytics data available yet.',
+  'analytics.overview': 'Event overview',
+  'analytics.overviewDesc': 'Events collected without sensitive personal data.',
+  'analytics.noEvents': 'No events',
+  'analytics.ordersCreated': 'Orders created',
+  'analytics.averageOrder': 'Average order value',
+  'analytics.noPageViews': 'No page views recorded yet.',
+  'analytics.noProductEvents': 'No product events recorded yet.',
+  'analytics.noRecentEvents': 'No recent events.',
+  'apps.openCta': 'Open',
+  'apps.module': 'Module',
+  'apps.ready': 'Ready',
+  'apps.notConfigured': 'Not configured',
+  'apps.providerRequired': 'Provider required for real sending',
+  'settings.permissionDenied': 'Insufficient permissions.',
+  'settings.permissionReadDenied': 'Insufficient permissions to read sensitive settings.',
+  'marketing.campaigns': 'Campaigns',
+  'marketing.campaignsDesc': 'Create and edit campaigns with dates, status and optional coupon.',
+  'marketing.discounts': 'Discounts',
+  'marketing.discountsDesc': 'Manage percentage or fixed-amount discount codes.',
+  'dataflow.prices': 'Prices',
+})
+
+Object.assign(ADMIN_TRANSLATIONS.it, {
+  'products.variant.add': 'Aggiungi variante',
+  'reviews.add': 'Aggiungi review',
+  'reviews.edit': 'Modifica review',
+  'reviews.save': 'Salva review',
+  'reviews.update': 'Aggiorna review',
+  'policies.add': 'Aggiungi policy',
+  'policies.edit': 'Modifica policy',
+  'policies.save': 'Salva policy',
+  'policies.update': 'Aggiorna policy',
+  'blog.add': 'Aggiungi articolo',
+  'blog.edit': 'Modifica articolo',
+  'blog.save': 'Salva articolo',
+  'blog.update': 'Aggiorna articolo',
+  'media.add': 'Aggiungi media',
+  'media.edit': 'Modifica media',
+  'media.save': 'Salva media',
+  'media.update': 'Aggiorna media',
+  'menu.addItem': 'Aggiungi voce menu',
+  'menu.saveItem': 'Salva voce menu',
+  'discounts.add': 'Aggiungi sconto',
+  'discounts.edit': 'Modifica sconto',
+  'discounts.save': 'Salva sconto',
+  'discounts.update': 'Aggiorna sconto',
+  'campaigns.add': 'Aggiungi campagna',
+  'campaigns.edit': 'Modifica campagna',
+  'campaigns.save': 'Salva campagna',
+  'campaigns.update': 'Aggiorna campagna',
+  'markets.add': 'Aggiungi mercato',
+  'markets.edit': 'Modifica mercato',
+  'markets.addFromPreset': 'Aggiungi mercato da preset',
+  'markets.save': 'Salva mercato',
+  'markets.update': 'Aggiorna mercato',
+  'shipping.add': 'Aggiungi metodo',
+  'shipping.edit': 'Modifica metodo',
+  'shipping.save': 'Salva spedizione',
+  'shipping.update': 'Aggiorna spedizione',
+  'integrations.add': 'Aggiungi integrazione',
+  'integrations.edit': 'Modifica integrazione',
+  'integrations.save': 'Salva integrazione',
+  'integrations.update': 'Aggiorna integrazione',
+  'users.add': 'Aggiungi utente',
+  'users.edit': 'Modifica utente',
+  'users.save': 'Salva utente',
+  'users.update': 'Aggiorna utente',
+  'notifications.add': 'Aggiungi template',
+  'notifications.edit': 'Modifica template',
+  'notifications.save': 'Salva template',
+  'notifications.update': 'Aggiorna template',
+  'domains.add': 'Aggiungi dominio',
+  'domains.edit': 'Modifica dominio',
+  'domains.save': 'Salva dominio',
+  'domains.update': 'Aggiorna dominio',
+  'tenants.add': 'Aggiungi tenant',
+  'tenants.edit': 'Modifica tenant',
+  'tenants.save': 'Salva tenant',
+  'tenants.update': 'Aggiorna tenant',
+})
+
+Object.assign(ADMIN_TRANSLATIONS.en, {
+  'products.variant.add': 'Add variant',
+  'reviews.add': 'Add review',
+  'reviews.edit': 'Edit review',
+  'reviews.save': 'Save review',
+  'reviews.update': 'Update review',
+  'policies.add': 'Add policy',
+  'policies.edit': 'Edit policy',
+  'policies.save': 'Save policy',
+  'policies.update': 'Update policy',
+  'blog.add': 'Add article',
+  'blog.edit': 'Edit article',
+  'blog.save': 'Save article',
+  'blog.update': 'Update article',
+  'media.add': 'Add media',
+  'media.edit': 'Edit media',
+  'media.save': 'Save media',
+  'media.update': 'Update media',
+  'menu.addItem': 'Add menu item',
+  'menu.saveItem': 'Save menu item',
+  'discounts.add': 'Add discount',
+  'discounts.edit': 'Edit discount',
+  'discounts.save': 'Save discount',
+  'discounts.update': 'Update discount',
+  'campaigns.add': 'Add campaign',
+  'campaigns.edit': 'Edit campaign',
+  'campaigns.save': 'Save campaign',
+  'campaigns.update': 'Update campaign',
+  'markets.add': 'Add market',
+  'markets.edit': 'Edit market',
+  'markets.addFromPreset': 'Add market from preset',
+  'markets.save': 'Save market',
+  'markets.update': 'Update market',
+  'shipping.add': 'Add method',
+  'shipping.edit': 'Edit method',
+  'shipping.save': 'Save shipping',
+  'shipping.update': 'Update shipping',
+  'integrations.add': 'Add integration',
+  'integrations.edit': 'Edit integration',
+  'integrations.save': 'Save integration',
+  'integrations.update': 'Update integration',
+  'users.add': 'Add user',
+  'users.edit': 'Edit user',
+  'users.save': 'Save user',
+  'users.update': 'Update user',
+  'notifications.add': 'Add template',
+  'notifications.edit': 'Edit template',
+  'notifications.save': 'Save template',
+  'notifications.update': 'Update template',
+  'domains.add': 'Add domain',
+  'domains.edit': 'Edit domain',
+  'domains.save': 'Save domain',
+  'domains.update': 'Update domain',
+  'tenants.add': 'Add tenant',
+  'tenants.edit': 'Edit tenant',
+  'tenants.save': 'Save tenant',
+  'tenants.update': 'Update tenant',
+})
 
 function getAdminLanguage() {
   try {
@@ -296,7 +1046,9 @@ function setAdminLanguage(language) {
   try {
     localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, nextLanguage)
   } catch {}
-  applyAdminTranslations()
+  document.documentElement.lang = nextLanguage
+  rerenderActiveAdminView()
+  applyAdminLanguage()
 }
 
 function getAdminTheme() {
@@ -329,13 +1081,23 @@ function setAdminTheme(theme) {
   applyAdminTheme(nextTheme)
 }
 
-function adminT(key) {
+function adminT(key, fallback = '') {
   const language = getAdminLanguage()
-  return (
-    ADMIN_TRANSLATIONS[language]?.[key] ||
-    ADMIN_TRANSLATIONS[ADMIN_DEFAULT_LANGUAGE]?.[key] ||
-    key
-  )
+  const value =
+    ADMIN_TRANSLATIONS[language]?.[key] ??
+    ADMIN_TRANSLATIONS[ADMIN_DEFAULT_LANGUAGE]?.[key] ??
+    fallback ??
+    ''
+
+  if (value === null || value === undefined || typeof value === 'object') {
+    return fallback ? String(fallback) : ''
+  }
+
+  return String(value)
+}
+
+function t(key, fallback = '') {
+  return adminT(key, fallback)
 }
 
 function setAdminText(selector, key) {
@@ -823,12 +1585,352 @@ ADMIN_STATIC_TRANSLATIONS.push(
   ['Errore aggiunta sezione.', 'Section add failed.'],
 )
 
+ADMIN_STATIC_TRANSLATIONS.push(
+  ['Lingua admin', 'Admin language'],
+  ['Cambia tema', 'Change theme'],
+  ['Navigazione TakeOffMilan CMS', 'TakeOffMilan CMS navigation'],
+  ['Aree CMS', 'CMS areas'],
+  ['Website Operating System', 'Website Operating System'],
+  ['Next Generation Website CMS', 'Next Generation Website CMS'],
+  ['Benvenuto nel CMS', 'Welcome to the CMS'],
+  ['Crea, gestisci e fai crescere siti custom da un unico sistema operativo.', 'Build, manage and scale custom websites from one operating system.'],
+  ['Quick action', 'Quick action'],
+  ['Modifica il sito', 'Edit site'],
+  ['Apri editor visuale, sezioni e tema.', 'Open the visual editor, sections and theme.'],
+  ['Gestisci prodotti', 'Manage products'],
+  ['Catalogo, varianti, immagini e stock.', 'Catalog, variants, images and stock.'],
+  ['Carica media', 'Upload media'],
+  ['Libreria visuale, upload e URL.', 'Visual library, uploads and URLs.'],
+  ['Configura markets', 'Configure markets'],
+  ['Lingue, valute e prezzi localizzati.', 'Languages, currencies and localized prices.'],
+  ['Catalogo attivo e varianti.', 'Active catalog and variants.'],
+  ['Struttura catalogo.', 'Catalog structure.'],
+  ['Asset disponibili nel CMS.', 'Assets available in the CMS.'],
+  ['Main feature', 'Main feature'],
+  ['Visual Editor', 'Visual Editor'],
+  ['Il cuore del CMS: costruisci, controlla e verifica il sito in tempo reale su desktop, tablet e mobile.', 'The CMS core: build, control and verify the site in real time across desktop, tablet and mobile.'],
+  ['Formato preview', 'Preview format'],
+  ['Desktop', 'Desktop'],
+  ['Tablet', 'Tablet'],
+  ['Mobile', 'Mobile'],
+  ['Desktop preview', 'Desktop preview'],
+  ['Tablet preview', 'Tablet preview'],
+  ['Mobile preview', 'Mobile preview'],
+  ['Live canvas', 'Live canvas'],
+  ['Anteprima sito', 'Site preview'],
+  ['Theme settings', 'Theme settings'],
+  ['Logo, colori, tipografie, header e footer.', 'Logo, colors, typography, header and footer.'],
+  ['Chiudi impostazioni tema', 'Close theme settings'],
+  ['Base', 'Base'],
+  ['Premium', 'Premium'],
+  ['Ecommerce', 'Ecommerce'],
+  ['Conversione', 'Conversion'],
+  ['Brand', 'Brand'],
+  ['Layout', 'Layout'],
+  ['Sezioni base', 'Base sections'],
+  ['Sezioni premium', 'Premium sections'],
+  ['Fiducia e conversione', 'Trust and conversion'],
+  ['Brand e contenuto', 'Brand and content'],
+  ['Layout avanzati', 'Advanced layouts'],
+  ['Testo + immagine', 'Text + image'],
+  ['Griglia prodotti', 'Product grid'],
+  ['Griglia collezioni', 'Collection grid'],
+  ['Stats / Numeri', 'Stats / Numbers'],
+  ['Gallery Editoriale', 'Editorial gallery'],
+  ['Logo Partner / Clienti', 'Partner / Customer logos'],
+  ['Awards / Riconoscimenti', 'Awards / Recognition'],
+  ['Accordion avanzato', 'Advanced accordion'],
+  ['Sezioni pagina', 'Page sections'],
+  ['Operativo', 'Operational'],
+  ['Native apps', 'Native apps'],
+  ['Attiva', 'Active'],
+  ['Attivo', 'Active'],
+  ['Configurabile', 'Configurable'],
+  ['Configurable', 'Configurable'],
+  ['Nel prodotto', 'In product'],
+  ['Gestisci schede prodotto, immagini, prezzi e disponibilita.', 'Manage product pages, images, prices and availability.'],
+  ['Raggruppa prodotti in collezioni cliccabili e pagine dedicate.', 'Group products into clickable collections and dedicated pages.'],
+  ['Gestisci opzioni, SKU, prezzo e stock variante nel form prodotto.', 'Manage options, SKU, price and variant stock in the product form.'],
+  ['Scorte prodotto e variante, filtri, soglie low stock e aggiornamento rapido.', 'Product and variant stock, filters, low-stock thresholds and quick updates.'],
+  ["Apri l'app nativa per export, import controllati e workflow traduzioni.", 'Open the native app for exports, controlled imports and translation workflows.'],
+  ['App native per gestire operativita, contenuti e crescita del sito.', 'Native apps to manage operations, content and site growth.'],
+  ['Ogni modulo resta interno al TakeOffMilan CMS: stessa sicurezza admin, stessi permessi, stesso flusso di lavoro.', 'Every module stays inside TakeOffMilan CMS: same admin security, same permissions, same workflow.'],
+  ['Gestione traduzioni contenuti pubblici con fallback alla lingua originale.', 'Public content translation management with fallback to the original language.'],
+  ['Centro SEO nativo per audit, metadati e contenuti ottimizzati.', 'Native SEO center for audits, metadata and optimized content.'],
+  ['Metriche base, eventi e dati operativi integrati nel CMS.', 'Base metrics, events and operational data integrated in the CMS.'],
+  ['Configura GA4, Google Ads, Search Console e Tag Manager.', 'Configure GA4, Google Ads, Search Console and Tag Manager.'],
+  ['Libreria visuale per upload, URL fallback, anteprime e alt text.', 'Visual library for uploads, fallback URLs, previews and alt text.'],
+  ['Viewer prodotto 3D nativo per esperienze premium e interattive.', 'Native 3D product viewer for premium interactive experiences.'],
+  ['Campagne, sconti e strumenti promozionali collegati al catalogo.', 'Campaigns, discounts and promotional tools connected to the catalog.'],
+  ['Webhook e integrazioni non sensibili gestiti da pannello.', 'Webhooks and non-sensitive integrations managed from the panel.'],
+  ['Collega strumenti Google per analytics, advertising, verifica SEO e tag management senza salvare secrets.', 'Connect Google tools for analytics, advertising, SEO verification and tag management without saving secrets.'],
+  ['Google stack configurabile dal CMS.', 'Google stack configurable from the CMS.'],
+  ['Inserisci un Measurement ID tipo G-XXXXXXXXXX. Se attivo, il sito carica gtag.js.', 'Enter a Measurement ID such as G-XXXXXXXXXX. When active, the site loads gtag.js.'],
+  ['GA4 attivo', 'GA4 active'],
+  ['Google Ads attivo', 'Google Ads active'],
+  ['Copia il valore del meta tag di verifica da Search Console e salvalo qui.', 'Copy the verification meta tag value from Search Console and save it here.'],
+  ['Verification content o meta tag completo', 'Verification content or full meta tag'],
+  ['GTM usa un Container ID tipo GTM-XXXXXXX. Google Tag puo usare G- oppure AW-.', 'GTM uses a Container ID like GTM-XXXXXXX. Google Tag can use G- or AW-.'],
+  ['GTM attivo', 'GTM active'],
+  ['Google Tag attivo', 'Google Tag active'],
+  ['Google Tag ID opzionale', 'Optional Google Tag ID'],
+  ['Privacy e stato', 'Privacy and status'],
+  ['Gli eventi ecommerce base sono predisposti: view_item, add_to_cart, begin_checkout e purchase. Il sito usa un consenso conservativo: analytics e marketing partono solo dopo scelta del visitatore.', 'Base ecommerce events are ready: view_item, add_to_cart, begin_checkout and purchase. The site uses conservative consent: analytics and marketing start only after the visitor chooses.'],
+  ['Torna ad App Hub', 'Back to App Hub'],
+  ['Torna a Catalogo', 'Back to Catalog'],
+  ['Torna a Marketing', 'Back to Marketing'],
+  ['Torna a TakeOff SEO', 'Back to TakeOff SEO'],
+  ['Torna a Import Export', 'Back to Import Export'],
+  ['Torna a Contenuto', 'Back to Content'],
+  ['Tutto lo stock', 'All stock'],
+  ['Out of stock', 'Out of stock'],
+  ['Soglia low stock', 'Low-stock threshold'],
+  ['Caricamento inventario...', 'Loading inventory...'],
+  ['Crea e modifica le collezioni del catalogo.', 'Create and edit catalog collections.'],
+  ['Nome collezione', 'Collection name'],
+  ['Archivio collezioni', 'Collection archive'],
+  ['Nome prodotto', 'Product name'],
+  ['Senza collezione', 'No collection'],
+  ['Varianti prodotto', 'Product variants'],
+  ['Opzioni semplici come taglia, colore o formato. Lascia vuoto se il prodotto non ha varianti.', 'Simple options such as size, color or format. Leave empty if the product has no variants.'],
+  ['Archivio prodotti', 'Product archive'],
+  ['Operativita centralizzata per dati, contenuti e traduzioni.', 'Centralized operations for data, content and translations.'],
+  ['Scarica risorse singole in JSON o CSV senza modificare il database.', 'Download individual resources as JSON or CSV without modifying the database.'],
+  ["Usa prima il dry-run per validare il file. L'import crea o aggiorna record e non elimina dati esistenti.", 'Use dry-run first to validate the file. Import creates or updates records and does not delete existing data.'],
+  ['Valida / importa', 'Validate / import'],
+  ['Template scaricabili', 'Downloadable templates'],
+  ['Template con struttura consigliata e campi compatibili per prodotti, collezioni, traduzioni e prezzi localizzati.', 'Templates with recommended structure and compatible fields for products, collections, translations and localized prices.'],
+  ['Aggiorna stock prodotti o varianti tramite product_slug, product_id, variant_id o SKU.', 'Update product or variant stock through product_slug, product_id, variant_id or SKU.'],
+  ["Il dry-run valida le righe prima di scrivere. L'import aggiorna solo stock, senza cancellare prodotti o varianti.", 'Dry-run validates rows before writing. Import updates stock only, without deleting products or variants.'],
+  ['Agency workflow: esporta testi traducibili, compila translated_value e reimporta senza modificare i contenuti originali.', 'Agency workflow: export translatable text, fill translated_value and reimport without changing original content.'],
+  ['Lingua target', 'Target language'],
+  ['Export sicuro dei contenuti configurabili del sito. Non include codice JS/CSS o file eseguibili.', 'Safe export of configurable site content. It does not include JS/CSS code or executable files.'],
+  ['Import site package completo non attivo per sicurezza: ora e disponibile export sicuro dei contenuti configurabili.', 'Full site package import is disabled for safety: safe export of configurable content is available now.'],
+  ['Supplier feed, scheduled import/export e restore completo saranno attivati solo con controlli dedicati e backup obbligatorio.', 'Supplier feed, scheduled import/export and full restore will be enabled only with dedicated checks and mandatory backups.'],
+  ['Caricamento automazioni...', 'Loading automations...'],
+  ['Recensioni prodotto native con moderazione e rating pubblico.', 'Native product reviews with moderation and public rating.'],
+  ['Prodotto', 'Product'],
+  ['Nome cliente', 'Customer name'],
+  ['Nota cliente', 'Customer note'],
+  ['Bundle, frequently bought together e cart upsell in configurazione base.', 'Bundles, frequently bought together and cart upsells in basic configuration.'],
+  ['Prodotto base', 'Base product'],
+  ['Prodotto trigger', 'Trigger product'],
+  ['Prodotti consigliati (ID separati da virgola)', 'Recommended products (comma-separated IDs)'],
+  ['Configura feed', 'Configure feed'],
+  ['Valuta default', 'Default currency'],
+  ['Lingua default', 'Default language'],
+  ['Customer portal base, inviti provider-ready e stato account senza introdurre auth cliente complessa.', 'Base customer portal, provider-ready invites and account status without introducing complex customer auth.'],
+  ['Pagina pubblica /account pianificata per ordini cliente, indirizzi e account status. In questa release resta fallback sicuro se il login cliente non e configurato.', 'Public /account page planned for customer orders, addresses and account status. In this release it remains a safe fallback when customer login is not configured.'],
+  ['Apri clienti', 'Open customers'],
+  ['Gift cards e store credit gestibili da admin con saldo, stato, cliente e note operative.', 'Gift cards and store credit manageable by admin with balance, status, customer and operational notes.'],
+  ['Email cliente opzionale', 'Optional customer email'],
+  ['Saldo', 'Balance'],
+  ['Saldo residuo', 'Remaining balance'],
+  ['Scadenza', 'Expiry'],
+  ['Regole sconto Shopify-like con stato chiaro e compatibilita checkout progressiva.', 'Shopify-like discount rules with clear status and progressive checkout compatibility.'],
+  ['Disponibile ora', 'Available now'],
+  ['Apri sconti', 'Open discounts'],
+  ['Limit, customer eligibility, market/currency e combinabilita sono tracciati come configurazione avanzata dove il checkout non applica ancora la regola.', 'Limit, customer eligibility, market/currency and combinability are tracked as advanced configuration when checkout does not yet apply the rule.'],
+  ['Send recovery email crea un log/mock se il provider email non e configurato.', 'Send recovery email creates a log/mock if the email provider is not configured.'],
+  ['Apri Email Automations', 'Open Email Automations'],
+  ['Ricerca prodotti e filtri catalogo configurabili senza motore esterno.', 'Product search and catalog filters configurable without an external engine.'],
+  ['Title, description, SKU, categoria, collezione, tag/metafields disponibili e brand/vendor quando presenti.', 'Title, description, SKU, category, collection, available tags/metafields and brand/vendor when present.'],
+  ['Endpoint pubblico /api/search?q= attivo con fallback nessun risultato e senza dipendenze esterne.', 'Public /api/search?q= endpoint active with no-results fallback and no external dependencies.'],
+  ['Organization, Website, Product e Breadcrumb possono essere generati dal contenuto esistente con fallback quando campi SEO sono vuoti.', 'Organization, Website, Product and Breadcrumb can be generated from existing content with fallbacks when SEO fields are empty.'],
+  ['Il dry-run valida la configurazione e registra l esecuzione. Scheduler reale richiede Cloudflare cron o provider esterno.', 'Dry-run validates the configuration and logs the run. A real scheduler requires Cloudflare cron or an external provider.'],
+  ['Prodotti in abbonamento predisposti senza avviare billing ricorrente reale.', 'Subscription products prepared without starting real recurring billing.'],
+  ['Cookie categories, Google Consent Mode base e strumenti privacy provider-ready.', 'Cookie categories, base Google Consent Mode and provider-ready privacy tools.'],
+  ['Cookie categories', 'Cookie categories'],
+  ['Privacy tools', 'Privacy tools'],
+  ['Apri Cookie settings', 'Open Cookie settings'],
+  ['Dettaglio ordine', 'Order detail'],
+  ['Stato ordine', 'Order status'],
+  ['Stato pagamento', 'Payment status'],
+  ['Stato spedizione', 'Shipping status'],
+  ['Fulfillment', 'Fulfillment'],
+  ['Tracking', 'Tracking'],
+  ['Carrier', 'Carrier'],
+  ['Note interne', 'Internal notes'],
+  ['Timeline', 'Timeline'],
+  ['Marca come pagato', 'Mark as paid'],
+  ['Marca come spedito', 'Mark as shipped'],
+  ['Aggiungi tracking', 'Add tracking'],
+  ['Cancella ordine', 'Cancel order'],
+  ['Rimborso', 'Refund'],
+  ['Reso', 'Return'],
+  ['Indirizzo', 'Address'],
+  ['Ordini cliente', 'Customer orders'],
+  ['Account cliente', 'Customer account'],
+  ['Send invite', 'Send invite'],
+  ['Lifetime value', 'Lifetime value'],
+  ['Ultimo ordine', 'Last order'],
+  ['Nessun ordine', 'No orders'],
+  ['Nessun cliente', 'No customers'],
+  ['Mercati', 'Markets'],
+  ['Paesi', 'Countries'],
+  ['Lingue', 'Languages'],
+  ['Valute', 'Currencies'],
+  ['Domini per mercato', 'Domains by market'],
+  ['Aggiungi mercato', 'Add market'],
+  ['Mercati consigliati', 'Recommended markets'],
+  ['Valuta', 'Currency'],
+  ['Paese', 'Country'],
+  ['Path', 'Path'],
+  ['Dominio', 'Domain'],
+  ['Prezzo base', 'Base price'],
+  ['Fallback', 'Fallback'],
+  ['Salva mercato', 'Save market'],
+  ['Esporta', 'Export'],
+  ['Importa', 'Import'],
+  ['Scarica template', 'Download template'],
+  ['Report', 'Report'],
+  ['Creati', 'Created'],
+  ['Aggiornati', 'Updated'],
+  ['Saltati', 'Skipped'],
+  ['Errori', 'Errors'],
+  ['Nessun errore', 'No errors'],
+  ['Carica file', 'Upload file'],
+  ['Scegli file', 'Choose file'],
+  ['Formato CSV', 'CSV format'],
+  ['Formato JSON', 'JSON format'],
+  ['Backup prima di import', 'Backup before import'],
+  ['Scheduled import/export', 'Scheduled import/export'],
+  ['Supplier feed', 'Supplier feed'],
+  ['Measurement ID', 'Measurement ID'],
+  ['Conversion ID', 'Conversion ID'],
+  ['Verification tag', 'Verification tag'],
+  ['Salva impostazioni', 'Save settings'],
+  ['Alt text', 'Alt text'],
+  ['Copia URL', 'Copy URL'],
+  ['Apri file', 'Open file'],
+  ['Dimensione', 'Size'],
+  ['SEO dashboard', 'SEO dashboard'],
+  ['Missing meta', 'Missing meta'],
+  ['Google snippet', 'Google snippet'],
+  ['Sitemap', 'Sitemap'],
+  ['Robots', 'Robots'],
+  ['Redirects', 'Redirects'],
+  ['Analytics overview', 'Analytics overview'],
+  ['Traffic', 'Traffic'],
+  ['Sales', 'Sales'],
+  ['Products', 'Products'],
+  ['Conversions', 'Conversions'],
+  ['Events', 'Events'],
+  ['Empty state', 'Empty state'],
+  ['Carrello abbandonato', 'Abandoned cart'],
+  ['Recovery email', 'Recovery email'],
+  ['Ricerca', 'Search'],
+  ['Filtri', 'Filters'],
+  ['Sitemap status', 'Sitemap status'],
+  ['Robots status', 'Robots status'],
+  ['Event', 'Event'],
+  ['Delivery log', 'Delivery log'],
+  ['Feed fornitori', 'Supplier feeds'],
+  ['Abbonamenti', 'Subscriptions'],
+  ['Prezzo abbonamento', 'Subscription price'],
+  ['Generali', 'General'],
+  ['Pagamenti', 'Payments'],
+  ['Tasse', 'Taxes'],
+  ['Notifiche', 'Notifications'],
+  ['Cookie', 'Cookie'],
+  ['Domini', 'Domains'],
+  ['Ruoli', 'Roles'],
+  ['Permessi', 'Permissions'],
+  ['Activity Log', 'Activity Log'],
+  ['Conferma', 'Confirm'],
+  ['Annulla', 'Cancel'],
+  ['Continua', 'Continue'],
+  ['Riprova', 'Try again'],
+  ['Operazione completata', 'Operation completed'],
+  ['Errore durante il salvataggio', 'Save error'],
+  ['Caricamento', 'Loading'],
+  ['Nessun risultato', 'No results'],
+  ['Read only', 'Read only'],
+  ['Mock / logging only', 'Mock / logging only'],
+  ['Provider required', 'Provider required'],
+  ['Checkout support in progress', 'Checkout support in progress'],
+  ['Basic configuration', 'Basic configuration'],
+  ['Available in this release', 'Available in this release'],
+  ['Mancante', 'Missing'],
+  ['Traduzione presente', 'Translation available'],
+  ['Traduzioni non disponibili.', 'Translations unavailable.'],
+  ['Traduzione salvata.', 'Translation saved.'],
+  ['Traduzione disattivata.', 'Translation disabled.'],
+  ['undefined', ''],
+  ['null', ''],
+)
+
 const ADMIN_STATIC_TRANSLATION_PATTERNS = [
   { it: /^Iniziale: (.+)$/, en: 'Initial: $1', enRegex: /^Initial: (.+)$/, itText: 'Iniziale: $1' },
   { it: /^Mercato: (.+)$/, en: 'Market: $1', enRegex: /^Market: (.+)$/, itText: 'Mercato: $1' },
   { it: /^Webhook: configurato$/, en: 'Webhook: configured', enRegex: /^Webhook: configured$/, itText: 'Webhook: configurato' },
   { it: /^Webhook: mancante\/opzionale$/, en: 'Webhook: missing/optional', enRegex: /^Webhook: missing\/optional$/, itText: 'Webhook: mancante/opzionale' },
+  { it: /^\u2190 Torna ad App Hub$/, en: '\u2190 Back to App Hub', enRegex: /^\u2190 Back to App Hub$/, itText: '\u2190 Torna ad App Hub' },
+  { it: /^\u2190 Torna a Catalogo$/, en: '\u2190 Back to Catalog', enRegex: /^\u2190 Back to Catalog$/, itText: '\u2190 Torna a Catalogo' },
+  { it: /^\u2190 Torna a Marketing$/, en: '\u2190 Back to Marketing', enRegex: /^\u2190 Back to Marketing$/, itText: '\u2190 Torna a Marketing' },
+  { it: /^\u2190 Torna a TakeOff SEO$/, en: '\u2190 Back to TakeOff SEO', enRegex: /^\u2190 Back to TakeOff SEO$/, itText: '\u2190 Torna a TakeOff SEO' },
+  { it: /^\u2190 Torna a Import Export$/, en: '\u2190 Back to Import Export', enRegex: /^\u2190 Back to Import Export$/, itText: '\u2190 Torna a Import Export' },
+  { it: /^\u2190 Torna a Contenuto$/, en: '\u2190 Back to Content', enRegex: /^\u2190 Back to Content$/, itText: '\u2190 Torna a Contenuto' },
 ]
+
+ADMIN_STATIC_TRANSLATIONS.push(
+  ['Core', 'Core'],
+  ['Commerce', 'Commerce'],
+  ['Growth', 'Growth'],
+  ['System', 'System'],
+  ['Modulo', 'Module'],
+  ['Pronto', 'Ready'],
+  ['Non configurato', 'Not configured'],
+  ['Provider ready', 'Provider ready'],
+  ['Provider richiesto per invio reale', 'Provider required for real sending'],
+  ['Visualizzazioni pagina', 'Page views'],
+  ['Visualizzazioni prodotto', 'Product views'],
+  ['Aggiunta al carrello', 'Add to cart'],
+  ['Avvio checkout', 'Checkout start'],
+  ['Conversione checkout', 'Checkout conversion'],
+  ['Ricavi', 'Revenue'],
+  ['Vista', 'View'],
+  ['Page views aggregate', 'Page views aggregate'],
+  ['Product to cart', 'Product to cart'],
+  ['Checkout to order', 'Checkout to order'],
+  ['Pending', 'Pending'],
+  ['Confirmed', 'Confirmed'],
+  ['Fulfilled', 'Fulfilled'],
+  ['Cancelled', 'Cancelled'],
+  ['manual', 'manual'],
+  ['pending', 'pending'],
+  ['standard', 'standard'],
+  ['unfulfilled', 'unfulfilled'],
+  ['none', 'none'],
+  ['Operations workflow', 'Operations workflow'],
+  ['Nota spedizione', 'Shipping note'],
+  ['Nota interna', 'Internal note'],
+  ['Importo rimborso EUR', 'Refund amount EUR'],
+  ['Nota rimborso', 'Refund note'],
+  ['Refund requested', 'Refund requested'],
+  ['Refund complete', 'Refund complete'],
+  ['Returns / refunds', 'Returns / refunds'],
+  ['Manual refund / provider required. Nessun reso collegato.', 'Manual refund / provider required. No returns linked.'],
+  ['Notification log', 'Notification log'],
+  ['Nessuna notifica loggata per questo ordine.', 'No notifications logged for this order.'],
+  ['Righe stock', 'Stock rows'],
+  ['Esaurito', 'Out of stock'],
+  ['Stock basso', 'Low stock'],
+  ['Nessun prodotto disponibile per l inventario.', 'No products available for inventory.'],
+  ['Nessuna riga inventario corrisponde ai filtri.', 'No inventory row matches the filters.'],
+  ['Variante', 'Variant'],
+  ['Stock prodotto base', 'Base product stock'],
+  ['Aggiorna stock', 'Update stock'],
+  ['Buono', 'Good'],
+  ['Richiede attenzione', 'Needs attention'],
+  ['Totale contenuti', 'Total content'],
+  ['Gia presente', 'Already added'],
+  ['Preset consigliato', 'Recommended preset'],
+  ['Fallback consigliato', 'Recommended fallback'],
+  ['Configurato', 'Configured'],
+  ['Configurata', 'Configured'],
+  ['Rate manuale', 'Manual rate'],
+)
 
 const ADMIN_PLACEHOLDER_TRANSLATIONS = [
   ['cliente@example.com', 'customer@example.com'],
@@ -882,36 +1984,145 @@ const ADMIN_PLACEHOLDER_TRANSLATIONS = [
   ['/new-url', '/new-url'],
 ]
 
+ADMIN_PLACEHOLDER_TRANSLATIONS.push(
+  ['Cerca per nome, alt text o URL...', 'Search by name, alt text or URL...'],
+  ['Cerca prodotto, SKU, categoria...', 'Search product, SKU, category...'],
+  ['Cerca prodotto, titolo, cliente...', 'Search product, title, customer...'],
+  ['Cerca ordini...', 'Search orders...'],
+  ['Cerca clienti...', 'Search customers...'],
+  ['Cerca collezioni...', 'Search collections...'],
+  ['Cerca prodotti...', 'Search products...'],
+  ['Cerca articoli...', 'Search articles...'],
+  ['Cerca media...', 'Search media...'],
+  ['Cerca menu...', 'Search menus...'],
+  ['Cerca log...', 'Search logs...'],
+  ['Inserisci un codice sconto', 'Enter a discount code'],
+  ['Inserisci URL media...', 'Enter media URL...'],
+  ['Aggiungi note interne...', 'Add internal notes...'],
+  ['Aggiungi tracking...', 'Add tracking...'],
+  ['Codice gift card', 'Gift card code'],
+  ['Codice sconto', 'Discount code'],
+  ['Cliente email', 'Customer email'],
+  ['Saldo residuo', 'Remaining balance'],
+  ['Recovery email', 'Recovery email'],
+  ['Target URL', 'Target URL'],
+  ['Feed fornitori', 'Supplier feeds'],
+  ['Frequenza', 'Frequency'],
+  ['Prezzo abbonamento', 'Subscription price'],
+  ['Trial days', 'Trial days'],
+)
+
 let adminStaticTranslationQueued = false
 let adminStaticTranslationRunning = false
+const adminRuntimeTranslationMapCache = new Map()
 
-function getAdminStaticTranslation(text) {
+function normalizeAdminRuntimeText(value) {
+  return String(value ?? '').trim().replace(/\s+/g, ' ')
+}
+
+function getAdminPairMap(pairs, cacheName) {
   const language = getAdminLanguage()
+  const cacheKey = `${cacheName}:${language}`
+  if (adminRuntimeTranslationMapCache.has(cacheKey)) return adminRuntimeTranslationMapCache.get(cacheKey)
+
   const sourceIndex = language === 'en' ? 0 : 1
   const targetIndex = language === 'en' ? 1 : 0
-  const copyMap = new Map(
-    ADMIN_STATIC_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
-  )
+  const map = new Map(pairs.map((pair) => [pair[sourceIndex], pair[targetIndex]]))
+  adminRuntimeTranslationMapCache.set(cacheKey, map)
+  return map
+}
 
-  if (copyMap.has(text)) return copyMap.get(text)
+function getAdminStaticTranslation(text) {
+  const normalized = normalizeAdminRuntimeText(text)
+  if (!normalized) return null
+  if (/^(undefined|null)$/i.test(normalized)) return ''
+
+  const language = getAdminLanguage()
+  const copyMap = getAdminPairMap(ADMIN_STATIC_TRANSLATIONS, 'static')
+  if (copyMap.has(normalized)) return copyMap.get(normalized)
 
   for (const pattern of ADMIN_STATIC_TRANSLATION_PATTERNS) {
-    if (language === 'en' && pattern.it.test(text)) return text.replace(pattern.it, pattern.en)
-    if (language === 'it' && pattern.enRegex.test(text)) return text.replace(pattern.enRegex, pattern.itText)
+    if (language === 'en' && pattern.it.test(normalized)) return normalized.replace(pattern.it, pattern.en)
+    if (language === 'it' && pattern.enRegex.test(normalized)) {
+      return normalized.replace(pattern.enRegex, pattern.itText)
+    }
   }
 
   return null
 }
 
-function translateAdminStaticCopy() {
-  if (adminStaticTranslationRunning) return
-  adminStaticTranslationRunning = true
-  const language = getAdminLanguage()
-  const sourceIndex = language === 'en' ? 0 : 1
-  const targetIndex = language === 'en' ? 1 : 0
-  const placeholderMap = new Map(
-    ADMIN_PLACEHOLDER_TRANSLATIONS.map((pair) => [pair[sourceIndex], pair[targetIndex]]),
+function adminUiText(text, fallback = text) {
+  const translated = getAdminStaticTranslation(text)
+  if (translated !== null && translated !== undefined) return translated
+
+  const safeFallback =
+    fallback === null || fallback === undefined || typeof fallback === 'object' ? '' : String(fallback)
+  const safeText = text === null || text === undefined || typeof text === 'object' ? safeFallback : String(text)
+  return safeText || safeFallback
+}
+
+function adminUiHtml(text, fallback = text) {
+  return escapeHtml(adminUiText(text, fallback))
+}
+
+function setAdminUiText(element, text, fallback = text) {
+  if (!element) return
+  element.textContent = adminUiText(text, fallback)
+}
+
+function shouldSkipAdminRuntimeElement(element) {
+  if (!element) return true
+  return Boolean(
+    element.closest(
+      '[data-admin-no-translate], [contenteditable="true"], script, style, noscript, pre, code',
+    ),
   )
+}
+
+function setAdminTranslatedText(element, value) {
+  if (!element || value === null || value === undefined) return
+  const text = String(value)
+  if (element.textContent !== text) element.textContent = text
+}
+
+function translateAdminDataI18n(root = document) {
+  root.querySelectorAll('[data-i18n]').forEach((element) => {
+    if (shouldSkipAdminRuntimeElement(element)) return
+    setAdminTranslatedText(
+      element,
+      t(element.dataset.i18n, element.getAttribute('data-i18n-fallback') || element.textContent),
+    )
+  })
+
+  root.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
+    if (shouldSkipAdminRuntimeElement(element)) return
+    const translated = t(
+      element.dataset.i18nPlaceholder,
+      element.getAttribute('data-i18n-placeholder-fallback') || element.getAttribute('placeholder') || '',
+    )
+    if (translated) element.setAttribute('placeholder', translated)
+  })
+
+  root.querySelectorAll('[data-i18n-title]').forEach((element) => {
+    if (shouldSkipAdminRuntimeElement(element)) return
+    const translated = t(
+      element.dataset.i18nTitle,
+      element.getAttribute('data-i18n-title-fallback') || element.getAttribute('title') || '',
+    )
+    if (translated) element.setAttribute('title', translated)
+  })
+
+  root.querySelectorAll('[data-i18n-aria-label]').forEach((element) => {
+    if (shouldSkipAdminRuntimeElement(element)) return
+    const translated = t(
+      element.dataset.i18nAriaLabel,
+      element.getAttribute('data-i18n-aria-label-fallback') || element.getAttribute('aria-label') || '',
+    )
+    if (translated) element.setAttribute('aria-label', translated)
+  })
+}
+
+function translateDynamicText() {
   const roots = [adminAuthGate, adminApp].filter(Boolean)
   const ignoredParents = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'PRE', 'CODE'])
 
@@ -927,26 +2138,105 @@ function translateAdminStaticCopy() {
     textNodes.forEach((textNode) => {
       const parentName = textNode.parentElement?.tagName
       if (!parentName || ignoredParents.has(parentName)) return
+      if (shouldSkipAdminRuntimeElement(textNode.parentElement)) return
 
       const original = textNode.nodeValue || ''
       const trimmed = original.trim().replace(/\s+/g, ' ')
       if (!trimmed) return
 
       const translated = getAdminStaticTranslation(trimmed)
-      if (!translated || translated === trimmed) return
+      if (translated === null || translated === undefined || translated === trimmed) return
 
       const leading = original.match(/^\s*/)?.[0] || ''
       const trailing = original.match(/\s*$/)?.[0] || ''
       textNode.nodeValue = `${leading}${translated}${trailing}`
     })
   })
+}
+
+function translatePlaceholders() {
+  const placeholderMap = getAdminPairMap(ADMIN_PLACEHOLDER_TRANSLATIONS, 'placeholder')
 
   document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((element) => {
-    const placeholder = element.getAttribute('placeholder') || ''
-    if (placeholderMap.has(placeholder)) element.setAttribute('placeholder', placeholderMap.get(placeholder))
-  })
+    if (shouldSkipAdminRuntimeElement(element)) return
+    if (element.dataset.i18nPlaceholder) return
 
+    const placeholder = element.getAttribute('placeholder') || ''
+    const normalized = normalizeAdminRuntimeText(placeholder)
+    const translated = placeholderMap.has(normalized)
+      ? placeholderMap.get(normalized)
+      : getAdminStaticTranslation(normalized)
+
+    if (translated !== null && translated !== undefined && translated !== placeholder) {
+      element.setAttribute('placeholder', translated)
+    }
+  })
+}
+
+function translateButtons() {
+  document
+    .querySelectorAll('input[type="button"][value], input[type="submit"][value], input[type="reset"][value]')
+    .forEach((element) => {
+      if (shouldSkipAdminRuntimeElement(element)) return
+      const value = element.getAttribute('value') || ''
+      const translated = getAdminStaticTranslation(value)
+      if (translated !== null && translated !== undefined && translated !== value) {
+        element.setAttribute('value', translated)
+      }
+    })
+}
+
+function translateStatusBadges() {
+  document
+    .querySelectorAll(
+      '.status-badge, .mini-card-status, .translation-status-pill, .admin-current-view, .admin-auth-message',
+    )
+    .forEach((element) => {
+      if (shouldSkipAdminRuntimeElement(element)) return
+      const text = normalizeAdminRuntimeText(element.textContent)
+      const translated = getAdminStaticTranslation(text)
+      if (translated !== null && translated !== undefined && translated !== text) {
+        setAdminTranslatedText(element, translated)
+      }
+    })
+}
+
+function translateAdminAttributes() {
+  document.querySelectorAll('[title], [aria-label]').forEach((element) => {
+    if (shouldSkipAdminRuntimeElement(element)) return
+
+    ;['title', 'aria-label'].forEach((attribute) => {
+      if (!element.hasAttribute(attribute)) return
+      if (attribute === 'title' && element.dataset.i18nTitle) return
+      if (attribute === 'aria-label' && element.dataset.i18nAriaLabel) return
+
+      const value = element.getAttribute(attribute) || ''
+      const translated = getAdminStaticTranslation(value)
+      if (translated !== null && translated !== undefined && translated !== value) {
+        element.setAttribute(attribute, translated)
+      }
+    })
+  })
+}
+
+function translateAdminUI() {
+  if (adminStaticTranslationRunning) return
+  adminStaticTranslationRunning = true
+  translateAdminDataI18n()
+  translateDynamicText()
+  translatePlaceholders()
+  translateButtons()
+  translateStatusBadges()
+  translateAdminAttributes()
   adminStaticTranslationRunning = false
+}
+
+function translateAdminStaticCopy() {
+  translateAdminUI()
+}
+
+function applyAdminLanguage() {
+  applyAdminTranslations()
 }
 
 function queueAdminStaticTranslation() {
@@ -968,6 +2258,17 @@ function setupAdminStaticTranslationObserver() {
       childList: true,
       subtree: true,
       characterData: true,
+      attributes: true,
+      attributeFilter: [
+        'aria-label',
+        'data-i18n',
+        'data-i18n-aria-label',
+        'data-i18n-placeholder',
+        'data-i18n-title',
+        'placeholder',
+        'title',
+        'value',
+      ],
     })
   })
 }
@@ -993,6 +2294,7 @@ function applyAdminTranslations() {
 
   document.querySelectorAll('[data-admin-language-select]').forEach((select) => {
     select.value = language
+    select.setAttribute('aria-label', adminT('languageAriaLabel'))
   })
 
   setAdminText('.admin-language-control span', 'languageLabel')
@@ -1103,7 +2405,7 @@ function applyAdminTranslations() {
   const auditBadge = document.querySelector('#adminAuditBadge')
   if (auditBadge) auditBadge.textContent = adminT('auditBadge')
 
-  translateAdminStaticCopy()
+  translateAdminUI()
   applyAdminTheme()
   updateAdminAuthIntro()
   updateAdminCurrentViewLabel()
@@ -1386,7 +2688,7 @@ window.fetch = async (resource, options) => {
       .clone()
       .json()
       .then((data) => {
-        showAdminPermissionNotice(data.message || 'Permessi insufficienti.')
+        showAdminPermissionNotice(data.message || adminUiText('Permessi insufficienti.'))
       })
       .catch(() => {
         showAdminPermissionNotice()
@@ -1582,6 +2884,87 @@ function refreshAdminDataAfterAuth() {
   })
 }
 
+function getActiveAdminViewId() {
+  const hash = window.location.hash.replace('#', '') || 'dashboard'
+  return document.querySelector(`[data-admin-view="${hash}"]`) ? hash : 'dashboard'
+}
+
+function runAdminViewLoader(loader) {
+  try {
+    if (typeof loader === 'function') loader()
+  } catch {}
+}
+
+function rerenderActiveAdminView() {
+  if (!adminApp || adminApp.hidden) return
+
+  const activeView = getActiveAdminViewId()
+  const loadersByView = {
+    dashboard: [loadOperationsSummary],
+    editor: [loadEditorPages, loadSections, loadThemeSettings],
+    catalogo: [loadProducts, loadCollections],
+    prodotti: [loadProducts],
+    inventario: [loadProducts],
+    collezioni: [loadCollections],
+    ordini: [loadOrders, loadOperationsSummary],
+    clienti: [loadCustomers, loadCustomerAccountsSummary],
+    contenuto: [],
+    media: [loadMediaItems],
+    'blog-admin': [loadBlogPosts],
+    policy: [loadPoliciesAdmin],
+    pagine: [loadPages],
+    menu: [loadMenuResources, loadMenus],
+    traduzioni: [loadTranslationManager],
+    metaobjects: [loadMetaobjects],
+    marketing: [loadDiscounts, loadCampaigns],
+    sconti: [loadDiscounts],
+    campagne: [loadCampaigns],
+    markets: [loadMarketsAdmin, loadLocalizedPricingAdmin],
+    'markets-paesi': [loadMarketsAdmin],
+    'markets-lingue': [loadMarketsAdmin],
+    'markets-valute': [loadMarketsAdmin],
+    'localized-pricing': [loadLocalizedPricingAdmin],
+    analisi: [loadAnalyticsDashboard],
+    traffico: [loadAnalyticsDashboard],
+    vendite: [loadAnalyticsDashboard],
+    'analytics-prodotti': [loadAnalyticsDashboard],
+    conversioni: [loadAnalyticsDashboard],
+    apps: [loadNativeApps],
+    'app-hub': [loadNativeApps],
+    'import-export': [loadImportExportHistory],
+    'google-suite': [loadGoogleSuiteSettings],
+    reviews: [loadReviews],
+    returns: [loadReturns],
+    upsells: [loadUpsells],
+    'product-feeds': [loadProductFeeds],
+    'gift-cards': [loadGiftCards],
+    'store-credit': [loadStoreCredits],
+    'abandoned-carts': [loadAbandonedCarts],
+    'search-filters': [loadSearchFilters],
+    'seo-technical': [loadSeoTechnical],
+    webhooks: [loadWebhooks],
+    'supplier-feeds': [loadSupplierFeeds],
+    subscriptions: [loadSubscriptions],
+    checkout: [loadTaxSettingsAdmin, loadPaymentSettingsAdmin, loadShippingMethodsAdmin],
+    tasse: [loadTaxSettingsAdmin],
+    pagamenti: [loadPaymentSettingsAdmin],
+    spedizioni: [loadShippingMethodsAdmin],
+    impostazioni: [loadCookiePrivacySettings],
+    integrazioni: [loadIntegrations],
+    utenti: [loadAdminUsers],
+    'activity-log': [loadActivityLog],
+    notifiche: [loadNotifications],
+    domini: [loadDomainsAdmin],
+    tenants: [loadTenantsAdmin],
+    performance: [loadPerformanceAdmin],
+    'store-health': [loadStoreHealth],
+    'launch-checklist': [loadLaunchChecklist],
+    seo: [loadSeoDashboard],
+  }
+
+  ;(loadersByView[activeView] || []).forEach(runAdminViewLoader)
+}
+
 async function initAdminAuth() {
   showAdminAuthGate({ message: adminT('authChecking') })
 
@@ -1594,7 +2977,7 @@ async function initAdminAuth() {
     if (data.migration_required) {
       showAdminAuthGate({
         migration: true,
-        message: data.message || 'Applica la migration 0011 prima di usare il login admin.',
+        message: data.message || adminUiText('Applica la migration 0011 prima di usare il login admin.'),
       })
       return
     }
@@ -1602,7 +2985,7 @@ async function initAdminAuth() {
     if (data.bootstrap_required) {
       showAdminAuthGate({
         bootstrap: true,
-        message: data.message || 'Crea il primo owner.',
+        message: data.message || adminUiText('Crea il primo owner.'),
       })
       return
     }
@@ -1613,7 +2996,7 @@ async function initAdminAuth() {
       return
     }
 
-    showAdminLogin(data.message || '')
+    showAdminLogin(data.message || adminUiText(''))
   } catch {
     showAdminAuthGate({
       message: 'Non e stato possibile verificare la sessione admin.',
@@ -1639,11 +3022,11 @@ adminLoginForm?.addEventListener('submit', async (event) => {
 
     if (!data.success) {
       if (data.bootstrap_required) {
-        showAdminAuthGate({ bootstrap: true, message: data.message || 'Crea il primo owner.' })
+        showAdminAuthGate({ bootstrap: true, message: data.message || adminUiText('Crea il primo owner.') })
         return
       }
 
-      setAdminAuthMessage(data.message || 'Credenziali non valide.', true)
+      setAdminAuthMessage(data.message || adminUiText('Credenziali non valide.'), true)
       return
     }
 
@@ -1673,7 +3056,7 @@ adminBootstrapForm?.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      setAdminAuthMessage(data.message || 'Bootstrap non riuscito.', true)
+      setAdminAuthMessage(data.message || adminUiText('Bootstrap non riuscito.'), true)
       return
     }
 
@@ -1747,12 +3130,17 @@ function adminItemMatchesSearch(item = {}, query = '', fields = []) {
 
 function renderAdminListState(target, message, state = 'empty') {
   if (!target) return
+  const translatedMessage = getAdminStaticTranslation(message) ?? message
+  const helperText = state === 'loading'
+    ? t('common.wait', 'Attendi qualche secondo.')
+    : t('common.updateOrSearch', 'Puoi aggiornare o modificare la ricerca.')
   target.innerHTML = `
     <div class="admin-list-state ${state}">
-      <strong>${escapeHtml(message)}</strong>
-      <span>${state === 'loading' ? 'Attendi qualche secondo.' : 'Puoi aggiornare o modificare la ricerca.'}</span>
+      <strong>${escapeHtml(translatedMessage)}</strong>
+      <span>${escapeHtml(helperText)}</span>
     </div>
   `
+  applyAdminLanguage()
 }
 
 function setAdminDashboardCount(key, value) {
@@ -1788,10 +3176,10 @@ function resetForm() {
   fillSeoFields('product')
   productVariantsDraft = []
   renderVariantRows()
-  formTitle.textContent = 'Aggiungi prodotto'
-  submitButton.textContent = 'Salva prodotto'
+  formTitle.textContent = t('products.add', 'Aggiungi prodotto')
+  submitButton.textContent = t('products.save', 'Salva prodotto')
   cancelEdit.hidden = true
-  message.textContent = ''
+  message.textContent = adminUiText('')
 }
 
 function fillForm(product) {
@@ -1815,8 +3203,8 @@ function fillForm(product) {
   }))
   renderVariantRows()
 
-  formTitle.textContent = 'Modifica prodotto'
-  submitButton.textContent = 'Aggiorna prodotto'
+  formTitle.textContent = t('products.edit', 'Modifica prodotto')
+  submitButton.textContent = t('products.update', 'Aggiorna prodotto')
   cancelEdit.hidden = false
 
   window.scrollTo({
@@ -1845,7 +3233,7 @@ function renderVariantRows() {
   if (!productVariantsList) return
 
   if (productVariantsDraft.length === 0) {
-    productVariantsList.innerHTML = '<p class="empty-variants">Nessuna variante configurata.</p>'
+    productVariantsList.innerHTML = `<p class="empty-variants">${escapeHtml(t('products.variant.empty', 'Nessuna variante configurata.'))}</p>`
     return
   }
 
@@ -1854,22 +3242,22 @@ function renderVariantRows() {
       (variant, index) => `
         <div class="variant-row" data-variant-row="${index}">
           <label>
-            Nome opzione
+            ${escapeHtml(t('products.variant.optionName', 'Nome opzione'))}
             <input
               type="text"
               data-variant-field="option_name"
               value="${escapeHtml(variant.option_name)}"
-              placeholder="Colore"
+              placeholder="${escapeHtml(t('products.variant.optionNamePlaceholder', 'Colore'))}"
             />
           </label>
 
           <label>
-            Valore
+            ${escapeHtml(t('products.variant.optionValue', 'Valore'))}
             <input
               type="text"
               data-variant-field="option_value"
               value="${escapeHtml(variant.option_value)}"
-              placeholder="Rosso"
+              placeholder="${escapeHtml(t('products.variant.optionValuePlaceholder', 'Rosso'))}"
             />
           </label>
 
@@ -1879,33 +3267,33 @@ function renderVariantRows() {
               type="text"
               data-variant-field="sku"
               value="${escapeHtml(variant.sku)}"
-              placeholder="SKU opzionale"
+              placeholder="${escapeHtml(t('products.variant.optionalSku', 'SKU opzionale'))}"
             />
           </label>
 
           <label>
-            Prezzo variante
+            ${escapeHtml(t('products.variant.price', 'Prezzo variante'))}
             <input
               type="number"
               step="0.01"
               data-variant-field="price"
               value="${variant.price_cents === '' ? '' : Number(variant.price_cents) / 100}"
-              placeholder="Lascia vuoto"
+              placeholder="${escapeHtml(t('products.variant.emptyValue', 'Lascia vuoto'))}"
             />
           </label>
 
           <label>
-            Stock variante
+            ${escapeHtml(t('products.variant.stock', 'Stock variante'))}
             <input
               type="number"
               data-variant-field="stock"
               value="${variant.stock ?? ''}"
-              placeholder="Lascia vuoto"
+              placeholder="${escapeHtml(t('products.variant.emptyValue', 'Lascia vuoto'))}"
             />
           </label>
 
           <button class="danger" type="button" data-remove-variant="${index}">
-            Rimuovi
+            ${escapeHtml(t('common.remove', 'Rimuovi'))}
           </button>
         </div>
       `,
@@ -1944,14 +3332,14 @@ function readVariantRows() {
 }
 
 async function loadProducts() {
-  renderAdminListState(productsList, 'Caricamento prodotti...', 'loading')
+  renderAdminListState(productsList, t('products.loading', 'Caricamento prodotti...'), 'loading')
 
   try {
     const response = await fetch('/api/products')
     const data = await response.json()
 
     if (!data.success) {
-      renderAdminListState(productsList, 'Errore nel caricamento prodotti.', 'error')
+      renderAdminListState(productsList, t('products.loadError', 'Errore nel caricamento prodotti.'), 'error')
       return
     }
 
@@ -1961,7 +3349,7 @@ async function loadProducts() {
     populateNativeAppProductSelects()
 
     if (data.products.length === 0) {
-      renderAdminListState(productsList, 'Nessun prodotto trovato.')
+      renderAdminListState(productsList, t('products.empty', 'Nessun prodotto trovato.'))
       return
     }
 
@@ -1977,7 +3365,7 @@ async function loadProducts() {
     )
 
     if (!visibleProducts.length) {
-      renderAdminListState(productsList, 'Nessun prodotto corrisponde alla ricerca.')
+      renderAdminListState(productsList, t('products.noSearchResults', 'Nessun prodotto corrisponde alla ricerca.'))
       return
     }
 
@@ -1986,19 +3374,19 @@ async function loadProducts() {
         (product) => `
           <article class="product-item">
             <h3>${escapeHtml(product.name)}</h3>
-            <p>${escapeHtml(product.description || 'Nessuna descrizione')}</p>
+            <p>${escapeHtml(product.description || t('products.noDescription', 'Nessuna descrizione'))}</p>
 
             <div class="meta">
               <span>${formatMoney(product.price_cents)}</span>
-              <span>Stock: ${product.stock}</span>
-              <span>${escapeHtml(product.category || 'Senza categoria')}</span>
-              <span>${escapeHtml(product.collection_slug || 'Senza collezione')}</span>
-              <span>${product.variants?.length || 0} varianti</span>
+              <span>${escapeHtml(t('products.stock', 'Stock'))}: ${product.stock}</span>
+              <span>${escapeHtml(product.category || t('products.noCategory', 'Senza categoria'))}</span>
+              <span>${escapeHtml(product.collection_slug || t('products.noCollection', 'Senza collezione'))}</span>
+              <span>${product.variants?.length || 0} ${escapeHtml(t('products.variants', 'varianti'))}</span>
             </div>
 
             <div class="product-actions">
-              <button type="button" data-edit="${product.id}">Modifica</button>
-              <button type="button" class="danger" data-disable="${product.id}">Disattiva</button>
+              <button type="button" data-edit="${product.id}">${escapeHtml(t('common.edit', 'Modifica'))}</button>
+              <button type="button" class="danger" data-disable="${product.id}">${escapeHtml(t('common.disable', 'Disattiva'))}</button>
             </div>
           </article>
         `,
@@ -2014,7 +3402,7 @@ async function loadProducts() {
 
     document.querySelectorAll('[data-disable]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const confirmed = confirm('Vuoi disattivare questo prodotto?')
+        const confirmed = confirm(t('products.disableConfirm', 'Vuoi disattivare questo prodotto?'))
         if (!confirmed) return
 
         const response = await fetch('/api/admin/products', {
@@ -2030,15 +3418,16 @@ async function loadProducts() {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore durante la disattivazione.')
+          alert(result.message || t('products.disableError', 'Errore durante la disattivazione.'))
           return
         }
 
         loadProducts()
       })
     })
+    applyAdminLanguage()
   } catch (error) {
-    renderAdminListState(productsList, 'Errore di connessione alla API.', 'error')
+    renderAdminListState(productsList, t('products.connectionError', 'Errore di connessione alla API.'), 'error')
   }
 }
 
@@ -2076,9 +3465,9 @@ function getInventoryRows() {
 }
 
 function inventoryStatus(row, threshold) {
-  if (row.stock <= 0) return { key: 'out', label: 'Out of stock' }
-  if (row.stock <= threshold) return { key: 'low', label: 'Stock basso' }
-  return { key: 'ok', label: 'Disponibile' }
+  if (row.stock <= 0) return { key: 'out', label: t('products.outOfStock', 'Esaurito') }
+  if (row.stock <= threshold) return { key: 'low', label: t('products.lowStock', 'Stock basso') }
+  return { key: 'ok', label: t('common.available', 'Disponibile') }
 }
 
 function renderInventory() {
@@ -2104,20 +3493,20 @@ function renderInventory() {
     const availableCount = enrichedRows.filter((row) => row.status.key === 'ok').length
 
     inventorySummary.innerHTML = `
-      <article><strong>${enrichedRows.length}</strong><span>Righe stock</span></article>
-      <article><strong>${availableCount}</strong><span>Disponibili</span></article>
-      <article><strong>${lowCount}</strong><span>Stock basso</span></article>
-      <article><strong>${outCount}</strong><span>Out of stock</span></article>
+      <article><strong>${enrichedRows.length}</strong><span>${adminUiHtml('Righe stock')}</span></article>
+      <article><strong>${availableCount}</strong><span>${escapeHtml(t('common.available', 'Disponibile'))}</span></article>
+      <article><strong>${lowCount}</strong><span>${escapeHtml(t('products.lowStock', 'Stock basso'))}</span></article>
+      <article><strong>${outCount}</strong><span>${escapeHtml(t('products.outOfStock', 'Esaurito'))}</span></article>
     `
   }
 
   if (!enrichedRows.length) {
-    inventoryList.innerHTML = '<p class="admin-empty">Nessun prodotto disponibile per l inventario.</p>'
+    inventoryList.innerHTML = `<p class="admin-empty">${adminUiHtml('Nessun prodotto disponibile per l inventario.')}</p>`
     return
   }
 
   if (!visibleRows.length) {
-    inventoryList.innerHTML = '<p class="admin-empty">Nessuna riga inventario corrisponde ai filtri.</p>'
+    inventoryList.innerHTML = `<p class="admin-empty">${adminUiHtml('Nessuna riga inventario corrisponde ai filtri.')}</p>`
     return
   }
 
@@ -2126,19 +3515,19 @@ function renderInventory() {
       <article class="product-item inventory-item" data-inventory-row="${escapeHtml(row.id)}">
         <div>
           <h3>${escapeHtml(row.name)}</h3>
-          <p>${escapeHtml(row.type === 'variant' ? `Variante - SKU ${row.sku || 'N/D'}` : 'Stock prodotto base')}</p>
+          <p>${row.type === 'variant' ? `${adminUiHtml('Variante')} - SKU ${escapeHtml(row.sku || 'N/D')}` : adminUiHtml('Stock prodotto base')}</p>
         </div>
         <div class="meta">
           <span>${escapeHtml(row.status.label)}</span>
-          <span>${escapeHtml(row.category || 'Senza categoria')}</span>
-          <span>${escapeHtml(row.collection || 'Senza collezione')}</span>
+          <span>${escapeHtml(row.category || t('products.noCategory', 'Senza categoria'))}</span>
+          <span>${escapeHtml(row.collection || t('products.noCollection', 'Senza collezione'))}</span>
           <span>${formatMoney(row.price_cents || 0)}</span>
         </div>
         <div class="inventory-actions">
           <label>Stock
             <input type="number" min="0" step="1" value="${row.stock}" data-inventory-stock="${escapeHtml(row.id)}" />
           </label>
-          <button type="button" data-save-stock="${escapeHtml(row.id)}">Aggiorna stock</button>
+          <button type="button" data-save-stock="${escapeHtml(row.id)}">${adminUiHtml('Aggiorna stock')}</button>
         </div>
       </article>
     `)
@@ -2151,7 +3540,7 @@ function renderInventory() {
       const stock = Number(input?.value || 0)
 
       if (!row || Number.isNaN(stock) || stock < 0) {
-        alert('Stock non valido.')
+        alert(adminUiText('Stock non valido.'))
         return
       }
 
@@ -2169,13 +3558,13 @@ function renderInventory() {
         const data = await response.json()
 
         if (!data.success) {
-          alert(data.message || 'Aggiornamento stock non riuscito.')
+          alert(data.message || adminUiText('Aggiornamento stock non riuscito.'))
           return
         }
 
         await loadProducts()
       } catch {
-        alert('Errore di connessione inventario.')
+        alert(adminUiText('Errore di connessione inventario.'))
       }
     })
   })
@@ -2191,7 +3580,7 @@ refreshInventoryButton?.addEventListener('click', loadProducts)
 productForm.addEventListener('submit', async (event) => {
   event.preventDefault()
 
-  message.textContent = 'Salvataggio in corso...'
+  message.textContent = adminUiText('Salvataggio in corso...')
 
   const product = getFormProduct()
   const isEditing = Boolean(product.id)
@@ -2208,7 +3597,7 @@ productForm.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      message.textContent = data.message || 'Errore nel salvataggio.'
+      message.textContent = data.message || adminUiText('Errore nel salvataggio.')
       return
     }
 
@@ -2219,7 +3608,7 @@ productForm.addEventListener('submit', async (event) => {
     resetForm()
     loadProducts()
   } catch (error) {
-    message.textContent = 'Errore di connessione.'
+    message.textContent = adminUiText('Errore di connessione.')
   }
 })
 
@@ -2505,7 +3894,7 @@ function renderNativeApps(apps = []) {
         <div class="app-group app-group--${escapeHtml(groupVisual.tone)}">
           <div class="app-group-heading">
             <span>${escapeHtml(groupVisual.icon)}</span>
-            <h3>${escapeHtml(group)}</h3>
+            <h3>${adminUiHtml(group)}</h3>
           </div>
           <div class="app-group-grid">
             ${groupApps
@@ -2518,15 +3907,15 @@ function renderNativeApps(apps = []) {
                   <a class="mini-card app-card app-card--${escapeHtml(tone)} app-card--${escapeHtml(slugifyCss(app.id || app.name))} ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
                     <div class="app-card-topline">
                       <span class="app-card-icon" aria-hidden="true">${escapeHtml(icon)}</span>
-                      <span class="mini-card-status status-badge--${escapeHtml(appStatusClass(statusLabel))}">${escapeHtml(app.badge || 'Native app')}</span>
+                      <span class="mini-card-status status-badge--${escapeHtml(appStatusClass(statusLabel))}">${adminUiHtml(app.badge || 'Native app')}</span>
                     </div>
                     <h3>${escapeHtml(app.name)}</h3>
-                    <p>${escapeHtml(app.description)}</p>
+                    <p>${adminUiHtml(app.description)}</p>
                     <div class="meta app-card-meta">
-                      <span class="category-chip category-chip--${escapeHtml(tone)}">${escapeHtml(app.category || 'Module')}</span>
-                      <span class="status-chip status-chip--${escapeHtml(appStatusClass(statusLabel))}">${escapeHtml(statusLabel)}</span>
+                      <span class="category-chip category-chip--${escapeHtml(tone)}">${adminUiHtml(app.category || t('apps.module', 'Modulo'))}</span>
+                      <span class="status-chip status-chip--${escapeHtml(appStatusClass(statusLabel))}">${adminUiHtml(statusLabel)}</span>
                     </div>
-                    <strong>Apri <span aria-hidden="true">-&gt;</span></strong>
+                    <strong>${escapeHtml(t('apps.openCta', 'Apri'))} <span aria-hidden="true">-&gt;</span></strong>
                   </a>
                 `
               })
@@ -2559,8 +3948,8 @@ function enhanceAppDetailShells() {
     const meta = document.createElement('div')
     meta.className = 'app-detail-meta'
     meta.innerHTML = `
-      <span class="category-chip category-chip--${tone}">${escapeHtml(visual.category)}</span>
-      <span class="status-chip status-chip--${appStatusClass(visual.status)}">${escapeHtml(visual.status)}</span>
+      <span class="category-chip category-chip--${tone}">${adminUiHtml(visual.category)}</span>
+      <span class="status-chip status-chip--${appStatusClass(visual.status)}">${adminUiHtml(visual.status)}</span>
     `
     const heading = title.querySelector('div')
     if (heading) heading.append(meta)
@@ -2596,19 +3985,19 @@ async function loadGoogleSuiteSettings() {
     const data = await response.json()
 
     if (!response.ok || !data.success) {
-      if (googleSuiteMessage) googleSuiteMessage.textContent = data.message || 'Google Suite non disponibile.'
+      if (googleSuiteMessage) googleSuiteMessage.textContent = data.message || adminUiText('Google Suite non disponibile.')
       return
     }
 
     fillGoogleSuiteForm(data.settings || {})
   } catch {
-    if (googleSuiteMessage) googleSuiteMessage.textContent = 'Errore caricamento Google Suite.'
+    if (googleSuiteMessage) googleSuiteMessage.textContent = adminUiText('Errore caricamento Google Suite.')
   }
 }
 
 googleSuiteForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (googleSuiteMessage) googleSuiteMessage.textContent = 'Salvataggio Google Suite...'
+  if (googleSuiteMessage) googleSuiteMessage.textContent = adminUiText('Salvataggio Google Suite...')
 
   try {
     const response = await fetch('/api/admin/google', {
@@ -2624,7 +4013,7 @@ googleSuiteForm?.addEventListener('submit', async (event) => {
 
     if (data.success) fillGoogleSuiteForm(data.settings || readGoogleSuitePayload())
   } catch {
-    if (googleSuiteMessage) googleSuiteMessage.textContent = 'Salvataggio Google Suite non riuscito.'
+    if (googleSuiteMessage) googleSuiteMessage.textContent = adminUiText('Salvataggio Google Suite non riuscito.')
   }
 })
 
@@ -2654,8 +4043,8 @@ async function loadCookiePrivacySettings() {
   if (!cookieSettingsForm && !privacySettingsStatus) return
 
   if (!canAdminViewSensitiveSettings()) {
-    if (privacySettingsStatus) privacySettingsStatus.textContent = 'Permessi insufficienti per leggere impostazioni privacy.'
-    if (cookieSettingsMessage) cookieSettingsMessage.textContent = 'Permessi insufficienti.'
+    if (privacySettingsStatus) privacySettingsStatus.textContent = adminUiText('Permessi insufficienti per leggere impostazioni privacy.')
+    if (cookieSettingsMessage) cookieSettingsMessage.textContent = adminUiText('Permessi insufficienti.')
     return
   }
 
@@ -2664,13 +4053,13 @@ async function loadCookiePrivacySettings() {
     const data = await response.json()
 
     if (!data.success) {
-      if (cookieSettingsMessage) cookieSettingsMessage.textContent = data.message || 'Cookie settings non disponibili.'
+      if (cookieSettingsMessage) cookieSettingsMessage.textContent = data.message || adminUiText('Cookie settings non disponibili.')
       return
     }
 
     fillCookieSettings(settingsListToMap(data.settings || []))
   } catch {
-    if (cookieSettingsMessage) cookieSettingsMessage.textContent = 'Errore caricamento cookie settings.'
+    if (cookieSettingsMessage) cookieSettingsMessage.textContent = adminUiText('Errore caricamento cookie settings.')
   }
 }
 
@@ -2678,11 +4067,11 @@ cookieSettingsForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   if (!canAdminViewSensitiveSettings()) {
-    cookieSettingsMessage.textContent = 'Permessi insufficienti.'
+    cookieSettingsMessage.textContent = adminUiText('Permessi insufficienti.')
     return
   }
 
-  cookieSettingsMessage.textContent = 'Salvataggio cookie settings...'
+  cookieSettingsMessage.textContent = adminUiText('Salvataggio cookie settings...')
 
   try {
     const response = await fetch('/api/admin/settings', {
@@ -2698,10 +4087,10 @@ cookieSettingsForm?.addEventListener('submit', async (event) => {
     })
     const data = await response.json()
 
-    cookieSettingsMessage.textContent = data.message || 'Cookie settings salvate.'
+    cookieSettingsMessage.textContent = data.message || adminUiText('Cookie settings salvate.')
     if (data.success) loadCookiePrivacySettings()
   } catch {
-    cookieSettingsMessage.textContent = 'Salvataggio cookie settings non riuscito.'
+    cookieSettingsMessage.textContent = adminUiText('Salvataggio cookie settings non riuscito.')
   }
 })
 
@@ -2723,7 +4112,7 @@ async function loadNativeApps() {
 async function prepareExport(resource, format, previewElement, filenameBase, extraParams = {}) {
   if (!previewElement) return
 
-  previewElement.textContent = 'Preparazione export...'
+  previewElement.textContent = adminUiText('Preparazione export...')
 
   try {
     const params = new URLSearchParams({
@@ -2742,7 +4131,7 @@ async function prepareExport(resource, format, previewElement, filenameBase, ext
 
     const data = await response.json()
     if (!response.ok || !data.success) {
-      previewElement.textContent = data.message || 'Export non disponibile.'
+      previewElement.textContent = data.message || adminUiText('Export non disponibile.')
       return
     }
 
@@ -2750,21 +4139,21 @@ async function prepareExport(resource, format, previewElement, filenameBase, ext
     previewElement.textContent = text
     downloadTextFile(`${filenameBase}.json`, text)
   } catch {
-    previewElement.textContent = 'Export non riuscito. Riprova.'
+    previewElement.textContent = adminUiText('Export non riuscito. Riprova.')
   }
 }
 
 async function loadImportExportHistory() {
   if (!importExportHistoryPreview) return
 
-  importExportHistoryPreview.textContent = 'Caricamento history...'
+  importExportHistoryPreview.textContent = adminUiText('Caricamento history...')
 
   try {
     const response = await fetch('/api/admin/import-export?resource=history&format=json')
     const data = await response.json()
 
     if (!response.ok || !data.success) {
-      importExportHistoryPreview.textContent = data.message || 'History non disponibile.'
+      importExportHistoryPreview.textContent = data.message || adminUiText('History non disponibile.')
       return
     }
 
@@ -2775,13 +4164,13 @@ async function loadImportExportHistory() {
           .join('\n')
       : 'Nessun job DataFlow registrato. Le prossime esportazioni/importazioni appariranno qui.'
   } catch {
-    importExportHistoryPreview.textContent = 'History non disponibile.'
+    importExportHistoryPreview.textContent = adminUiText('History non disponibile.')
   }
 }
 
 async function runImport({ resource, format, content, dryRun, previewElement, messageElement }) {
   if (messageElement) messageElement.textContent = dryRun ? 'Validazione import...' : 'Import in corso...'
-  if (previewElement) previewElement.textContent = ''
+  if (previewElement) previewElement.textContent = adminUiText('')
 
   try {
     const rows = parseImportRows(format, content)
@@ -2809,8 +4198,8 @@ async function runImport({ resource, format, content, dryRun, previewElement, me
       if (resource === 'translations' || resource === 'translation_package') loadTranslationManager()
     }
   } catch {
-    if (messageElement) messageElement.textContent = 'Import non riuscito. Verifica formato e riprova.'
-    if (previewElement) previewElement.textContent = 'Il contenuto deve essere JSON valido o CSV coerente con il template.'
+    if (messageElement) messageElement.textContent = adminUiText('Import non riuscito. Verifica formato e riprova.')
+    if (previewElement) previewElement.textContent = adminUiText('Il contenuto deve essere JSON valido o CSV coerente con il template.')
   }
 }
 
@@ -2979,8 +4368,8 @@ function renderProviderStatus(container, providers = []) {
       (provider) => `
         <article class="metric-card">
           <span>${escapeHtml(provider.provider)}</span>
-          <strong>${provider.configured ? 'Ready' : 'Not configured'}</strong>
-          <small>${escapeHtml(provider.status || provider.required_env || 'Provider required for real sending')}</small>
+          <strong>${escapeHtml(provider.configured ? t('apps.ready', 'Pronto') : t('apps.notConfigured', 'Non configurato'))}</strong>
+          <small>${adminUiHtml(provider.status || provider.required_env || t('apps.providerRequired', 'Provider richiesto per invio reale'))}</small>
         </article>
       `,
     )
@@ -2993,7 +4382,7 @@ async function loadEmailAutomations() {
     const response = await fetch('/api/admin/email-automations')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      if (emailAutomationsList) emailAutomationsList.textContent = data.message || 'Email Automations non disponibile.'
+      if (emailAutomationsList) emailAutomationsList.textContent = data.message || adminUiText('Email Automations non disponibile.')
       return
     }
     renderProviderStatus(emailAutomationsProviderStatus, data.provider_status || [])
@@ -3001,7 +4390,7 @@ async function loadEmailAutomations() {
     const logs = data.logs || []
     emailAutomationsList.innerHTML = `
       <div class="placeholder-panel compact-panel">
-        <span class="status-badge">${escapeHtml(data.sending_mode === 'provider_ready' ? 'Provider ready' : 'Mock / logging only')}</span>
+        <span class="status-badge">${adminUiHtml(data.sending_mode === 'provider_ready' ? 'Provider ready' : 'Mock / logging only')}</span>
         <p>Provider required for real sending. Nessuna chiave viene salvata nel repository.</p>
       </div>
       ${templates.length ? templates.map((item) => `
@@ -3014,13 +4403,13 @@ async function loadEmailAutomations() {
       <pre class="admin-pre">${logs.length ? logs.slice(0, 10).map((log) => `${log.created_at || ''} - ${log.type || ''} - ${log.status || ''}`).join('\n') : 'Nessun log email.'}</pre>
     `
   } catch {
-    if (emailAutomationsList) emailAutomationsList.textContent = 'Email Automations non disponibile.'
+    if (emailAutomationsList) emailAutomationsList.textContent = adminUiText('Email Automations non disponibile.')
   }
 }
 
 emailAutomationForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (emailAutomationMessage) emailAutomationMessage.textContent = 'Salvataggio template...'
+  if (emailAutomationMessage) emailAutomationMessage.textContent = adminUiText('Salvataggio template...')
   try {
     const response = await fetch('/api/admin/email-automations', {
       method: 'POST',
@@ -3033,10 +4422,10 @@ emailAutomationForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    if (emailAutomationMessage) emailAutomationMessage.textContent = data.message || 'Template salvato.'
+    if (emailAutomationMessage) emailAutomationMessage.textContent = data.message || adminUiText('Template salvato.')
     if (data.success) loadEmailAutomations()
   } catch {
-    if (emailAutomationMessage) emailAutomationMessage.textContent = 'Salvataggio non riuscito.'
+    if (emailAutomationMessage) emailAutomationMessage.textContent = adminUiText('Salvataggio non riuscito.')
   }
 })
 refreshEmailAutomationsButton?.addEventListener('click', loadEmailAutomations)
@@ -3074,13 +4463,13 @@ function fillReviewForm(review) {
 
 async function loadReviews() {
   if (!reviewsList) return
-  reviewsList.textContent = 'Caricamento reviews...'
+  reviewsList.textContent = adminUiText('Caricamento reviews...')
   try {
     const status = reviewStatusFilter?.value || ''
     const response = await fetch(`/api/admin/reviews${status ? `?status=${encodeURIComponent(status)}` : ''}`)
     const data = await response.json()
     if (!response.ok || !data.success) {
-      reviewsList.textContent = data.message || 'Reviews non disponibili.'
+      reviewsList.textContent = data.message || adminUiText('Reviews non disponibili.')
       return
     }
     const reviews = data.reviews || []
@@ -3112,19 +4501,19 @@ async function loadReviews() {
       button.addEventListener('click', async () => {
         const response = await fetch(`/api/admin/reviews?id=${button.dataset.deleteReview}`, { method: 'DELETE' })
         const data = await response.json()
-        if (reviewMessage) reviewMessage.textContent = data.message || 'Review aggiornata.'
+        if (reviewMessage) reviewMessage.textContent = data.message || adminUiText('Review aggiornata.')
         loadReviews()
       })
     })
   } catch {
-    reviewsList.textContent = 'Reviews non disponibili.'
+    reviewsList.textContent = adminUiText('Reviews non disponibili.')
   }
 }
 
 reviewForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
   const payload = reviewPayload()
-  if (reviewMessage) reviewMessage.textContent = 'Salvataggio review...'
+  if (reviewMessage) reviewMessage.textContent = adminUiText('Salvataggio review...')
   try {
     const response = await fetch('/api/admin/reviews', {
       method: payload.id ? 'PUT' : 'POST',
@@ -3132,13 +4521,13 @@ reviewForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (reviewMessage) reviewMessage.textContent = data.message || 'Review salvata.'
+    if (reviewMessage) reviewMessage.textContent = data.message || adminUiText('Review salvata.')
     if (data.success) {
       resetReviewForm()
       loadReviews()
     }
   } catch {
-    if (reviewMessage) reviewMessage.textContent = 'Salvataggio review non riuscito.'
+    if (reviewMessage) reviewMessage.textContent = adminUiText('Salvataggio review non riuscito.')
   }
 })
 refreshReviewsButton?.addEventListener('click', loadReviews)
@@ -3178,12 +4567,12 @@ function fillReturnForm(item) {
 
 async function loadReturns() {
   if (!returnsList) return
-  returnsList.textContent = 'Caricamento resi...'
+  returnsList.textContent = adminUiText('Caricamento resi...')
   try {
     const response = await fetch('/api/admin/returns')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      returnsList.textContent = data.message || 'Returns non disponibili.'
+      returnsList.textContent = data.message || adminUiText('Returns non disponibili.')
       return
     }
     const returns = data.returns || []
@@ -3214,19 +4603,19 @@ async function loadReturns() {
       button.addEventListener('click', async () => {
         const response = await fetch(`/api/admin/returns?id=${button.dataset.deleteReturn}`, { method: 'DELETE' })
         const data = await response.json()
-        if (returnMessage) returnMessage.textContent = data.message || 'Return aggiornato.'
+        if (returnMessage) returnMessage.textContent = data.message || adminUiText('Return aggiornato.')
         loadReturns()
       })
     })
   } catch {
-    returnsList.textContent = 'Returns non disponibili.'
+    returnsList.textContent = adminUiText('Returns non disponibili.')
   }
 }
 
 returnForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
   const payload = returnPayload()
-  if (returnMessage) returnMessage.textContent = 'Salvataggio reso...'
+  if (returnMessage) returnMessage.textContent = adminUiText('Salvataggio reso...')
   try {
     const response = await fetch('/api/admin/returns', {
       method: payload.id ? 'PUT' : 'POST',
@@ -3234,13 +4623,13 @@ returnForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (returnMessage) returnMessage.textContent = data.message || 'Reso salvato.'
+    if (returnMessage) returnMessage.textContent = data.message || adminUiText('Reso salvato.')
     if (data.success) {
       resetReturnForm()
       loadReturns()
     }
   } catch {
-    if (returnMessage) returnMessage.textContent = 'Salvataggio reso non riuscito.'
+    if (returnMessage) returnMessage.textContent = adminUiText('Salvataggio reso non riuscito.')
   }
 })
 refreshReturnsButton?.addEventListener('click', loadReturns)
@@ -3284,12 +4673,12 @@ function fillUpsellForm(rule) {
 
 async function loadUpsells() {
   if (!upsellsList) return
-  upsellsList.textContent = 'Caricamento upsell...'
+  upsellsList.textContent = adminUiText('Caricamento upsell...')
   try {
     const response = await fetch('/api/admin/upsells')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      upsellsList.textContent = data.message || 'Upsell non disponibile.'
+      upsellsList.textContent = data.message || adminUiText('Upsell non disponibile.')
       return
     }
     const rules = data.rules || []
@@ -3320,19 +4709,19 @@ async function loadUpsells() {
       button.addEventListener('click', async () => {
         const response = await fetch(`/api/admin/upsells?id=${button.dataset.deleteUpsell}`, { method: 'DELETE' })
         const data = await response.json()
-        if (upsellMessage) upsellMessage.textContent = data.message || 'Upsell aggiornato.'
+        if (upsellMessage) upsellMessage.textContent = data.message || adminUiText('Upsell aggiornato.')
         loadUpsells()
       })
     })
   } catch {
-    upsellsList.textContent = 'Upsell non disponibile.'
+    upsellsList.textContent = adminUiText('Upsell non disponibile.')
   }
 }
 
 upsellForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
   const payload = upsellPayload()
-  if (upsellMessage) upsellMessage.textContent = 'Salvataggio upsell...'
+  if (upsellMessage) upsellMessage.textContent = adminUiText('Salvataggio upsell...')
   try {
     const response = await fetch('/api/admin/upsells', {
       method: payload.id ? 'PUT' : 'POST',
@@ -3340,13 +4729,13 @@ upsellForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (upsellMessage) upsellMessage.textContent = data.message || 'Upsell salvato.'
+    if (upsellMessage) upsellMessage.textContent = data.message || adminUiText('Upsell salvato.')
     if (data.success) {
       resetUpsellForm()
       loadUpsells()
     }
   } catch {
-    if (upsellMessage) upsellMessage.textContent = 'Salvataggio upsell non riuscito.'
+    if (upsellMessage) upsellMessage.textContent = adminUiText('Salvataggio upsell non riuscito.')
   }
 })
 refreshUpsellsButton?.addEventListener('click', loadUpsells)
@@ -3365,12 +4754,12 @@ function fillProductFeedForm(feed) {
 
 async function loadProductFeeds() {
   if (!productFeedsList) return
-  productFeedsList.textContent = 'Caricamento product feeds...'
+  productFeedsList.textContent = adminUiText('Caricamento product feeds...')
   try {
     const response = await fetch('/api/admin/product-feeds')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      productFeedsList.textContent = data.message || 'Product Feed non disponibile.'
+      productFeedsList.textContent = data.message || adminUiText('Product Feed non disponibile.')
       return
     }
     const feeds = data.feeds || []
@@ -3391,13 +4780,13 @@ async function loadProductFeeds() {
       button.addEventListener('click', () => fillProductFeedForm(feeds.find((feed) => feed.provider === button.dataset.editFeed)))
     })
   } catch {
-    productFeedsList.textContent = 'Product Feed non disponibile.'
+    productFeedsList.textContent = adminUiText('Product Feed non disponibile.')
   }
 }
 
 productFeedForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (productFeedMessage) productFeedMessage.textContent = 'Salvataggio feed...'
+  if (productFeedMessage) productFeedMessage.textContent = adminUiText('Salvataggio feed...')
   try {
     const response = await fetch('/api/admin/product-feeds', {
       method: 'PUT',
@@ -3413,10 +4802,10 @@ productFeedForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    if (productFeedMessage) productFeedMessage.textContent = data.message || 'Feed salvato.'
+    if (productFeedMessage) productFeedMessage.textContent = data.message || adminUiText('Feed salvato.')
     if (data.success) loadProductFeeds()
   } catch {
-    if (productFeedMessage) productFeedMessage.textContent = 'Salvataggio feed non riuscito.'
+    if (productFeedMessage) productFeedMessage.textContent = adminUiText('Salvataggio feed non riuscito.')
   }
 })
 refreshProductFeedsButton?.addEventListener('click', loadProductFeeds)
@@ -3442,12 +4831,12 @@ function fillGiftCardForm(card) {
 
 async function loadGiftCards() {
   if (!giftCardsList) return
-  giftCardsList.textContent = 'Caricamento gift cards...'
+  giftCardsList.textContent = adminUiText('Caricamento gift cards...')
   try {
     const response = await fetch('/api/admin/gift-cards')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      giftCardsList.textContent = data.message || 'Gift cards non disponibili.'
+      giftCardsList.textContent = data.message || adminUiText('Gift cards non disponibili.')
       return
     }
     const cards = data.gift_cards || []
@@ -3483,18 +4872,18 @@ async function loadGiftCards() {
           body: JSON.stringify({ id: Number(button.dataset.disableGiftCard) }),
         })
         const data = await response.json()
-        if (giftCardMessage) giftCardMessage.textContent = data.message || 'Gift card aggiornata.'
+        if (giftCardMessage) giftCardMessage.textContent = data.message || adminUiText('Gift card aggiornata.')
         loadGiftCards()
       })
     })
   } catch {
-    giftCardsList.textContent = 'Gift cards non disponibili.'
+    giftCardsList.textContent = adminUiText('Gift cards non disponibili.')
   }
 }
 
 giftCardForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (giftCardMessage) giftCardMessage.textContent = 'Salvataggio gift card...'
+  if (giftCardMessage) giftCardMessage.textContent = adminUiText('Salvataggio gift card...')
   const payload = {
     id: Number(document.querySelector('#giftCardId')?.value || 0) || undefined,
     code: document.querySelector('#giftCardCode')?.value.trim(),
@@ -3512,13 +4901,13 @@ giftCardForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (giftCardMessage) giftCardMessage.textContent = data.message || 'Gift card salvata.'
+    if (giftCardMessage) giftCardMessage.textContent = data.message || adminUiText('Gift card salvata.')
     if (data.success) {
       resetGiftCardForm()
       loadGiftCards()
     }
   } catch {
-    if (giftCardMessage) giftCardMessage.textContent = 'Salvataggio gift card non riuscito.'
+    if (giftCardMessage) giftCardMessage.textContent = adminUiText('Salvataggio gift card non riuscito.')
   }
 })
 refreshGiftCardsButton?.addEventListener('click', loadGiftCards)
@@ -3542,12 +4931,12 @@ function fillStoreCreditForm(credit) {
 
 async function loadStoreCredits() {
   if (!storeCreditsList) return
-  storeCreditsList.textContent = 'Caricamento crediti...'
+  storeCreditsList.textContent = adminUiText('Caricamento crediti...')
   try {
     const response = await fetch('/api/admin/store-credit')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      storeCreditsList.textContent = data.message || 'Store credit non disponibile.'
+      storeCreditsList.textContent = data.message || adminUiText('Store credit non disponibile.')
       return
     }
     const credits = data.store_credits || []
@@ -3582,18 +4971,18 @@ async function loadStoreCredits() {
           body: JSON.stringify({ id: Number(button.dataset.disableStoreCredit) }),
         })
         const data = await response.json()
-        if (storeCreditMessage) storeCreditMessage.textContent = data.message || 'Credito aggiornato.'
+        if (storeCreditMessage) storeCreditMessage.textContent = data.message || adminUiText('Credito aggiornato.')
         loadStoreCredits()
       })
     })
   } catch {
-    storeCreditsList.textContent = 'Store credit non disponibile.'
+    storeCreditsList.textContent = adminUiText('Store credit non disponibile.')
   }
 }
 
 storeCreditForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (storeCreditMessage) storeCreditMessage.textContent = 'Salvataggio credito...'
+  if (storeCreditMessage) storeCreditMessage.textContent = adminUiText('Salvataggio credito...')
   const payload = {
     id: Number(document.querySelector('#storeCreditId')?.value || 0) || undefined,
     customer_email: document.querySelector('#storeCreditCustomerEmail')?.value.trim(),
@@ -3608,13 +4997,13 @@ storeCreditForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (storeCreditMessage) storeCreditMessage.textContent = data.message || 'Credito salvato.'
+    if (storeCreditMessage) storeCreditMessage.textContent = data.message || adminUiText('Credito salvato.')
     if (data.success) {
       resetStoreCreditForm()
       loadStoreCredits()
     }
   } catch {
-    if (storeCreditMessage) storeCreditMessage.textContent = 'Salvataggio credito non riuscito.'
+    if (storeCreditMessage) storeCreditMessage.textContent = adminUiText('Salvataggio credito non riuscito.')
   }
 })
 refreshStoreCreditsButton?.addEventListener('click', loadStoreCredits)
@@ -3622,12 +5011,12 @@ cancelStoreCreditEdit?.addEventListener('click', resetStoreCreditForm)
 
 async function loadAbandonedCarts() {
   if (!abandonedCartsList) return
-  abandonedCartsList.textContent = 'Caricamento carrelli...'
+  abandonedCartsList.textContent = adminUiText('Caricamento carrelli...')
   try {
     const response = await fetch('/api/admin/abandoned-carts')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      abandonedCartsList.textContent = data.message || 'Abandoned carts non disponibili.'
+      abandonedCartsList.textContent = data.message || adminUiText('Abandoned carts non disponibili.')
       return
     }
     const carts = data.carts || []
@@ -3659,7 +5048,7 @@ async function loadAbandonedCarts() {
       })
     })
   } catch {
-    abandonedCartsList.textContent = 'Abandoned carts non disponibili.'
+    abandonedCartsList.textContent = adminUiText('Abandoned carts non disponibili.')
   }
 }
 refreshAbandonedCartsButton?.addEventListener('click', loadAbandonedCarts)
@@ -3670,7 +5059,7 @@ async function loadSearchFilters() {
     const response = await fetch('/api/admin/search-filters')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      if (searchFiltersStatus) searchFiltersStatus.textContent = data.message || 'Search config non disponibile.'
+      if (searchFiltersStatus) searchFiltersStatus.textContent = data.message || adminUiText('Search config non disponibile.')
       return
     }
     const suggestionsEnabled = String(data.settings?.search_suggestions_enabled ?? '1') !== '0'
@@ -3685,13 +5074,13 @@ async function loadSearchFilters() {
       `
     }
   } catch {
-    if (searchFiltersStatus) searchFiltersStatus.textContent = 'Search config non disponibile.'
+    if (searchFiltersStatus) searchFiltersStatus.textContent = adminUiText('Search config non disponibile.')
   }
 }
 
 searchFiltersForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (searchFiltersMessage) searchFiltersMessage.textContent = 'Salvataggio ricerca...'
+  if (searchFiltersMessage) searchFiltersMessage.textContent = adminUiText('Salvataggio ricerca...')
   try {
     const response = await fetch('/api/admin/search-filters', {
       method: 'PUT',
@@ -3703,10 +5092,10 @@ searchFiltersForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    if (searchFiltersMessage) searchFiltersMessage.textContent = data.message || 'Configurazione salvata.'
+    if (searchFiltersMessage) searchFiltersMessage.textContent = data.message || adminUiText('Configurazione salvata.')
     if (data.success) loadSearchFilters()
   } catch {
-    if (searchFiltersMessage) searchFiltersMessage.textContent = 'Salvataggio ricerca non riuscito.'
+    if (searchFiltersMessage) searchFiltersMessage.textContent = adminUiText('Salvataggio ricerca non riuscito.')
   }
 })
 
@@ -3732,7 +5121,7 @@ async function loadSeoTechnical() {
     const response = await fetch('/api/admin/seo-technical')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      if (seoTechnicalStatus) seoTechnicalStatus.textContent = data.message || 'SEO Technical non disponibile.'
+      if (seoTechnicalStatus) seoTechnicalStatus.textContent = data.message || adminUiText('SEO Technical non disponibile.')
       return
     }
     if (seoTechnicalStatus) {
@@ -3770,19 +5159,19 @@ async function loadSeoTechnical() {
         button.addEventListener('click', async () => {
           const response = await fetch(`/api/admin/seo-technical?id=${button.dataset.disableRedirect}`, { method: 'DELETE' })
           const data = await response.json()
-          if (seoRedirectMessage) seoRedirectMessage.textContent = data.message || 'Redirect aggiornato.'
+          if (seoRedirectMessage) seoRedirectMessage.textContent = data.message || adminUiText('Redirect aggiornato.')
           loadSeoTechnical()
         })
       })
     }
   } catch {
-    if (seoTechnicalStatus) seoTechnicalStatus.textContent = 'SEO Technical non disponibile.'
+    if (seoTechnicalStatus) seoTechnicalStatus.textContent = adminUiText('SEO Technical non disponibile.')
   }
 }
 
 seoRedirectForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (seoRedirectMessage) seoRedirectMessage.textContent = 'Salvataggio redirect...'
+  if (seoRedirectMessage) seoRedirectMessage.textContent = adminUiText('Salvataggio redirect...')
   const payload = {
     id: Number(document.querySelector('#seoRedirectId')?.value || 0) || undefined,
     from_path: document.querySelector('#seoRedirectFrom')?.value.trim(),
@@ -3797,13 +5186,13 @@ seoRedirectForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (seoRedirectMessage) seoRedirectMessage.textContent = data.message || 'Redirect salvato.'
+    if (seoRedirectMessage) seoRedirectMessage.textContent = data.message || adminUiText('Redirect salvato.')
     if (data.success) {
       resetSeoRedirectForm()
       loadSeoTechnical()
     }
   } catch {
-    if (seoRedirectMessage) seoRedirectMessage.textContent = 'Salvataggio redirect non riuscito.'
+    if (seoRedirectMessage) seoRedirectMessage.textContent = adminUiText('Salvataggio redirect non riuscito.')
   }
 })
 cancelSeoRedirectEdit?.addEventListener('click', resetSeoRedirectForm)
@@ -3830,7 +5219,7 @@ async function loadWebhooks() {
     const response = await fetch('/api/admin/webhooks')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      if (webhooksList) webhooksList.textContent = data.message || 'Webhooks non disponibili.'
+      if (webhooksList) webhooksList.textContent = data.message || adminUiText('Webhooks non disponibili.')
       return
     }
     const webhooks = data.webhooks || []
@@ -3872,7 +5261,7 @@ async function loadWebhooks() {
         button.addEventListener('click', async () => {
           const response = await fetch(`/api/admin/webhooks?id=${button.dataset.disableWebhook}`, { method: 'DELETE' })
           const data = await response.json()
-          if (webhookMessage) webhookMessage.textContent = data.message || 'Webhook aggiornato.'
+          if (webhookMessage) webhookMessage.textContent = data.message || adminUiText('Webhook aggiornato.')
           loadWebhooks()
         })
       })
@@ -3883,13 +5272,13 @@ async function loadWebhooks() {
         .join('\n') || 'Nessun delivery log.'
     }
   } catch {
-    if (webhooksList) webhooksList.textContent = 'Webhooks non disponibili.'
+    if (webhooksList) webhooksList.textContent = adminUiText('Webhooks non disponibili.')
   }
 }
 
 webhookForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (webhookMessage) webhookMessage.textContent = 'Salvataggio webhook...'
+  if (webhookMessage) webhookMessage.textContent = adminUiText('Salvataggio webhook...')
   const payload = {
     id: Number(document.querySelector('#webhookId')?.value || 0) || undefined,
     event: document.querySelector('#webhookEvent')?.value,
@@ -3904,13 +5293,13 @@ webhookForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (webhookMessage) webhookMessage.textContent = data.message || 'Webhook salvato.'
+    if (webhookMessage) webhookMessage.textContent = data.message || adminUiText('Webhook salvato.')
     if (data.success) {
       resetWebhookForm()
       loadWebhooks()
     }
   } catch {
-    if (webhookMessage) webhookMessage.textContent = 'Salvataggio webhook non riuscito.'
+    if (webhookMessage) webhookMessage.textContent = adminUiText('Salvataggio webhook non riuscito.')
   }
 })
 refreshWebhooksButton?.addEventListener('click', loadWebhooks)
@@ -3940,7 +5329,7 @@ async function loadSupplierFeeds() {
     const response = await fetch('/api/admin/supplier-feeds')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      if (supplierFeedsList) supplierFeedsList.textContent = data.message || 'Supplier feeds non disponibili.'
+      if (supplierFeedsList) supplierFeedsList.textContent = data.message || adminUiText('Supplier feeds non disponibili.')
       return
     }
     const feeds = data.feeds || []
@@ -3973,7 +5362,7 @@ async function loadSupplierFeeds() {
         button.addEventListener('click', async () => {
           const response = await fetch(`/api/admin/supplier-feeds?id=${button.dataset.disableSupplierFeed}`, { method: 'DELETE' })
           const data = await response.json()
-          if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || 'Feed aggiornato.'
+          if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || adminUiText('Feed aggiornato.')
           loadSupplierFeeds()
         })
       })
@@ -3984,7 +5373,7 @@ async function loadSupplierFeeds() {
         .join('\n') || 'Nessun dry-run ancora registrato.'
     }
   } catch {
-    if (supplierFeedsList) supplierFeedsList.textContent = 'Supplier feeds non disponibili.'
+    if (supplierFeedsList) supplierFeedsList.textContent = adminUiText('Supplier feeds non disponibili.')
   }
 }
 
@@ -4002,7 +5391,7 @@ function supplierFeedPayload() {
 
 supplierFeedForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (supplierFeedMessage) supplierFeedMessage.textContent = 'Salvataggio feed...'
+  if (supplierFeedMessage) supplierFeedMessage.textContent = adminUiText('Salvataggio feed...')
   const payload = supplierFeedPayload()
   try {
     const response = await fetch('/api/admin/supplier-feeds', {
@@ -4011,18 +5400,18 @@ supplierFeedForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || 'Feed salvato.'
+    if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || adminUiText('Feed salvato.')
     if (data.success) {
       resetSupplierFeedForm()
       loadSupplierFeeds()
     }
   } catch {
-    if (supplierFeedMessage) supplierFeedMessage.textContent = 'Salvataggio feed non riuscito.'
+    if (supplierFeedMessage) supplierFeedMessage.textContent = adminUiText('Salvataggio feed non riuscito.')
   }
 })
 
 runSupplierFeedDryRunButton?.addEventListener('click', async () => {
-  if (supplierFeedMessage) supplierFeedMessage.textContent = 'Dry-run feed...'
+  if (supplierFeedMessage) supplierFeedMessage.textContent = adminUiText('Dry-run feed...')
   const payload = supplierFeedPayload()
   try {
     const response = await fetch('/api/admin/supplier-feeds', {
@@ -4031,22 +5420,22 @@ runSupplierFeedDryRunButton?.addEventListener('click', async () => {
       body: JSON.stringify({ action: 'dry_run', ...payload }),
     })
     const data = await response.json()
-    if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || 'Dry-run completato.'
+    if (supplierFeedMessage) supplierFeedMessage.textContent = data.message || adminUiText('Dry-run completato.')
     loadSupplierFeeds()
   } catch {
-    if (supplierFeedMessage) supplierFeedMessage.textContent = 'Dry-run non riuscito.'
+    if (supplierFeedMessage) supplierFeedMessage.textContent = adminUiText('Dry-run non riuscito.')
   }
 })
 cancelSupplierFeedEdit?.addEventListener('click', resetSupplierFeedForm)
 
 async function loadSubscriptions() {
   if (!subscriptionsList) return
-  subscriptionsList.textContent = 'Caricamento subscriptions...'
+  subscriptionsList.textContent = adminUiText('Caricamento subscriptions...')
   try {
     const response = await fetch('/api/admin/subscriptions')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      subscriptionsList.textContent = data.message || 'Subscriptions non disponibili.'
+      subscriptionsList.textContent = data.message || adminUiText('Subscriptions non disponibili.')
       return
     }
     const subscriptions = data.subscriptions || []
@@ -4063,13 +5452,13 @@ async function loadSubscriptions() {
       `).join('')
       : '<p>Nessun prodotto subscription configurato.</p>'
   } catch {
-    subscriptionsList.textContent = 'Subscriptions non disponibili.'
+    subscriptionsList.textContent = adminUiText('Subscriptions non disponibili.')
   }
 }
 
 subscriptionForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (subscriptionMessage) subscriptionMessage.textContent = 'Salvataggio subscription...'
+  if (subscriptionMessage) subscriptionMessage.textContent = adminUiText('Salvataggio subscription...')
   try {
     const response = await fetch('/api/admin/subscriptions', {
       method: 'POST',
@@ -4083,28 +5472,28 @@ subscriptionForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    if (subscriptionMessage) subscriptionMessage.textContent = data.message || 'Subscription salvata.'
+    if (subscriptionMessage) subscriptionMessage.textContent = data.message || adminUiText('Subscription salvata.')
     if (data.success) loadSubscriptions()
   } catch {
-    if (subscriptionMessage) subscriptionMessage.textContent = 'Salvataggio subscription non riuscito.'
+    if (subscriptionMessage) subscriptionMessage.textContent = adminUiText('Salvataggio subscription non riuscito.')
   }
 })
 
 downloadBackupButton?.addEventListener('click', async () => {
   if (!backupPreview) return
-  backupPreview.textContent = 'Generazione backup...'
+  backupPreview.textContent = adminUiText('Generazione backup...')
   try {
     const response = await fetch('/api/admin/backup')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      backupPreview.textContent = data.message || 'Backup non disponibile.'
+      backupPreview.textContent = data.message || adminUiText('Backup non disponibile.')
       return
     }
     const text = JSON.stringify(data.backup, null, 2)
     backupPreview.textContent = text
     downloadTextFile(`takeoff-backup-${new Date().toISOString().slice(0, 10)}.json`, text)
   } catch {
-    backupPreview.textContent = 'Backup non riuscito.'
+    backupPreview.textContent = adminUiText('Backup non riuscito.')
   }
 })
 
@@ -4126,7 +5515,7 @@ let collectionsCache = []
 
 function renderProductCollectionOptions(selectedValue = '') {
   productCollectionSelect.innerHTML = `
-    <option value="">Senza collezione</option>
+    <option value="">${escapeHtml(t('collections.noCollection', 'Senza collezione'))}</option>
     ${collectionsCache
       .map(
         (collection) => `
@@ -4145,10 +5534,10 @@ function resetCollectionForm() {
   collectionForm.reset()
   document.querySelector('#collectionId').value = ''
   fillSeoFields('collection')
-  collectionFormTitle.textContent = 'Aggiungi collezione'
-  collectionSubmitButton.textContent = 'Salva collezione'
+  collectionFormTitle.textContent = t('collections.add', 'Aggiungi collezione')
+  collectionSubmitButton.textContent = t('collections.save', 'Salva collezione')
   cancelCollectionEdit.hidden = true
-  collectionMessage.textContent = ''
+  collectionMessage.textContent = adminUiText('')
 }
 
 function fillCollectionForm(collection) {
@@ -4159,8 +5548,8 @@ function fillCollectionForm(collection) {
   document.querySelector('#collectionImageUrl').value = collection.image_url || ''
   fillSeoFields('collection', collection.seo || {})
 
-  collectionFormTitle.textContent = 'Modifica collezione'
-  collectionSubmitButton.textContent = 'Aggiorna collezione'
+  collectionFormTitle.textContent = t('collections.edit', 'Modifica collezione')
+  collectionSubmitButton.textContent = t('collections.update', 'Aggiorna collezione')
   cancelCollectionEdit.hidden = false
 }
 
@@ -4176,14 +5565,14 @@ function getFormCollection() {
 }
 
 async function loadCollections() {
-  renderAdminListState(collectionsList, 'Caricamento collezioni...', 'loading')
+  renderAdminListState(collectionsList, t('collections.loading', 'Caricamento collezioni...'), 'loading')
 
   try {
     const response = await fetch('/api/admin/collections')
     const data = await response.json()
 
     if (!data.success) {
-      renderAdminListState(collectionsList, 'Errore nel caricamento collezioni.', 'error')
+      renderAdminListState(collectionsList, t('collections.loadError', 'Errore nel caricamento collezioni.'), 'error')
       return
     }
 
@@ -4192,7 +5581,7 @@ async function loadCollections() {
     renderProductCollectionOptions(document.querySelector('#collection_slug').value)
 
     if (data.collections.length === 0) {
-      renderAdminListState(collectionsList, 'Nessuna collezione trovata.')
+      renderAdminListState(collectionsList, t('collections.empty', 'Nessuna collezione trovata.'))
       return
     }
 
@@ -4202,7 +5591,7 @@ async function loadCollections() {
     )
 
     if (!visibleCollections.length) {
-      renderAdminListState(collectionsList, 'Nessuna collezione corrisponde alla ricerca.')
+      renderAdminListState(collectionsList, t('collections.noSearchResults', 'Nessuna collezione corrisponde alla ricerca.'))
       return
     }
 
@@ -4211,7 +5600,7 @@ async function loadCollections() {
         (collection) => `
           <article class="product-item">
             <h3>${escapeHtml(collection.name)}</h3>
-            <p>${escapeHtml(collection.description || 'Nessuna descrizione')}</p>
+            <p>${escapeHtml(collection.description || t('collections.noDescription', 'Nessuna descrizione'))}</p>
 
             <div class="meta">
               <span>Slug: ${escapeHtml(collection.slug)}</span>
@@ -4219,8 +5608,8 @@ async function loadCollections() {
             </div>
 
             <div class="product-actions">
-              <button type="button" data-edit-collection="${collection.id}">Modifica</button>
-              <button type="button" class="danger" data-delete-collection="${collection.id}">Elimina</button>
+              <button type="button" data-edit-collection="${collection.id}">${escapeHtml(t('common.edit', 'Modifica'))}</button>
+              <button type="button" class="danger" data-delete-collection="${collection.id}">${escapeHtml(t('common.delete', 'Elimina'))}</button>
             </div>
           </article>
         `,
@@ -4239,7 +5628,7 @@ async function loadCollections() {
 
     document.querySelectorAll('[data-delete-collection]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const confirmed = confirm('Vuoi eliminare questa collezione?')
+        const confirmed = confirm(t('collections.deleteConfirm', 'Vuoi eliminare questa collezione?'))
         if (!confirmed) return
 
         const response = await fetch('/api/admin/collections', {
@@ -4255,7 +5644,7 @@ async function loadCollections() {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore durante eliminazione collezione.')
+          alert(result.message || t('collections.deleteError', 'Errore durante eliminazione collezione.'))
           return
         }
 
@@ -4263,15 +5652,16 @@ async function loadCollections() {
         loadCollections()
       })
     })
+    applyAdminLanguage()
   } catch (error) {
-    renderAdminListState(collectionsList, 'Errore di connessione alla API collezioni.', 'error')
+    renderAdminListState(collectionsList, t('collections.connectionError', 'Errore di connessione collezioni.'), 'error')
   }
 }
 
 collectionForm.addEventListener('submit', async (event) => {
   event.preventDefault()
 
-  collectionMessage.textContent = 'Salvataggio in corso...'
+  collectionMessage.textContent = t('collections.saving', 'Salvataggio in corso...')
 
   const collection = getFormCollection()
   const isEditing = Boolean(collection.id)
@@ -4288,19 +5678,19 @@ collectionForm.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      collectionMessage.textContent = data.message || 'Errore nel salvataggio.'
+      collectionMessage.textContent = data.message || t('pages.saveError', 'Errore nel salvataggio.')
       return
     }
 
     collectionMessage.textContent = isEditing
-      ? 'Collezione aggiornata correttamente.'
-      : 'Collezione salvata correttamente.'
+      ? t('collections.updated', 'Collezione aggiornata correttamente.')
+      : t('collections.saved', 'Collezione salvata correttamente.')
 
     resetCollectionForm()
     loadCollections()
     loadMenuResources()
   } catch (error) {
-    collectionMessage.textContent = 'Errore di connessione.'
+    collectionMessage.textContent = t('collections.connectionError', 'Errore di connessione collezioni.')
   }
 })
 
@@ -4326,10 +5716,10 @@ function resetPageForm() {
   pageForm.reset()
   document.querySelector('#pageId').value = ''
   fillSeoFields('page')
-  pageFormTitle.textContent = 'Aggiungi pagina'
-  pageSubmitButton.textContent = 'Salva pagina'
+  pageFormTitle.textContent = t('pages.addTitle', 'Aggiungi pagina')
+  pageSubmitButton.textContent = t('pages.save', 'Salva pagina')
   cancelPageEdit.hidden = true
-  pageMessage.textContent = ''
+  pageMessage.textContent = adminUiText('')
 }
 
 function fillPageForm(page) {
@@ -4338,8 +5728,8 @@ function fillPageForm(page) {
   document.querySelector('#pageSlug').value = page.slug || ''
   fillSeoFields('page', page.seo || {})
 
-  pageFormTitle.textContent = 'Modifica pagina'
-  pageSubmitButton.textContent = 'Aggiorna pagina'
+  pageFormTitle.textContent = t('pages.editTitle', 'Modifica pagina')
+  pageSubmitButton.textContent = t('pages.update', 'Aggiorna pagina')
   cancelPageEdit.hidden = false
 }
 
@@ -4353,19 +5743,19 @@ function getFormPage() {
 }
 
 async function loadPages() {
-  pagesList.textContent = 'Caricamento pagine...'
+  pagesList.textContent = t('pages.loading', 'Caricamento pagine...')
 
   try {
     const response = await fetch('/api/admin/pages')
     const data = await response.json()
 
     if (!data.success) {
-      pagesList.textContent = 'Errore nel caricamento pagine.'
+      pagesList.textContent = t('pages.loadError', 'Errore nel caricamento pagine.')
       return
     }
 
     if (data.pages.length === 0) {
-      pagesList.textContent = 'Nessuna pagina trovata.'
+      pagesList.textContent = t('pages.empty', 'Nessuna pagina trovata.')
       return
     }
 
@@ -4381,16 +5771,16 @@ async function loadPages() {
             </div>
 
             <div class="product-actions">
-              <button type="button" data-edit-page="${page.id}">Modifica</button>
+              <button type="button" data-edit-page="${page.id}">${escapeHtml(t('common.edit', 'Modifica'))}</button>
 
               <button type="button" data-edit-page-sections="${escapeHtml(page.slug)}">
-                Modifica sezioni
+                ${escapeHtml(t('pages.editSections', 'Modifica sezioni'))}
               </button>
 
               ${
                 page.slug === 'home'
-                  ? '<button type="button" class="secondary" disabled>Homepage protetta</button>'
-                  : `<button type="button" class="danger" data-delete-page="${page.id}">Elimina</button>`
+                  ? `<button type="button" class="secondary" disabled>${escapeHtml(t('pages.protectedHomepage', 'Homepage protetta'))}</button>`
+                  : `<button type="button" class="danger" data-delete-page="${page.id}">${escapeHtml(t('common.delete', 'Elimina'))}</button>`
               }
             </div>
           </article>
@@ -4423,7 +5813,7 @@ async function loadPages() {
 
     document.querySelectorAll('[data-delete-page]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const confirmed = confirm('Vuoi eliminare questa pagina?')
+        const confirmed = confirm(t('pages.deleteConfirm', 'Vuoi eliminare questa pagina?'))
         if (!confirmed) return
 
         const response = await fetch('/api/admin/pages', {
@@ -4439,7 +5829,7 @@ async function loadPages() {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore durante eliminazione pagina.')
+          alert(result.message || t('pages.deleteError', 'Errore durante eliminazione pagina.'))
           return
         }
 
@@ -4449,15 +5839,16 @@ async function loadPages() {
         loadMenuResources()
       })
     })
+    applyAdminLanguage()
   } catch (error) {
-    pagesList.textContent = 'Errore di connessione alla API pagine.'
+    pagesList.textContent = t('pages.connectionError', 'Errore di connessione alla API pagine.')
   }
 }
 
 pageForm.addEventListener('submit', async (event) => {
   event.preventDefault()
 
-  pageMessage.textContent = 'Salvataggio in corso...'
+  pageMessage.textContent = t('pages.saveProgress', 'Salvataggio in corso...')
 
   const page = getFormPage()
   const isEditing = Boolean(page.id)
@@ -4474,20 +5865,20 @@ pageForm.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      pageMessage.textContent = data.message || 'Errore nel salvataggio.'
+      pageMessage.textContent = data.message || t('pages.saveError', 'Errore nel salvataggio.')
       return
     }
 
     pageMessage.textContent = isEditing
-      ? 'Pagina aggiornata correttamente.'
-      : 'Pagina salvata correttamente.'
+      ? t('pages.updated', 'Pagina aggiornata correttamente.')
+      : t('pages.saved', 'Pagina salvata correttamente.')
 
     resetPageForm()
     loadPages()
     loadEditorPages()
     loadMenuResources()
   } catch (error) {
-    pageMessage.textContent = 'Errore di connessione.'
+    pageMessage.textContent = t('common.connectionError', 'Errore di connessione.')
   }
 })
 
@@ -4619,6 +6010,7 @@ function setupAdminViews() {
     })
 
     const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+    applyAdminLanguage()
     updateCurrentViewLabel(activeView)
     target?.scrollIntoView({
       behavior: 'smooth',
@@ -4664,10 +6056,10 @@ function resetPolicyForm() {
   if (!policyForm) return
   policyForm.reset()
   document.querySelector('#policyId').value = ''
-  policyFormTitle.textContent = 'Aggiungi policy'
-  policySubmitButton.textContent = 'Salva policy'
+  policyFormTitle.textContent = t('policies.add', 'Aggiungi policy')
+  policySubmitButton.textContent = t('policies.save', 'Salva policy')
   cancelPolicyEdit.hidden = true
-  policyMessage.textContent = ''
+  policyMessage.textContent = adminUiText('')
 }
 
 function fillPolicyForm(policy) {
@@ -4677,8 +6069,8 @@ function fillPolicyForm(policy) {
   document.querySelector('#policySlug').value = policy.slug || ''
   document.querySelector('#policyContent').value = policy.content || ''
   document.querySelector('#policyStatus').value = policy.status || 'draft'
-  policyFormTitle.textContent = 'Modifica policy'
-  policySubmitButton.textContent = 'Aggiorna policy'
+  policyFormTitle.textContent = t('policies.edit', 'Modifica policy')
+  policySubmitButton.textContent = t('policies.update', 'Aggiorna policy')
   cancelPolicyEdit.hidden = false
 }
 
@@ -4695,14 +6087,14 @@ function readPolicyPayload() {
 
 async function loadPoliciesAdmin() {
   if (!policiesList) return
-  policiesList.textContent = 'Caricamento policy...'
+  policiesList.textContent = adminUiText('Caricamento policy...')
 
   try {
     const response = await fetch('/api/admin/policies')
     const data = await response.json()
 
     if (!data.success) {
-      policiesList.textContent = data.message || 'Errore caricamento policy.'
+      policiesList.textContent = data.message || adminUiText('Errore caricamento policy.')
       return
     }
 
@@ -4718,15 +6110,15 @@ async function loadPoliciesAdmin() {
                   <span>${escapeHtml(policy.updated_at || '')}</span>
                 </div>
                 <div class="product-actions">
-                  <button type="button" data-edit-policy="${policy.id}">Modifica</button>
-                  <a class="button-link" href="/policies/${escapeHtml(policy.slug)}" target="_blank" rel="noreferrer">Apri</a>
-                  <button type="button" class="danger" data-unpublish-policy="${policy.id}">Bozza</button>
+                  <button type="button" data-edit-policy="${policy.id}">${escapeHtml(t('common.edit', 'Modifica'))}</button>
+                  <a class="button-link" href="/policies/${escapeHtml(policy.slug)}" target="_blank" rel="noreferrer">${escapeHtml(t('common.open', 'Apri'))}</a>
+                  <button type="button" class="danger" data-unpublish-policy="${policy.id}">${escapeHtml(t('common.draft', 'Bozza'))}</button>
                 </div>
               </article>
             `,
           )
           .join('')
-      : 'Nessuna policy.'
+      : adminUiText('Nessuna policy.')
 
     document.querySelectorAll('[data-edit-policy]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -4747,13 +6139,13 @@ async function loadPoliciesAdmin() {
       })
     })
   } catch {
-    policiesList.textContent = 'Errore di connessione policy.'
+    policiesList.textContent = adminUiText('Errore di connessione policy.')
   }
 }
 
 policyForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  policyMessage.textContent = 'Salvataggio policy...'
+  policyMessage.textContent = adminUiText('Salvataggio policy...')
   const payload = readPolicyPayload()
   const isEditing = Boolean(payload.id)
 
@@ -4764,13 +6156,13 @@ policyForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    policyMessage.textContent = data.message || 'Policy salvata.'
+    policyMessage.textContent = data.message || adminUiText('Policy salvata.')
     if (data.success) {
       resetPolicyForm()
       loadPoliciesAdmin()
     }
   } catch {
-    policyMessage.textContent = 'Errore di connessione policy.'
+    policyMessage.textContent = adminUiText('Errore di connessione policy.')
   }
 })
 
@@ -4886,6 +6278,10 @@ function getTranslationConfig() {
   return translationConfigs[translationEntityType?.value || 'product'] || translationConfigs.product
 }
 
+function translateAdminConfigLabel(label = '') {
+  return getAdminStaticTranslation(label) ?? label
+}
+
 function getCurrentTranslationResource() {
   const id = Number(translationEntitySelect?.value || 0)
   return translationState.resources.find((item) => Number(item.id) === id)
@@ -4911,7 +6307,7 @@ function renderTranslationFields() {
   const config = getTranslationConfig()
 
   translationFieldSelect.innerHTML = config.fields
-    .map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`)
+    .map(([key, label]) => `<option value="${escapeHtml(key)}">${escapeHtml(translateAdminConfigLabel(label))}</option>`)
     .join('')
 }
 
@@ -4927,7 +6323,7 @@ function renderTranslationResources() {
           `,
         )
         .join('')
-    : '<option value="">Nessun elemento disponibile</option>'
+    : `<option value="">${escapeHtml(t('translations.noItems', 'Nessun elemento disponibile'))}</option>`
 }
 
 function renderTranslationEditor() {
@@ -4956,7 +6352,7 @@ function renderTranslationsList() {
   const resource = getCurrentTranslationResource()
 
   if (!resource) {
-    translationsList.textContent = 'Seleziona un elemento da tradurre.'
+    translationsList.textContent = t('translations.selectItem', 'Seleziona un elemento da tradurre.')
     return
   }
 
@@ -4964,12 +6360,15 @@ function renderTranslationsList() {
     .map(([fieldKey, label]) => {
       const record = getCurrentTranslationRecord(fieldKey)
       const present = record?.status === 'active' && record?.translated_value
+      const statusLabel = present
+        ? t('translations.present', 'Traduzione presente')
+        : t('translations.missing', 'Mancante')
 
       return `
         <article class="product-item">
-          <h3>${escapeHtml(label)}</h3>
+          <h3>${escapeHtml(translateAdminConfigLabel(label))}</h3>
           <p>${escapeHtml(fieldKey)}</p>
-          <span class="translation-status-pill">${present ? 'Traduzione presente' : 'Mancante'}</span>
+          <span class="translation-status-pill">${escapeHtml(statusLabel)}</span>
         </article>
       `
     })
@@ -5031,20 +6430,20 @@ async function loadTranslationRecords() {
 
     if (!data.success) {
       translationState.translations = []
-      if (translationMessage) translationMessage.textContent = data.message || 'Traduzioni non disponibili.'
+      if (translationMessage) translationMessage.textContent = data.message || adminUiText('Traduzioni non disponibili.')
       return
     }
 
     translationState.translations = data.translations || []
   } catch {
     translationState.translations = []
-    if (translationMessage) translationMessage.textContent = 'Errore caricamento traduzioni.'
+    if (translationMessage) translationMessage.textContent = adminUiText('Errore caricamento traduzioni.')
   }
 }
 
 async function loadTranslationManager() {
   if (!translationForm) return
-  if (translationsList) translationsList.textContent = 'Caricamento traduzioni...'
+  if (translationsList) translationsList.textContent = adminUiText('Caricamento traduzioni...')
 
   renderTranslationFields()
   await Promise.all([loadTranslationResources(), loadTranslationRecords()])
@@ -5060,11 +6459,11 @@ async function saveTranslation(event) {
   const fieldKey = translationFieldSelect?.value || ''
 
   if (!resource || !fieldKey) {
-    if (translationMessage) translationMessage.textContent = 'Seleziona contenuto e campo da tradurre.'
+    if (translationMessage) translationMessage.textContent = adminUiText('Seleziona contenuto e campo da tradurre.')
     return
   }
 
-  if (translationMessage) translationMessage.textContent = 'Salvataggio traduzione...'
+  if (translationMessage) translationMessage.textContent = adminUiText('Salvataggio traduzione...')
 
   const payload = {
     id: translationId?.value || '',
@@ -5085,21 +6484,21 @@ async function saveTranslation(event) {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    if (translationMessage) translationMessage.textContent = data.message || 'Traduzione salvata.'
+    if (translationMessage) translationMessage.textContent = data.message || adminUiText('Traduzione salvata.')
     if (response.ok && data.success) {
       await loadTranslationRecords()
       renderTranslationEditor()
       renderTranslationsList()
     }
   } catch {
-    if (translationMessage) translationMessage.textContent = 'Errore di connessione traduzioni.'
+    if (translationMessage) translationMessage.textContent = adminUiText('Errore di connessione traduzioni.')
   }
 }
 
 async function disableCurrentTranslation() {
   const id = Number(translationId?.value || 0)
   if (!id) return
-  if (translationMessage) translationMessage.textContent = 'Disattivazione traduzione...'
+  if (translationMessage) translationMessage.textContent = adminUiText('Disattivazione traduzione...')
 
   try {
     const response = await fetch('/api/admin/translations', {
@@ -5108,14 +6507,14 @@ async function disableCurrentTranslation() {
       body: JSON.stringify({ id }),
     })
     const data = await response.json()
-    if (translationMessage) translationMessage.textContent = data.message || 'Traduzione disattivata.'
+    if (translationMessage) translationMessage.textContent = data.message || adminUiText('Traduzione disattivata.')
     if (response.ok && data.success) {
       await loadTranslationRecords()
       renderTranslationEditor()
       renderTranslationsList()
     }
   } catch {
-    if (translationMessage) translationMessage.textContent = 'Errore disattivazione traduzione.'
+    if (translationMessage) translationMessage.textContent = adminUiText('Errore disattivazione traduzione.')
   }
 }
 
@@ -5147,10 +6546,10 @@ function resetBlogForm() {
   if (!blogPostForm) return
   blogPostForm.reset()
   document.querySelector('#blogPostId').value = ''
-  blogPostFormTitle.textContent = 'Aggiungi articolo'
-  blogSubmitButton.textContent = 'Salva articolo'
+  blogPostFormTitle.textContent = t('blog.add', 'Aggiungi articolo')
+  blogSubmitButton.textContent = t('blog.save', 'Salva articolo')
   cancelBlogEdit.hidden = true
-  blogMessage.textContent = ''
+  blogMessage.textContent = adminUiText('')
 }
 
 function fillBlogForm(post) {
@@ -5165,8 +6564,8 @@ function fillBlogForm(post) {
   document.querySelector('#blogMetaTitle').value = post.meta_title || ''
   document.querySelector('#blogMetaDescription').value = post.meta_description || ''
   document.querySelector('#blogOgImage').value = post.og_image || ''
-  blogPostFormTitle.textContent = 'Modifica articolo'
-  blogSubmitButton.textContent = 'Aggiorna articolo'
+  blogPostFormTitle.textContent = t('blog.edit', 'Modifica articolo')
+  blogSubmitButton.textContent = t('blog.update', 'Aggiorna articolo')
   cancelBlogEdit.hidden = false
 }
 
@@ -5195,7 +6594,7 @@ async function loadBlogPosts() {
     const data = await response.json()
 
     if (!data.success) {
-      renderAdminListState(blogPostsList, data.message || 'Errore caricamento blog.', 'error')
+      renderAdminListState(blogPostsList, data.message || adminUiText('Errore caricamento blog.'), 'error')
       return
     }
 
@@ -5219,16 +6618,16 @@ async function loadBlogPosts() {
         (post) => `
           <article class="product-item">
             <h3>${escapeHtml(post.title)}</h3>
-            <p>${escapeHtml(post.excerpt || 'Nessun excerpt')}</p>
+            <p>${escapeHtml(post.excerpt || adminUiText('Nessun excerpt'))}</p>
             <div class="meta">
               <span>Slug: ${escapeHtml(post.slug)}</span>
-              <span>${escapeHtml(post.status)}</span>
-              <span>${escapeHtml(post.author || 'Autore N/D')}</span>
+              <span>${adminUiHtml(post.status)}</span>
+              <span>${escapeHtml(post.author || adminUiText('Autore N/D'))}</span>
             </div>
             <div class="product-actions">
-              <button type="button" data-edit-blog="${post.id}">Modifica</button>
-              <a class="button-link" href="/blog/${escapeHtml(post.slug)}" target="_blank" rel="noreferrer">Apri</a>
-              <button type="button" class="danger" data-unpublish-blog="${post.id}">Bozza</button>
+              <button type="button" data-edit-blog="${post.id}">${escapeHtml(t('common.edit', 'Modifica'))}</button>
+              <a class="button-link" href="/blog/${escapeHtml(post.slug)}" target="_blank" rel="noreferrer">${escapeHtml(t('common.open', 'Apri'))}</a>
+              <button type="button" class="danger" data-unpublish-blog="${post.id}">${escapeHtml(t('common.draft', 'Bozza'))}</button>
             </div>
           </article>
         `,
@@ -5250,7 +6649,7 @@ async function loadBlogPosts() {
           body: JSON.stringify({ id: Number(button.dataset.unpublishBlog) }),
         })
         const result = await response.json()
-        if (!result.success) alert(result.message || 'Errore articolo.')
+        if (!result.success) alert(result.message || adminUiText('Errore articolo.'))
         resetBlogForm()
         loadBlogPosts()
       })
@@ -5262,7 +6661,7 @@ async function loadBlogPosts() {
 
 blogPostForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  blogMessage.textContent = 'Salvataggio articolo...'
+  blogMessage.textContent = adminUiText('Salvataggio articolo...')
   const payload = readBlogPayload()
   const isEditing = Boolean(payload.id)
 
@@ -5273,13 +6672,13 @@ blogPostForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    blogMessage.textContent = data.message || (data.success ? 'Articolo salvato.' : 'Errore articolo.')
+    blogMessage.textContent = data.message || (data.success ? adminUiText('Articolo salvato.') : adminUiText('Errore articolo.'))
     if (data.success) {
       resetBlogForm()
       loadBlogPosts()
     }
   } catch {
-    blogMessage.textContent = 'Errore di connessione blog.'
+    blogMessage.textContent = adminUiText('Errore di connessione blog.')
   }
 })
 
@@ -5316,7 +6715,7 @@ function resetMetaobjectEntryForm() {
   document.querySelector('#metaobjectEntryId').value = ''
   document.querySelector('#metaobjectEntryDataJson').value = '{}'
   cancelMetaobjectEntryEdit.hidden = true
-  metaobjectEntryMessage.textContent = ''
+  metaobjectEntryMessage.textContent = adminUiText('')
 }
 
 function fillMetaobjectEntryForm(entry) {
@@ -5330,14 +6729,14 @@ function fillMetaobjectEntryForm(entry) {
 
 async function loadMetaobjects() {
   if (!metaobjectsList) return
-  metaobjectsList.textContent = 'Caricamento metaobjects...'
+  metaobjectsList.textContent = adminUiText('Caricamento metaobjects...')
 
   try {
     const response = await fetch('/api/admin/metaobjects')
     const data = await response.json()
 
     if (!data.success) {
-      metaobjectsList.textContent = data.message || 'Errore metaobjects.'
+      metaobjectsList.textContent = data.message || adminUiText('Errore metaobjects.')
       return
     }
 
@@ -5346,7 +6745,7 @@ async function loadMetaobjects() {
     renderMetaobjectDefinitionOptions()
 
     if (!metaobjectDefinitionsCache.length && !metaobjectEntriesCache.length) {
-      metaobjectsList.textContent = 'Nessun metaobject creato.'
+      metaobjectsList.textContent = adminUiText('Nessun metaobject creato.')
       return
     }
 
@@ -5401,13 +6800,13 @@ async function loadMetaobjects() {
       })
     })
   } catch {
-    metaobjectsList.textContent = 'Errore di connessione metaobjects.'
+    metaobjectsList.textContent = adminUiText('Errore di connessione metaobjects.')
   }
 }
 
 metaobjectDefinitionForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  metaobjectDefinitionMessage.textContent = 'Salvataggio definizione...'
+  metaobjectDefinitionMessage.textContent = adminUiText('Salvataggio definizione...')
 
   try {
     const response = await fetch('/api/admin/metaobjects', {
@@ -5421,19 +6820,19 @@ metaobjectDefinitionForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    metaobjectDefinitionMessage.textContent = data.message || 'Definizione salvata.'
+    metaobjectDefinitionMessage.textContent = data.message || adminUiText('Definizione salvata.')
     if (data.success) {
       metaobjectDefinitionForm.reset()
       loadMetaobjects()
     }
   } catch (error) {
-    metaobjectDefinitionMessage.textContent = 'Errore metaobject. Verifica il JSON dei campi e riprova.'
+    metaobjectDefinitionMessage.textContent = adminUiText('Errore metaobject. Verifica il JSON dei campi e riprova.')
   }
 })
 
 metaobjectEntryForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  metaobjectEntryMessage.textContent = 'Salvataggio entry...'
+  metaobjectEntryMessage.textContent = adminUiText('Salvataggio entry...')
   const id = document.querySelector('#metaobjectEntryId').value
 
   try {
@@ -5450,13 +6849,13 @@ metaobjectEntryForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    metaobjectEntryMessage.textContent = data.message || 'Entry salvata.'
+    metaobjectEntryMessage.textContent = data.message || adminUiText('Entry salvata.')
     if (data.success) {
       resetMetaobjectEntryForm()
       loadMetaobjects()
     }
   } catch (error) {
-    metaobjectEntryMessage.textContent = 'Errore entry. Verifica il JSON dei dati e riprova.'
+    metaobjectEntryMessage.textContent = adminUiText('Errore entry. Verifica il JSON dei dati e riprova.')
   }
 })
 
@@ -5475,28 +6874,28 @@ const taxSettingsMessage = document.querySelector('#taxSettingsMessage')
 async function loadTaxSettingsAdmin() {
   if (!taxSettingsForm) return
 
-  taxSettingsMessage.textContent = 'Caricamento impostazioni fiscali...'
+  taxSettingsMessage.textContent = adminUiText('Caricamento impostazioni fiscali...')
 
   try {
     const response = await fetch('/api/admin/tax')
     const data = await response.json()
 
     if (!data.success) {
-      taxSettingsMessage.textContent = data.message || 'Errore caricamento impostazioni fiscali.'
+      taxSettingsMessage.textContent = data.message || adminUiText('Errore caricamento impostazioni fiscali.')
       return
     }
 
     taxVatRate.value = data.settings?.vat_rate ?? 22
     taxPricesIncludeTax.checked = data.settings?.prices_include_tax !== false
-    taxSettingsMessage.textContent = ''
+    taxSettingsMessage.textContent = adminUiText('')
   } catch {
-    taxSettingsMessage.textContent = 'Errore di connessione impostazioni fiscali.'
+    taxSettingsMessage.textContent = adminUiText('Errore di connessione impostazioni fiscali.')
   }
 }
 
 taxSettingsForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  taxSettingsMessage.textContent = 'Salvataggio impostazioni fiscali...'
+  taxSettingsMessage.textContent = adminUiText('Salvataggio impostazioni fiscali...')
 
   try {
     const response = await fetch('/api/admin/tax', {
@@ -5513,7 +6912,7 @@ taxSettingsForm?.addEventListener('submit', async (event) => {
 
     taxSettingsMessage.textContent = data.message || (data.success ? 'Impostazioni fiscali salvate.' : 'Errore impostazioni fiscali.')
   } catch {
-    taxSettingsMessage.textContent = 'Errore di connessione impostazioni fiscali.'
+    taxSettingsMessage.textContent = adminUiText('Errore di connessione impostazioni fiscali.')
   }
 })
 
@@ -5551,14 +6950,14 @@ function renderPaymentProviderStatus(settings = {}, message = '') {
 async function loadPaymentSettingsAdmin() {
   if (!paymentSettingsForm) return
 
-  paymentSettingsMessage.textContent = 'Caricamento pagamenti...'
+  paymentSettingsMessage.textContent = adminUiText('Caricamento pagamenti...')
 
   try {
     const response = await fetch('/api/admin/payments')
     const data = await response.json()
 
     if (!data.success) {
-      paymentSettingsMessage.textContent = data.message || 'Errore caricamento pagamenti.'
+      paymentSettingsMessage.textContent = data.message || adminUiText('Errore caricamento pagamenti.')
       return
     }
 
@@ -5568,15 +6967,15 @@ async function loadPaymentSettingsAdmin() {
     stripeMode.value = settings.stripe_mode || 'test'
     stripePublicKey.value = settings.stripe_public_key || ''
     renderPaymentProviderStatus(settings, data.message)
-    paymentSettingsMessage.textContent = ''
+    paymentSettingsMessage.textContent = adminUiText('')
   } catch {
-    paymentSettingsMessage.textContent = 'Errore di connessione pagamenti.'
+    paymentSettingsMessage.textContent = adminUiText('Errore di connessione pagamenti.')
   }
 }
 
 paymentSettingsForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  paymentSettingsMessage.textContent = 'Salvataggio pagamenti...'
+  paymentSettingsMessage.textContent = adminUiText('Salvataggio pagamenti...')
 
   try {
     const response = await fetch('/api/admin/payments', {
@@ -5591,13 +6990,13 @@ paymentSettingsForm?.addEventListener('submit', async (event) => {
     })
     const data = await response.json()
 
-    paymentSettingsMessage.textContent = data.message || 'Impostazioni pagamento salvate.'
+    paymentSettingsMessage.textContent = data.message || adminUiText('Impostazioni pagamento salvate.')
 
     if (data.success) {
       renderPaymentProviderStatus(data.settings || {}, data.message)
     }
   } catch {
-    paymentSettingsMessage.textContent = 'Errore salvataggio pagamenti.'
+    paymentSettingsMessage.textContent = adminUiText('Errore salvataggio pagamenti.')
   }
 })
 
@@ -5620,10 +7019,10 @@ function resetShippingMethodForm() {
   shippingMethodForm.reset()
   document.querySelector('#shippingMethodId').value = ''
   document.querySelector('#shippingMethodActive').checked = true
-  shippingMethodFormTitle.textContent = 'Aggiungi metodo'
-  shippingMethodSubmitButton.textContent = 'Salva spedizione'
+  shippingMethodFormTitle.textContent = t('shipping.add', 'Aggiungi metodo')
+  shippingMethodSubmitButton.textContent = t('shipping.save', 'Salva spedizione')
   cancelShippingMethodEdit.hidden = true
-  shippingMethodMessage.textContent = ''
+  shippingMethodMessage.textContent = adminUiText('')
 }
 
 function fillShippingMethodForm(method) {
@@ -5638,8 +7037,8 @@ function fillShippingMethodForm(method) {
       : ((method.free_over_cents || 0) / 100).toFixed(2)
   document.querySelector('#shippingMethodSortOrder').value = method.sort_order || 0
   document.querySelector('#shippingMethodActive').checked = Number(method.active) !== 0
-  shippingMethodFormTitle.textContent = 'Modifica metodo'
-  shippingMethodSubmitButton.textContent = 'Aggiorna spedizione'
+  shippingMethodFormTitle.textContent = t('shipping.edit', 'Modifica metodo')
+  shippingMethodSubmitButton.textContent = t('shipping.update', 'Aggiorna spedizione')
   cancelShippingMethodEdit.hidden = false
 }
 
@@ -5658,14 +7057,14 @@ function readShippingMethodPayload() {
 
 async function loadShippingMethodsAdmin() {
   if (!shippingMethodsList) return
-  shippingMethodsList.textContent = 'Caricamento spedizioni...'
+  shippingMethodsList.textContent = adminUiText('Caricamento spedizioni...')
 
   try {
     const response = await fetch('/api/admin/shipping')
     const data = await response.json()
 
     if (!data.success) {
-      shippingMethodsList.textContent = data.message || 'Spedizioni non disponibili.'
+      shippingMethodsList.textContent = data.message || adminUiText('Spedizioni non disponibili.')
       return
     }
 
@@ -5713,13 +7112,13 @@ async function loadShippingMethodsAdmin() {
 
     applyAdminAuditUi()
   } catch {
-    shippingMethodsList.textContent = 'Errore di connessione spedizioni.'
+    shippingMethodsList.textContent = adminUiText('Errore di connessione spedizioni.')
   }
 }
 
 shippingMethodForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  shippingMethodMessage.textContent = 'Salvataggio spedizione...'
+  shippingMethodMessage.textContent = adminUiText('Salvataggio spedizione...')
   const payload = readShippingMethodPayload()
   const isEditing = Boolean(payload.id)
 
@@ -5731,13 +7130,13 @@ shippingMethodForm?.addEventListener('submit', async (event) => {
     })
     const data = await response.json()
 
-    shippingMethodMessage.textContent = data.message || 'Metodo spedizione salvato.'
+    shippingMethodMessage.textContent = data.message || adminUiText('Metodo spedizione salvato.')
     if (data.success) {
       resetShippingMethodForm()
       loadShippingMethodsAdmin()
     }
   } catch {
-    shippingMethodMessage.textContent = 'Errore salvataggio spedizione.'
+    shippingMethodMessage.textContent = adminUiText('Errore salvataggio spedizione.')
   }
 })
 
@@ -5765,10 +7164,10 @@ function resetDiscountForm() {
   document.querySelector('#discountKind').value = 'standard'
   document.querySelector('#discountCustomerEligibility').value = 'all'
   document.querySelector('#discountCombinable').checked = false
-  discountFormTitle.textContent = 'Aggiungi sconto'
-  discountSubmitButton.textContent = 'Salva sconto'
+  discountFormTitle.textContent = t('discounts.add', 'Aggiungi sconto')
+  discountSubmitButton.textContent = t('discounts.save', 'Salva sconto')
   cancelDiscountEdit.hidden = true
-  discountMessage.textContent = ''
+  discountMessage.textContent = adminUiText('')
 }
 
 function fillDiscountForm(discount) {
@@ -5788,8 +7187,8 @@ function fillDiscountForm(discount) {
   document.querySelector('#discountEndsAt').value = discount.ends_at || ''
   document.querySelector('#discountActive').checked = Number(discount.active) !== 0
   document.querySelector('#discountCombinable').checked = Number(discount.combinable || 0) === 1
-  discountFormTitle.textContent = 'Modifica sconto'
-  discountSubmitButton.textContent = 'Aggiorna sconto'
+  discountFormTitle.textContent = t('discounts.edit', 'Modifica sconto')
+  discountSubmitButton.textContent = t('discounts.update', 'Aggiorna sconto')
   cancelDiscountEdit.hidden = false
 }
 
@@ -5819,19 +7218,19 @@ function getDiscountFormPayload() {
 async function loadDiscounts() {
   if (!discountsList) return
 
-  discountsList.textContent = 'Caricamento sconti...'
+  discountsList.textContent = adminUiText('Caricamento sconti...')
 
   try {
     const response = await fetch('/api/admin/discounts')
     const data = await response.json()
 
     if (!data.success) {
-      discountsList.textContent = data.message || 'Errore caricamento sconti.'
+      discountsList.textContent = data.message || adminUiText('Errore caricamento sconti.')
       return
     }
 
     if (!data.discounts.length) {
-      discountsList.textContent = 'Nessuno sconto creato.'
+      discountsList.textContent = adminUiText('Nessuno sconto creato.')
       return
     }
 
@@ -5873,7 +7272,7 @@ async function loadDiscounts() {
 
     document.querySelectorAll('[data-disable-discount]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const confirmed = confirm('Vuoi disattivare questo sconto?')
+        const confirmed = confirm(adminUiText('Vuoi disattivare questo sconto?'))
         if (!confirmed) return
 
         const response = await fetch('/api/admin/discounts', {
@@ -5888,7 +7287,7 @@ async function loadDiscounts() {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore disattivazione sconto.')
+          alert(result.message || adminUiText('Errore disattivazione sconto.'))
           return
         }
 
@@ -5897,13 +7296,13 @@ async function loadDiscounts() {
       })
     })
   } catch {
-    discountsList.textContent = 'Errore di connessione sconti.'
+    discountsList.textContent = adminUiText('Errore di connessione sconti.')
   }
 }
 
 discountForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  discountMessage.textContent = 'Salvataggio sconto...'
+  discountMessage.textContent = adminUiText('Salvataggio sconto...')
 
   const payload = getDiscountFormPayload()
   const isEditing = Boolean(payload.id)
@@ -5919,15 +7318,15 @@ discountForm?.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      discountMessage.textContent = data.message || 'Errore salvataggio sconto.'
+      discountMessage.textContent = data.message || adminUiText('Errore salvataggio sconto.')
       return
     }
 
-    discountMessage.textContent = data.message || 'Sconto salvato.'
+    discountMessage.textContent = data.message || adminUiText('Sconto salvato.')
     resetDiscountForm()
     loadDiscounts()
   } catch {
-    discountMessage.textContent = 'Errore di connessione sconti.'
+    discountMessage.textContent = adminUiText('Errore di connessione sconti.')
   }
 })
 
@@ -5952,10 +7351,10 @@ function resetCampaignForm() {
   campaignForm.reset()
   document.querySelector('#campaignId').value = ''
   document.querySelector('#campaignActive').checked = true
-  campaignFormTitle.textContent = 'Aggiungi campagna'
-  campaignSubmitButton.textContent = 'Salva campagna'
+  campaignFormTitle.textContent = t('campaigns.add', 'Aggiungi campagna')
+  campaignSubmitButton.textContent = t('campaigns.save', 'Salva campagna')
   cancelCampaignEdit.hidden = true
-  campaignMessage.textContent = ''
+  campaignMessage.textContent = adminUiText('')
 }
 
 function fillCampaignForm(campaign) {
@@ -5966,8 +7365,8 @@ function fillCampaignForm(campaign) {
   document.querySelector('#campaignStartsAt').value = campaign.starts_at || ''
   document.querySelector('#campaignEndsAt').value = campaign.ends_at || ''
   document.querySelector('#campaignActive').checked = Number(campaign.active) !== 0
-  campaignFormTitle.textContent = 'Modifica campagna'
-  campaignSubmitButton.textContent = 'Aggiorna campagna'
+  campaignFormTitle.textContent = t('campaigns.edit', 'Modifica campagna')
+  campaignSubmitButton.textContent = t('campaigns.update', 'Aggiorna campagna')
   cancelCampaignEdit.hidden = false
 }
 
@@ -5985,19 +7384,19 @@ function readCampaignPayload() {
 
 async function loadCampaigns() {
   if (!campaignsList) return
-  campaignsList.textContent = 'Caricamento campagne...'
+  campaignsList.textContent = adminUiText('Caricamento campagne...')
 
   try {
     const response = await fetch('/api/admin/marketing')
     const data = await response.json()
 
     if (!data.success) {
-      campaignsList.textContent = data.message || 'Errore caricamento campagne.'
+      campaignsList.textContent = data.message || adminUiText('Errore caricamento campagne.')
       return
     }
 
     if (!data.campaigns.length) {
-      campaignsList.textContent = 'Nessuna campagna creata.'
+      campaignsList.textContent = adminUiText('Nessuna campagna creata.')
       return
     }
 
@@ -6039,13 +7438,13 @@ async function loadCampaigns() {
       })
     })
   } catch {
-    campaignsList.textContent = 'Errore di connessione campagne.'
+    campaignsList.textContent = adminUiText('Errore di connessione campagne.')
   }
 }
 
 campaignForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  campaignMessage.textContent = 'Salvataggio campagna...'
+  campaignMessage.textContent = adminUiText('Salvataggio campagna...')
   const payload = readCampaignPayload()
   const isEditing = Boolean(payload.id)
 
@@ -6056,13 +7455,13 @@ campaignForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    campaignMessage.textContent = data.message || 'Campagna salvata.'
+    campaignMessage.textContent = data.message || adminUiText('Campagna salvata.')
     if (data.success) {
       resetCampaignForm()
       loadCampaigns()
     }
   } catch {
-    campaignMessage.textContent = 'Errore di connessione campagne.'
+    campaignMessage.textContent = adminUiText('Errore di connessione campagne.')
   }
 })
 
@@ -6249,10 +7648,10 @@ function resetMediaForm() {
   if (!mediaForm) return
   mediaForm.reset()
   document.querySelector('#mediaId').value = ''
-  mediaFormTitle.textContent = 'Aggiungi media'
-  mediaSubmitButton.textContent = 'Salva media'
+  mediaFormTitle.textContent = t('media.add', 'Aggiungi media')
+  mediaSubmitButton.textContent = t('media.save', 'Salva media')
   cancelMediaEdit.hidden = true
-  mediaMessage.textContent = ''
+  mediaMessage.textContent = adminUiText('')
 }
 
 function fillMediaForm(media) {
@@ -6262,8 +7661,8 @@ function fillMediaForm(media) {
   document.querySelector('#mediaUrl').value = media.url || ''
   document.querySelector('#mediaType').value = media.type || 'image'
   document.querySelector('#mediaAltText').value = media.alt_text || ''
-  mediaFormTitle.textContent = 'Modifica media'
-  mediaSubmitButton.textContent = 'Aggiorna media'
+  mediaFormTitle.textContent = t('media.edit', 'Modifica media')
+  mediaSubmitButton.textContent = t('media.update', 'Aggiorna media')
   cancelMediaEdit.hidden = false
 }
 
@@ -6358,7 +7757,7 @@ function renderMediaItems(mediaItems = mediaItemsCache) {
 
     document.querySelectorAll('[data-delete-media]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const confirmed = confirm('Vuoi eliminare questo media dalla libreria?')
+        const confirmed = confirm(adminUiText('Vuoi eliminare questo media dalla libreria?'))
         if (!confirmed) return
 
         const response = await fetch('/api/admin/media', {
@@ -6373,7 +7772,7 @@ function renderMediaItems(mediaItems = mediaItemsCache) {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore eliminazione media.')
+          alert(result.message || adminUiText('Errore eliminazione media.'))
           return
         }
 
@@ -6394,7 +7793,7 @@ async function loadMediaItems() {
     const data = await response.json()
 
     if (!data.success) {
-      renderAdminListState(mediaList, data.message || 'Errore caricamento media.', 'error')
+      renderAdminListState(mediaList, data.message || adminUiText('Errore caricamento media.'), 'error')
       return
     }
 
@@ -6408,7 +7807,7 @@ async function loadMediaItems() {
 
 mediaForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  mediaMessage.textContent = 'Salvataggio media...'
+  mediaMessage.textContent = adminUiText('Salvataggio media...')
 
   const payload = getMediaPayload()
   const isEditing = Boolean(payload.id)
@@ -6424,15 +7823,15 @@ mediaForm?.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      mediaMessage.textContent = data.message || 'Errore salvataggio media.'
+      mediaMessage.textContent = data.message || adminUiText('Errore salvataggio media.')
       return
     }
 
-    mediaMessage.textContent = data.message || 'Media salvato.'
+    mediaMessage.textContent = data.message || adminUiText('Media salvato.')
     resetMediaForm()
     loadMediaItems()
   } catch {
-    mediaMessage.textContent = 'Errore di connessione media.'
+    mediaMessage.textContent = adminUiText('Errore di connessione media.')
   }
 })
 
@@ -6440,11 +7839,11 @@ mediaUploadForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   if (!mediaUploadFile?.files?.[0]) {
-    mediaUploadMessage.textContent = 'Seleziona un file da caricare.'
+    mediaUploadMessage.textContent = adminUiText('Seleziona un file da caricare.')
     return
   }
 
-  mediaUploadMessage.textContent = 'Upload in corso...'
+  mediaUploadMessage.textContent = adminUiText('Upload in corso...')
 
   const formData = new FormData()
   formData.append('file', mediaUploadFile.files[0])
@@ -6460,11 +7859,11 @@ mediaUploadForm?.addEventListener('submit', async (event) => {
 
     if (!data.success) {
       mediaUploadMessage.textContent =
-        data.message || 'Upload non disponibile. Usa URL manuale.'
+        data.message || adminUiText('Upload non disponibile. Usa URL manuale.')
       return
     }
 
-    mediaUploadMessage.textContent = data.message || 'Media caricato.'
+    mediaUploadMessage.textContent = data.message || adminUiText('Media caricato.')
 
     if (data.media?.url) {
       document.querySelector('#mediaName').value = data.media.name || ''
@@ -6537,7 +7936,7 @@ async function loadMetafieldResources() {
     renderMetafieldEntityOptions()
     loadMetafieldValues()
   } catch {
-    metafieldValuesFields.textContent = 'Errore caricamento record metafields.'
+    metafieldValuesFields.textContent = adminUiText('Errore caricamento record metafields.')
   }
 }
 
@@ -6566,7 +7965,7 @@ function renderMetafieldValueFields(definitions = []) {
   currentMetafieldDefinitions = definitions
 
   if (!definitions.length) {
-    metafieldValuesFields.textContent = 'Nessuna definizione metafield per questa entita.'
+    metafieldValuesFields.textContent = adminUiText('Nessuna definizione metafield per questa entita.')
     return
   }
 
@@ -6609,7 +8008,7 @@ async function loadMetafieldValues() {
 
   const entityType = metafieldValueEntityType.value
   const entityId = metafieldEntitySelect.value
-  metafieldValuesFields.textContent = 'Caricamento metafields...'
+  metafieldValuesFields.textContent = adminUiText('Caricamento metafields...')
 
   try {
     const response = await fetch(
@@ -6618,13 +8017,13 @@ async function loadMetafieldValues() {
     const data = await response.json()
 
     if (!data.success) {
-      metafieldValuesFields.textContent = data.message || 'Errore caricamento metafields.'
+      metafieldValuesFields.textContent = data.message || adminUiText('Errore caricamento metafields.')
       return
     }
 
     renderMetafieldValueFields(data.definitions || [])
   } catch {
-    metafieldValuesFields.textContent = 'Errore di connessione metafields.'
+    metafieldValuesFields.textContent = adminUiText('Errore di connessione metafields.')
   }
 }
 
@@ -6638,7 +8037,7 @@ function readMetafieldValueFields() {
 
 metafieldDefinitionForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  metafieldDefinitionMessage.textContent = 'Creazione metafield...'
+  metafieldDefinitionMessage.textContent = adminUiText('Creazione metafield...')
 
   try {
     const response = await fetch('/api/admin/metafields', {
@@ -6656,15 +8055,15 @@ metafieldDefinitionForm?.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      metafieldDefinitionMessage.textContent = data.message || 'Errore creazione metafield.'
+      metafieldDefinitionMessage.textContent = data.message || adminUiText('Errore creazione metafield.')
       return
     }
 
-    metafieldDefinitionMessage.textContent = data.message || 'Metafield creato.'
+    metafieldDefinitionMessage.textContent = data.message || adminUiText('Metafield creato.')
     metafieldDefinitionForm.reset()
     await loadMetafieldValues()
   } catch {
-    metafieldDefinitionMessage.textContent = 'Errore di connessione metafields.'
+    metafieldDefinitionMessage.textContent = adminUiText('Errore di connessione metafields.')
   }
 })
 
@@ -6677,11 +8076,11 @@ metafieldEntitySelect?.addEventListener('change', loadMetafieldValues)
 
 saveMetafieldValuesButton?.addEventListener('click', async () => {
   if (!metafieldEntitySelect.value) {
-    metafieldValuesMessage.textContent = 'Seleziona un record.'
+    metafieldValuesMessage.textContent = adminUiText('Seleziona un record.')
     return
   }
 
-  metafieldValuesMessage.textContent = 'Salvataggio metafields...'
+  metafieldValuesMessage.textContent = adminUiText('Salvataggio metafields...')
 
   try {
     const response = await fetch('/api/admin/metafields', {
@@ -6699,7 +8098,7 @@ saveMetafieldValuesButton?.addEventListener('click', async () => {
 
     metafieldValuesMessage.textContent = data.message || (data.success ? 'Metafields salvati.' : 'Errore metafields.')
   } catch {
-    metafieldValuesMessage.textContent = 'Errore di connessione metafields.'
+    metafieldValuesMessage.textContent = adminUiText('Errore di connessione metafields.')
   }
 })
 
@@ -6844,10 +8243,10 @@ function resetMarketForm() {
   document.querySelector('#marketId').value = ''
   document.querySelector('#marketActive').checked = true
   document.querySelector('#marketDefault').checked = false
-  marketFormTitle.textContent = 'Aggiungi mercato'
-  marketSubmitButton.textContent = 'Salva mercato'
+  marketFormTitle.textContent = t('markets.add', 'Aggiungi mercato')
+  marketSubmitButton.textContent = t('markets.save', 'Salva mercato')
   cancelMarketEdit.hidden = true
-  marketMessage.textContent = ''
+  marketMessage.textContent = adminUiText('')
 }
 
 function fillMarketForm(market) {
@@ -6862,8 +8261,12 @@ function fillMarketForm(market) {
   document.querySelector('#marketNotes').value = market.notes || ''
   document.querySelector('#marketActive').checked = Number(market.active) !== 0
   document.querySelector('#marketDefault').checked = Number(market.is_default) === 1
-  marketFormTitle.textContent = market.id ? 'Modifica mercato' : 'Aggiungi mercato da preset'
-  marketSubmitButton.textContent = market.id ? 'Aggiorna mercato' : 'Salva mercato'
+  marketFormTitle.textContent = market.id
+    ? t('markets.edit', 'Modifica mercato')
+    : t('markets.addFromPreset', 'Aggiungi mercato da preset')
+  marketSubmitButton.textContent = market.id
+    ? t('markets.update', 'Aggiorna mercato')
+    : t('markets.save', 'Salva mercato')
   cancelMarketEdit.hidden = !market.id
 }
 
@@ -6887,7 +8290,7 @@ function renderMarketConfigList(target, items, config) {
   if (!target) return
 
   if (!items.length) {
-    target.innerHTML = '<p class="admin-empty">Nessun dato configurato. Applica la migration Markets 2.0 per abilitare questa lista.</p>'
+    target.innerHTML = `<p class="admin-empty">${adminUiHtml('Nessun dato configurato. Applica la migration Markets 2.0 per abilitare questa lista.')}</p>`
     return
   }
 
@@ -6901,7 +8304,7 @@ function renderMarketConfigList(target, items, config) {
           </div>
           <div class="meta">
             ${config.meta(item)
-              .map((value) => `<span>${escapeHtml(value)}</span>`)
+              .map((value) => `<span>${adminUiHtml(value)}</span>`)
               .join('')}
           </div>
         </article>
@@ -6952,13 +8355,13 @@ function renderMarketPresets(markets = []) {
     return `
       <article class="market-preset-card ${exists ? 'is-added' : ''}">
         <div>
-          <span class="mini-card-status">${exists ? 'Gia presente' : 'Preset consigliato'}</span>
+          <span class="mini-card-status">${adminUiHtml(exists ? 'Gia presente' : 'Preset consigliato')}</span>
           <h4>${escapeHtml(preset.name)}</h4>
           <p>${escapeHtml(preset.country_code)} / ${escapeHtml(preset.language_code)} / ${escapeHtml(preset.currency_code)}</p>
           <p class="market-preset-path">${escapeHtml(preset.path_prefix || '/')}</p>
         </div>
         <button type="button" data-market-preset="${escapeHtml(preset.handle)}" ${exists ? 'disabled' : ''}>
-          Aggiungi mercato
+          ${escapeHtml(t('markets.add', 'Aggiungi mercato'))}
         </button>
       </article>
     `
@@ -6970,7 +8373,7 @@ function renderMarketPresets(markets = []) {
       if (!preset) return
 
       if (existingHandles.has(preset.handle)) {
-        marketMessage.textContent = 'Questo mercato e gia configurato.'
+        marketMessage.textContent = adminUiText('Questo mercato e gia configurato.')
         return
       }
 
@@ -6980,7 +8383,7 @@ function renderMarketPresets(markets = []) {
         is_default: preset.is_default && !markets.some((market) => Number(market.is_default) === 1) ? 1 : 0,
         domain: '',
       })
-      marketMessage.textContent = 'Preset caricato nel form. Controlla i dati e salva il mercato.'
+      marketMessage.textContent = adminUiText('Preset caricato nel form. Controlla i dati e salva il mercato.')
       marketForm?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
   })
@@ -6990,7 +8393,7 @@ function renderMarketPresets(markets = []) {
 
 async function loadMarketsAdmin() {
   if (!marketsList) return
-  marketsList.textContent = 'Caricamento markets...'
+  marketsList.textContent = adminUiText('Caricamento markets...')
   renderMarketPresets(adminMarketsData.markets || [])
 
   try {
@@ -6998,7 +8401,7 @@ async function loadMarketsAdmin() {
     const data = await response.json()
 
     if (!data.success) {
-      marketsList.textContent = data.message || 'Errore markets.'
+      marketsList.textContent = data.message || adminUiText('Errore markets.')
       renderMarketPresets([])
       return
     }
@@ -7069,14 +8472,14 @@ async function loadMarketsAdmin() {
 
     loadLocalizedPricingAdmin()
   } catch {
-    marketsList.textContent = 'Errore di connessione markets.'
+    marketsList.textContent = adminUiText('Errore di connessione markets.')
     renderMarketPresets([])
   }
 }
 
 marketForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  marketMessage.textContent = 'Salvataggio mercato...'
+  marketMessage.textContent = adminUiText('Salvataggio mercato...')
   const payload = readMarketPayload()
   const isEditing = Boolean(payload.id)
 
@@ -7087,14 +8490,14 @@ marketForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    marketMessage.textContent = data.message || 'Mercato salvato.'
+    marketMessage.textContent = data.message || adminUiText('Mercato salvato.')
     if (data.success) {
       resetMarketForm()
       loadMarketsAdmin()
       loadLocalizedPricingAdmin()
     }
   } catch {
-    marketMessage.textContent = 'Errore di connessione markets.'
+    marketMessage.textContent = adminUiText('Errore di connessione markets.')
   }
 })
 
@@ -7107,7 +8510,7 @@ function resetLocalizedPriceForm() {
   const idField = document.querySelector('#localizedPriceId')
   if (idField) idField.value = ''
   if (localizedPriceActive) localizedPriceActive.checked = true
-  if (localizedPriceMessage) localizedPriceMessage.textContent = ''
+  if (localizedPriceMessage) localizedPriceMessage.textContent = adminUiText('')
   updateLocalizedVariantOptions()
 }
 
@@ -7234,7 +8637,7 @@ function renderLocalizedPricesList() {
       localizedPriceCurrency.value = price.currency_code || 'EUR'
       localizedPriceAmount.value = centsToAdminPrice(price.price_cents)
       localizedPriceActive.checked = Number(price.active) !== 0
-      localizedPriceMessage.textContent = 'Prezzo caricato nel form.'
+      localizedPriceMessage.textContent = adminUiText('Prezzo caricato nel form.')
     })
   })
 
@@ -7252,14 +8655,14 @@ function renderLocalizedPricesList() {
 
 async function loadLocalizedPricingAdmin() {
   if (!localizedPricesList && !localizedPriceForm) return
-  if (localizedPricesList) localizedPricesList.textContent = 'Caricamento prezzi localizzati...'
+  if (localizedPricesList) localizedPricesList.textContent = adminUiText('Caricamento prezzi localizzati...')
 
   try {
     const response = await fetch('/api/admin/localized-pricing')
     const data = await response.json()
 
     if (!data.success) {
-      if (localizedPricesList) localizedPricesList.textContent = data.message || 'Prezzi localizzati non disponibili.'
+      if (localizedPricesList) localizedPricesList.textContent = data.message || adminUiText('Prezzi localizzati non disponibili.')
       return
     }
 
@@ -7272,7 +8675,7 @@ async function loadLocalizedPricingAdmin() {
     renderLocalizedPriceOptions()
     renderLocalizedPricesList()
   } catch {
-    if (localizedPricesList) localizedPricesList.textContent = 'Errore di connessione prezzi localizzati.'
+    if (localizedPricesList) localizedPricesList.textContent = adminUiText('Errore di connessione prezzi localizzati.')
   }
 }
 
@@ -7284,7 +8687,7 @@ localizedPriceMarket?.addEventListener('change', () => {
 
 localizedPriceForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  localizedPriceMessage.textContent = 'Salvataggio prezzo localizzato...'
+  localizedPriceMessage.textContent = adminUiText('Salvataggio prezzo localizzato...')
 
   const payload = {
     id: document.querySelector('#localizedPriceId').value,
@@ -7303,14 +8706,14 @@ localizedPriceForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    localizedPriceMessage.textContent = data.message || 'Prezzo localizzato salvato.'
+    localizedPriceMessage.textContent = data.message || adminUiText('Prezzo localizzato salvato.')
 
     if (data.success) {
       resetLocalizedPriceForm()
       loadLocalizedPricingAdmin()
     }
   } catch {
-    localizedPriceMessage.textContent = 'Errore di connessione prezzi localizzati.'
+    localizedPriceMessage.textContent = adminUiText('Errore di connessione prezzi localizzati.')
   }
 })
 
@@ -7330,20 +8733,20 @@ const analyticsConversionsPanel = document.querySelector('#analyticsConversionsP
 const analyticsEventsPanel = document.querySelector('#analyticsEventsPanel')
 const seoDashboard = document.querySelector('#seoDashboard')
 
-function renderAnalyticsEmpty(target, text = 'Nessun dato analytics ancora disponibile.') {
-  if (target) target.innerHTML = `<p class="admin-empty">${escapeHtml(text)}</p>`
+function renderAnalyticsEmpty(target, text = t('analytics.empty', 'Nessun dato analytics ancora disponibile.')) {
+  if (target) target.innerHTML = `<p class="admin-empty">${adminUiHtml(text)}</p>`
 }
 
 function renderAnalyticsMetricGrid(summary = {}) {
   return `
     <div class="analytics-metric-grid">
-      <article><strong>${summary.page_views || 0}</strong><span>Page views</span></article>
-      <article><strong>${summary.product_views || 0}</strong><span>Product views</span></article>
-      <article><strong>${summary.add_to_cart || 0}</strong><span>Add to cart</span></article>
-      <article><strong>${summary.checkout_starts || 0}</strong><span>Checkout start</span></article>
-      <article><strong>${summary.orders_created || 0}</strong><span>Ordini creati</span></article>
-      <article><strong>${summary.conversion_rate || 0}%</strong><span>Checkout conversion</span></article>
-      <article><strong>${formatMoney(summary.revenue_cents || 0)}</strong><span>Revenue</span></article>
+      <article><strong>${summary.page_views || 0}</strong><span>${adminUiHtml('Page views')}</span></article>
+      <article><strong>${summary.product_views || 0}</strong><span>${adminUiHtml('Product views')}</span></article>
+      <article><strong>${summary.add_to_cart || 0}</strong><span>${adminUiHtml('Add to cart')}</span></article>
+      <article><strong>${summary.checkout_starts || 0}</strong><span>${adminUiHtml('Checkout start')}</span></article>
+      <article><strong>${summary.orders_created || 0}</strong><span>${escapeHtml(t('analytics.ordersCreated', 'Ordini creati'))}</span></article>
+      <article><strong>${summary.conversion_rate || 0}%</strong><span>${adminUiHtml('Checkout conversion')}</span></article>
+      <article><strong>${formatMoney(summary.revenue_cents || 0)}</strong><span>${adminUiHtml('Revenue')}</span></article>
     </div>
   `
 }
@@ -7357,14 +8760,14 @@ function renderAnalyticsPanels(data = {}) {
       <article class="admin-record">
         <div class="admin-record-head">
           <div>
-            <h3>Overview eventi</h3>
-            <p>Eventi raccolti senza dati personali sensibili.</p>
+            <h3>${escapeHtml(t('analytics.overview', 'Overview eventi'))}</h3>
+            <p>${escapeHtml(t('analytics.overviewDesc', 'Eventi raccolti senza dati personali sensibili.'))}</p>
           </div>
         </div>
         <div class="meta">
           ${(data.counts || [])
             .map((item) => `<span>${escapeHtml(item.event_type)}: ${item.count}</span>`)
-            .join('') || '<span>Nessun evento</span>'}
+            .join('') || `<span>${escapeHtml(t('analytics.noEvents', 'Nessun evento'))}</span>`}
         </div>
       </article>
     `
@@ -7379,23 +8782,23 @@ function renderAnalyticsPanels(data = {}) {
               <div class="admin-record-head">
                 <div>
                   <h3>${escapeHtml(row.path || '/')}</h3>
-                  <p>Page views aggregate</p>
+                  <p>${adminUiHtml('Page views aggregate')}</p>
                 </div>
                 <strong>${row.views || 0}</strong>
               </div>
             </article>
           `)
           .join('')
-      : '<p class="admin-empty">Nessuna page view ancora registrata.</p>'
+      : `<p class="admin-empty">${escapeHtml(t('analytics.noPageViews', 'Nessuna page view ancora registrata.'))}</p>`
   }
 
   if (analyticsSalesPanel) {
     const sales = data.sales || {}
     analyticsSalesPanel.innerHTML = `
       <div class="analytics-metric-grid">
-        <article><strong>${sales.orders_count || 0}</strong><span>Ordini</span></article>
-        <article><strong>${formatMoney(sales.revenue_cents || 0)}</strong><span>Revenue</span></article>
-        <article><strong>${formatMoney(sales.average_order_cents || 0)}</strong><span>Valore medio</span></article>
+        <article><strong>${sales.orders_count || 0}</strong><span>${escapeHtml(t('orders.title', 'Ordini'))}</span></article>
+        <article><strong>${formatMoney(sales.revenue_cents || 0)}</strong><span>${adminUiHtml('Revenue')}</span></article>
+        <article><strong>${formatMoney(sales.average_order_cents || 0)}</strong><span>${escapeHtml(t('analytics.averageOrder', 'Valore medio'))}</span></article>
       </div>
     `
   }
@@ -7413,23 +8816,23 @@ function renderAnalyticsPanels(data = {}) {
                 </div>
               </div>
               <div class="meta">
-                <span>View: ${product.product_views || 0}</span>
-                <span>Add to cart: ${product.add_to_cart || 0}</span>
+                <span>${adminUiHtml('View')}: ${product.product_views || 0}</span>
+                <span>${adminUiHtml('Add to cart')}: ${product.add_to_cart || 0}</span>
               </div>
             </article>
           `)
           .join('')
-      : '<p class="admin-empty">Nessun evento prodotto ancora registrato.</p>'
+      : `<p class="admin-empty">${escapeHtml(t('analytics.noProductEvents', 'Nessun evento prodotto ancora registrato.'))}</p>`
   }
 
   if (analyticsConversionsPanel) {
     const conversions = data.conversions || {}
     analyticsConversionsPanel.innerHTML = `
       <div class="analytics-metric-grid">
-        <article><strong>${conversions.add_to_cart_rate || 0}%</strong><span>Product to cart</span></article>
-        <article><strong>${conversions.checkout_to_order_rate || 0}%</strong><span>Checkout to order</span></article>
-        <article><strong>${summary.checkout_starts || 0}</strong><span>Checkout start</span></article>
-        <article><strong>${summary.orders_created || 0}</strong><span>Orders created</span></article>
+        <article><strong>${conversions.add_to_cart_rate || 0}%</strong><span>${adminUiHtml('Product to cart')}</span></article>
+        <article><strong>${conversions.checkout_to_order_rate || 0}%</strong><span>${adminUiHtml('Checkout to order')}</span></article>
+        <article><strong>${summary.checkout_starts || 0}</strong><span>${adminUiHtml('Checkout start')}</span></article>
+        <article><strong>${summary.orders_created || 0}</strong><span>${escapeHtml(t('analytics.ordersCreated', 'Ordini creati'))}</span></article>
       </div>
     `
   }
@@ -7450,14 +8853,14 @@ function renderAnalyticsPanels(data = {}) {
             </article>
           `)
           .join('')
-      : '<p class="admin-empty">Nessun evento recente.</p>'
+      : `<p class="admin-empty">${escapeHtml(t('analytics.noRecentEvents', 'Nessun evento recente.'))}</p>`
   }
 }
 
 async function loadAnalyticsDashboard() {
-  if (analyticsDashboard) analyticsDashboard.textContent = 'Caricamento analytics...'
+  if (analyticsDashboard) analyticsDashboard.textContent = t('analytics.loading', 'Caricamento analytics...')
   ;[analyticsTrafficPanel, analyticsSalesPanel, analyticsProductsPanel, analyticsConversionsPanel, analyticsEventsPanel].forEach((panel) => {
-    if (panel) panel.textContent = 'Caricamento analytics...'
+    if (panel) panel.textContent = t('analytics.loading', 'Caricamento analytics...')
   })
 
   try {
@@ -7465,7 +8868,7 @@ async function loadAnalyticsDashboard() {
     const data = await response.json()
 
     if (!data.success) {
-      renderAnalyticsEmpty(analyticsDashboard, data.message || 'Errore analytics.')
+      renderAnalyticsEmpty(analyticsDashboard, data.message || adminUiText('Errore analytics.'))
       return
     }
 
@@ -7487,9 +8890,9 @@ function seoStatusForItem(item = {}, type = '') {
   if (!title || String(title).length < 20) missing.push('title')
   if (!description || String(description).length < 70) missing.push('description')
 
-  if (!missing.length) return { key: 'good', label: 'Good', missing }
-  if (missing.length === 2) return { key: 'missing', label: 'Missing', missing }
-  return { key: 'attention', label: 'Needs attention', missing }
+  if (!missing.length) return { key: 'good', label: adminUiText('Good'), missing }
+  if (missing.length === 2) return { key: 'missing', label: adminUiText('Missing'), missing }
+  return { key: 'attention', label: adminUiText('Needs attention'), missing }
 }
 
 function renderGoogleSnippet(item = {}, type = '') {
@@ -7524,7 +8927,7 @@ async function fetchSeoResource(url, key) {
 
 async function loadSeoDashboard() {
   if (!seoDashboard) return
-  seoDashboard.textContent = 'Caricamento SEO...'
+  seoDashboard.textContent = adminUiText('Caricamento SEO...')
 
   const [productsData, collectionsData, pages, posts, policies] = await Promise.all([
     fetch('/api/products').then((response) => response.json()).catch(() => ({ success: false, products: [] })),
@@ -7535,15 +8938,15 @@ async function loadSeoDashboard() {
   ])
 
   const resources = [
-    ...((productsData.products || []).map((item) => ({ ...item, seo_type: 'product', seo_label: 'Prodotto' }))),
-    ...((collectionsData.collections || []).map((item) => ({ ...item, seo_type: 'collection', seo_label: 'Collezione' }))),
-    ...(pages.map((item) => ({ ...item, seo_type: 'page', seo_label: 'Pagina' }))),
+    ...((productsData.products || []).map((item) => ({ ...item, seo_type: 'product', seo_label: t('product', 'Prodotto') }))),
+    ...((collectionsData.collections || []).map((item) => ({ ...item, seo_type: 'collection', seo_label: t('collections.title', 'Collezione') }))),
+    ...(pages.map((item) => ({ ...item, seo_type: 'page', seo_label: t('pages.title', 'Pagina') }))),
     ...(posts.map((item) => ({ ...item, seo_type: 'blog', seo_label: 'Blog' }))),
     ...(policies.map((item) => ({ ...item, seo_type: 'policy', seo_label: 'Policy' }))),
   ]
 
   if (!resources.length) {
-    seoDashboard.innerHTML = '<p class="admin-empty">Nessun contenuto disponibile per l audit SEO.</p>'
+    seoDashboard.innerHTML = `<p class="admin-empty">${adminUiHtml('Nessun contenuto disponibile per l audit SEO.')}</p>`
     return
   }
 
@@ -7561,14 +8964,14 @@ async function loadSeoDashboard() {
 
   seoDashboard.innerHTML = `
     <div class="analytics-metric-grid">
-      <article><strong>${counts.good}</strong><span>Good</span></article>
-      <article><strong>${counts.attention}</strong><span>Needs attention</span></article>
-      <article><strong>${counts.missing}</strong><span>Missing</span></article>
-      <article><strong>${resources.length}</strong><span>Totale contenuti</span></article>
+      <article><strong>${counts.good}</strong><span>${adminUiHtml('Good')}</span></article>
+      <article><strong>${counts.attention}</strong><span>${adminUiHtml('Needs attention')}</span></article>
+      <article><strong>${counts.missing}</strong><span>${adminUiHtml('Missing')}</span></article>
+      <article><strong>${resources.length}</strong><span>${adminUiHtml('Totale contenuti')}</span></article>
     </div>
     <div class="placeholder-panel compact-panel">
-      <span class="status-badge">Configurazione base</span>
-      <p>Sitemap, robots, canonical e hreflang sono predisposti a livello contenuto/setting. Search Console API e audit AI restano advanced tools in progress.</p>
+      <span class="status-badge">${escapeHtml(t('status.basicConfiguration', 'Configurazione base'))}</span>
+      <p>${escapeHtml(t('seo.dashboardNote', 'Sitemap, robots, canonical e hreflang sono predisposti a livello contenuto/setting. Search Console API e audit AI restano advanced tools in progress.'))}</p>
     </div>
     ${enriched
       .map((item) => `
@@ -7610,10 +9013,10 @@ function resetIntegrationForm() {
   document.querySelector('#integrationId').value = ''
   document.querySelector('#integrationConfigJson').value = '{}'
   document.querySelector('#integrationActive').checked = true
-  integrationFormTitle.textContent = 'Aggiungi integrazione'
-  integrationSubmitButton.textContent = 'Salva integrazione'
+  integrationFormTitle.textContent = t('integrations.add', 'Aggiungi integrazione')
+  integrationSubmitButton.textContent = t('integrations.save', 'Salva integrazione')
   cancelIntegrationEdit.hidden = true
-  integrationMessage.textContent = ''
+  integrationMessage.textContent = adminUiText('')
 }
 
 function fillIntegrationForm(integration) {
@@ -7623,21 +9026,21 @@ function fillIntegrationForm(integration) {
   document.querySelector('#integrationWebhookUrl').value = integration.webhook_url || ''
   document.querySelector('#integrationConfigJson').value = stringifyForTextarea(integration.config, {})
   document.querySelector('#integrationActive').checked = Number(integration.active) !== 0
-  integrationFormTitle.textContent = 'Modifica integrazione'
-  integrationSubmitButton.textContent = 'Aggiorna integrazione'
+  integrationFormTitle.textContent = t('integrations.edit', 'Modifica integrazione')
+  integrationSubmitButton.textContent = t('integrations.update', 'Aggiorna integrazione')
   cancelIntegrationEdit.hidden = false
 }
 
 async function loadIntegrations() {
   if (!integrationsList) return
-  integrationsList.textContent = 'Caricamento integrazioni...'
+  integrationsList.textContent = adminUiText('Caricamento integrazioni...')
 
   try {
     const response = await fetch('/api/admin/integrations')
     const data = await response.json()
 
     if (!data.success) {
-      integrationsList.textContent = data.message || 'Errore integrazioni.'
+      integrationsList.textContent = data.message || adminUiText('Errore integrazioni.')
       return
     }
 
@@ -7681,13 +9084,13 @@ async function loadIntegrations() {
       })
     })
   } catch {
-    integrationsList.textContent = 'Errore di connessione integrazioni.'
+    integrationsList.textContent = adminUiText('Errore di connessione integrazioni.')
   }
 }
 
 integrationForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  integrationMessage.textContent = 'Salvataggio integrazione...'
+  integrationMessage.textContent = adminUiText('Salvataggio integrazione...')
   const id = document.querySelector('#integrationId').value
 
   try {
@@ -7705,13 +9108,13 @@ integrationForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    integrationMessage.textContent = data.message || 'Integrazione salvata.'
+    integrationMessage.textContent = data.message || adminUiText('Integrazione salvata.')
     if (data.success) {
       resetIntegrationForm()
       loadIntegrations()
     }
   } catch (error) {
-    integrationMessage.textContent = 'Errore integrazione. Verifica il JSON configurazione e riprova.'
+    integrationMessage.textContent = adminUiText('Errore integrazione. Verifica il JSON configurazione e riprova.')
   }
 })
 
@@ -7740,12 +9143,12 @@ function resetAdminUserForm() {
   if (adminUserPasswordInput) {
     adminUserPasswordInput.value = ''
     adminUserPasswordInput.required = true
-    adminUserPasswordInput.placeholder = 'Minimo 8 caratteri'
+    adminUserPasswordInput.placeholder = adminUiText('Minimo 8 caratteri')
   }
-  adminUserFormTitle.textContent = 'Aggiungi utente'
-  adminUserSubmitButton.textContent = 'Salva utente'
+  adminUserFormTitle.textContent = t('users.add', 'Aggiungi utente')
+  adminUserSubmitButton.textContent = t('users.save', 'Salva utente')
   cancelAdminUserEdit.hidden = true
-  adminUserMessage.textContent = ''
+  adminUserMessage.textContent = adminUiText('')
 }
 
 function fillAdminUserForm(user) {
@@ -7757,10 +9160,10 @@ function fillAdminUserForm(user) {
   if (adminUserPasswordInput) {
     adminUserPasswordInput.value = ''
     adminUserPasswordInput.required = false
-    adminUserPasswordInput.placeholder = 'Lascia vuota per non cambiarla'
+    adminUserPasswordInput.placeholder = adminUiText('Lascia vuota per non cambiarla')
   }
-  adminUserFormTitle.textContent = 'Modifica utente'
-  adminUserSubmitButton.textContent = 'Aggiorna utente'
+  adminUserFormTitle.textContent = t('users.edit', 'Modifica utente')
+  adminUserSubmitButton.textContent = t('users.update', 'Aggiorna utente')
   cancelAdminUserEdit.hidden = false
 }
 
@@ -7768,20 +9171,20 @@ async function loadAdminUsers() {
   if (!adminUsersList) return
 
   if (!canAdminManageUsers()) {
-    adminUsersList.textContent = 'Permessi insufficienti per gestire gli utenti admin.'
+    adminUsersList.textContent = adminUiText('Permessi insufficienti per gestire gli utenti admin.')
     if (adminUserForm) adminUserForm.hidden = true
     return
   }
 
   if (adminUserForm) adminUserForm.hidden = false
-  adminUsersList.textContent = 'Caricamento utenti...'
+  adminUsersList.textContent = adminUiText('Caricamento utenti...')
 
   try {
     const response = await fetch('/api/admin/users')
     const data = await response.json()
 
     if (!data.success) {
-      adminUsersList.textContent = data.message || 'Errore utenti.'
+      adminUsersList.textContent = data.message || adminUiText('Errore utenti.')
       return
     }
 
@@ -7826,7 +9229,7 @@ async function loadAdminUsers() {
       })
     })
   } catch {
-    adminUsersList.textContent = 'Errore di connessione utenti.'
+    adminUsersList.textContent = adminUiText('Errore di connessione utenti.')
   }
 }
 
@@ -7834,11 +9237,11 @@ adminUserForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   if (!canAdminManageUsers()) {
-    adminUserMessage.textContent = 'Permessi insufficienti.'
+    adminUserMessage.textContent = adminUiText('Permessi insufficienti.')
     return
   }
 
-  adminUserMessage.textContent = 'Salvataggio utente...'
+  adminUserMessage.textContent = adminUiText('Salvataggio utente...')
   const id = document.querySelector('#adminUserId').value
 
   try {
@@ -7855,13 +9258,13 @@ adminUserForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    adminUserMessage.textContent = data.message || 'Utente salvato.'
+    adminUserMessage.textContent = data.message || adminUiText('Utente salvato.')
     if (data.success) {
       resetAdminUserForm()
       loadAdminUsers()
     }
   } catch {
-    adminUserMessage.textContent = 'Errore di connessione utenti.'
+    adminUserMessage.textContent = adminUiText('Errore di connessione utenti.')
   }
 })
 
@@ -7880,18 +9283,18 @@ async function loadActivityLog() {
   if (!activityLogList) return
 
   if (!canAdminViewSensitiveSettings()) {
-    activityLogList.textContent = 'Permessi insufficienti per leggere l\'activity log.'
+    activityLogList.textContent = adminUiText('Permessi insufficienti per leggere l\'activity log.')
     return
   }
 
-  activityLogList.textContent = 'Caricamento activity log...'
+  activityLogList.textContent = adminUiText('Caricamento activity log...')
 
   try {
     const response = await fetch('/api/admin/activity')
     const data = await response.json()
 
     if (!data.success) {
-      activityLogList.textContent = data.message || 'Errore activity log.'
+      activityLogList.textContent = data.message || adminUiText('Errore activity log.')
       return
     }
 
@@ -7914,7 +9317,7 @@ async function loadActivityLog() {
           .join('')
       : 'Nessun log.'
   } catch {
-    activityLogList.textContent = 'Errore di connessione activity log.'
+    activityLogList.textContent = adminUiText('Errore di connessione activity log.')
   }
 }
 
@@ -7939,10 +9342,10 @@ function resetNotificationForm() {
   notificationForm.reset()
   document.querySelector('#notificationId').value = ''
   document.querySelector('#notificationActive').checked = true
-  notificationFormTitle.textContent = 'Aggiungi template'
-  notificationSubmitButton.textContent = 'Salva template'
+  notificationFormTitle.textContent = t('notifications.add', 'Aggiungi template')
+  notificationSubmitButton.textContent = t('notifications.save', 'Salva template')
   cancelNotificationEdit.hidden = true
-  notificationMessage.textContent = ''
+  notificationMessage.textContent = adminUiText('')
 }
 
 function fillNotificationForm(template) {
@@ -7952,21 +9355,21 @@ function fillNotificationForm(template) {
   document.querySelector('#notificationSubject').value = template.subject || ''
   document.querySelector('#notificationBody').value = template.body || ''
   document.querySelector('#notificationActive').checked = Number(template.active) !== 0
-  notificationFormTitle.textContent = 'Modifica template'
-  notificationSubmitButton.textContent = 'Aggiorna template'
+  notificationFormTitle.textContent = t('notifications.edit', 'Modifica template')
+  notificationSubmitButton.textContent = t('notifications.update', 'Aggiorna template')
   cancelNotificationEdit.hidden = false
 }
 
 async function loadNotifications() {
   if (!notificationsList) return
-  notificationsList.textContent = 'Caricamento notifiche...'
+  notificationsList.textContent = adminUiText('Caricamento notifiche...')
 
   try {
     const response = await fetch('/api/admin/notifications')
     const data = await response.json()
 
     if (!data.success) {
-      notificationsList.textContent = data.message || 'Errore notifiche.'
+      notificationsList.textContent = data.message || adminUiText('Errore notifiche.')
       return
     }
 
@@ -8053,13 +9456,13 @@ async function loadNotifications() {
       })
     })
   } catch {
-    notificationsList.textContent = 'Errore di connessione notifiche.'
+    notificationsList.textContent = adminUiText('Errore di connessione notifiche.')
   }
 }
 
 notificationForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  notificationMessage.textContent = 'Salvataggio notifica...'
+  notificationMessage.textContent = adminUiText('Salvataggio notifica...')
   const id = document.querySelector('#notificationId').value
 
   try {
@@ -8076,13 +9479,13 @@ notificationForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    notificationMessage.textContent = data.message || 'Notifica salvata.'
+    notificationMessage.textContent = data.message || adminUiText('Notifica salvata.')
     if (data.success) {
       resetNotificationForm()
       loadNotifications()
     }
   } catch {
-    notificationMessage.textContent = 'Errore di connessione notifiche.'
+    notificationMessage.textContent = adminUiText('Errore di connessione notifiche.')
   }
 })
 
@@ -8107,10 +9510,10 @@ function resetDomainForm() {
   domainForm.reset()
   document.querySelector('#domainId').value = ''
   document.querySelector('#domainPrimary').checked = false
-  domainFormTitle.textContent = 'Aggiungi dominio'
-  domainSubmitButton.textContent = 'Salva dominio'
+  domainFormTitle.textContent = t('domains.add', 'Aggiungi dominio')
+  domainSubmitButton.textContent = t('domains.save', 'Salva dominio')
   cancelDomainEdit.hidden = true
-  domainMessage.textContent = ''
+  domainMessage.textContent = adminUiText('')
 }
 
 function fillDomainForm(domain) {
@@ -8120,8 +9523,8 @@ function fillDomainForm(domain) {
   document.querySelector('#domainStatus').value = domain.status || 'pending'
   document.querySelector('#domainDnsNotes').value = domain.dns_notes || ''
   document.querySelector('#domainPrimary').checked = Number(domain.is_primary) === 1
-  domainFormTitle.textContent = 'Modifica dominio'
-  domainSubmitButton.textContent = 'Aggiorna dominio'
+  domainFormTitle.textContent = t('domains.edit', 'Modifica dominio')
+  domainSubmitButton.textContent = t('domains.update', 'Aggiorna dominio')
   cancelDomainEdit.hidden = false
 }
 
@@ -8138,14 +9541,14 @@ function readDomainPayload() {
 
 async function loadDomainsAdmin() {
   if (!domainsList) return
-  domainsList.textContent = 'Caricamento domini...'
+  domainsList.textContent = adminUiText('Caricamento domini...')
 
   try {
     const response = await fetch('/api/admin/domains')
     const data = await response.json()
 
     if (!data.success) {
-      domainsList.textContent = data.message || 'Errore domini.'
+      domainsList.textContent = data.message || adminUiText('Errore domini.')
       return
     }
 
@@ -8190,13 +9593,13 @@ async function loadDomainsAdmin() {
       })
     })
   } catch {
-    domainsList.textContent = 'Errore di connessione domini.'
+    domainsList.textContent = adminUiText('Errore di connessione domini.')
   }
 }
 
 domainForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  domainMessage.textContent = 'Salvataggio dominio...'
+  domainMessage.textContent = adminUiText('Salvataggio dominio...')
   const payload = readDomainPayload()
   const isEditing = Boolean(payload.id)
 
@@ -8207,13 +9610,13 @@ domainForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    domainMessage.textContent = data.message || 'Dominio salvato.'
+    domainMessage.textContent = data.message || adminUiText('Dominio salvato.')
     if (data.success) {
       resetDomainForm()
       loadDomainsAdmin()
     }
   } catch {
-    domainMessage.textContent = 'Errore di connessione domini.'
+    domainMessage.textContent = adminUiText('Errore di connessione domini.')
   }
 })
 
@@ -8238,10 +9641,10 @@ function resetTenantForm() {
   tenantForm.reset()
   document.querySelector('#tenantId').value = ''
   document.querySelector('#tenantDefault').checked = false
-  tenantFormTitle.textContent = 'Aggiungi tenant'
-  tenantSubmitButton.textContent = 'Salva tenant'
+  tenantFormTitle.textContent = t('tenants.add', 'Aggiungi tenant')
+  tenantSubmitButton.textContent = t('tenants.save', 'Salva tenant')
   cancelTenantEdit.hidden = true
-  tenantMessage.textContent = ''
+  tenantMessage.textContent = adminUiText('')
 }
 
 function fillTenantForm(tenant) {
@@ -8251,8 +9654,8 @@ function fillTenantForm(tenant) {
   document.querySelector('#tenantStatus').value = tenant.status || 'active'
   document.querySelector('#tenantNotes').value = tenant.notes || ''
   document.querySelector('#tenantDefault').checked = Number(tenant.is_default) === 1
-  tenantFormTitle.textContent = 'Modifica tenant'
-  tenantSubmitButton.textContent = 'Aggiorna tenant'
+  tenantFormTitle.textContent = t('tenants.edit', 'Modifica tenant')
+  tenantSubmitButton.textContent = t('tenants.update', 'Aggiorna tenant')
   cancelTenantEdit.hidden = false
 }
 
@@ -8269,14 +9672,14 @@ function readTenantPayload() {
 
 async function loadTenantsAdmin() {
   if (!tenantsList) return
-  tenantsList.textContent = 'Caricamento tenants...'
+  tenantsList.textContent = adminUiText('Caricamento tenants...')
 
   try {
     const response = await fetch('/api/admin/tenants')
     const data = await response.json()
 
     if (!data.success) {
-      tenantsList.textContent = data.message || 'Errore tenants.'
+      tenantsList.textContent = data.message || adminUiText('Errore tenants.')
       return
     }
 
@@ -8315,13 +9718,13 @@ async function loadTenantsAdmin() {
       })
     })
   } catch {
-    tenantsList.textContent = 'Errore di connessione tenants.'
+    tenantsList.textContent = adminUiText('Errore di connessione tenants.')
   }
 }
 
 tenantForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  tenantMessage.textContent = 'Salvataggio tenant...'
+  tenantMessage.textContent = adminUiText('Salvataggio tenant...')
   const payload = readTenantPayload()
   const isEditing = Boolean(payload.id)
 
@@ -8332,13 +9735,13 @@ tenantForm?.addEventListener('submit', async (event) => {
       body: JSON.stringify(payload),
     })
     const data = await response.json()
-    tenantMessage.textContent = data.message || 'Tenant salvato.'
+    tenantMessage.textContent = data.message || adminUiText('Tenant salvato.')
     if (data.success) {
       resetTenantForm()
       loadTenantsAdmin()
     }
   } catch {
-    tenantMessage.textContent = 'Errore di connessione tenants.'
+    tenantMessage.textContent = adminUiText('Errore di connessione tenants.')
   }
 })
 
@@ -8357,14 +9760,14 @@ const refreshPerformanceButton = document.querySelector('#refreshPerformanceButt
 
 async function loadPerformanceAdmin() {
   if (!performanceDashboard) return
-  performanceDashboard.textContent = 'Caricamento performance...'
+  performanceDashboard.textContent = adminUiText('Caricamento performance...')
 
   try {
     const response = await fetch('/api/admin/performance')
     const data = await response.json()
 
     if (!data.success) {
-      performanceDashboard.textContent = data.message || 'Errore performance.'
+      performanceDashboard.textContent = data.message || adminUiText('Errore performance.')
       return
     }
 
@@ -8396,13 +9799,13 @@ async function loadPerformanceAdmin() {
       </article>
     `
   } catch {
-    performanceDashboard.textContent = 'Errore di connessione performance.'
+    performanceDashboard.textContent = adminUiText('Errore di connessione performance.')
   }
 }
 
 performanceForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  performanceMessage.textContent = 'Salvataggio performance...'
+  performanceMessage.textContent = adminUiText('Salvataggio performance...')
 
   try {
     const response = await fetch('/api/admin/performance', {
@@ -8417,10 +9820,10 @@ performanceForm?.addEventListener('submit', async (event) => {
       }),
     })
     const data = await response.json()
-    performanceMessage.textContent = data.message || 'Performance salvata.'
+    performanceMessage.textContent = data.message || adminUiText('Performance salvata.')
     if (data.success) loadPerformanceAdmin()
   } catch {
-    performanceMessage.textContent = 'Errore di connessione performance.'
+    performanceMessage.textContent = adminUiText('Errore di connessione performance.')
   }
 })
 
@@ -8443,10 +9846,10 @@ const refreshLaunchChecklistButton = document.querySelector('#refreshLaunchCheck
 
 function renderOrderStatusSelect(order) {
   const statuses = [
-    ['pending', 'Pending'],
-    ['confirmed', 'Confirmed'],
-    ['fulfilled', 'Fulfilled'],
-    ['cancelled', 'Cancelled'],
+    ['pending', adminUiText('Pending')],
+    ['confirmed', adminUiText('Confirmed')],
+    ['fulfilled', adminUiText('Fulfilled')],
+    ['cancelled', adminUiText('Cancelled')],
   ]
 
   return `
@@ -8455,7 +9858,7 @@ function renderOrderStatusSelect(order) {
         .map(
           ([value, label]) => `
             <option value="${value}" ${order.order_status === value ? 'selected' : ''}>
-              ${label}
+              ${escapeHtml(label)}
             </option>
           `,
         )
@@ -8467,21 +9870,21 @@ function renderOrderStatusSelect(order) {
 async function loadOrders() {
   if (!ordersList) return
 
-  renderAdminListState(ordersList, 'Caricamento ordini...', 'loading')
+  renderAdminListState(ordersList, t('orders.loading', 'Caricamento ordini...'), 'loading')
 
   try {
     const response = await fetch('/api/admin/orders')
     const data = await response.json()
 
     if (!data.success) {
-      renderAdminListState(ordersList, data.message || 'Errore caricamento ordini.', 'error')
+      renderAdminListState(ordersList, data.message || t('orders.loadError', 'Errore caricamento ordini.'), 'error')
       return
     }
 
     setAdminDashboardCount('orders', data.orders?.length || 0)
 
     if (!data.orders.length) {
-      renderAdminListState(ordersList, 'Nessun ordine trovato.')
+      renderAdminListState(ordersList, t('orders.empty', 'Nessun ordine trovato.'))
       return
     }
 
@@ -8501,7 +9904,7 @@ async function loadOrders() {
     )
 
     if (!visibleOrders.length) {
-      renderAdminListState(ordersList, 'Nessun ordine corrisponde alla ricerca.')
+      renderAdminListState(ordersList, t('orders.noSearchResults', 'Nessun ordine corrisponde alla ricerca.'))
       return
     }
 
@@ -8511,23 +9914,23 @@ async function loadOrders() {
           <article class="admin-record">
             <div class="admin-record-head">
               <div>
-                <h3>Ordine #${order.id}</h3>
-                <p>${escapeHtml(order.customer_name || order.email || 'Cliente')}</p>
+                <h3>${escapeHtml(t('orders.order', 'Ordine'))} #${order.id}</h3>
+                <p>${escapeHtml(order.customer_name || order.email || t('customers.customer', 'Cliente'))}</p>
               </div>
               <strong>${formatMoney(order.total_cents || 0)}</strong>
             </div>
 
             <div class="meta">
-              <span>Pagamento: ${escapeHtml(order.payment_status || 'pending')}</span>
-              <span>Metodo: ${escapeHtml(order.payment_method || 'manual')}</span>
-              <span>Provider: ${escapeHtml(order.payment_provider || 'manual')}</span>
+              <span>${escapeHtml(t('orders.payment', 'Pagamento'))}: ${adminUiHtml(order.payment_status || 'pending')}</span>
+              <span>${escapeHtml(t('orders.method', 'Metodo'))}: ${adminUiHtml(order.payment_method || 'manual')}</span>
+              <span>${escapeHtml(t('orders.provider', 'Provider'))}: ${adminUiHtml(order.payment_provider || 'manual')}</span>
               <span>Ref: ${escapeHtml(order.provider_reference || 'N/D')}</span>
-              <span>Valuta: ${escapeHtml(order.currency || 'EUR')}</span>
-              <span>Spedizione: ${escapeHtml(order.shipping_method || 'standard')}</span>
-              <span>Fulfillment: ${escapeHtml(order.fulfillment_status || 'unfulfilled')}</span>
-              <span>Refund: ${escapeHtml(order.refund_status || 'none')}</span>
-              <span>Sconto: ${order.discount_cents ? `-${formatMoney(order.discount_cents)}` : formatMoney(0)}</span>
-              <span>Tasse: ${formatMoney(order.tax_cents || 0)}</span>
+              <span>${escapeHtml(t('orders.currency', 'Valuta'))}: ${escapeHtml(order.currency || 'EUR')}</span>
+              <span>${escapeHtml(t('orders.shipping', 'Spedizione'))}: ${adminUiHtml(order.shipping_method || 'standard')}</span>
+              <span>${escapeHtml(t('orders.fulfillment', 'Fulfillment'))}: ${adminUiHtml(order.fulfillment_status || 'unfulfilled')}</span>
+              <span>${escapeHtml(t('orders.refund', 'Rimborso'))}: ${adminUiHtml(order.refund_status || 'none')}</span>
+              <span>${escapeHtml(t('orders.discount', 'Sconto'))}: ${order.discount_cents ? `-${formatMoney(order.discount_cents)}` : formatMoney(0)}</span>
+              <span>${escapeHtml(t('orders.taxes', 'Tasse'))}: ${formatMoney(order.tax_cents || 0)}</span>
               <span>${escapeHtml(order.created_at || '')}</span>
             </div>
 
@@ -8539,7 +9942,7 @@ async function loadOrders() {
             </div>
 
             <details>
-              <summary>Righe ordine (${order.items?.length || 0})</summary>
+              <summary>${escapeHtml(t('orders.orderLines', 'Righe ordine'))} (${order.items?.length || 0})</summary>
               <div class="admin-lines">
                 ${(order.items || [])
                   .map(
@@ -8558,17 +9961,17 @@ async function loadOrders() {
             </details>
 
             <label class="admin-status-control">
-              Stato ordine
+              ${escapeHtml(t('orders.orderStatus', 'Stato ordine'))}
               ${renderOrderStatusSelect(order)}
             </label>
 
             <label class="admin-status-control">
-              Stato pagamento
+              ${escapeHtml(t('orders.paymentStatus', 'Stato pagamento'))}
               ${renderPaymentStatusSelect(order)}
             </label>
 
             <details open>
-              <summary>Operations workflow</summary>
+              <summary>${adminUiHtml('Operations workflow')}</summary>
               <div class="operations-tools" data-order-tools="${order.id}">
                 <label>Carrier
                   <input data-order-tracking-carrier type="text" value="${escapeHtml(order.tracking_carrier || '')}" placeholder="DHL, UPS, Poste..." />
@@ -8579,33 +9982,33 @@ async function loadOrders() {
                 <label>Tracking URL
                   <input data-order-tracking-url type="text" value="${escapeHtml(order.tracking_url || '')}" placeholder="https://..." />
                 </label>
-                <label>Shipping note
+                <label>${adminUiHtml('Shipping note')}
                   <input data-order-shipping-note type="text" value="${escapeHtml(order.shipping_note || '')}" placeholder="Nota spedizione" />
                 </label>
-                <label>Internal note
+                <label>${adminUiHtml('Internal note')}
                   <textarea data-order-internal-note placeholder="Nota interna ordine">${escapeHtml(order.internal_note || '')}</textarea>
                 </label>
-                <label>Refund amount EUR
+                <label>${adminUiHtml('Refund amount EUR')}
                   <input data-order-refund-amount type="number" step="0.01" value="${Number(order.refund_amount_cents || 0) / 100}" />
                 </label>
-                <label>Refund note
+                <label>${adminUiHtml('Refund note')}
                   <input data-order-refund-note type="text" value="${escapeHtml(order.refund_note || '')}" placeholder="Manual refund / provider required" />
                 </label>
                 <div class="product-actions">
-                  <button type="button" data-order-action="confirm_order" data-order-id="${order.id}">Conferma ordine</button>
-                  <button type="button" data-order-action="mark_paid" data-order-id="${order.id}">Marca pagato</button>
-                  <button type="button" data-order-action="add_tracking" data-order-id="${order.id}">Add tracking</button>
-                  <button type="button" data-order-action="mark_fulfilled" data-order-id="${order.id}">Mark as fulfilled</button>
-                  <button type="button" data-order-action="add_note" data-order-id="${order.id}">Salva nota</button>
-                  <button type="button" data-order-action="refund_requested" data-order-id="${order.id}">Refund requested</button>
-                  <button type="button" data-order-action="refund_complete" data-order-id="${order.id}">Refund complete</button>
-                  <button type="button" class="danger" data-order-action="cancel_order" data-order-id="${order.id}">Cancella ordine</button>
+                  <button type="button" data-order-action="confirm_order" data-order-id="${order.id}">${escapeHtml(t('orders.confirm', 'Conferma ordine'))}</button>
+                  <button type="button" data-order-action="mark_paid" data-order-id="${order.id}">${escapeHtml(t('orders.markPaid', 'Marca pagato'))}</button>
+                  <button type="button" data-order-action="add_tracking" data-order-id="${order.id}">${escapeHtml(t('orders.addTracking', 'Aggiungi tracking'))}</button>
+                  <button type="button" data-order-action="mark_fulfilled" data-order-id="${order.id}">${escapeHtml(t('orders.markFulfilled', 'Marca come spedito'))}</button>
+                  <button type="button" data-order-action="add_note" data-order-id="${order.id}">${escapeHtml(t('orders.saveNote', 'Salva nota'))}</button>
+                  <button type="button" data-order-action="refund_requested" data-order-id="${order.id}">${adminUiHtml('Refund requested')}</button>
+                  <button type="button" data-order-action="refund_complete" data-order-id="${order.id}">${adminUiHtml('Refund complete')}</button>
+                  <button type="button" class="danger" data-order-action="cancel_order" data-order-id="${order.id}">${escapeHtml(t('orders.cancel', 'Cancella ordine'))}</button>
                 </div>
               </div>
             </details>
 
             <details>
-              <summary>Returns / refunds (${order.returns?.length || 0})</summary>
+              <summary>${adminUiHtml('Returns / refunds')} (${order.returns?.length || 0})</summary>
               <div class="admin-lines">
                 ${(order.returns || [])
                   .map(
@@ -8616,7 +10019,7 @@ async function loadOrders() {
                       </div>
                     `,
                   )
-                  .join('') || '<p>Manual refund / provider required. Nessun reso collegato.</p>'}
+                  .join('') || `<p>${adminUiHtml('Manual refund / provider required. Nessun reso collegato.')}</p>`}
               </div>
             </details>
 
@@ -8637,7 +10040,7 @@ async function loadOrders() {
             </details>
 
             <details>
-              <summary>Notification log (${order.notification_logs?.length || 0})</summary>
+              <summary>${adminUiHtml('Notification log')} (${order.notification_logs?.length || 0})</summary>
               <div class="admin-lines">
                 ${(order.notification_logs || [])
                   .map(
@@ -8648,7 +10051,7 @@ async function loadOrders() {
                       </div>
                     `,
                   )
-                  .join('') || '<p>Nessuna notifica loggata per questo ordine.</p>'}
+                  .join('') || `<p>${adminUiHtml('Nessuna notifica loggata per questo ordine.')}</p>`}
               </div>
             </details>
           </article>
@@ -8671,7 +10074,7 @@ async function loadOrders() {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore aggiornamento ordine.')
+          alert(result.message || t('orders.updateError', 'Errore aggiornamento ordine.'))
           await loadOrders()
         }
       })
@@ -8692,7 +10095,7 @@ async function loadOrders() {
         const order = data.orders.find((item) => item.id === Number(button.dataset.orderId))
         if (!order) return
         if (button.dataset.orderAction === 'cancel_order') {
-          const confirmed = confirm('Confermi cancellazione ordine?')
+          const confirmed = confirm(t('orders.cancelConfirm', 'Confermi cancellazione ordine?'))
           if (!confirmed) return
         }
         await sendOrderAction(orderActionPayload(order, button.dataset.orderAction))
@@ -8754,7 +10157,7 @@ async function loadCustomers() {
     const data = await response.json()
 
     if (!data.success) {
-      renderAdminListState(customersList, data.message || 'Errore caricamento clienti.', 'error')
+      renderAdminListState(customersList, data.message || adminUiText('Errore caricamento clienti.'), 'error')
       return
     }
 
@@ -8865,7 +10268,7 @@ async function loadCustomers() {
           }),
         })
         const result = await response.json()
-        if (!result.success) alert(result.message || 'Aggiornamento cliente non riuscito.')
+        if (!result.success) alert(result.message || adminUiText('Aggiornamento cliente non riuscito.'))
         await loadCustomers()
         await loadCustomerAccountsSummary()
         await loadNotifications()
@@ -8916,7 +10319,7 @@ async function loadMenuResources() {
 
     renderMenuTargetOptions()
   } catch {
-    menuMessage.textContent = 'Errore caricamento destinazioni menu.'
+    menuMessage.textContent = adminUiText('Errore caricamento destinazioni menu.')
   }
 }
 
@@ -8983,14 +10386,14 @@ function renderMenuTargetOptions() {
 }
 
 async function loadMenus() {
-  menusList.textContent = 'Caricamento menu...'
+  menusList.textContent = adminUiText('Caricamento menu...')
 
   try {
     const response = await fetch('/api/admin/menus')
     const data = await response.json()
 
     if (!data.success) {
-      menusList.textContent = 'Errore nel caricamento menu.'
+      menusList.textContent = adminUiText('Errore nel caricamento menu.')
       return
     }
 
@@ -8998,7 +10401,7 @@ async function loadMenus() {
     renderMenuSelect()
 
     if (menusCache.length === 0) {
-      menusList.textContent = 'Nessun menu trovato.'
+      menusList.textContent = adminUiText('Nessun menu trovato.')
       return
     }
 
@@ -9054,7 +10457,7 @@ async function loadMenus() {
 
     document.querySelectorAll('[data-delete-menu-item]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const confirmed = confirm('Vuoi eliminare questa voce menu?')
+        const confirmed = confirm(adminUiText('Vuoi eliminare questa voce menu?'))
         if (!confirmed) return
 
         const response = await fetch('/api/admin/menus', {
@@ -9071,7 +10474,7 @@ async function loadMenus() {
         const result = await response.json()
 
         if (!result.success) {
-          alert(result.message || 'Errore eliminazione voce menu.')
+          alert(result.message || adminUiText('Errore eliminazione voce menu.'))
           return
         }
 
@@ -9079,7 +10482,7 @@ async function loadMenus() {
       })
     })
   } catch {
-    menusList.textContent = 'Errore di connessione alla API menu.'
+    menusList.textContent = adminUiText('Errore di connessione alla API menu.')
   }
 }
 
@@ -9088,7 +10491,7 @@ menuLinkType.addEventListener('change', renderMenuTargetOptions)
 menuItemForm.addEventListener('submit', async (event) => {
   event.preventDefault()
 
-  menuMessage.textContent = 'Salvataggio voce menu...'
+  menuMessage.textContent = adminUiText('Salvataggio voce menu...')
 
   const linkType = menuLinkType.value
 
@@ -9113,16 +10516,16 @@ menuItemForm.addEventListener('submit', async (event) => {
     const data = await response.json()
 
     if (!data.success) {
-      menuMessage.textContent = data.message || 'Errore salvataggio voce menu.'
+      menuMessage.textContent = data.message || adminUiText('Errore salvataggio voce menu.')
       return
     }
 
-    menuMessage.textContent = 'Voce menu salvata.'
+    menuMessage.textContent = adminUiText('Voce menu salvata.')
     menuItemForm.reset()
     renderMenuTargetOptions()
     loadMenus()
   } catch {
-    menuMessage.textContent = 'Errore di connessione.'
+    menuMessage.textContent = adminUiText('Errore di connessione.')
   }
 })
 
@@ -9378,11 +10781,11 @@ async function loadThemeSettings() {
   if (!themeSettingsGroups) return
 
   if (!canAdminViewSensitiveSettings()) {
-    themeSettingsGroups.textContent = 'Permessi insufficienti per leggere impostazioni sensibili.'
+    themeSettingsGroups.textContent = adminUiText('Permessi insufficienti per leggere impostazioni sensibili.')
     return
   }
 
-  themeSettingsGroups.textContent = 'Caricamento impostazioni tema...'
+  themeSettingsGroups.textContent = adminUiText('Caricamento impostazioni tema...')
 
   try {
     const response = await fetch('/api/admin/settings')
@@ -9390,7 +10793,7 @@ async function loadThemeSettings() {
 
     if (!data.success) {
       themeSettingsGroups.textContent =
-        data.message || 'Errore caricamento impostazioni tema.'
+        data.message || adminUiText('Errore caricamento impostazioni tema.')
       return
     }
 
@@ -9405,11 +10808,11 @@ async function saveThemeSettings(event) {
   event.preventDefault()
 
   if (!canAdminViewSensitiveSettings()) {
-    themeSettingsMessage.textContent = 'Permessi insufficienti.'
+    themeSettingsMessage.textContent = adminUiText('Permessi insufficienti.')
     return
   }
 
-  themeSettingsMessage.textContent = 'Salvataggio impostazioni tema...'
+  themeSettingsMessage.textContent = adminUiText('Salvataggio impostazioni tema...')
 
   const payload = {
     settings: {},
@@ -9432,14 +10835,14 @@ async function saveThemeSettings(event) {
 
     if (!data.success) {
       themeSettingsMessage.textContent =
-        data.message || 'Errore salvataggio impostazioni tema.'
+        data.message || adminUiText('Errore salvataggio impostazioni tema.')
       return
     }
 
-    themeSettingsMessage.textContent = 'Impostazioni tema salvate.'
+    themeSettingsMessage.textContent = adminUiText('Impostazioni tema salvate.')
     await loadThemeSettings()
   } catch {
-    themeSettingsMessage.textContent = 'Errore di connessione.'
+    themeSettingsMessage.textContent = adminUiText('Errore di connessione.')
   }
 }
 
@@ -9523,7 +10926,7 @@ async function sendOrderAction(payload) {
     body: JSON.stringify(payload),
   })
   const result = await response.json()
-  if (!result.success) alert(result.message || 'Operazione ordine non riuscita.')
+  if (!result.success) alert(result.message || t('orders.operationError', 'Operazione ordine non riuscita.'))
   await loadOrders()
   await loadOperationsSummary()
   await loadNotifications()
@@ -9581,12 +10984,12 @@ function renderOperationalChecks(container, checks = []) {
 
 async function loadStoreHealth() {
   if (!storeHealthList && !storeHealthSummary) return
-  if (storeHealthList) storeHealthList.textContent = 'Caricamento Store Health...'
+  if (storeHealthList) storeHealthList.textContent = adminUiText('Caricamento Store Health...')
   try {
     const response = await fetch('/api/admin/health')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      if (storeHealthList) storeHealthList.textContent = data.message || 'Store Health non disponibile.'
+      if (storeHealthList) storeHealthList.textContent = data.message || adminUiText('Store Health non disponibile.')
       return
     }
     const summary = data.summary || {}
@@ -9609,23 +11012,23 @@ async function loadStoreHealth() {
     }
     renderOperationalChecks(storeHealthList, data.checks || [])
   } catch {
-    if (storeHealthList) storeHealthList.textContent = 'Store Health non disponibile.'
+    if (storeHealthList) storeHealthList.textContent = adminUiText('Store Health non disponibile.')
   }
 }
 
 async function loadLaunchChecklist() {
   if (!launchChecklistList) return
-  launchChecklistList.textContent = 'Caricamento checklist...'
+  launchChecklistList.textContent = adminUiText('Caricamento checklist...')
   try {
     const response = await fetch('/api/admin/launch-checklist')
     const data = await response.json()
     if (!response.ok || !data.success) {
-      launchChecklistList.textContent = data.message || 'Launch checklist non disponibile.'
+      launchChecklistList.textContent = data.message || adminUiText('Launch checklist non disponibile.')
       return
     }
     renderOperationalChecks(launchChecklistList, data.items || [])
   } catch {
-    launchChecklistList.textContent = 'Launch checklist non disponibile.'
+    launchChecklistList.textContent = adminUiText('Launch checklist non disponibile.')
   }
 }
 
@@ -9670,7 +11073,7 @@ async function loadEditorPages() {
 
     editorPageSelect.value = currentEditorPageSlug
   } catch {
-    sectionMessage.textContent = 'Errore caricamento pagine editor.'
+    sectionMessage.textContent = t('editor.pagesLoadError', 'Errore caricamento pagine editor.')
   }
 }
 
@@ -10179,12 +11582,13 @@ function renderSelectedSection() {
   const section = selectedSection()
 
   if (!section) {
-    selectedSectionTitle.textContent = 'Seleziona una sezione'
-    sectionFields.innerHTML = '<p>Seleziona una sezione dalla lista.</p>'
+    selectedSectionTitle.textContent = t('editor.selectSection', 'Seleziona una sezione')
+    sectionFields.innerHTML = `<p>${escapeHtml(t('editor.selectSectionHelp', 'Seleziona una sezione dalla lista.'))}</p>`
+    applyAdminLanguage()
     return
   }
 
-  selectedSectionTitle.textContent = sectionLabels[section.type] || section.type
+  selectedSectionTitle.textContent = translateAdminConfigLabel(sectionLabels[section.type] || section.type)
 
   const fields = fieldsByType[section.type] || []
 
@@ -10203,14 +11607,14 @@ function renderSelectedSection() {
               data-section-field="${field}"
               ${checked ? 'checked' : ''}
             />
-            ${fieldLabels[field] || field}
+            ${escapeHtml(translateAdminConfigLabel(fieldLabels[field] || field))}
           </label>
         `
       }
 
       return `
         <label>
-          ${fieldLabels[field] || field}
+          ${escapeHtml(translateAdminConfigLabel(fieldLabels[field] || field))}
           <textarea data-section-field="${field}">${escapeHtml(value)}</textarea>
         </label>
       `
@@ -10231,6 +11635,7 @@ function renderSelectedSection() {
   })
 
   enhanceMediaPickerFields(sectionFields)
+  applyAdminLanguage()
 }
 
 async function loadSections() {
@@ -10240,7 +11645,7 @@ async function loadSections() {
   const data = await response.json()
 
   if (!data.success) {
-    sectionMessage.textContent = 'Errore caricamento sezioni.'
+    sectionMessage.textContent = t('editor.sectionsLoadError', 'Errore caricamento sezioni.')
     return
   }
 
@@ -10265,13 +11670,13 @@ function renderSectionsList() {
             class="section-button"
             data-section-id="${section.id}"
           >
-            ${sectionLabels[section.type] || section.type}
+            ${escapeHtml(translateAdminConfigLabel(sectionLabels[section.type] || section.type))}
           </button>
 
           <div class="section-tools">
-            <button type="button" data-up="${index}">Su</button>
-            <button type="button" data-down="${index}">Giu</button>
-            <button type="button" class="danger" data-delete-section="${section.id}">x</button>
+            <button type="button" data-up="${index}">${escapeHtml(t('editor.up', 'Su'))}</button>
+            <button type="button" data-down="${index}">${escapeHtml(t('editor.down', 'Giu'))}</button>
+            <button type="button" class="danger" data-delete-section="${section.id}" aria-label="${escapeHtml(t('common.delete', 'Elimina'))}">x</button>
           </div>
         </div>
       `,
@@ -10318,7 +11723,7 @@ function renderSectionsList() {
 
   document.querySelectorAll('[data-delete-section]').forEach((button) => {
     button.addEventListener('click', async () => {
-      const confirmed = confirm('Vuoi eliminare questa sezione?')
+      const confirmed = confirm(t('editor.sectionDeleteConfirm', 'Vuoi eliminare questa sezione?'))
       if (!confirmed) return
 
       const id = Number(button.dataset.deleteSection)
@@ -10334,15 +11739,16 @@ function renderSectionsList() {
       const data = await response.json()
 
       if (!data.success) {
-        sectionMessage.textContent = data.message || 'Errore eliminazione sezione.'
+        sectionMessage.textContent = data.message || t('editor.sectionDeleteError', 'Errore eliminazione sezione.')
         return
       }
 
       selectedSectionId = null
       await loadSections()
-      sectionMessage.textContent = 'Sezione eliminata.'
+      sectionMessage.textContent = t('editor.sectionDeleted', 'Sezione eliminata.')
     })
   })
+  applyAdminLanguage()
 }
 
 async function saveSectionOrder() {
@@ -10376,7 +11782,7 @@ async function saveSelectedSection() {
   const section = selectedSection()
   if (!section) return
 
-  sectionMessage.textContent = 'Salvataggio...'
+  sectionMessage.textContent = t('editor.sectionSaving', 'Salvataggio...')
 
   const response = await fetch('/api/admin/section', {
     method: 'PUT',
@@ -10391,12 +11797,12 @@ async function saveSelectedSection() {
 
   const data = await response.json()
   sectionMessage.textContent = data.success
-    ? 'Sezione salvata.'
-    : 'Errore salvataggio.'
+    ? t('editor.sectionSaved', 'Sezione salvata.')
+    : t('editor.sectionSaveError', 'Errore salvataggio.')
 }
 
 async function addSection() {
-  sectionMessage.textContent = 'Aggiunta sezione...'
+  sectionMessage.textContent = t('editor.sectionAdding', 'Aggiunta sezione...')
 
   const response = await fetch('/api/admin/section', {
     method: 'POST',
@@ -10412,13 +11818,13 @@ async function addSection() {
   const data = await response.json()
 
   if (!data.success) {
-    sectionMessage.textContent = data.message || 'Errore aggiunta sezione.'
+    sectionMessage.textContent = data.message || t('editor.sectionAddError', 'Errore aggiunta sezione.')
     return
   }
 
   selectedSectionId = null
   await loadSections()
-  sectionMessage.textContent = 'Sezione aggiunta.'
+  sectionMessage.textContent = t('editor.sectionAdded', 'Sezione aggiunta.')
 }
 
 saveSectionButton.addEventListener('click', saveSelectedSection)
