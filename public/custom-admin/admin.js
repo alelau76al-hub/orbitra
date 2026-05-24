@@ -2771,6 +2771,7 @@ let adminAllowProtectedFetches = false
 let adminAuditObserver = null
 let adminEntryCountdownTimer = null
 let adminEntryCountdownInterval = null
+let adminRenderCurrentRoute = null
 
 function isProtectedAdminRequest(resource) {
   const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
@@ -3102,6 +3103,7 @@ function shouldShowAdminEntryScreen() {
 }
 
 function showAdminEntryScreen() {
+  if (ADMIN_DEMO_MODE) return
   if (!adminEntryScreen || !shouldShowAdminEntryScreen()) return
 
   if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
@@ -3131,11 +3133,40 @@ function applyAdminDemoModeUi() {
 
   if (adminAuthGate) adminAuthGate.hidden = true
   if (adminEntryScreen) adminEntryScreen.hidden = true
+  if (adminApp) adminApp.hidden = false
   if (adminLogoutButton) {
     adminLogoutButton.textContent = 'Demo mode'
     adminLogoutButton.disabled = true
     adminLogoutButton.setAttribute('aria-disabled', 'true')
   }
+}
+
+function renderAdminShellAfterAuth() {
+  const renderRoute = () => {
+    if (typeof adminRenderCurrentRoute === 'function') {
+      adminRenderCurrentRoute({ load: false, skipScroll: true })
+    }
+
+    const activeView = getActiveAdminViewId()
+    const activeElement =
+      adminViewRegistry.get(activeView) ||
+      adminViewRegistry.get('dashboard') ||
+      document.querySelector('[data-admin-view="dashboard"]')
+
+    if (activeElement) activeElement.hidden = false
+    if (!activeElement && window.location.hash !== '#/dashboard') {
+      window.history.replaceState(null, '', '#/dashboard')
+      if (typeof adminRenderCurrentRoute === 'function') {
+        adminRenderCurrentRoute({ load: false, skipScroll: true })
+      }
+    }
+
+    applyAdminLanguage()
+    updateAdminCurrentViewLabel()
+  }
+
+  renderRoute()
+  window.requestAnimationFrame(renderRoute)
 }
 
 function showAdminApp(user) {
@@ -3152,7 +3183,8 @@ function showAdminApp(user) {
   applyAdminPermissionUi()
   startAdminAuditObserver()
   applyAdminAuditUi()
-  showAdminEntryScreen()
+  renderAdminShellAfterAuth()
+  if (!ADMIN_DEMO_MODE) showAdminEntryScreen()
 }
 
 function refreshAdminDataAfterAuth() {
@@ -6586,6 +6618,7 @@ function setupAdminViews() {
   }
 
   window.addEventListener('hashchange', openViewFromHash)
+  adminRenderCurrentRoute = openViewFromHash
   openViewFromHash({ load: false, skipScroll: true })
   window.setTimeout(() => {
     singlePageMounted = true
