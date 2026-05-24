@@ -82,9 +82,9 @@ const ADMIN_TRANSLATIONS = {
     entrySubtitle: 'Il futuro dei siti web',
     entryClaim: 'Powerful. Flexible. Custom.',
     entryCountdown: 'Il tuo CMS si aprira tra',
-    entryButton: 'Enter CMS',
-    themeLight: 'Light mode',
-    themeDark: 'Dark mode',
+    entryButton: 'Entra nel CMS',
+    themeLight: 'Modalita chiara',
+    themeDark: 'Modalita scura',
     navDashboard: 'Dashboard',
     navDashboardDesc: 'Panoramica e azioni rapide',
     navEditor: 'Editor sito',
@@ -107,7 +107,7 @@ const ADMIN_TRANSLATIONS = {
     navCheckoutDesc: 'Checkout, pagamenti, spedizioni, tasse e conferma',
     navSettings: 'Impostazioni',
     navSettingsDesc: 'Generali, domini, utenti, privacy e operativita',
-    navApps: 'Apps',
+    navApps: 'App',
     navAppsDesc: 'App native TakeOff e moduli interni del CMS',
     navGoogleSuite: 'Google Suite',
     navGoogleSuiteDesc: 'GA4, Ads, GTM, Search',
@@ -126,7 +126,7 @@ const ADMIN_TRANSLATIONS = {
     heroText: 'Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.',
     editorTitle: 'Editor visuale sito',
     editorDesc: 'Personalizza sezioni, contenuti e impostazioni del sito cliente senza toccare codice.',
-    previewDesktop: 'Desktop preview',
+    previewDesktop: 'Anteprima desktop',
     previewTablet: 'Tablet preview',
     previewMobile: 'Mobile preview',
     catalogTitle: 'Catalogo',
@@ -172,7 +172,7 @@ const ADMIN_TRANSLATIONS = {
     statusOperational: 'Operativo',
     statusArea: 'Area',
     statusBaseConfig: 'Configurazione base',
-    statusDevelopment: 'Advanced tools in progress',
+    statusDevelopment: 'Strumenti avanzati in corso',
     logout: 'Logout',
   },
   en: {
@@ -313,7 +313,7 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'dashboard.summary.media': 'Media',
   'dashboard.summary.mediaDescription': 'Asset disponibili nel CMS.',
   'editor.mainFeature': 'Funzione principale',
-  'editor.visualEditor': 'Visual Editor',
+  'editor.visualEditor': 'Editor visuale sito',
   'editor.description': 'Il cuore del CMS: costruisci, controlla e verifica il sito in tempo reale su desktop, tablet e mobile.',
   'editor.previewFormat': 'Formato preview',
   'editor.pageToEdit': 'Pagina da modificare',
@@ -346,7 +346,7 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'editor.desktop': 'Desktop',
   'editor.tablet': 'Tablet',
   'editor.mobile': 'Mobile',
-  'editor.liveCanvas': 'Live canvas',
+  'editor.liveCanvas': 'Canvas live',
   'editor.sitePreviewTitle': 'Anteprima sito',
   'content.title': 'Contenuto',
   'content.pages.title': 'Pagine',
@@ -959,6 +959,7 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'shipping.edit': 'Modifica metodo',
   'shipping.save': 'Salva spedizione',
   'shipping.update': 'Aggiorna spedizione',
+  'shipping.standardPlaceholder': 'Spedizione standard',
   'integrations.add': 'Aggiungi integrazione',
   'integrations.edit': 'Modifica integrazione',
   'integrations.save': 'Salva integrazione',
@@ -1018,6 +1019,7 @@ Object.assign(ADMIN_TRANSLATIONS.en, {
   'shipping.edit': 'Edit method',
   'shipping.save': 'Save shipping',
   'shipping.update': 'Update shipping',
+  'shipping.standardPlaceholder': 'Standard shipping',
   'integrations.add': 'Add integration',
   'integrations.edit': 'Edit integration',
   'integrations.save': 'Save integration',
@@ -1072,8 +1074,8 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'apps.gdprDesc': 'Consensi, cookie e privacy tools.',
   'apps.subscriptionsDesc': 'Abbonamenti e ricorrenze provider-ready.',
   'dashboard.controlPanelTitle': 'TakeOff Control Panel',
-  'dashboard.controlPanelClaim': 'Gestisci sito, catalogo e operazioni da un pannello pulito.',
-  'dashboard.editWebsite': 'Modifica sito',
+  'dashboard.controlPanelClaim': 'Crea, gestisci e fai crescere siti custom da un unico sistema operativo.',
+  'dashboard.editWebsite': 'Modifica il sito',
   'dashboard.editWebsiteDesc': 'Apri editor visuale e sezioni.',
   'dashboard.addProduct': 'Aggiungi prodotto',
   'dashboard.addProductDesc': 'Crea o aggiorna schede catalogo.',
@@ -1178,6 +1180,8 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'markets.currenciesDesc': 'Valute e fallback monetario.',
   'markets.localizedPrices': 'Prezzi localizzati',
   'markets.localizedPricesDesc': 'Listini per mercato e valuta.',
+  'markets.domains': 'Domini per mercato',
+  'markets.domainsDesc': 'Domini, preview e DNS collegati ai mercati.',
   'status.ready': 'Pronto',
   'status.needsSetup': 'Richiede setup',
   'status.providerReady': 'Provider-ready',
@@ -1221,7 +1225,7 @@ Object.assign(ADMIN_TRANSLATIONS.en, {
   'apps.gdprDesc': 'Consent, cookies and privacy tools.',
   'apps.subscriptionsDesc': 'Subscriptions and recurring billing provider-ready.',
   'dashboard.controlPanelTitle': 'TakeOff Control Panel',
-  'dashboard.controlPanelClaim': 'Manage site, catalog and operations from a clean control panel.',
+  'dashboard.controlPanelClaim': 'Build, manage and scale custom websites from one operating system.',
   'dashboard.editWebsite': 'Edit website',
   'dashboard.editWebsiteDesc': 'Open the visual editor and sections.',
   'dashboard.addProduct': 'Add product',
@@ -1327,6 +1331,8 @@ Object.assign(ADMIN_TRANSLATIONS.en, {
   'markets.currenciesDesc': 'Currencies and monetary fallback.',
   'markets.localizedPrices': 'Localized prices',
   'markets.localizedPricesDesc': 'Price lists by market and currency.',
+  'markets.domains': 'Market domains',
+  'markets.domainsDesc': 'Domains, preview and DNS linked to markets.',
   'status.ready': 'Ready',
   'status.needsSetup': 'Needs setup',
   'status.providerReady': 'Provider-ready',
@@ -1355,8 +1361,11 @@ function setAdminLanguage(language) {
     localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, nextLanguage)
   } catch {}
   document.documentElement.lang = nextLanguage
-  rerenderActiveAdminView()
+  if (typeof adminRenderCurrentRoute === 'function') {
+    adminRenderCurrentRoute({ load: false, skipScroll: true })
+  }
   applyAdminLanguage()
+  rerenderActiveAdminView()
 }
 
 function getAdminTheme() {
@@ -1469,11 +1478,13 @@ const ADMIN_ROUTE_TO_VIEW = {
   'growth/advanced-discounts': 'advanced-discounts',
   'growth/abandoned-cart': 'abandoned-carts',
   markets: 'markets',
+  'markets/overview': 'markets-mercati',
   'markets/markets': 'markets-mercati',
   'markets/countries': 'markets-paesi',
   'markets/languages': 'markets-lingue',
   'markets/currencies': 'markets-valute',
   'markets/prices': 'markets-prezzi',
+  'markets/domains': 'domini',
   tools: 'takeoff-tools',
   'takeoff-tools': 'takeoff-tools',
   'tools/import-export': 'import-export',
@@ -6499,6 +6510,23 @@ function setupAdminViews() {
   adminViewRegistry = new Map(views.map((view) => [view.dataset.adminView, view]))
   upgradeAdminRouteLinks(document)
 
+  function setRouteViewState(view, isActive) {
+    if (!view) return
+
+    view.hidden = !isActive
+    view.dataset.adminActive = isActive ? 'true' : 'false'
+    view.classList.toggle('admin-view--active', isActive)
+    view.setAttribute('aria-hidden', isActive ? 'false' : 'true')
+
+    if (isActive) {
+      view.removeAttribute('inert')
+    } else {
+      view.setAttribute('inert', '')
+    }
+  }
+
+  views.forEach((view) => setRouteViewState(view, false))
+
   document.addEventListener('click', (event) => {
     const link = event.target.closest?.('a[href^="#"]')
     if (!link) return
@@ -6529,9 +6557,9 @@ function setupAdminViews() {
   function renderAdminPageChrome(target, activeView, routePath) {
     if (!target) return
 
-    const primaryRoute = getAdminPrimaryRouteForView(activeView)
+    const primaryRoute = routePath.split('/')[0] || getAdminPrimaryRouteForView(activeView)
     const isDashboard = activeView === 'dashboard'
-    const isHubPage = getAdminRouteForView(activeView) === primaryRoute
+    const isHubPage = routePath === primaryRoute
     let chrome = target.querySelector(':scope > .admin-page-chrome')
 
     target.classList.toggle('admin-hub-page', isHubPage && !isDashboard)
@@ -6572,7 +6600,7 @@ function setupAdminViews() {
 
     views.forEach((view) => {
       const isActive = view === activeElement
-      view.hidden = !isActive
+      setRouteViewState(view, isActive)
 
       if (singlePageMounted && !isActive && view.parentElement === viewHost) {
         view.remove()
@@ -6583,37 +6611,52 @@ function setupAdminViews() {
       viewHost.appendChild(activeElement)
     }
 
-    activeElement.hidden = false
+    setRouteViewState(activeElement, true)
+    viewHost.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
     return activeElement
   }
 
   function openViewFromHash({ skipScroll = false, load = true } = {}) {
-    const routePath = normalizeAdminRoutePath()
-    const activeView = getAdminViewForRoute(routePath)
-    const canonicalHash = `#/${routePath}`
+    try {
+      const routePath = normalizeAdminRoutePath()
+      const activeView = getAdminViewForRoute(routePath)
+      const canonicalHash = `#/${routePath}`
 
-    if (window.location.hash !== canonicalHash) {
-      window.history.replaceState(null, '', canonicalHash)
-    }
+      if (window.location.hash !== canonicalHash) {
+        window.history.replaceState(null, '', canonicalHash)
+      }
 
-    const target = mountActiveView(activeView)
-    const activeHubHash = `#/${getAdminPrimaryRouteForView(activeView)}`
+      const target = mountActiveView(activeView)
+      const activeHubHash = `#/${routePath.split('/')[0] || getAdminPrimaryRouteForView(activeView)}`
 
-    hubLinks.forEach((link) => {
-      link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
-    })
-
-    applyAdminLanguage()
-    renderAdminPageChrome(target, activeView, routePath)
-    updateCurrentViewLabel(activeView)
-    upgradeAdminRouteLinks(target || document)
-    applyAdminAuditUi()
-    if (load) rerenderActiveAdminView()
-    if (!skipScroll) {
-      target?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+      hubLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
       })
+
+      applyAdminLanguage()
+      renderAdminPageChrome(target, activeView, routePath)
+      updateCurrentViewLabel(activeView)
+      upgradeAdminRouteLinks(target || document)
+      applyAdminAuditUi()
+      if (load) rerenderActiveAdminView()
+      if (!skipScroll) {
+        target?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      }
+    } catch (error) {
+      console.error('Admin route render failed, falling back to dashboard.', error)
+      window.history.replaceState(null, '', '#/dashboard')
+      const target = mountActiveView('dashboard')
+      hubLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === '#/dashboard')
+      })
+      renderAdminPageChrome(target, 'dashboard', 'dashboard')
+      updateCurrentViewLabel('dashboard')
+      if (target) setRouteViewState(target, true)
+      applyAdminLanguage()
+      applyAdminAuditUi()
     }
   }
 

@@ -5082,3 +5082,8 @@ body[data-admin-theme="light"] .admin-page-back {
     grid-template-columns: 1fr;
   }
 }
+
+/* Hard route isolation: only the active admin page can occupy the main area. */
+[data-admin-view]:not([data-admin-active="true"]) {
+  display: none !important;
+}
