@@ -51,6 +51,14 @@ const ADMIN_THEME_STORAGE_KEY = 'takeoff_admin_theme_v1'
 const ADMIN_DEFAULT_THEME = 'dark'
 const ADMIN_ENTRY_STORAGE_KEY = 'takeoff_admin_entry_seen_v1'
 const ADMIN_ENTRY_DURATION_SECONDS = 5
+const ADMIN_DEMO_MODE = true
+const ADMIN_DEMO_USER = {
+  id: 'demo-admin',
+  name: 'Demo Admin',
+  email: 'demo@takeoffmilan.local',
+  role: 'owner',
+  audit_mode: false,
+}
 const ADMIN_TRANSLATIONS = {
   it: {
     documentTitle: 'TakeOffMilan CMS',
@@ -2709,6 +2717,7 @@ function applyAdminTranslations() {
   applyAdminTheme()
   updateAdminAuthIntro()
   updateAdminCurrentViewLabel()
+  applyAdminDemoModeUi()
 }
 
 function setupAdminLanguageControls() {
@@ -2979,7 +2988,7 @@ window.fetch = async (resource, options) => {
 
   const response = await nativeFetch(resource, options)
 
-  if (protectedAdminRequest && response.status === 401) {
+  if (protectedAdminRequest && response.status === 401 && !ADMIN_DEMO_MODE) {
     showAdminLogin('Sessione scaduta. Effettua di nuovo il login.')
   }
 
@@ -3034,6 +3043,11 @@ function setAdminAuthMessage(message = '', isError = false) {
 }
 
 function showAdminAuthGate({ bootstrap = false, migration = false, message = '' } = {}) {
+  if (ADMIN_DEMO_MODE) {
+    showAdminApp(ADMIN_DEMO_USER)
+    return
+  }
+
   adminAllowProtectedFetches = false
   adminCurrentUser = null
 
@@ -3058,6 +3072,11 @@ function showAdminAuthGate({ bootstrap = false, migration = false, message = '' 
 }
 
 function showAdminLogin(message = '') {
+  if (ADMIN_DEMO_MODE) {
+    showAdminApp(ADMIN_DEMO_USER)
+    return
+  }
+
   showAdminAuthGate({ message })
 }
 
@@ -3107,14 +3126,28 @@ function showAdminEntryScreen() {
   }, ADMIN_ENTRY_DURATION_SECONDS * 1000)
 }
 
+function applyAdminDemoModeUi() {
+  if (!ADMIN_DEMO_MODE) return
+
+  if (adminAuthGate) adminAuthGate.hidden = true
+  if (adminEntryScreen) adminEntryScreen.hidden = true
+  if (adminLogoutButton) {
+    adminLogoutButton.textContent = 'Demo mode'
+    adminLogoutButton.disabled = true
+    adminLogoutButton.setAttribute('aria-disabled', 'true')
+  }
+}
+
 function showAdminApp(user) {
   adminCurrentUser = user
   adminAllowProtectedFetches = true
 
+  hideAdminEntryScreen()
   if (adminAuthGate) adminAuthGate.hidden = true
   if (adminApp) adminApp.hidden = false
   if (adminSessionName) adminSessionName.textContent = user?.name || user?.email || 'Admin'
   if (adminSessionRole) adminSessionRole.textContent = user?.role || 'viewer'
+  applyAdminDemoModeUi()
 
   applyAdminPermissionUi()
   startAdminAuditObserver()
@@ -3461,6 +3494,12 @@ function rerenderActiveAdminView() {
 }
 
 async function initAdminAuth() {
+  if (ADMIN_DEMO_MODE) {
+    showAdminApp(ADMIN_DEMO_USER)
+    refreshAdminDataAfterAuth()
+    return
+  }
+
   showAdminAuthGate({ message: adminT('authChecking') })
 
   try {
@@ -3564,6 +3603,8 @@ adminBootstrapForm?.addEventListener('submit', async (event) => {
 })
 
 adminLogoutButton?.addEventListener('click', async () => {
+  if (ADMIN_DEMO_MODE) return
+
   try {
     await nativeFetch('/api/admin/auth/logout', {
       method: 'POST',
