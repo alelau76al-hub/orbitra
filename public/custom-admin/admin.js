@@ -1420,6 +1420,241 @@ function setAdminPlaceholder(selector, key) {
   })
 }
 
+const ADMIN_ROUTE_TO_VIEW = {
+  dashboard: 'dashboard',
+  website: 'website',
+  'website/editor': 'editor',
+  'website/pages': 'pagine',
+  'website/menus': 'menu',
+  'website/theme': 'editor',
+  'website/header-footer': 'menu',
+  'website/media': 'media',
+  'website/blog': 'blog-admin',
+  'website/policies': 'policy',
+  'website/metaobjects': 'metaobjects',
+  catalog: 'catalogo',
+  catalogo: 'catalogo',
+  'catalog/products': 'prodotti',
+  'catalog/collections': 'collezioni',
+  'catalog/inventory': 'inventario',
+  'catalog/variants': 'prodotti',
+  'catalog/metafields': 'metafields',
+  commerce: 'commerce',
+  'commerce/orders': 'ordini',
+  'commerce/customers': 'clienti',
+  'commerce/checkout': 'checkout',
+  'commerce/payments': 'checkout-payments',
+  'commerce/shipping': 'checkout-shipping',
+  'commerce/taxes': 'checkout-taxes',
+  'commerce/returns': 'returns',
+  'commerce/gift-cards': 'gift-cards',
+  'commerce/store-credit': 'gift-cards',
+  growth: 'growth',
+  'growth/marketing': 'marketing',
+  'growth/campaigns': 'marketing-campaigns',
+  'growth/discounts': 'marketing-discounts',
+  'growth/coupons': 'marketing-coupons',
+  'growth/newsletter': 'marketing-newsletter',
+  'growth/seo': 'seo',
+  'growth/seo-technical': 'seo-technical',
+  'growth/analytics': 'analytics-dashboard',
+  'growth/analytics/traffic': 'analytics-traffic',
+  'growth/analytics/sales': 'analytics-sales',
+  'growth/analytics/products': 'analytics-products',
+  'growth/analytics/conversions': 'analytics-conversions',
+  'growth/analytics/events': 'analytics-events',
+  'growth/google-suite': 'google-suite',
+  'growth/search-filters': 'search-filters',
+  'growth/product-feed': 'product-feeds',
+  'growth/advanced-discounts': 'advanced-discounts',
+  'growth/abandoned-cart': 'abandoned-carts',
+  markets: 'markets',
+  'markets/markets': 'markets-mercati',
+  'markets/countries': 'markets-paesi',
+  'markets/languages': 'markets-lingue',
+  'markets/currencies': 'markets-valute',
+  'markets/prices': 'markets-prezzi',
+  tools: 'takeoff-tools',
+  'takeoff-tools': 'takeoff-tools',
+  'tools/import-export': 'import-export',
+  'tools/backup': 'backup',
+  'tools/translations': 'traduzioni',
+  'tools/supplier-feeds': 'supplier-feeds',
+  'tools/store-health': 'store-health',
+  'tools/launch-checklist': 'launch-checklist',
+  'tools/dataflow': 'import-export',
+  'tools/import-history': 'import-export',
+  apps: 'apps',
+  'apps/reviews': 'reviews',
+  'apps/email-automations': 'email-automations',
+  'apps/upsell-bundles': 'upsells',
+  'apps/abandoned-cart': 'abandoned-carts',
+  'apps/customer-accounts': 'customer-accounts',
+  'apps/webhooks': 'webhooks',
+  'apps/gdpr-cookie': 'gdpr-cookie',
+  'apps/subscriptions': 'subscriptions',
+  settings: 'impostazioni',
+  impostazioni: 'impostazioni',
+  'settings/general': 'settings-general',
+  'settings/users': 'utenti',
+  'settings/domains': 'domini',
+  'settings/privacy': 'privacy-settings',
+  'settings/cookies': 'cookie-settings',
+  'settings/notifications': 'notifiche',
+  'settings/integrations': 'integrazioni',
+  'settings/metafields': 'metafields',
+  'settings/multi-client': 'tenants',
+  'settings/activity-log': 'activity',
+  'settings/performance': 'performance',
+  'settings/import-export': 'settings-import-export',
+}
+
+const ADMIN_VIEW_TO_ROUTE = {
+  dashboard: 'dashboard',
+  website: 'website',
+  editor: 'website/editor',
+  pagine: 'website/pages',
+  menu: 'website/menus',
+  media: 'website/media',
+  'blog-admin': 'website/blog',
+  policy: 'website/policies',
+  metaobjects: 'website/metaobjects',
+  contenuto: 'website',
+  catalogo: 'catalog',
+  prodotti: 'catalog/products',
+  collezioni: 'catalog/collections',
+  inventario: 'catalog/inventory',
+  commerce: 'commerce',
+  ordini: 'commerce/orders',
+  clienti: 'commerce/customers',
+  checkout: 'commerce/checkout',
+  'checkout-settings': 'commerce/checkout',
+  'checkout-payments': 'commerce/payments',
+  'checkout-shipping': 'commerce/shipping',
+  'checkout-taxes': 'commerce/taxes',
+  'checkout-confirmation': 'commerce/checkout',
+  returns: 'commerce/returns',
+  'gift-cards': 'commerce/gift-cards',
+  growth: 'growth',
+  marketing: 'growth/marketing',
+  'marketing-campaigns': 'growth/campaigns',
+  'marketing-discounts': 'growth/discounts',
+  'marketing-coupons': 'growth/coupons',
+  'marketing-newsletter': 'growth/newsletter',
+  seo: 'growth/seo',
+  'seo-technical': 'growth/seo-technical',
+  analisi: 'growth/analytics',
+  'analytics-dashboard': 'growth/analytics',
+  'analytics-traffic': 'growth/analytics/traffic',
+  'analytics-sales': 'growth/analytics/sales',
+  'analytics-products': 'growth/analytics/products',
+  'analytics-conversions': 'growth/analytics/conversions',
+  'analytics-events': 'growth/analytics/events',
+  'google-suite': 'growth/google-suite',
+  'search-filters': 'growth/search-filters',
+  'product-feeds': 'growth/product-feed',
+  'advanced-discounts': 'growth/advanced-discounts',
+  'abandoned-carts': 'apps/abandoned-cart',
+  markets: 'markets',
+  'markets-mercati': 'markets/markets',
+  'markets-paesi': 'markets/countries',
+  'markets-lingue': 'markets/languages',
+  'markets-valute': 'markets/currencies',
+  'markets-prezzi': 'markets/prices',
+  'takeoff-tools': 'tools',
+  'import-export': 'tools/import-export',
+  backup: 'tools/backup',
+  traduzioni: 'tools/translations',
+  'supplier-feeds': 'tools/supplier-feeds',
+  'store-health': 'tools/store-health',
+  'launch-checklist': 'tools/launch-checklist',
+  apps: 'apps',
+  reviews: 'apps/reviews',
+  'email-automations': 'apps/email-automations',
+  upsells: 'apps/upsell-bundles',
+  'customer-accounts': 'apps/customer-accounts',
+  webhooks: 'apps/webhooks',
+  'gdpr-cookie': 'apps/gdpr-cookie',
+  subscriptions: 'apps/subscriptions',
+  impostazioni: 'settings',
+  'settings-general': 'settings/general',
+  utenti: 'settings/users',
+  domini: 'settings/domains',
+  'privacy-settings': 'settings/privacy',
+  'cookie-settings': 'settings/cookies',
+  notifiche: 'settings/notifications',
+  integrazioni: 'settings/integrations',
+  metafields: 'settings/metafields',
+  tenants: 'settings/multi-client',
+  activity: 'settings/activity-log',
+  performance: 'settings/performance',
+  'settings-import-export': 'settings/import-export',
+}
+
+const ADMIN_PRIMARY_ROUTE_KEYS = {
+  dashboard: 'navDashboard',
+  website: 'navWebsite',
+  catalog: 'navCatalog',
+  commerce: 'navCommerce',
+  growth: 'navGrowth',
+  markets: 'navMarkets',
+  tools: 'navTakeOffTools',
+  apps: 'navApps',
+  settings: 'navSettings',
+}
+
+let adminViewRegistry = new Map()
+
+function normalizeAdminRoutePath(rawHash = window.location.hash) {
+  let raw = String(rawHash || '')
+    .replace(/^#/, '')
+    .trim()
+
+  if (!raw) return 'dashboard'
+  if (raw.startsWith('/')) raw = raw.slice(1)
+  raw = raw.replace(/^\/+|\/+$/g, '').toLowerCase()
+
+  if (!raw) return 'dashboard'
+  if (ADMIN_VIEW_TO_ROUTE[raw]) return ADMIN_VIEW_TO_ROUTE[raw]
+  if (ADMIN_ROUTE_TO_VIEW[raw]) return raw
+  return 'dashboard'
+}
+
+function getAdminViewForRoute(routePath = normalizeAdminRoutePath()) {
+  return ADMIN_ROUTE_TO_VIEW[routePath] || 'dashboard'
+}
+
+function getAdminRouteForView(viewId = 'dashboard') {
+  return ADMIN_VIEW_TO_ROUTE[viewId] || 'dashboard'
+}
+
+function getAdminRouteHashForView(viewId = 'dashboard') {
+  return `#/${getAdminRouteForView(viewId)}`
+}
+
+function getCanonicalAdminHref(href = '') {
+  if (!href.startsWith('#')) return ''
+  const path = normalizeAdminRoutePath(href)
+  return `#/${path}`
+}
+
+function upgradeAdminRouteLinks(scope = document) {
+  scope.querySelectorAll?.('a[href^="#"]').forEach((link) => {
+    const href = link.getAttribute('href') || ''
+    const canonical = getCanonicalAdminHref(href)
+    if (canonical && canonical !== href) link.setAttribute('href', canonical)
+  })
+}
+
+function getAdminPrimaryRouteForView(viewId = 'dashboard') {
+  const route = getAdminRouteForView(viewId)
+  return route.split('/')[0] || 'dashboard'
+}
+
+function getActiveAdminViewId() {
+  return getAdminViewForRoute(normalizeAdminRoutePath())
+}
+
 const ADMIN_STATIC_TRANSLATIONS = [
   ['Apri', 'Open'],
   ['Salva', 'Save'],
@@ -3189,241 +3424,6 @@ function showAdminApp(user) {
 
 function refreshAdminDataAfterAuth() {
   rerenderActiveAdminView()
-}
-
-const ADMIN_ROUTE_TO_VIEW = {
-  dashboard: 'dashboard',
-  website: 'website',
-  'website/editor': 'editor',
-  'website/pages': 'pagine',
-  'website/menus': 'menu',
-  'website/theme': 'editor',
-  'website/header-footer': 'menu',
-  'website/media': 'media',
-  'website/blog': 'blog-admin',
-  'website/policies': 'policy',
-  'website/metaobjects': 'metaobjects',
-  catalog: 'catalogo',
-  catalogo: 'catalogo',
-  'catalog/products': 'prodotti',
-  'catalog/collections': 'collezioni',
-  'catalog/inventory': 'inventario',
-  'catalog/variants': 'prodotti',
-  'catalog/metafields': 'metafields',
-  commerce: 'commerce',
-  'commerce/orders': 'ordini',
-  'commerce/customers': 'clienti',
-  'commerce/checkout': 'checkout',
-  'commerce/payments': 'checkout-payments',
-  'commerce/shipping': 'checkout-shipping',
-  'commerce/taxes': 'checkout-taxes',
-  'commerce/returns': 'returns',
-  'commerce/gift-cards': 'gift-cards',
-  'commerce/store-credit': 'gift-cards',
-  growth: 'growth',
-  'growth/marketing': 'marketing',
-  'growth/campaigns': 'marketing-campaigns',
-  'growth/discounts': 'marketing-discounts',
-  'growth/coupons': 'marketing-coupons',
-  'growth/newsletter': 'marketing-newsletter',
-  'growth/seo': 'seo',
-  'growth/seo-technical': 'seo-technical',
-  'growth/analytics': 'analytics-dashboard',
-  'growth/analytics/traffic': 'analytics-traffic',
-  'growth/analytics/sales': 'analytics-sales',
-  'growth/analytics/products': 'analytics-products',
-  'growth/analytics/conversions': 'analytics-conversions',
-  'growth/analytics/events': 'analytics-events',
-  'growth/google-suite': 'google-suite',
-  'growth/search-filters': 'search-filters',
-  'growth/product-feed': 'product-feeds',
-  'growth/advanced-discounts': 'advanced-discounts',
-  'growth/abandoned-cart': 'abandoned-carts',
-  markets: 'markets',
-  'markets/markets': 'markets-mercati',
-  'markets/countries': 'markets-paesi',
-  'markets/languages': 'markets-lingue',
-  'markets/currencies': 'markets-valute',
-  'markets/prices': 'markets-prezzi',
-  tools: 'takeoff-tools',
-  'takeoff-tools': 'takeoff-tools',
-  'tools/import-export': 'import-export',
-  'tools/backup': 'backup',
-  'tools/translations': 'traduzioni',
-  'tools/supplier-feeds': 'supplier-feeds',
-  'tools/store-health': 'store-health',
-  'tools/launch-checklist': 'launch-checklist',
-  'tools/dataflow': 'import-export',
-  'tools/import-history': 'import-export',
-  apps: 'apps',
-  'apps/reviews': 'reviews',
-  'apps/email-automations': 'email-automations',
-  'apps/upsell-bundles': 'upsells',
-  'apps/abandoned-cart': 'abandoned-carts',
-  'apps/customer-accounts': 'customer-accounts',
-  'apps/webhooks': 'webhooks',
-  'apps/gdpr-cookie': 'gdpr-cookie',
-  'apps/subscriptions': 'subscriptions',
-  settings: 'impostazioni',
-  impostazioni: 'impostazioni',
-  'settings/general': 'settings-general',
-  'settings/users': 'utenti',
-  'settings/domains': 'domini',
-  'settings/privacy': 'privacy-settings',
-  'settings/cookies': 'cookie-settings',
-  'settings/notifications': 'notifiche',
-  'settings/integrations': 'integrazioni',
-  'settings/metafields': 'metafields',
-  'settings/multi-client': 'tenants',
-  'settings/activity-log': 'activity',
-  'settings/performance': 'performance',
-  'settings/import-export': 'settings-import-export',
-}
-
-const ADMIN_VIEW_TO_ROUTE = {
-  dashboard: 'dashboard',
-  website: 'website',
-  editor: 'website/editor',
-  pagine: 'website/pages',
-  menu: 'website/menus',
-  media: 'website/media',
-  'blog-admin': 'website/blog',
-  policy: 'website/policies',
-  metaobjects: 'website/metaobjects',
-  contenuto: 'website',
-  catalogo: 'catalog',
-  prodotti: 'catalog/products',
-  collezioni: 'catalog/collections',
-  inventario: 'catalog/inventory',
-  commerce: 'commerce',
-  ordini: 'commerce/orders',
-  clienti: 'commerce/customers',
-  checkout: 'commerce/checkout',
-  'checkout-settings': 'commerce/checkout',
-  'checkout-payments': 'commerce/payments',
-  'checkout-shipping': 'commerce/shipping',
-  'checkout-taxes': 'commerce/taxes',
-  'checkout-confirmation': 'commerce/checkout',
-  returns: 'commerce/returns',
-  'gift-cards': 'commerce/gift-cards',
-  growth: 'growth',
-  marketing: 'growth/marketing',
-  'marketing-campaigns': 'growth/campaigns',
-  'marketing-discounts': 'growth/discounts',
-  'marketing-coupons': 'growth/coupons',
-  'marketing-newsletter': 'growth/newsletter',
-  seo: 'growth/seo',
-  'seo-technical': 'growth/seo-technical',
-  analisi: 'growth/analytics',
-  'analytics-dashboard': 'growth/analytics',
-  'analytics-traffic': 'growth/analytics/traffic',
-  'analytics-sales': 'growth/analytics/sales',
-  'analytics-products': 'growth/analytics/products',
-  'analytics-conversions': 'growth/analytics/conversions',
-  'analytics-events': 'growth/analytics/events',
-  'google-suite': 'growth/google-suite',
-  'search-filters': 'growth/search-filters',
-  'product-feeds': 'growth/product-feed',
-  'advanced-discounts': 'growth/advanced-discounts',
-  'abandoned-carts': 'apps/abandoned-cart',
-  markets: 'markets',
-  'markets-mercati': 'markets/markets',
-  'markets-paesi': 'markets/countries',
-  'markets-lingue': 'markets/languages',
-  'markets-valute': 'markets/currencies',
-  'markets-prezzi': 'markets/prices',
-  'takeoff-tools': 'tools',
-  'import-export': 'tools/import-export',
-  backup: 'tools/backup',
-  traduzioni: 'tools/translations',
-  'supplier-feeds': 'tools/supplier-feeds',
-  'store-health': 'tools/store-health',
-  'launch-checklist': 'tools/launch-checklist',
-  apps: 'apps',
-  reviews: 'apps/reviews',
-  'email-automations': 'apps/email-automations',
-  upsells: 'apps/upsell-bundles',
-  'customer-accounts': 'apps/customer-accounts',
-  webhooks: 'apps/webhooks',
-  'gdpr-cookie': 'apps/gdpr-cookie',
-  subscriptions: 'apps/subscriptions',
-  impostazioni: 'settings',
-  'settings-general': 'settings/general',
-  utenti: 'settings/users',
-  domini: 'settings/domains',
-  'privacy-settings': 'settings/privacy',
-  'cookie-settings': 'settings/cookies',
-  notifiche: 'settings/notifications',
-  integrazioni: 'settings/integrations',
-  metafields: 'settings/metafields',
-  tenants: 'settings/multi-client',
-  activity: 'settings/activity-log',
-  performance: 'settings/performance',
-  'settings-import-export': 'settings/import-export',
-}
-
-const ADMIN_PRIMARY_ROUTE_KEYS = {
-  dashboard: 'navDashboard',
-  website: 'navWebsite',
-  catalog: 'navCatalog',
-  commerce: 'navCommerce',
-  growth: 'navGrowth',
-  markets: 'navMarkets',
-  tools: 'navTakeOffTools',
-  apps: 'navApps',
-  settings: 'navSettings',
-}
-
-let adminViewRegistry = new Map()
-
-function normalizeAdminRoutePath(rawHash = window.location.hash) {
-  let raw = String(rawHash || '')
-    .replace(/^#/, '')
-    .trim()
-
-  if (!raw) return 'dashboard'
-  if (raw.startsWith('/')) raw = raw.slice(1)
-  raw = raw.replace(/^\/+|\/+$/g, '').toLowerCase()
-
-  if (!raw) return 'dashboard'
-  if (ADMIN_VIEW_TO_ROUTE[raw]) return ADMIN_VIEW_TO_ROUTE[raw]
-  if (ADMIN_ROUTE_TO_VIEW[raw]) return raw
-  return 'dashboard'
-}
-
-function getAdminViewForRoute(routePath = normalizeAdminRoutePath()) {
-  return ADMIN_ROUTE_TO_VIEW[routePath] || 'dashboard'
-}
-
-function getAdminRouteForView(viewId = 'dashboard') {
-  return ADMIN_VIEW_TO_ROUTE[viewId] || 'dashboard'
-}
-
-function getAdminRouteHashForView(viewId = 'dashboard') {
-  return `#/${getAdminRouteForView(viewId)}`
-}
-
-function getCanonicalAdminHref(href = '') {
-  if (!href.startsWith('#')) return ''
-  const path = normalizeAdminRoutePath(href)
-  return `#/${path}`
-}
-
-function upgradeAdminRouteLinks(scope = document) {
-  scope.querySelectorAll?.('a[href^="#"]').forEach((link) => {
-    const href = link.getAttribute('href') || ''
-    const canonical = getCanonicalAdminHref(href)
-    if (canonical && canonical !== href) link.setAttribute('href', canonical)
-  })
-}
-
-function getAdminPrimaryRouteForView(viewId = 'dashboard') {
-  const route = getAdminRouteForView(viewId)
-  return route.split('/')[0] || 'dashboard'
-}
-
-function getActiveAdminViewId() {
-  return getAdminViewForRoute(normalizeAdminRoutePath())
 }
 
 function runAdminViewLoader(loader) {
