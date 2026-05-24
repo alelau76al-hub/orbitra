@@ -6505,7 +6505,20 @@ function setupAdminViews() {
   const views = Array.from(document.querySelectorAll('[data-admin-view]'))
   const viewHost = views[0]?.parentElement || adminApp
   const hubLinks = document.querySelectorAll('.hub-card')
-  let singlePageMounted = false
+  const viewStore = document.createDocumentFragment()
+  let routesAreIsolated = false
+  let routeOutlet = document.querySelector('#adminRouteOutlet')
+
+  if (!routeOutlet) {
+    routeOutlet = document.createElement('section')
+    routeOutlet.id = 'adminRouteOutlet'
+    routeOutlet.className = 'admin-route-outlet'
+    routeOutlet.setAttribute('aria-live', 'polite')
+  }
+
+  if (viewHost && routeOutlet.parentElement !== viewHost) {
+    viewHost.insertBefore(routeOutlet, views[0] || null)
+  }
 
   adminViewRegistry = new Map(views.map((view) => [view.dataset.adminView, view]))
   upgradeAdminRouteLinks(document)
@@ -6517,6 +6530,7 @@ function setupAdminViews() {
     view.dataset.adminActive = isActive ? 'true' : 'false'
     view.classList.toggle('admin-view--active', isActive)
     view.setAttribute('aria-hidden', isActive ? 'false' : 'true')
+    view.style.display = isActive ? '' : 'none'
 
     if (isActive) {
       view.removeAttribute('inert')
@@ -6526,6 +6540,31 @@ function setupAdminViews() {
   }
 
   views.forEach((view) => setRouteViewState(view, false))
+
+  function clearRouteOutlet() {
+    if (!routeOutlet) return
+
+    Array.from(routeOutlet.children).forEach((child) => {
+      if (child.matches?.('[data-admin-view]')) {
+        viewStore.appendChild(child)
+      } else {
+        child.remove()
+      }
+    })
+
+    routeOutlet.innerHTML = ''
+  }
+
+  function parkInactiveViews(activeElement) {
+    views.forEach((view) => {
+      if (view === activeElement) return
+      setRouteViewState(view, false)
+
+      if (view.parentElement === viewHost || view.parentElement === routeOutlet) {
+        viewStore.appendChild(view)
+      }
+    })
+  }
 
   document.addEventListener('click', (event) => {
     const link = event.target.closest?.('a[href^="#"]')
@@ -6596,23 +6635,19 @@ function setupAdminViews() {
 
   function mountActiveView(activeView) {
     const activeElement = getRegisteredView(activeView) || getRegisteredView('dashboard')
-    if (!activeElement || !viewHost) return activeElement
+    if (!activeElement || !viewHost || !routeOutlet) return activeElement
 
     views.forEach((view) => {
-      const isActive = view === activeElement
-      setRouteViewState(view, isActive)
-
-      if (singlePageMounted && !isActive && view.parentElement === viewHost) {
-        view.remove()
-      }
+      setRouteViewState(view, view === activeElement)
     })
 
-    if (singlePageMounted && activeElement.parentElement !== viewHost) {
-      viewHost.appendChild(activeElement)
-    }
+    clearRouteOutlet()
+    if (routesAreIsolated) parkInactiveViews(activeElement)
 
+    routeOutlet.appendChild(activeElement)
     setRouteViewState(activeElement, true)
     viewHost.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
+    routeOutlet.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
     return activeElement
   }
 
@@ -6664,7 +6699,7 @@ function setupAdminViews() {
   adminRenderCurrentRoute = openViewFromHash
   openViewFromHash({ load: false, skipScroll: true })
   window.setTimeout(() => {
-    singlePageMounted = true
+    routesAreIsolated = true
     openViewFromHash({ load: false, skipScroll: true })
   }, 0)
 }
