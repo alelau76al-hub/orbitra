@@ -1273,22 +1273,22 @@ document.querySelector('#app').innerHTML = `
   <aside class="cart-panel" id="cartPanel" aria-hidden="true">
     <div class="cart-head">
       <div>
-        <p class="eyebrow">Carrello</p>
-        <h2>Il tuo carrello</h2>
+        <p class="eyebrow">${escapeCmsHtml(sfT('cart'))}</p>
+        <h2>${escapeCmsHtml(sfT('cartTitle'))}</h2>
       </div>
-      <button type="button" class="cart-close" data-cart-close>Chiudi</button>
+      <button type="button" class="cart-close" data-cart-close>${escapeCmsHtml(sfT('cartClose'))}</button>
     </div>
 
     <div id="cartItems" class="cart-items"></div>
 
     <div class="cart-summary">
-      <span>Totale</span>
+      <span>${escapeCmsHtml(sfT('cartTotal'))}</span>
       <strong id="cartTotal">€0</strong>
     </div>
 
-    <a class="btn primary cart-checkout" href="/checkout">Vai al checkout</a>
+    <a class="btn primary cart-checkout" href="/checkout">${escapeCmsHtml(sfT('cartCheckout'))}</a>
     <p id="cartMessage" class="cart-message"></p>
-    <p class="cart-note">Pagamento manuale o simulato. Nessun pagamento reale viene elaborato.</p>
+    <p class="cart-note">${escapeCmsHtml(sfT('cartNote'))}</p>
   </aside>
 `
 
