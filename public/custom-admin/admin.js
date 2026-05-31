@@ -6507,11 +6507,10 @@ function setupAdminViews() {
   const viewHost = adminApp || templateHost || views[0]?.parentElement
   const hubLinks = document.querySelectorAll('.hub-card')
   const viewStore = templateHost || document.createDocumentFragment()
-  let routesAreIsolated = false
   let routeOutlet = document.querySelector('#adminRouteOutlet')
 
   if (!routeOutlet) {
-    routeOutlet = document.createElement('section')
+    routeOutlet = document.createElement('div')
     routeOutlet.id = 'adminRouteOutlet'
     routeOutlet.className = 'admin-route-outlet'
     routeOutlet.setAttribute('aria-live', 'polite')
@@ -6529,6 +6528,31 @@ function setupAdminViews() {
 
   adminViewRegistry = new Map(views.map((view) => [view.dataset.adminView, view]))
   upgradeAdminRouteLinks(document)
+
+  function setupRouteDebugHelpers() {
+    window.__takeoffRouteDebug = function () {
+      return Array.from(document.querySelectorAll('[data-admin-view]')).map((el) => ({
+        view: el.getAttribute('data-admin-view'),
+        parent: el.parentElement?.id || '',
+        hidden: el.hidden,
+        display: getComputedStyle(el).display,
+        visible: Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length),
+      }))
+    }
+
+    window.__takeoffCurrentRouteDebug = function () {
+      const outlet = document.querySelector('#adminRouteOutlet')
+      return {
+        hash: window.location.hash,
+        routeOutlet: Boolean(outlet),
+        templateHost: Boolean(document.querySelector('#adminViewTemplates')),
+        visibleViews: window.__takeoffRouteDebug().filter((view) => view.visible),
+        outletChildren: Array.from(outlet?.children || []).map(
+          (el) => el.getAttribute('data-admin-view') || el.id || el.className,
+        ),
+      }
+    }
+  }
 
   function setRouteViewState(view, isActive) {
     if (!view) return
@@ -6549,10 +6573,11 @@ function setupAdminViews() {
   views.forEach((view) => setRouteViewState(view, false))
 
   function clearRouteOutlet() {
-    if (!routeOutlet) return
+    if (!routeOutlet || !viewStore) return
 
     Array.from(routeOutlet.children).forEach((child) => {
       if (child.matches?.('[data-admin-view]')) {
+        setRouteViewState(child, false)
         viewStore.appendChild(child)
       } else {
         child.remove()
@@ -6567,10 +6592,19 @@ function setupAdminViews() {
       if (view === activeElement) return
       setRouteViewState(view, false)
 
-      if (view.parentElement === viewHost || view.parentElement === routeOutlet) {
+      if (view.parentElement === viewHost || view.parentElement === routeOutlet || !view.parentElement) {
         viewStore.appendChild(view)
       }
     })
+  }
+
+  function getViewForMount(viewId) {
+    return (
+      adminViewRegistry.get(viewId) ||
+      templateHost?.querySelector(`[data-admin-view="${viewId}"]`) ||
+      routeOutlet?.querySelector(`[data-admin-view="${viewId}"]`) ||
+      document.querySelector(`[data-admin-view="${viewId}"]`)
+    )
   }
 
   document.addEventListener('click', (event) => {
@@ -6640,22 +6674,40 @@ function setupAdminViews() {
     `
   }
 
-  function mountActiveView(activeView) {
-    const activeElement = getRegisteredView(activeView) || getRegisteredView('dashboard')
-    if (!activeElement || !viewHost || !routeOutlet) return activeElement
+  function mountAdminView(activeView, fallbackView = 'dashboard') {
+    if (!viewHost || !routeOutlet || !viewStore) {
+      console.error('[TakeOff Admin] route outlet or template host missing.')
+      return getRegisteredView(fallbackView)
+    }
+
+    let activeElement = getViewForMount(activeView)
+    if (!activeElement && activeView !== fallbackView) {
+      activeElement = getViewForMount(fallbackView)
+      activeView = fallbackView
+      window.history.replaceState(null, '', '#/dashboard')
+    }
+
+    if (!activeElement) {
+      console.error(`[TakeOff Admin] view "${activeView}" not found.`)
+      return null
+    }
 
     views.forEach((view) => {
-      setRouteViewState(view, view === activeElement)
+      setRouteViewState(view, false)
     })
 
     clearRouteOutlet()
-    if (routesAreIsolated) parkInactiveViews(activeElement)
+    parkInactiveViews(activeElement)
 
     routeOutlet.appendChild(activeElement)
     setRouteViewState(activeElement, true)
     viewHost.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
     routeOutlet.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
     return activeElement
+  }
+
+  function mountActiveView(activeView) {
+    return mountAdminView(activeView)
   }
 
   function openViewFromHash({ skipScroll = false, load = true } = {}) {
@@ -6702,11 +6754,11 @@ function setupAdminViews() {
     }
   }
 
+  setupRouteDebugHelpers()
   window.addEventListener('hashchange', openViewFromHash)
   adminRenderCurrentRoute = openViewFromHash
   openViewFromHash({ load: false, skipScroll: true })
   window.setTimeout(() => {
-    routesAreIsolated = true
     openViewFromHash({ load: false, skipScroll: true })
   }, 0)
 }

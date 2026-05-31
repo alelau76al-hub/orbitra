@@ -5089,10 +5089,18 @@ body[data-admin-theme="light"] .admin-page-back {
   min-width: 0;
 }
 
-.admin-route-outlet > [data-admin-view] {
+#adminRouteOutlet > [data-admin-view] {
+  display: block;
   width: 100%;
 }
 
+#adminRouteOutlet > .grid.admin-view[data-admin-active="true"],
+#adminRouteOutlet > .grid.admin-section[data-admin-active="true"] {
+  display: grid;
+}
+
+#adminViewTemplates,
+#adminViewTemplates [data-admin-view],
 .admin-view-templates {
   display: none !important;
 }
