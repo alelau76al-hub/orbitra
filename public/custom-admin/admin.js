@@ -6503,9 +6503,10 @@ loadPages()
 
 function setupAdminViews() {
   const views = Array.from(document.querySelectorAll('[data-admin-view]'))
-  const viewHost = views[0]?.parentElement || adminApp
+  const templateHost = document.querySelector('#adminViewTemplates')
+  const viewHost = adminApp || templateHost || views[0]?.parentElement
   const hubLinks = document.querySelectorAll('.hub-card')
-  const viewStore = document.createDocumentFragment()
+  const viewStore = templateHost || document.createDocumentFragment()
   let routesAreIsolated = false
   let routeOutlet = document.querySelector('#adminRouteOutlet')
 
@@ -6517,7 +6518,13 @@ function setupAdminViews() {
   }
 
   if (viewHost && routeOutlet.parentElement !== viewHost) {
-    viewHost.insertBefore(routeOutlet, views[0] || null)
+    const outletAnchor =
+      templateHost?.parentElement === viewHost
+        ? templateHost
+        : views[0]?.parentElement === viewHost
+          ? views[0]
+          : null
+    viewHost.insertBefore(routeOutlet, outletAnchor)
   }
 
   adminViewRegistry = new Map(views.map((view) => [view.dataset.adminView, view]))

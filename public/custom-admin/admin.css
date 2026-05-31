@@ -5093,6 +5093,10 @@ body[data-admin-theme="light"] .admin-page-back {
   width: 100%;
 }
 
+.admin-view-templates {
+  display: none !important;
+}
+
 [data-admin-view]:not([data-admin-active="true"]) {
   display: none !important;
 }
