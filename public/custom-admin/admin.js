@@ -51,12 +51,7 @@ const ADMIN_THEME_STORAGE_KEY = 'takeoff_admin_theme_v1'
 const ADMIN_DEFAULT_THEME = 'dark'
 const ADMIN_ENTRY_STORAGE_KEY = 'takeoff_admin_entry_seen_v1'
 const ADMIN_ENTRY_DURATION_SECONDS = 5
-const ADMIN_DEMO_MODE = true
-const ADMIN_DEMO_USER = {
-  name: 'Audit Viewer',
-  role: 'owner',
-  email: 'demo@takeoff.local',
-}
+const ADMIN_DEMO_MODE = false
 const ADMIN_TRANSLATIONS = {
   it: {
     documentTitle: 'TakeOffMilan CMS',
@@ -2436,6 +2431,10 @@ function getAdminAuditMessage() {
   return adminT('auditMessage')
 }
 
+function getAdminReadOnlyMessage() {
+  return isAdminAuditMode() ? getAdminAuditMessage() : adminT('common.readOnly', 'Sola lettura')
+}
+
 function updateAdminAuthIntro() {
   if (!adminAuthIntro || adminAuthGate?.hidden) return
   const state = adminAuthGate?.dataset.authState || 'login'
@@ -2469,6 +2468,7 @@ let adminAllowProtectedFetches = false
 let adminAuditObserver = null
 let adminEntryCountdownTimer = null
 let adminEntryCountdownInterval = null
+let adminEntryCompleteHandler = null
 
 function isProtectedAdminRequest(resource) {
   const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
@@ -2505,7 +2505,7 @@ function localAdminAuditResponse() {
   return new Response(
     JSON.stringify({
       success: false,
-      message: getAdminAuditMessage(),
+      message: getAdminReadOnlyMessage(),
     }),
     {
       status: 403,
@@ -2536,6 +2536,17 @@ function getAdminRole() {
 
 function adminHasRole(roles = []) {
   return roles.includes(getAdminRole())
+}
+
+function canAdminMutate() {
+  if (!adminCurrentUser) return false
+  if (Number(adminCurrentUser.active) === 0) return false
+  if (isAdminAuditMode()) return false
+
+  const role = getAdminRole()
+  if (role === 'viewer' || role === 'auditor') return false
+
+  return role === 'owner' || role === 'admin' || role === 'editor'
 }
 
 function canAdminManageUsers() {
@@ -2587,7 +2598,6 @@ function isAuditMutationControl(button) {
 
   return (
     button.type === 'submit' ||
-    button.id === 'adminLogoutButton' ||
     button.id === 'importProductsButton' ||
     button.id === 'addVariantButton' ||
     button.id === 'saveSectionButton' ||
@@ -2612,18 +2622,20 @@ function isAuditMutationControl(button) {
 
 function applyAdminAuditUi() {
   const auditMode = isAdminAuditMode()
+  const readOnlyMode = !canAdminMutate()
   document.body.dataset.adminAuditMode = auditMode ? 'true' : 'false'
+  document.body.dataset.adminReadOnlyMode = readOnlyMode ? 'true' : 'false'
 
   const badge = ensureAdminAuditBadge()
   if (badge) badge.hidden = !auditMode
 
-  document.querySelectorAll('button').forEach((button) => {
+  document.querySelectorAll('#adminApp button').forEach((button) => {
     if (!isAuditMutationControl(button)) return
 
-    button.disabled = auditMode
-    button.classList.toggle('audit-disabled', auditMode)
-    if (auditMode) {
-      button.title = getAdminAuditMessage()
+    button.disabled = readOnlyMode
+    button.classList.toggle('audit-disabled', readOnlyMode)
+    if (readOnlyMode) {
+      button.title = auditMode ? getAdminAuditMessage() : adminT('common.readOnly', 'Sola lettura')
       button.dataset.auditDisabled = 'true'
     } else if (button.dataset.auditDisabled === 'true') {
       button.title = ''
@@ -2631,9 +2643,9 @@ function applyAdminAuditUi() {
     }
   })
 
-  document.querySelectorAll('input[type="file"]').forEach((input) => {
-    input.disabled = auditMode
-    input.classList.toggle('audit-disabled', auditMode)
+  document.querySelectorAll('#adminApp input[type="file"]').forEach((input) => {
+    input.disabled = readOnlyMode
+    input.classList.toggle('audit-disabled', readOnlyMode)
   })
 }
 
@@ -2641,7 +2653,7 @@ function startAdminAuditObserver() {
   if (adminAuditObserver || !adminApp) return
 
   adminAuditObserver = new MutationObserver(() => {
-    if (isAdminAuditMode()) {
+    if (!canAdminMutate()) {
       window.requestAnimationFrame(applyAdminAuditUi)
     }
   })
@@ -2679,14 +2691,14 @@ window.fetch = async (resource, options) => {
     return localAdminAuthResponse()
   }
 
-  if (protectedAdminRequest && isAdminAuditMode() && !isReadMethod(requestMethod)) {
-    showAdminPermissionNotice(getAdminAuditMessage())
+  if (protectedAdminRequest && !canAdminMutate() && !isReadMethod(requestMethod)) {
+    showAdminPermissionNotice(getAdminReadOnlyMessage())
     return localAdminAuditResponse()
   }
 
   const response = await nativeFetch(resource, options)
 
-  if (protectedAdminRequest && response.status === 401 && !ADMIN_DEMO_MODE) {
+  if (protectedAdminRequest && response.status === 401) {
     showAdminLogin('Sessione scaduta. Effettua di nuovo il login.')
   }
 
@@ -2708,11 +2720,11 @@ window.fetch = async (resource, options) => {
 document.addEventListener(
   'submit',
   (event) => {
-    if (!isAdminAuditMode() || !event.target.closest('#adminApp')) return
+    if (canAdminMutate() || !event.target.closest('#adminApp')) return
 
     event.preventDefault()
     event.stopImmediatePropagation()
-    showAdminPermissionNotice(getAdminAuditMessage())
+    showAdminPermissionNotice(getAdminReadOnlyMessage())
   },
   true,
 )
@@ -2720,14 +2732,14 @@ document.addEventListener(
 document.addEventListener(
   'click',
   (event) => {
-    if (!isAdminAuditMode()) return
+    if (canAdminMutate() || !event.target.closest('#adminApp')) return
 
     const button = event.target.closest('button')
     if (!button || !isAuditMutationControl(button)) return
 
     event.preventDefault()
     event.stopImmediatePropagation()
-    showAdminPermissionNotice(getAdminAuditMessage())
+    showAdminPermissionNotice(getAdminReadOnlyMessage())
   },
   true,
 )
@@ -2741,18 +2753,10 @@ function setAdminAuthMessage(message = '', isError = false) {
 }
 
 function showAdminAuthGate({ bootstrap = false, migration = false, message = '' } = {}) {
-  if (ADMIN_DEMO_MODE) {
-    if (adminAuthGate) adminAuthGate.hidden = true
-    if (adminLoginForm) adminLoginForm.hidden = true
-    if (adminBootstrapForm) adminBootstrapForm.hidden = true
-    showAdminApp(ADMIN_DEMO_USER)
-    return
-  }
-
   adminAllowProtectedFetches = false
   adminCurrentUser = null
 
-  if (adminEntryScreen) adminEntryScreen.hidden = true
+  cancelAdminEntryScreen()
   if (adminApp) adminApp.hidden = true
   if (adminAuthGate) adminAuthGate.hidden = false
   if (adminAuthGate) {
@@ -2773,11 +2777,6 @@ function showAdminAuthGate({ bootstrap = false, migration = false, message = '' 
 }
 
 function showAdminLogin(message = '') {
-  if (ADMIN_DEMO_MODE) {
-    showAdminApp(ADMIN_DEMO_USER)
-    return
-  }
-
   showAdminAuthGate({ message })
 }
 
@@ -2795,8 +2794,28 @@ function applyAdminDemoModeUi() {
   }
 }
 
+function cancelAdminEntryScreen() {
+  adminEntryCompleteHandler = null
+  if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
+  if (adminEntryCountdownInterval) window.clearInterval(adminEntryCountdownInterval)
+  adminEntryCountdownTimer = null
+  adminEntryCountdownInterval = null
+
+  if (adminEntryScreen) {
+    adminEntryScreen.hidden = true
+    adminEntryScreen.classList.remove('is-visible')
+  }
+}
+
 function hideAdminEntryScreen() {
-  if (!adminEntryScreen) return
+  const complete = adminEntryCompleteHandler
+  adminEntryCompleteHandler = null
+
+  if (!adminEntryScreen) {
+    if (typeof complete === 'function') complete()
+    return
+  }
+
   if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
   if (adminEntryCountdownInterval) window.clearInterval(adminEntryCountdownInterval)
   adminEntryCountdownTimer = null
@@ -2806,6 +2825,8 @@ function hideAdminEntryScreen() {
   try {
     sessionStorage.setItem(ADMIN_ENTRY_STORAGE_KEY, '1')
   } catch {}
+
+  if (typeof complete === 'function') complete()
 }
 
 function shouldShowAdminEntryScreen({ force = false } = {}) {
@@ -2819,7 +2840,13 @@ function shouldShowAdminEntryScreen({ force = false } = {}) {
 }
 
 function showAdminEntryScreen(options = {}) {
-  if (!adminEntryScreen || !shouldShowAdminEntryScreen(options)) return
+  const { force = false, onComplete } = options
+  adminEntryCompleteHandler = typeof onComplete === 'function' ? onComplete : null
+
+  if (!adminEntryScreen || !shouldShowAdminEntryScreen({ force })) {
+    hideAdminEntryScreen()
+    return
+  }
 
   if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
   if (adminEntryCountdownInterval) window.clearInterval(adminEntryCountdownInterval)
@@ -2850,15 +2877,34 @@ function showAdminApp(user) {
   if (adminAuthGate) adminAuthGate.hidden = true
   if (adminLoginForm) adminLoginForm.hidden = true
   if (adminBootstrapForm) adminBootstrapForm.hidden = true
-  if (adminApp) adminApp.hidden = false
+  if (adminApp) adminApp.hidden = true
   if (adminSessionName) adminSessionName.textContent = user?.name || user?.email || 'Admin'
   if (adminSessionRole) adminSessionRole.textContent = user?.role || 'viewer'
   applyAdminDemoModeUi()
 
-  applyAdminPermissionUi()
-  startAdminAuditObserver()
-  applyAdminAuditUi()
-  showAdminEntryScreen({ force: ADMIN_DEMO_MODE })
+  const revealAdminApp = () => {
+    if (adminAuthGate) adminAuthGate.hidden = true
+    if (adminEntryScreen) adminEntryScreen.hidden = true
+    if (adminApp) adminApp.hidden = false
+    applyAdminPermissionUi()
+    startAdminAuditObserver()
+    applyAdminAuditUi()
+  }
+
+  showAdminEntryScreen({
+    force: true,
+    onComplete: revealAdminApp,
+  })
+}
+
+window.__takeoffAdminModeDebug = function () {
+  return {
+    demoMode: ADMIN_DEMO_MODE,
+    currentUser: adminCurrentUser,
+    canMutate: typeof canAdminMutate === 'function' ? canAdminMutate() : null,
+    hasAuthGate: !!document.querySelector('#adminAuthGate'),
+    hasEntryScreen: !!document.querySelector('#adminEntryScreen'),
+  }
 }
 
 function refreshAdminDataAfterAuth() {
@@ -3005,15 +3051,6 @@ function rerenderActiveAdminView() {
 }
 
 async function initAdminAuth() {
-  if (ADMIN_DEMO_MODE) {
-    if (adminAuthGate) adminAuthGate.hidden = true
-    if (adminLoginForm) adminLoginForm.hidden = true
-    if (adminBootstrapForm) adminBootstrapForm.hidden = true
-    showAdminApp(ADMIN_DEMO_USER)
-    refreshAdminDataAfterAuth()
-    return
-  }
-
   showAdminAuthGate({ message: adminT('authChecking') })
 
   try {
@@ -3054,10 +3091,6 @@ async function initAdminAuth() {
 
 adminLoginForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (ADMIN_DEMO_MODE) {
-    showAdminApp(ADMIN_DEMO_USER)
-    return
-  }
 
   setAdminAuthMessage('Accesso in corso...')
 
@@ -3093,10 +3126,6 @@ adminLoginForm?.addEventListener('submit', async (event) => {
 
 adminBootstrapForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
-  if (ADMIN_DEMO_MODE) {
-    showAdminApp(ADMIN_DEMO_USER)
-    return
-  }
 
   setAdminAuthMessage('Creazione owner...')
 
@@ -3127,11 +3156,6 @@ adminBootstrapForm?.addEventListener('submit', async (event) => {
 })
 
 adminLogoutButton?.addEventListener('click', async () => {
-  if (ADMIN_DEMO_MODE) {
-    showAdminApp(ADMIN_DEMO_USER)
-    return
-  }
-
   try {
     await nativeFetch('/api/admin/auth/logout', {
       method: 'POST',
