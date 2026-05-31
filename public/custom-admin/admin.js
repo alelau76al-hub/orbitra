@@ -53,11 +53,9 @@ const ADMIN_ENTRY_STORAGE_KEY = 'takeoff_admin_entry_seen_v1'
 const ADMIN_ENTRY_DURATION_SECONDS = 5
 const ADMIN_DEMO_MODE = true
 const ADMIN_DEMO_USER = {
-  id: 'demo-admin',
-  name: 'Demo Admin',
-  email: 'demo@takeoffmilan.local',
+  name: 'Audit Viewer',
   role: 'owner',
-  audit_mode: false,
+  email: 'demo@takeoff.local',
 }
 const ADMIN_TRANSLATIONS = {
   it: {
@@ -82,9 +80,9 @@ const ADMIN_TRANSLATIONS = {
     entrySubtitle: 'Il futuro dei siti web',
     entryClaim: 'Powerful. Flexible. Custom.',
     entryCountdown: 'Il tuo CMS si aprira tra',
-    entryButton: 'Entra nel CMS',
-    themeLight: 'Modalita chiara',
-    themeDark: 'Modalita scura',
+    entryButton: 'Enter CMS',
+    themeLight: 'Light mode',
+    themeDark: 'Dark mode',
     navDashboard: 'Dashboard',
     navDashboardDesc: 'Panoramica e azioni rapide',
     navEditor: 'Editor sito',
@@ -107,7 +105,7 @@ const ADMIN_TRANSLATIONS = {
     navCheckoutDesc: 'Checkout, pagamenti, spedizioni, tasse e conferma',
     navSettings: 'Impostazioni',
     navSettingsDesc: 'Generali, domini, utenti, privacy e operativita',
-    navApps: 'App',
+    navApps: 'Apps',
     navAppsDesc: 'App native TakeOff e moduli interni del CMS',
     navGoogleSuite: 'Google Suite',
     navGoogleSuiteDesc: 'GA4, Ads, GTM, Search',
@@ -126,7 +124,7 @@ const ADMIN_TRANSLATIONS = {
     heroText: 'Next Generation Website CMS per controllare contenuti, catalogo, checkout e impostazioni da un pannello proprietario.',
     editorTitle: 'Editor visuale sito',
     editorDesc: 'Personalizza sezioni, contenuti e impostazioni del sito cliente senza toccare codice.',
-    previewDesktop: 'Anteprima desktop',
+    previewDesktop: 'Desktop preview',
     previewTablet: 'Tablet preview',
     previewMobile: 'Mobile preview',
     catalogTitle: 'Catalogo',
@@ -172,7 +170,7 @@ const ADMIN_TRANSLATIONS = {
     statusOperational: 'Operativo',
     statusArea: 'Area',
     statusBaseConfig: 'Configurazione base',
-    statusDevelopment: 'Strumenti avanzati in corso',
+    statusDevelopment: 'Advanced tools in progress',
     logout: 'Logout',
   },
   en: {
@@ -313,7 +311,7 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'dashboard.summary.media': 'Media',
   'dashboard.summary.mediaDescription': 'Asset disponibili nel CMS.',
   'editor.mainFeature': 'Funzione principale',
-  'editor.visualEditor': 'Editor visuale sito',
+  'editor.visualEditor': 'Visual Editor',
   'editor.description': 'Il cuore del CMS: costruisci, controlla e verifica il sito in tempo reale su desktop, tablet e mobile.',
   'editor.previewFormat': 'Formato preview',
   'editor.pageToEdit': 'Pagina da modificare',
@@ -346,7 +344,7 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'editor.desktop': 'Desktop',
   'editor.tablet': 'Tablet',
   'editor.mobile': 'Mobile',
-  'editor.liveCanvas': 'Canvas live',
+  'editor.liveCanvas': 'Live canvas',
   'editor.sitePreviewTitle': 'Anteprima sito',
   'content.title': 'Contenuto',
   'content.pages.title': 'Pagine',
@@ -959,7 +957,6 @@ Object.assign(ADMIN_TRANSLATIONS.it, {
   'shipping.edit': 'Modifica metodo',
   'shipping.save': 'Salva spedizione',
   'shipping.update': 'Aggiorna spedizione',
-  'shipping.standardPlaceholder': 'Spedizione standard',
   'integrations.add': 'Aggiungi integrazione',
   'integrations.edit': 'Modifica integrazione',
   'integrations.save': 'Salva integrazione',
@@ -1019,7 +1016,6 @@ Object.assign(ADMIN_TRANSLATIONS.en, {
   'shipping.edit': 'Edit method',
   'shipping.save': 'Save shipping',
   'shipping.update': 'Update shipping',
-  'shipping.standardPlaceholder': 'Standard shipping',
   'integrations.add': 'Add integration',
   'integrations.edit': 'Edit integration',
   'integrations.save': 'Save integration',
@@ -1042,310 +1038,6 @@ Object.assign(ADMIN_TRANSLATIONS.en, {
   'tenants.update': 'Update tenant',
 })
 
-Object.assign(ADMIN_TRANSLATIONS.it, {
-  'nav.mainAreas': 'Aree principali',
-  'sidebar.systemName': 'Website Operating System',
-  'sidebar.systemDesc': 'Next Generation Website CMS',
-  navWebsite: 'Sito',
-  navWebsiteDesc: 'Editor, pagine, menu e media',
-  navCatalogDesc: 'Prodotti, collezioni e stock',
-  navCommerce: 'Commercio',
-  navCommerceDesc: 'Ordini, clienti e checkout',
-  navGrowth: 'Crescita',
-  navGrowthDesc: 'Marketing, SEO e analytics',
-  navTakeOffTools: 'TakeOff Tools',
-  navTakeOffToolsDesc: 'Import massivi, backup e controlli',
-  navApps: 'App',
-  navAppsDesc: 'Moduli nativi opzionali',
-  navSettingsDesc: 'Store, accessi e sistema',
-  settingsTitle: 'Impostazioni',
-  'breadcrumb.admin': 'Admin',
-  'common.back': 'Torna',
-  appsTitle: 'App',
-  appsDesc: 'Moduli nativi inclusi nel CMS TakeOff. Nessun marketplace esterno. Nessun abbonamento mensile.',
-  'apps.heroTitle': 'Moduli avanzati, attivabili quando servono.',
-  'apps.heroDesc': 'Funzioni native per estendere il CMS senza installare app esterne.',
-  'apps.reviewsDesc': 'Recensioni prodotto e moderazione.',
-  'apps.emailDesc': 'Template email, provider status e log.',
-  'apps.upsellDesc': 'Regole native per bundle e cross-sell.',
-  'apps.abandonedCartDesc': 'Recovery carrello con email provider-ready.',
-  'apps.customerAccountsDesc': 'Account cliente e inviti controllati.',
-  'apps.webhooksDesc': 'Eventi developer per integrazioni custom.',
-  'apps.gdprDesc': 'Consensi, cookie e privacy tools.',
-  'apps.subscriptionsDesc': 'Abbonamenti e ricorrenze provider-ready.',
-  'dashboard.controlPanelTitle': 'TakeOff Control Panel',
-  'dashboard.controlPanelClaim': 'Crea, gestisci e fai crescere siti custom da un unico sistema operativo.',
-  'dashboard.editWebsite': 'Modifica il sito',
-  'dashboard.editWebsiteDesc': 'Apri editor visuale e sezioni.',
-  'dashboard.addProduct': 'Aggiungi prodotto',
-  'dashboard.addProductDesc': 'Crea o aggiorna schede catalogo.',
-  'dashboard.importData': 'Importa dati',
-  'dashboard.importDataDesc': 'Bulk update senza app esterne.',
-  'dashboard.viewOrders': 'Vedi ordini',
-  'dashboard.viewOrdersDesc': 'Controlla pagamento e fulfillment.',
-  'dashboard.summary.siteHealth': 'Stato sito',
-  'dashboard.summary.siteHealthDescription': 'Controlli in TakeOff Tools.',
-  'dashboard.summary.setup': 'Setup',
-  'dashboard.summary.setupDescription': 'Step prioritari prima del go-live.',
-  'dashboard.launchChecklistMini': 'Launch checklist',
-  'dashboard.checklist.products': 'Aggiungi prodotti',
-  'dashboard.checklist.checkout': 'Configura checkout',
-  'dashboard.checklist.domain': 'Collega dominio',
-  'dashboard.checklist.seo': 'Rivedi SEO',
-  'dashboard.recentActivity': 'Ultimi eventi',
-  'dashboard.recentActivityDesc': 'Activity log, warning e audit restano nelle rispettive sezioni di dettaglio.',
-  'website.title': 'Sito',
-  'website.description': 'Gestisci esperienza, pagine, menu, tema e asset del sito.',
-  'website.visualEditor': 'Editor visuale',
-  'website.visualEditorDesc': 'Sezioni, preview e contenuti di pagina.',
-  'website.pages': 'Pagine',
-  'website.pagesDesc': 'Pagine istituzionali, landing e SEO base.',
-  'website.menus': 'Menu',
-  'website.menusDesc': 'Header, footer e navigazione pubblica.',
-  'website.themeSettings': 'Impostazioni tema',
-  'website.themeSettingsDesc': 'Logo, colori, font e layout globali.',
-  'website.headerFooter': 'Header / Footer',
-  'website.headerFooterDesc': 'Menu e link globali del sito.',
-  'website.mediaLibrary': 'Libreria media',
-  'website.mediaLibraryDesc': 'Asset, URL, anteprime e alt text.',
-  'catalog.productMetafields': 'Metafields prodotto',
-  'catalog.productMetafieldsDesc': 'Campi custom per schede prodotto.',
-  'commerce.title': 'Commercio',
-  'commerce.description': 'Gestisci ordini, clienti, checkout, pagamenti e operativita commerciale.',
-  'commerce.ordersDesc': 'Stati, pagamenti, spedizione e timeline.',
-  'commerce.customersDesc': 'Profili, storico ordini e account status.',
-  'commerce.checkoutDesc': 'Impostazioni, conferma e flusso operativo.',
-  'commerce.payments': 'Pagamenti',
-  'commerce.paymentsDesc': 'Manuale o provider test via ambiente.',
-  'commerce.shipping': 'Spedizioni',
-  'commerce.shippingDesc': 'Metodi, soglie e stato attivo.',
-  'commerce.taxes': 'Tasse',
-  'commerce.taxesDesc': 'IVA base e prezzi inclusi/esclusi.',
-  'commerce.giftCardsDesc': 'Crediti cliente e codici regalo nativi.',
-  'commerce.returnsDesc': 'Resi e rimborsi con workflow controllato.',
-  'commerce.backToCommerce': 'Torna a Commercio',
-  'growth.title': 'Crescita',
-  'growth.description': 'Marketing, SEO, analytics e strumenti di crescita in un hub unico.',
-  'growth.campaignsDesc': 'Promozioni, finestre temporali e coupon.',
-  'growth.discountsDesc': 'Codici percentuali o importo fisso.',
-  'growth.seoDesc': 'Audit, snippet e metadati.',
-  'growth.analyticsDesc': 'Traffico, vendite e conversioni.',
-  'growth.googleSuiteDesc': 'GA4, Ads, GTM e Search Console.',
-  'growth.searchFiltersDesc': 'Ricerca e filtri catalogo.',
-  'growth.productFeedDesc': 'Feed Google Merchant e Meta Catalog.',
-  'growth.backToGrowth': 'Torna a Crescita',
-  'tools.title': 'TakeOff Tools',
-  'tools.description': 'Strumenti operativi inclusi per ridurre costi e app esterne.',
-  'tools.importExportDesc': 'Importa, esporta e aggiorna prodotti, collezioni, menu, traduzioni e stock in bulk senza app esterne a pagamento.',
-  'tools.openTool': 'Apri tool',
-  'tools.backupDesc': 'Export JSON sicuro prima di import massivi.',
-  'tools.translationPackageDesc': 'Pacchetti traduzione per workflow agenzia.',
-  'tools.supplierFeedsDesc': 'Feed fornitori e dry-run controllati.',
-  'tools.storeHealthDesc': 'Controlli operativi su store e provider.',
-  'tools.launchChecklistDesc': 'Checklist go-live per test e produzione.',
-  'tools.dataflowHistoryDesc': 'Storico job, report e preview import.',
-  'tools.backToTools': 'Torna a TakeOff Tools',
-  'tools.openDataFlow': 'Apri DataFlow',
-  'settings.description': 'Configurazioni store, accessi, domini, privacy e sistema.',
-  'settings.general': 'Generali',
-  'settings.generalDesc': 'Store, azienda, email e dati sito.',
-  'settings.usersPermissions': 'Utenti e permessi',
-  'settings.usersPermissionsDesc': 'Utenti admin, ruoli e accessi.',
-  'settings.domains': 'Domini',
-  'settings.domainsDesc': 'Dominio primario, preview e DNS.',
-  'settings.privacy': 'Privacy',
-  'settings.privacyDesc': 'Consensi, GDPR e policy pubbliche.',
-  'settings.cookieSettings': 'Impostazioni cookie',
-  'settings.cookieSettingsDesc': 'Categorie consenso e Google Consent.',
-  'settings.metafields': 'Metafields',
-  'settings.metafieldsDesc': 'Dati custom per risorse CMS.',
-  'settings.notifications': 'Notifiche',
-  'settings.notificationsDesc': 'Template, log e invii mock.',
-  'settings.integrations': 'Integrazioni',
-  'settings.integrationsDesc': 'Provider e configurazioni non sensibili.',
-  'settings.multiClient': 'Multi-client / Store',
-  'settings.multiClientDesc': 'Tenant default e predisposizione store.',
-  'settings.activityLog': 'Activity log',
-  'settings.activityLogDesc': 'Azioni admin e modifiche recenti.',
-  'settings.performance': 'Performance',
-  'settings.performanceDesc': 'Cache, fallback e produzione.',
-  'markets.description': 'Gestisci mercati, paesi, lingue, valute e prezzi localizzati.',
-  'markets.markets': 'Mercati',
-  'markets.marketsDesc': 'Default, paese, lingua, valuta e stato.',
-  'markets.countries': 'Paesi',
-  'markets.countriesDesc': 'Paesi abilitati per mercato.',
-  'markets.languages': 'Lingue',
-  'markets.languagesDesc': 'Lingue storefront e fallback contenuti.',
-  'markets.currencies': 'Valute',
-  'markets.currenciesDesc': 'Valute e fallback monetario.',
-  'markets.localizedPrices': 'Prezzi localizzati',
-  'markets.localizedPricesDesc': 'Listini per mercato e valuta.',
-  'markets.domains': 'Domini per mercato',
-  'markets.domainsDesc': 'Domini, preview e DNS collegati ai mercati.',
-  'status.ready': 'Pronto',
-  'status.needsSetup': 'Richiede setup',
-  'status.providerReady': 'Provider-ready',
-  'status.advanced': 'Avanzato',
-  'status.comingSoon': 'In arrivo',
-  'status.locked': 'Bloccato',
-  'status.inProgress': 'In corso',
-  'status.included': 'Incluso',
-  'status.nativeApp': 'App nativa',
-  'common.configure': 'Configura',
-  'common.review': 'Rivedi',
-})
-
-Object.assign(ADMIN_TRANSLATIONS.en, {
-  'nav.mainAreas': 'Main areas',
-  'sidebar.systemName': 'Website Operating System',
-  'sidebar.systemDesc': 'Next Generation Website CMS',
-  navWebsite: 'Website',
-  navWebsiteDesc: 'Editor, pages, menus and media',
-  navCatalogDesc: 'Products, collections and stock',
-  navCommerce: 'Commerce',
-  navCommerceDesc: 'Orders, customers and checkout',
-  navGrowth: 'Growth',
-  navGrowthDesc: 'Marketing, SEO and analytics',
-  navTakeOffTools: 'TakeOff Tools',
-  navTakeOffToolsDesc: 'Bulk, backup and health',
-  navAppsDesc: 'Optional native modules',
-  navSettingsDesc: 'Store, access and system',
-  'breadcrumb.admin': 'Admin',
-  'common.back': 'Back',
-  appsTitle: 'Apps',
-  appsDesc: 'Native modules included in your TakeOff CMS. No external marketplace. No monthly app fees.',
-  'apps.heroTitle': 'Advanced modules, enabled when needed.',
-  'apps.heroDesc': 'Native features that extend the CMS without installing external apps.',
-  'apps.reviewsDesc': 'Product reviews and moderation.',
-  'apps.emailDesc': 'Email templates, provider status and logs.',
-  'apps.upsellDesc': 'Native rules for bundles and cross-sell.',
-  'apps.abandonedCartDesc': 'Cart recovery with provider-ready email.',
-  'apps.customerAccountsDesc': 'Customer accounts and controlled invites.',
-  'apps.webhooksDesc': 'Developer events for custom integrations.',
-  'apps.gdprDesc': 'Consent, cookies and privacy tools.',
-  'apps.subscriptionsDesc': 'Subscriptions and recurring billing provider-ready.',
-  'dashboard.controlPanelTitle': 'TakeOff Control Panel',
-  'dashboard.controlPanelClaim': 'Build, manage and scale custom websites from one operating system.',
-  'dashboard.editWebsite': 'Edit website',
-  'dashboard.editWebsiteDesc': 'Open the visual editor and sections.',
-  'dashboard.addProduct': 'Add product',
-  'dashboard.addProductDesc': 'Create or update catalog records.',
-  'dashboard.importData': 'Import data',
-  'dashboard.importDataDesc': 'Bulk updates without external apps.',
-  'dashboard.viewOrders': 'View orders',
-  'dashboard.viewOrdersDesc': 'Check payment and fulfillment.',
-  'dashboard.summary.siteHealth': 'Site health',
-  'dashboard.summary.siteHealthDescription': 'Checks live in TakeOff Tools.',
-  'dashboard.summary.setup': 'Setup',
-  'dashboard.summary.setupDescription': 'Priority steps before go-live.',
-  'dashboard.launchChecklistMini': 'Launch checklist',
-  'dashboard.checklist.products': 'Add products',
-  'dashboard.checklist.checkout': 'Configure checkout',
-  'dashboard.checklist.domain': 'Connect domain',
-  'dashboard.checklist.seo': 'Review SEO',
-  'dashboard.recentActivity': 'Recent activity',
-  'dashboard.recentActivityDesc': 'Activity log, warnings and audit stay in their detail sections.',
-  'website.title': 'Website',
-  'website.description': 'Manage site experience, pages, menus, theme and assets.',
-  'website.visualEditor': 'Visual editor',
-  'website.visualEditorDesc': 'Sections, preview and page content.',
-  'website.pages': 'Pages',
-  'website.pagesDesc': 'Institutional pages, landing pages and basic SEO.',
-  'website.menus': 'Menus',
-  'website.menusDesc': 'Header, footer and public navigation.',
-  'website.themeSettings': 'Theme settings',
-  'website.themeSettingsDesc': 'Logo, colors, fonts and global layout.',
-  'website.headerFooter': 'Header / Footer',
-  'website.headerFooterDesc': 'Global site menus and links.',
-  'website.mediaLibrary': 'Media Library',
-  'website.mediaLibraryDesc': 'Assets, URLs, previews and alt text.',
-  'catalog.productMetafields': 'Product metafields',
-  'catalog.productMetafieldsDesc': 'Custom fields for product records.',
-  'commerce.title': 'Commerce',
-  'commerce.description': 'Manage orders, customers, checkout, payments and commerce operations.',
-  'commerce.ordersDesc': 'Statuses, payments, shipping and timeline.',
-  'commerce.customersDesc': 'Profiles, order history and account status.',
-  'commerce.checkoutDesc': 'Settings, confirmation and operational flow.',
-  'commerce.payments': 'Payments',
-  'commerce.paymentsDesc': 'Manual or test provider via environment.',
-  'commerce.shipping': 'Shipping',
-  'commerce.shippingDesc': 'Methods, thresholds and active status.',
-  'commerce.taxes': 'Taxes',
-  'commerce.taxesDesc': 'Base VAT and included/excluded prices.',
-  'commerce.giftCardsDesc': 'Native customer credits and gift codes.',
-  'commerce.returnsDesc': 'Returns and refunds with a controlled workflow.',
-  'commerce.backToCommerce': 'Back to Commerce',
-  'growth.title': 'Growth',
-  'growth.description': 'Marketing, SEO, analytics and growth tools in one hub.',
-  'growth.campaignsDesc': 'Promotions, date windows and coupons.',
-  'growth.discountsDesc': 'Percentage or fixed-amount codes.',
-  'growth.seoDesc': 'Audits, snippets and metadata.',
-  'growth.analyticsDesc': 'Traffic, sales and conversions.',
-  'growth.googleSuiteDesc': 'GA4, Ads, GTM and Search Console.',
-  'growth.searchFiltersDesc': 'Catalog search and filters.',
-  'growth.productFeedDesc': 'Google Merchant and Meta Catalog feeds.',
-  'growth.backToGrowth': 'Back to Growth',
-  'tools.title': 'TakeOff Tools',
-  'tools.description': 'Included operational tools that reduce external app costs.',
-  'tools.importExportDesc': 'Import, export and update products, collections, menus, translations and stock in bulk without paid external apps.',
-  'tools.openTool': 'Open tool',
-  'tools.backupDesc': 'Safe JSON export before bulk imports.',
-  'tools.translationPackageDesc': 'Translation packages for agency workflows.',
-  'tools.supplierFeedsDesc': 'Supplier feeds and controlled dry-runs.',
-  'tools.storeHealthDesc': 'Operational checks across store and providers.',
-  'tools.launchChecklistDesc': 'Go-live checklist for testing and production.',
-  'tools.dataflowHistoryDesc': 'Job history, reports and import previews.',
-  'tools.backToTools': 'Back to TakeOff Tools',
-  'tools.openDataFlow': 'Open DataFlow',
-  'settings.description': 'Store, access, domains, privacy and system settings.',
-  'settings.general': 'General',
-  'settings.generalDesc': 'Store, company, email and site data.',
-  'settings.usersPermissions': 'Users & permissions',
-  'settings.usersPermissionsDesc': 'Admin users, roles and access.',
-  'settings.domains': 'Domains',
-  'settings.domainsDesc': 'Primary domain, preview and DNS.',
-  'settings.privacy': 'Privacy',
-  'settings.privacyDesc': 'Consent, GDPR and public policies.',
-  'settings.cookieSettings': 'Cookie settings',
-  'settings.cookieSettingsDesc': 'Consent categories and Google Consent.',
-  'settings.metafields': 'Metafields',
-  'settings.metafieldsDesc': 'Custom data for CMS resources.',
-  'settings.notifications': 'Notifications',
-  'settings.notificationsDesc': 'Templates, logs and mock sends.',
-  'settings.integrations': 'Integrations',
-  'settings.integrationsDesc': 'Providers and non-sensitive settings.',
-  'settings.multiClient': 'Multi-client / Store',
-  'settings.multiClientDesc': 'Default tenant and store readiness.',
-  'settings.activityLog': 'Activity log',
-  'settings.activityLogDesc': 'Admin actions and recent changes.',
-  'settings.performance': 'Performance',
-  'settings.performanceDesc': 'Cache, fallback and production.',
-  'markets.description': 'Manage markets, countries, languages, currencies and localized prices.',
-  'markets.markets': 'Markets',
-  'markets.marketsDesc': 'Default, country, language, currency and status.',
-  'markets.countries': 'Countries',
-  'markets.countriesDesc': 'Countries enabled by market.',
-  'markets.languages': 'Languages',
-  'markets.languagesDesc': 'Storefront languages and content fallback.',
-  'markets.currencies': 'Currencies',
-  'markets.currenciesDesc': 'Currencies and monetary fallback.',
-  'markets.localizedPrices': 'Localized prices',
-  'markets.localizedPricesDesc': 'Price lists by market and currency.',
-  'markets.domains': 'Market domains',
-  'markets.domainsDesc': 'Domains, preview and DNS linked to markets.',
-  'status.ready': 'Ready',
-  'status.needsSetup': 'Needs setup',
-  'status.providerReady': 'Provider-ready',
-  'status.advanced': 'Advanced',
-  'status.comingSoon': 'Coming soon',
-  'status.locked': 'Locked',
-  'status.inProgress': 'In progress',
-  'status.included': 'Included',
-  'status.nativeApp': 'Native app',
-  'common.configure': 'Configure',
-  'common.review': 'Review',
-})
-
 function getAdminLanguage() {
   try {
     const saved = localStorage.getItem(ADMIN_LANGUAGE_STORAGE_KEY)
@@ -1361,11 +1053,8 @@ function setAdminLanguage(language) {
     localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, nextLanguage)
   } catch {}
   document.documentElement.lang = nextLanguage
-  if (typeof adminRenderCurrentRoute === 'function') {
-    adminRenderCurrentRoute({ load: false, skipScroll: true })
-  }
-  applyAdminLanguage()
   rerenderActiveAdminView()
+  applyAdminLanguage()
 }
 
 function getAdminTheme() {
@@ -1427,243 +1116,6 @@ function setAdminPlaceholder(selector, key) {
   document.querySelectorAll(selector).forEach((element) => {
     element.placeholder = adminT(key)
   })
-}
-
-const ADMIN_ROUTE_TO_VIEW = {
-  dashboard: 'dashboard',
-  website: 'website',
-  'website/editor': 'editor',
-  'website/pages': 'pagine',
-  'website/menus': 'menu',
-  'website/theme': 'editor',
-  'website/header-footer': 'menu',
-  'website/media': 'media',
-  'website/blog': 'blog-admin',
-  'website/policies': 'policy',
-  'website/metaobjects': 'metaobjects',
-  catalog: 'catalogo',
-  catalogo: 'catalogo',
-  'catalog/products': 'prodotti',
-  'catalog/collections': 'collezioni',
-  'catalog/inventory': 'inventario',
-  'catalog/variants': 'prodotti',
-  'catalog/metafields': 'metafields',
-  commerce: 'commerce',
-  'commerce/orders': 'ordini',
-  'commerce/customers': 'clienti',
-  'commerce/checkout': 'checkout',
-  'commerce/payments': 'checkout-payments',
-  'commerce/shipping': 'checkout-shipping',
-  'commerce/taxes': 'checkout-taxes',
-  'commerce/returns': 'returns',
-  'commerce/gift-cards': 'gift-cards',
-  'commerce/store-credit': 'gift-cards',
-  growth: 'growth',
-  'growth/marketing': 'marketing',
-  'growth/campaigns': 'marketing-campaigns',
-  'growth/discounts': 'marketing-discounts',
-  'growth/coupons': 'marketing-coupons',
-  'growth/newsletter': 'marketing-newsletter',
-  'growth/seo': 'seo',
-  'growth/seo-technical': 'seo-technical',
-  'growth/analytics': 'analytics-dashboard',
-  'growth/analytics/traffic': 'analytics-traffic',
-  'growth/analytics/sales': 'analytics-sales',
-  'growth/analytics/products': 'analytics-products',
-  'growth/analytics/conversions': 'analytics-conversions',
-  'growth/analytics/events': 'analytics-events',
-  'growth/google-suite': 'google-suite',
-  'growth/search-filters': 'search-filters',
-  'growth/product-feed': 'product-feeds',
-  'growth/advanced-discounts': 'advanced-discounts',
-  'growth/abandoned-cart': 'abandoned-carts',
-  markets: 'markets',
-  'markets/overview': 'markets-mercati',
-  'markets/markets': 'markets-mercati',
-  'markets/countries': 'markets-paesi',
-  'markets/languages': 'markets-lingue',
-  'markets/currencies': 'markets-valute',
-  'markets/prices': 'markets-prezzi',
-  'markets/domains': 'domini',
-  tools: 'takeoff-tools',
-  'takeoff-tools': 'takeoff-tools',
-  'tools/import-export': 'import-export',
-  'tools/backup': 'backup',
-  'tools/translations': 'traduzioni',
-  'tools/supplier-feeds': 'supplier-feeds',
-  'tools/store-health': 'store-health',
-  'tools/launch-checklist': 'launch-checklist',
-  'tools/dataflow': 'import-export',
-  'tools/import-history': 'import-export',
-  apps: 'apps',
-  'apps/reviews': 'reviews',
-  'apps/email-automations': 'email-automations',
-  'apps/upsell-bundles': 'upsells',
-  'apps/abandoned-cart': 'abandoned-carts',
-  'apps/customer-accounts': 'customer-accounts',
-  'apps/webhooks': 'webhooks',
-  'apps/gdpr-cookie': 'gdpr-cookie',
-  'apps/subscriptions': 'subscriptions',
-  settings: 'impostazioni',
-  impostazioni: 'impostazioni',
-  'settings/general': 'settings-general',
-  'settings/users': 'utenti',
-  'settings/domains': 'domini',
-  'settings/privacy': 'privacy-settings',
-  'settings/cookies': 'cookie-settings',
-  'settings/notifications': 'notifiche',
-  'settings/integrations': 'integrazioni',
-  'settings/metafields': 'metafields',
-  'settings/multi-client': 'tenants',
-  'settings/activity-log': 'activity',
-  'settings/performance': 'performance',
-  'settings/import-export': 'settings-import-export',
-}
-
-const ADMIN_VIEW_TO_ROUTE = {
-  dashboard: 'dashboard',
-  website: 'website',
-  editor: 'website/editor',
-  pagine: 'website/pages',
-  menu: 'website/menus',
-  media: 'website/media',
-  'blog-admin': 'website/blog',
-  policy: 'website/policies',
-  metaobjects: 'website/metaobjects',
-  contenuto: 'website',
-  catalogo: 'catalog',
-  prodotti: 'catalog/products',
-  collezioni: 'catalog/collections',
-  inventario: 'catalog/inventory',
-  commerce: 'commerce',
-  ordini: 'commerce/orders',
-  clienti: 'commerce/customers',
-  checkout: 'commerce/checkout',
-  'checkout-settings': 'commerce/checkout',
-  'checkout-payments': 'commerce/payments',
-  'checkout-shipping': 'commerce/shipping',
-  'checkout-taxes': 'commerce/taxes',
-  'checkout-confirmation': 'commerce/checkout',
-  returns: 'commerce/returns',
-  'gift-cards': 'commerce/gift-cards',
-  growth: 'growth',
-  marketing: 'growth/marketing',
-  'marketing-campaigns': 'growth/campaigns',
-  'marketing-discounts': 'growth/discounts',
-  'marketing-coupons': 'growth/coupons',
-  'marketing-newsletter': 'growth/newsletter',
-  seo: 'growth/seo',
-  'seo-technical': 'growth/seo-technical',
-  analisi: 'growth/analytics',
-  'analytics-dashboard': 'growth/analytics',
-  'analytics-traffic': 'growth/analytics/traffic',
-  'analytics-sales': 'growth/analytics/sales',
-  'analytics-products': 'growth/analytics/products',
-  'analytics-conversions': 'growth/analytics/conversions',
-  'analytics-events': 'growth/analytics/events',
-  'google-suite': 'growth/google-suite',
-  'search-filters': 'growth/search-filters',
-  'product-feeds': 'growth/product-feed',
-  'advanced-discounts': 'growth/advanced-discounts',
-  'abandoned-carts': 'apps/abandoned-cart',
-  markets: 'markets',
-  'markets-mercati': 'markets/markets',
-  'markets-paesi': 'markets/countries',
-  'markets-lingue': 'markets/languages',
-  'markets-valute': 'markets/currencies',
-  'markets-prezzi': 'markets/prices',
-  'takeoff-tools': 'tools',
-  'import-export': 'tools/import-export',
-  backup: 'tools/backup',
-  traduzioni: 'tools/translations',
-  'supplier-feeds': 'tools/supplier-feeds',
-  'store-health': 'tools/store-health',
-  'launch-checklist': 'tools/launch-checklist',
-  apps: 'apps',
-  reviews: 'apps/reviews',
-  'email-automations': 'apps/email-automations',
-  upsells: 'apps/upsell-bundles',
-  'customer-accounts': 'apps/customer-accounts',
-  webhooks: 'apps/webhooks',
-  'gdpr-cookie': 'apps/gdpr-cookie',
-  subscriptions: 'apps/subscriptions',
-  impostazioni: 'settings',
-  'settings-general': 'settings/general',
-  utenti: 'settings/users',
-  domini: 'settings/domains',
-  'privacy-settings': 'settings/privacy',
-  'cookie-settings': 'settings/cookies',
-  notifiche: 'settings/notifications',
-  integrazioni: 'settings/integrations',
-  metafields: 'settings/metafields',
-  tenants: 'settings/multi-client',
-  activity: 'settings/activity-log',
-  performance: 'settings/performance',
-  'settings-import-export': 'settings/import-export',
-}
-
-const ADMIN_PRIMARY_ROUTE_KEYS = {
-  dashboard: 'navDashboard',
-  website: 'navWebsite',
-  catalog: 'navCatalog',
-  commerce: 'navCommerce',
-  growth: 'navGrowth',
-  markets: 'navMarkets',
-  tools: 'navTakeOffTools',
-  apps: 'navApps',
-  settings: 'navSettings',
-}
-
-let adminViewRegistry = new Map()
-
-function normalizeAdminRoutePath(rawHash = window.location.hash) {
-  let raw = String(rawHash || '')
-    .replace(/^#/, '')
-    .trim()
-
-  if (!raw) return 'dashboard'
-  if (raw.startsWith('/')) raw = raw.slice(1)
-  raw = raw.replace(/^\/+|\/+$/g, '').toLowerCase()
-
-  if (!raw) return 'dashboard'
-  if (ADMIN_VIEW_TO_ROUTE[raw]) return ADMIN_VIEW_TO_ROUTE[raw]
-  if (ADMIN_ROUTE_TO_VIEW[raw]) return raw
-  return 'dashboard'
-}
-
-function getAdminViewForRoute(routePath = normalizeAdminRoutePath()) {
-  return ADMIN_ROUTE_TO_VIEW[routePath] || 'dashboard'
-}
-
-function getAdminRouteForView(viewId = 'dashboard') {
-  return ADMIN_VIEW_TO_ROUTE[viewId] || 'dashboard'
-}
-
-function getAdminRouteHashForView(viewId = 'dashboard') {
-  return `#/${getAdminRouteForView(viewId)}`
-}
-
-function getCanonicalAdminHref(href = '') {
-  if (!href.startsWith('#')) return ''
-  const path = normalizeAdminRoutePath(href)
-  return `#/${path}`
-}
-
-function upgradeAdminRouteLinks(scope = document) {
-  scope.querySelectorAll?.('a[href^="#"]').forEach((link) => {
-    const href = link.getAttribute('href') || ''
-    const canonical = getCanonicalAdminHref(href)
-    if (canonical && canonical !== href) link.setAttribute('href', canonical)
-  })
-}
-
-function getAdminPrimaryRouteForView(viewId = 'dashboard') {
-  const route = getAdminRouteForView(viewId)
-  return route.split('/')[0] || 'dashboard'
-}
-
-function getActiveAdminViewId() {
-  return getAdminViewForRoute(normalizeAdminRoutePath())
 }
 
 const ADMIN_STATIC_TRANSLATIONS = [
@@ -3000,8 +2452,8 @@ function updateAdminAuthIntro() {
 
 function updateAdminCurrentViewLabel() {
   if (!adminCurrentView) return
-  const activeView = getActiveAdminViewId()
-  const target = adminViewRegistry.get(activeView) || document.querySelector(`[data-admin-view="${activeView}"]`)
+  const activeView = window.location.hash.replace('#', '') || 'dashboard'
+  const target = document.querySelector(`[data-admin-view="${activeView}"]`)
   const heading = target?.querySelector('h2')?.textContent?.trim()
   if (heading) adminCurrentView.textContent = heading
 }
@@ -3017,7 +2469,6 @@ let adminAllowProtectedFetches = false
 let adminAuditObserver = null
 let adminEntryCountdownTimer = null
 let adminEntryCountdownInterval = null
-let adminRenderCurrentRoute = null
 
 function isProtectedAdminRequest(resource) {
   const rawUrl = typeof resource === 'string' ? resource : resource?.url || ''
@@ -3291,6 +2742,9 @@ function setAdminAuthMessage(message = '', isError = false) {
 
 function showAdminAuthGate({ bootstrap = false, migration = false, message = '' } = {}) {
   if (ADMIN_DEMO_MODE) {
+    if (adminAuthGate) adminAuthGate.hidden = true
+    if (adminLoginForm) adminLoginForm.hidden = true
+    if (adminBootstrapForm) adminBootstrapForm.hidden = true
     showAdminApp(ADMIN_DEMO_USER)
     return
   }
@@ -3327,6 +2781,20 @@ function showAdminLogin(message = '') {
   showAdminAuthGate({ message })
 }
 
+function applyAdminDemoModeUi() {
+  if (!ADMIN_DEMO_MODE) return
+
+  if (adminAuthGate) adminAuthGate.hidden = true
+  if (adminLoginForm) adminLoginForm.hidden = true
+  if (adminBootstrapForm) adminBootstrapForm.hidden = true
+  if (adminLogoutButton) {
+    adminLogoutButton.textContent = 'Demo mode'
+    adminLogoutButton.disabled = true
+    adminLogoutButton.setAttribute('aria-disabled', 'true')
+    adminLogoutButton.title = 'Demo mode attivo'
+  }
+}
+
 function hideAdminEntryScreen() {
   if (!adminEntryScreen) return
   if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
@@ -3340,7 +2808,9 @@ function hideAdminEntryScreen() {
   } catch {}
 }
 
-function shouldShowAdminEntryScreen() {
+function shouldShowAdminEntryScreen({ force = false } = {}) {
+  if (force) return true
+
   try {
     return sessionStorage.getItem(ADMIN_ENTRY_STORAGE_KEY) !== '1'
   } catch {
@@ -3348,9 +2818,8 @@ function shouldShowAdminEntryScreen() {
   }
 }
 
-function showAdminEntryScreen() {
-  if (ADMIN_DEMO_MODE) return
-  if (!adminEntryScreen || !shouldShowAdminEntryScreen()) return
+function showAdminEntryScreen(options = {}) {
+  if (!adminEntryScreen || !shouldShowAdminEntryScreen(options)) return
 
   if (adminEntryCountdownTimer) window.clearTimeout(adminEntryCountdownTimer)
   if (adminEntryCountdownInterval) window.clearInterval(adminEntryCountdownInterval)
@@ -3374,53 +2843,13 @@ function showAdminEntryScreen() {
   }, ADMIN_ENTRY_DURATION_SECONDS * 1000)
 }
 
-function applyAdminDemoModeUi() {
-  if (!ADMIN_DEMO_MODE) return
-
-  if (adminAuthGate) adminAuthGate.hidden = true
-  if (adminEntryScreen) adminEntryScreen.hidden = true
-  if (adminApp) adminApp.hidden = false
-  if (adminLogoutButton) {
-    adminLogoutButton.textContent = 'Demo mode'
-    adminLogoutButton.disabled = true
-    adminLogoutButton.setAttribute('aria-disabled', 'true')
-  }
-}
-
-function renderAdminShellAfterAuth() {
-  const renderRoute = () => {
-    if (typeof adminRenderCurrentRoute === 'function') {
-      adminRenderCurrentRoute({ load: false, skipScroll: true })
-    }
-
-    const activeView = getActiveAdminViewId()
-    const activeElement =
-      adminViewRegistry.get(activeView) ||
-      adminViewRegistry.get('dashboard') ||
-      document.querySelector('[data-admin-view="dashboard"]')
-
-    if (activeElement) activeElement.hidden = false
-    if (!activeElement && window.location.hash !== '#/dashboard') {
-      window.history.replaceState(null, '', '#/dashboard')
-      if (typeof adminRenderCurrentRoute === 'function') {
-        adminRenderCurrentRoute({ load: false, skipScroll: true })
-      }
-    }
-
-    applyAdminLanguage()
-    updateAdminCurrentViewLabel()
-  }
-
-  renderRoute()
-  window.requestAnimationFrame(renderRoute)
-}
-
 function showAdminApp(user) {
   adminCurrentUser = user
   adminAllowProtectedFetches = true
 
-  hideAdminEntryScreen()
   if (adminAuthGate) adminAuthGate.hidden = true
+  if (adminLoginForm) adminLoginForm.hidden = true
+  if (adminBootstrapForm) adminBootstrapForm.hidden = true
   if (adminApp) adminApp.hidden = false
   if (adminSessionName) adminSessionName.textContent = user?.name || user?.email || 'Admin'
   if (adminSessionRole) adminSessionRole.textContent = user?.role || 'viewer'
@@ -3429,12 +2858,74 @@ function showAdminApp(user) {
   applyAdminPermissionUi()
   startAdminAuditObserver()
   applyAdminAuditUi()
-  renderAdminShellAfterAuth()
-  if (!ADMIN_DEMO_MODE) showAdminEntryScreen()
+  showAdminEntryScreen({ force: ADMIN_DEMO_MODE })
 }
 
 function refreshAdminDataAfterAuth() {
-  rerenderActiveAdminView()
+  const loaders = [
+    loadProducts,
+    loadCollections,
+    loadPages,
+    loadPoliciesAdmin,
+    loadBlogPosts,
+    loadMetaobjects,
+    loadTaxSettingsAdmin,
+    loadPaymentSettingsAdmin,
+    loadShippingMethodsAdmin,
+    loadDiscounts,
+    loadCampaigns,
+    loadMediaItems,
+    loadMetafieldResources,
+    loadMarketsAdmin,
+    loadLocalizedPricingAdmin,
+    loadAnalyticsDashboard,
+    loadSeoDashboard,
+    loadIntegrations,
+    loadAdminUsers,
+    loadActivityLog,
+    loadNotifications,
+    loadDomainsAdmin,
+    loadTenantsAdmin,
+    loadPerformanceAdmin,
+    loadNativeApps,
+    loadOrders,
+    loadCustomers,
+    loadMenuResources,
+    loadMenus,
+    loadEditorPages,
+    loadSections,
+    loadTranslationManager,
+    loadGoogleSuiteSettings,
+    loadCookiePrivacySettings,
+    loadEmailAutomations,
+    loadReviews,
+    loadReturns,
+    loadUpsells,
+    loadProductFeeds,
+    loadGiftCards,
+    loadStoreCredits,
+    loadAbandonedCarts,
+    loadSearchFilters,
+    loadSeoTechnical,
+    loadWebhooks,
+    loadSupplierFeeds,
+    loadSubscriptions,
+    loadOperationsSummary,
+    loadStoreHealth,
+    loadLaunchChecklist,
+    loadCustomerAccountsSummary,
+  ]
+
+  loaders.forEach((loader) => {
+    try {
+      if (typeof loader === 'function') loader()
+    } catch {}
+  })
+}
+
+function getActiveAdminViewId() {
+  const hash = window.location.hash.replace('#', '') || 'dashboard'
+  return document.querySelector(`[data-admin-view="${hash}"]`) ? hash : 'dashboard'
 }
 
 function runAdminViewLoader(loader) {
@@ -3448,14 +2939,12 @@ function rerenderActiveAdminView() {
 
   const activeView = getActiveAdminViewId()
   const loadersByView = {
-    dashboard: [loadProducts, loadOrders],
-    website: [loadEditorPages, loadMediaItems],
+    dashboard: [loadOperationsSummary],
     editor: [loadEditorPages, loadSections, loadThemeSettings],
     catalogo: [loadProducts, loadCollections],
     prodotti: [loadProducts],
     inventario: [loadProducts],
     collezioni: [loadCollections],
-    commerce: [loadOperationsSummary, loadCustomerAccountsSummary],
     ordini: [loadOrders, loadOperationsSummary],
     clienti: [loadCustomers, loadCustomerAccountsSummary],
     contenuto: [],
@@ -3466,29 +2955,19 @@ function rerenderActiveAdminView() {
     menu: [loadMenuResources, loadMenus],
     traduzioni: [loadTranslationManager],
     metaobjects: [loadMetaobjects],
-    growth: [loadAnalyticsDashboard],
     marketing: [loadDiscounts, loadCampaigns],
     sconti: [loadDiscounts],
     campagne: [loadCampaigns],
     markets: [loadMarketsAdmin, loadLocalizedPricingAdmin],
-    'markets-mercati': [loadMarketsAdmin, loadLocalizedPricingAdmin],
     'markets-paesi': [loadMarketsAdmin],
     'markets-lingue': [loadMarketsAdmin],
     'markets-valute': [loadMarketsAdmin],
-    'markets-prezzi': [loadMarketsAdmin, loadLocalizedPricingAdmin],
     'localized-pricing': [loadLocalizedPricingAdmin],
     analisi: [loadAnalyticsDashboard],
-    'analytics-dashboard': [loadAnalyticsDashboard],
-    'analytics-traffic': [loadAnalyticsDashboard],
-    'analytics-sales': [loadAnalyticsDashboard],
-    'analytics-products': [loadAnalyticsDashboard],
-    'analytics-conversions': [loadAnalyticsDashboard],
-    'analytics-events': [loadAnalyticsDashboard],
     traffico: [loadAnalyticsDashboard],
     vendite: [loadAnalyticsDashboard],
     'analytics-prodotti': [loadAnalyticsDashboard],
     conversioni: [loadAnalyticsDashboard],
-    'takeoff-tools': [loadImportExportHistory, loadStoreHealth, loadLaunchChecklist],
     apps: [loadNativeApps],
     'app-hub': [loadNativeApps],
     'import-export': [loadImportExportHistory],
@@ -3506,23 +2985,12 @@ function rerenderActiveAdminView() {
     'supplier-feeds': [loadSupplierFeeds],
     subscriptions: [loadSubscriptions],
     checkout: [loadTaxSettingsAdmin, loadPaymentSettingsAdmin, loadShippingMethodsAdmin],
-    'checkout-settings': [],
-    'checkout-payments': [loadPaymentSettingsAdmin],
-    'checkout-shipping': [loadShippingMethodsAdmin],
-    'checkout-taxes': [loadTaxSettingsAdmin],
-    'checkout-confirmation': [],
     tasse: [loadTaxSettingsAdmin],
     pagamenti: [loadPaymentSettingsAdmin],
     spedizioni: [loadShippingMethodsAdmin],
     impostazioni: [loadCookiePrivacySettings],
-    'settings-general': [],
-    'privacy-settings': [loadCookiePrivacySettings],
-    'cookie-settings': [loadCookiePrivacySettings],
-    'settings-import-export': [],
-    metafields: [loadMetafieldResources],
     integrazioni: [loadIntegrations],
     utenti: [loadAdminUsers],
-    activity: [loadActivityLog],
     'activity-log': [loadActivityLog],
     notifiche: [loadNotifications],
     domini: [loadDomainsAdmin],
@@ -3538,6 +3006,9 @@ function rerenderActiveAdminView() {
 
 async function initAdminAuth() {
   if (ADMIN_DEMO_MODE) {
+    if (adminAuthGate) adminAuthGate.hidden = true
+    if (adminLoginForm) adminLoginForm.hidden = true
+    if (adminBootstrapForm) adminBootstrapForm.hidden = true
     showAdminApp(ADMIN_DEMO_USER)
     refreshAdminDataAfterAuth()
     return
@@ -3583,6 +3054,11 @@ async function initAdminAuth() {
 
 adminLoginForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
+  if (ADMIN_DEMO_MODE) {
+    showAdminApp(ADMIN_DEMO_USER)
+    return
+  }
+
   setAdminAuthMessage('Accesso in corso...')
 
   try {
@@ -3617,6 +3093,11 @@ adminLoginForm?.addEventListener('submit', async (event) => {
 
 adminBootstrapForm?.addEventListener('submit', async (event) => {
   event.preventDefault()
+  if (ADMIN_DEMO_MODE) {
+    showAdminApp(ADMIN_DEMO_USER)
+    return
+  }
+
   setAdminAuthMessage('Creazione owner...')
 
   try {
@@ -3646,7 +3127,10 @@ adminBootstrapForm?.addEventListener('submit', async (event) => {
 })
 
 adminLogoutButton?.addEventListener('click', async () => {
-  if (ADMIN_DEMO_MODE) return
+  if (ADMIN_DEMO_MODE) {
+    showAdminApp(ADMIN_DEMO_USER)
+    return
+  }
 
   try {
     await nativeFetch('/api/admin/auth/logout', {
@@ -4443,28 +3927,6 @@ const APP_VIEW_VISUALS = {
   performance: { icon: 'PF', category: 'System', status: 'Configurable' },
 }
 
-const APP_HUB_OPTIONAL_MODULE_IDS = new Set([
-  'takeoff-reviews',
-  'takeoff-email-automations',
-  'takeoff-upsells',
-  'takeoff-abandoned-cart',
-  'takeoff-customer-accounts',
-  'takeoff-webhooks',
-  'takeoff-gdpr-cookie',
-  'takeoff-subscriptions',
-])
-
-const APP_HUB_OPTIONAL_MODULE_VIEWS = new Set([
-  'reviews',
-  'email-automations',
-  'upsells',
-  'abandoned-carts',
-  'customer-accounts',
-  'webhooks',
-  'gdpr-cookie',
-  'subscriptions',
-])
-
 function slugifyCss(value = '') {
   return String(value)
     .toLowerCase()
@@ -4485,17 +3947,10 @@ function appStatusClass(value = '') {
 function renderNativeApps(apps = []) {
   if (!appsList || !apps.length) return
 
-  const visibleApps = apps.filter((app) => {
-    const viewId = String(app.open_hash || '').replace('#', '')
-    return APP_HUB_OPTIONAL_MODULE_IDS.has(app.id) || APP_HUB_OPTIONAL_MODULE_VIEWS.has(viewId)
-  })
-
-  if (!visibleApps.length) return
-
-  const groups = ['Commerce', 'Growth', 'System']
+  const groups = ['Core', 'Commerce', 'Growth', 'System']
   appsList.innerHTML = groups
     .map((group) => {
-      const groupApps = visibleApps.filter((app) => app.category === group)
+      const groupApps = apps.filter((app) => app.category === group)
       if (!groupApps.length) return ''
       const groupVisual = APP_VISUALS[group] || APP_VISUALS.Core
       return `
@@ -4511,9 +3966,8 @@ function renderNativeApps(apps = []) {
                 const tone = (APP_VISUALS[app.category] || APP_VISUALS.Core).tone
                 const icon = app.icon || APP_ICON_MAP[app.id] || (APP_VISUALS[app.category] || APP_VISUALS.Core).icon
                 const statusLabel = app.status_label || app.status || 'Active'
-                const appHref = getCanonicalAdminHref(app.open_hash || '#apps') || '#/apps'
                 return `
-                  <a class="mini-card app-card app-card--${escapeHtml(tone)} app-card--${escapeHtml(slugifyCss(app.id || app.name))} ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(appHref)}">
+                  <a class="mini-card app-card app-card--${escapeHtml(tone)} app-card--${escapeHtml(slugifyCss(app.id || app.name))} ${progress ? 'placeholder-card' : ''}" href="${escapeHtml(app.open_hash || '#apps')}">
                     <div class="app-card-topline">
                       <span class="app-card-icon" aria-hidden="true">${escapeHtml(icon)}</span>
                       <span class="mini-card-status status-badge--${escapeHtml(appStatusClass(statusLabel))}">${adminUiHtml(app.badge || 'Native app')}</span>
@@ -4534,7 +3988,6 @@ function renderNativeApps(apps = []) {
       `
     })
     .join('')
-  upgradeAdminRouteLinks(appsList)
 }
 
 function enhanceAppDetailShells() {
@@ -6502,131 +5955,13 @@ loadPages()
 // ===============================
 
 function setupAdminViews() {
-  const views = Array.from(document.querySelectorAll('[data-admin-view]'))
-  const templateHost = document.querySelector('#adminViewTemplates')
-  const viewHost = adminApp || templateHost || views[0]?.parentElement
+  const views = document.querySelectorAll('[data-admin-view]')
   const hubLinks = document.querySelectorAll('.hub-card')
-  const viewStore = templateHost || document.createDocumentFragment()
-  let routeOutlet = document.querySelector('#adminRouteOutlet')
-
-  if (!routeOutlet) {
-    routeOutlet = document.createElement('div')
-    routeOutlet.id = 'adminRouteOutlet'
-    routeOutlet.className = 'admin-route-outlet'
-    routeOutlet.setAttribute('aria-live', 'polite')
-  }
-
-  if (viewHost && routeOutlet.parentElement !== viewHost) {
-    const outletAnchor =
-      templateHost?.parentElement === viewHost
-        ? templateHost
-        : views[0]?.parentElement === viewHost
-          ? views[0]
-          : null
-    viewHost.insertBefore(routeOutlet, outletAnchor)
-  }
-
-  adminViewRegistry = new Map(views.map((view) => [view.dataset.adminView, view]))
-  upgradeAdminRouteLinks(document)
-
-  function setupRouteDebugHelpers() {
-    window.__takeoffRouteDebug = function () {
-      return Array.from(document.querySelectorAll('[data-admin-view]')).map((el) => ({
-        view: el.getAttribute('data-admin-view'),
-        parent: el.parentElement?.id || '',
-        hidden: el.hidden,
-        display: getComputedStyle(el).display,
-        visible: Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length),
-      }))
-    }
-
-    window.__takeoffCurrentRouteDebug = function () {
-      const outlet = document.querySelector('#adminRouteOutlet')
-      return {
-        hash: window.location.hash,
-        routeOutlet: Boolean(outlet),
-        templateHost: Boolean(document.querySelector('#adminViewTemplates')),
-        visibleViews: window.__takeoffRouteDebug().filter((view) => view.visible),
-        outletChildren: Array.from(outlet?.children || []).map(
-          (el) => el.getAttribute('data-admin-view') || el.id || el.className,
-        ),
-      }
-    }
-  }
-
-  function setRouteViewState(view, isActive) {
-    if (!view) return
-
-    view.hidden = !isActive
-    view.dataset.adminActive = isActive ? 'true' : 'false'
-    view.classList.toggle('admin-view--active', isActive)
-    view.setAttribute('aria-hidden', isActive ? 'false' : 'true')
-    view.style.display = isActive ? '' : 'none'
-
-    if (isActive) {
-      view.removeAttribute('inert')
-    } else {
-      view.setAttribute('inert', '')
-    }
-  }
-
-  views.forEach((view) => setRouteViewState(view, false))
-
-  function clearRouteOutlet() {
-    if (!routeOutlet || !viewStore) return
-
-    Array.from(routeOutlet.children).forEach((child) => {
-      if (child.matches?.('[data-admin-view]')) {
-        setRouteViewState(child, false)
-        viewStore.appendChild(child)
-      } else {
-        child.remove()
-      }
-    })
-
-    routeOutlet.innerHTML = ''
-  }
-
-  function parkInactiveViews(activeElement) {
-    views.forEach((view) => {
-      if (view === activeElement) return
-      setRouteViewState(view, false)
-
-      if (view.parentElement === viewHost || view.parentElement === routeOutlet || !view.parentElement) {
-        viewStore.appendChild(view)
-      }
-    })
-  }
-
-  function getViewForMount(viewId) {
-    return (
-      adminViewRegistry.get(viewId) ||
-      templateHost?.querySelector(`[data-admin-view="${viewId}"]`) ||
-      routeOutlet?.querySelector(`[data-admin-view="${viewId}"]`) ||
-      document.querySelector(`[data-admin-view="${viewId}"]`)
-    )
-  }
-
-  document.addEventListener('click', (event) => {
-    const link = event.target.closest?.('a[href^="#"]')
-    if (!link) return
-
-    const href = link.getAttribute('href') || ''
-    const canonical = getCanonicalAdminHref(href)
-    if (!canonical || canonical === href) return
-
-    event.preventDefault()
-    window.location.hash = canonical
-  })
-
-  function getRegisteredView(viewId) {
-    return adminViewRegistry.get(viewId) || document.querySelector(`[data-admin-view="${viewId}"]`)
-  }
 
   function updateCurrentViewLabel(activeView) {
     if (!adminCurrentView) return
 
-    const target = getRegisteredView(activeView)
+    const target = document.querySelector(`[data-admin-view="${activeView}"]`)
     const heading =
       target?.querySelector('.view-heading h2, .section-title h2, h2')?.textContent?.trim() ||
       'Dashboard'
@@ -6634,133 +5969,120 @@ function setupAdminViews() {
     adminCurrentView.textContent = heading
   }
 
-  function renderAdminPageChrome(target, activeView, routePath) {
-    if (!target) return
-
-    const primaryRoute = routePath.split('/')[0] || getAdminPrimaryRouteForView(activeView)
-    const isDashboard = activeView === 'dashboard'
-    const isHubPage = routePath === primaryRoute
-    let chrome = target.querySelector(':scope > .admin-page-chrome')
-
-    target.classList.toggle('admin-hub-page', isHubPage && !isDashboard)
-    target.classList.toggle('admin-detail-page', !isHubPage && !isDashboard)
-
-    if (isDashboard) {
-      chrome?.remove()
-      return
-    }
-
-    if (!chrome) {
-      chrome = document.createElement('div')
-      chrome.className = 'admin-page-chrome'
-      target.prepend(chrome)
-    }
-
-    const title =
-      target.querySelector('.view-heading h2, .section-title h2, h2')?.textContent?.trim() ||
-      adminT(ADMIN_PRIMARY_ROUTE_KEYS[primaryRoute] || 'navDashboard', 'Dashboard')
-    const areaLabel = adminT(ADMIN_PRIMARY_ROUTE_KEYS[primaryRoute] || 'navDashboard', primaryRoute)
-    const backLink = !isHubPage
-      ? `<a class="admin-page-back" href="#/${escapeHtml(primaryRoute)}">${escapeHtml(adminT('common.back', 'Torna'))}</a>`
-      : ''
-
-    chrome.innerHTML = `
-      <nav class="admin-breadcrumb" aria-label="Breadcrumb">
-        <span>${escapeHtml(adminT('breadcrumb.admin', 'Admin'))}</span>
-        <span>${escapeHtml(areaLabel)}</span>
-        ${!isHubPage ? `<span>${escapeHtml(title)}</span>` : ''}
-      </nav>
-      ${backLink}
-    `
-  }
-
-  function mountAdminView(activeView, fallbackView = 'dashboard') {
-    if (!viewHost || !routeOutlet || !viewStore) {
-      console.error('[TakeOff Admin] route outlet or template host missing.')
-      return getRegisteredView(fallbackView)
-    }
-
-    let activeElement = getViewForMount(activeView)
-    if (!activeElement && activeView !== fallbackView) {
-      activeElement = getViewForMount(fallbackView)
-      activeView = fallbackView
-      window.history.replaceState(null, '', '#/dashboard')
-    }
-
-    if (!activeElement) {
-      console.error(`[TakeOff Admin] view "${activeView}" not found.`)
-      return null
-    }
+  function openViewFromHash() {
+    const hash = window.location.hash.replace('#', '') || 'dashboard'
+    const viewExists = document.querySelector(`[data-admin-view="${hash}"]`)
+    const activeView = viewExists ? hash : 'dashboard'
 
     views.forEach((view) => {
-      setRouteViewState(view, false)
+      view.hidden = view.dataset.adminView !== activeView
     })
 
-    clearRouteOutlet()
-    parkInactiveViews(activeElement)
+    const catalogoViews = ['prodotti', 'collezioni', 'inventario']
+    const contenutoViews = ['pagine', 'menu', 'seo', 'blog-admin', 'metaobjects', 'policy']
+    const marketingViews = [
+      'marketing-campaigns',
+      'marketing-discounts',
+      'marketing-coupons',
+      'marketing-newsletter',
+    ]
+    const marketsViews = [
+      'markets-mercati',
+      'markets-paesi',
+      'markets-lingue',
+      'markets-valute',
+      'markets-prezzi',
+    ]
+    const analyticsViews = [
+      'analytics-dashboard',
+      'analytics-traffic',
+      'analytics-sales',
+      'analytics-products',
+      'analytics-conversions',
+      'analytics-events',
+    ]
+    const checkoutViews = [
+      'checkout-settings',
+      'checkout-payments',
+      'checkout-shipping',
+      'checkout-taxes',
+      'checkout-confirmation',
+    ]
+    const impostazioniViews = [
+      'settings-general',
+      'privacy-settings',
+      'cookie-settings',
+      'settings-import-export',
+      'metafields',
+      'integrazioni',
+      'utenti',
+      'activity',
+      'notifiche',
+      'domini',
+      'tenants',
+      'performance',
+    ]
 
-    routeOutlet.appendChild(activeElement)
-    setRouteViewState(activeElement, true)
-    viewHost.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
-    routeOutlet.dataset.adminActiveView = activeElement.dataset.adminView || activeView || 'dashboard'
-    return activeElement
+    const directHubViews = [
+      'dashboard',
+      'media',
+      'traduzioni',
+      'import-export',
+      'google-suite',
+      'email-automations',
+      'reviews',
+      'returns',
+      'upsells',
+      'product-feeds',
+      'customer-accounts',
+      'gift-cards',
+      'advanced-discounts',
+      'abandoned-carts',
+      'search-filters',
+      'seo-technical',
+      'webhooks',
+      'supplier-feeds',
+      'subscriptions',
+      'backup',
+      'gdpr-cookie',
+      'store-health',
+      'launch-checklist',
+      'utenti',
+      'performance',
+    ]
+    const activeHubHash = directHubViews.includes(activeView)
+      ? `#${activeView}`
+      : contenutoViews.includes(activeView)
+      ? '#contenuto'
+      : catalogoViews.includes(activeView)
+        ? '#catalogo'
+        : marketingViews.includes(activeView)
+          ? '#marketing'
+          : marketsViews.includes(activeView)
+            ? '#markets'
+            : analyticsViews.includes(activeView)
+              ? '#analisi'
+              : checkoutViews.includes(activeView)
+                ? '#checkout'
+                : impostazioniViews.includes(activeView)
+                  ? '#impostazioni'
+                  : `#${activeView}`
+
+    hubLinks.forEach((link) => {
+      link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
+    })
+
+    const target = document.querySelector(`[data-admin-view="${activeView}"]`)
+    applyAdminLanguage()
+    updateCurrentViewLabel(activeView)
+    target?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
   }
 
-  function mountActiveView(activeView) {
-    return mountAdminView(activeView)
-  }
-
-  function openViewFromHash({ skipScroll = false, load = true } = {}) {
-    try {
-      const routePath = normalizeAdminRoutePath()
-      const activeView = getAdminViewForRoute(routePath)
-      const canonicalHash = `#/${routePath}`
-
-      if (window.location.hash !== canonicalHash) {
-        window.history.replaceState(null, '', canonicalHash)
-      }
-
-      const target = mountActiveView(activeView)
-      const activeHubHash = `#/${routePath.split('/')[0] || getAdminPrimaryRouteForView(activeView)}`
-
-      hubLinks.forEach((link) => {
-        link.classList.toggle('active', link.getAttribute('href') === activeHubHash)
-      })
-
-      applyAdminLanguage()
-      renderAdminPageChrome(target, activeView, routePath)
-      updateCurrentViewLabel(activeView)
-      upgradeAdminRouteLinks(target || document)
-      applyAdminAuditUi()
-      if (load) rerenderActiveAdminView()
-      if (!skipScroll) {
-        target?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        })
-      }
-    } catch (error) {
-      console.error('Admin route render failed, falling back to dashboard.', error)
-      window.history.replaceState(null, '', '#/dashboard')
-      const target = mountActiveView('dashboard')
-      hubLinks.forEach((link) => {
-        link.classList.toggle('active', link.getAttribute('href') === '#/dashboard')
-      })
-      renderAdminPageChrome(target, 'dashboard', 'dashboard')
-      updateCurrentViewLabel('dashboard')
-      if (target) setRouteViewState(target, true)
-      applyAdminLanguage()
-      applyAdminAuditUi()
-    }
-  }
-
-  setupRouteDebugHelpers()
   window.addEventListener('hashchange', openViewFromHash)
-  adminRenderCurrentRoute = openViewFromHash
-  openViewFromHash({ load: false, skipScroll: true })
-  window.setTimeout(() => {
-    openViewFromHash({ load: false, skipScroll: true })
-  }, 0)
+  openViewFromHash()
 }
 
 setupAdminViews()
